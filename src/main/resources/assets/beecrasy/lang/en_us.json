@@ -1,0 +1,13 @@
+{
+  "itemGroup.beecrasy": "Example Mod Tab",
+  "block.beecrasy.example_block": "Example Block",
+  "item.beecrasy.example_item": "Example Item",
+
+  "beecrasy.configuration.title": "Beecrasy Configs",
+  "beecrasy.configuration.section.beecrasy.common.toml": "Beecrasy Configs",
+  "beecrasy.configuration.section.beecrasy.common.toml.title": "Beecrasy Configs",
+  "beecrasy.configuration.items": "Item List",
+  "beecrasy.configuration.logDirtBlock": "Log Dirt Block",
+  "beecrasy.configuration.magicNumberIntroduction": "Magic Number Text",
+  "beecrasy.configuration.magicNumber": "Magic Number"
+}
