@@ -1,0 +1,88 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/block",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "beecrasy:block/skep_2",
+		"particle": "beecrasy:block/skep_2"
+	},
+	"elements": [
+		{
+			"name": "hiveBodyBottom",
+			"from": [2, 0, 2],
+			"to": [14, 6, 14],
+			"rotation": {"angle": 0, "axis": "y", "origin": [1, 0, 1]},
+			"faces": {
+				"north": {"uv": [9, 6, 15, 9], "texture": "#0"},
+				"east": {"uv": [1, 5, 7, 8], "texture": "#0"},
+				"south": {"uv": [1, 5, 7, 8], "texture": "#0"},
+				"west": {"uv": [1, 5, 7, 8], "texture": "#0"},
+				"up": {"uv": [9, 0, 15, 6], "texture": "#0"},
+				"down": {"uv": [9, 9, 15, 15], "texture": "#0"}
+			}
+		},
+		{
+			"name": "hiveBodyTop",
+			"from": [3, 6, 3],
+			"to": [13, 10, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [1, 6, 1]},
+			"faces": {
+				"north": {"uv": [1.5, 3, 6.5, 5], "texture": "#0"},
+				"east": {"uv": [1.5, 3, 6.5, 5], "texture": "#0"},
+				"south": {"uv": [1.5, 3, 6.5, 5], "texture": "#0"},
+				"west": {"uv": [1.5, 3, 6.5, 5], "texture": "#0"}
+			}
+		},
+		{
+			"name": "hiveLid",
+			"from": [2, 10, 2],
+			"to": [14, 12, 14],
+			"rotation": {"angle": 0, "axis": "y", "origin": [1, 8, 1]},
+			"faces": {
+				"north": {"uv": [1, 2, 7, 3], "texture": "#0"},
+				"east": {"uv": [1, 2, 7, 3], "texture": "#0"},
+				"south": {"uv": [1, 2, 7, 3], "texture": "#0"},
+				"west": {"uv": [1, 2, 7, 3], "texture": "#0"},
+				"up": {"uv": [1, 9, 7, 15], "rotation": 90, "texture": "#0"},
+				"down": {"uv": [9, 9, 15, 15], "texture": "#0"}
+			}
+		},
+		{
+			"name": "handlePartM",
+			"from": [7, 12.5, 7],
+			"to": [9, 13.5, 9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6, 14, 8]},
+			"faces": {
+				"north": {"uv": [3.5, 1.5, 4.5, 2], "texture": "#0"},
+				"south": {"uv": [3.5, 1.5, 4.5, 2], "texture": "#0"},
+				"up": {"uv": [4.5, 0.5, 3.5, 1.5], "texture": "#0"},
+				"down": {"uv": [4.5, 0.5, 3.5, 1.5], "texture": "#0"}
+			}
+		},
+		{
+			"name": "handlePartE",
+			"from": [9, 12.5, 7],
+			"to": [12, 13.5, 9],
+			"rotation": {"angle": -30, "axis": "z", "origin": [9, 13.5, 8]},
+			"faces": {
+				"north": {"uv": [2, 1.5, 3.5, 2], "texture": "#0"},
+				"south": {"uv": [4.5, 1.5, 6, 2], "texture": "#0"},
+				"up": {"uv": [3.5, 0.5, 2, 1.5], "texture": "#0"},
+				"down": {"uv": [3.5, 0.5, 2, 1.5], "texture": "#0"}
+			}
+		},
+		{
+			"name": "handlePartW",
+			"from": [4, 12.5, 7],
+			"to": [7, 13.5, 9],
+			"rotation": {"angle": 30, "axis": "z", "origin": [7, 13.5, 8]},
+			"faces": {
+				"north": {"uv": [4.5, 1.5, 6, 2], "texture": "#0"},
+				"south": {"uv": [2, 1.5, 3.5, 2], "texture": "#0"},
+				"up": {"uv": [6, 0.5, 4.5, 1.5], "texture": "#0"},
+				"down": {"uv": [6, 0.5, 4.5, 1.5], "texture": "#0"}
+			}
+		}
+	]
+}
