@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2024 TeamMoeg
+ *
+ * This file is part of Caupona.
+ *
+ * Caupona is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ *
+ * Caupona is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Specially, we allow this software to be used alongside with closed source software Minecraft(R) and Forge or other modloader.
+ * Any mods or plugins can also use apis provided by forge or com.teammoeg.caupona.api without using GPL or open source.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Caupona. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.khjxiaogu.beecrasy;
+
+import java.util.function.BiConsumer;
+
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.client.BeeTint;
+
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ItemModelOutput;
+import net.minecraft.client.data.models.model.ItemModelUtils;
+import net.minecraft.client.data.models.model.ModelInstance;
+import net.minecraft.client.data.models.model.ModelLocationUtils;
+import net.minecraft.client.data.models.model.ModelTemplate;
+import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.renderer.item.ItemModel.Unbaked;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
+
+
+public class BeecrasyItemModelProvider extends ItemModelGenerators {
+
+	public BeecrasyItemModelProvider(ItemModelOutput itemModelOutput, BiConsumer<Identifier, ModelInstance> modelOutput) {
+		super(itemModelOutput, modelOutput);
+	}
+	public static final ModelTemplate BEE_TEMPLATE=ModelTemplates.createItem("generated", TextureSlot.LAYER0, TextureSlot.LAYER1, TextureSlot.PARTICLE);
+	@Override
+	public void run() {
+		this.generateBeeTint(Items.DRONE);
+		this.generateBeeTint(Items.LARVA);
+		this.generateBeeTint(Items.PRODUCT_COMB);
+		this.generateBeeTint(Items.QUEEN_BEE);
+		
+		this.texture("beeswax");
+		this.texture("comb_foundation");
+		this.texture("honey_drop");
+
+	}
+    public void generateBeeTint(ItemLike item) {
+    	Identifier rkey=BuiltInRegistries.ITEM.getKey(item.asItem());
+    	Identifier texture=rkey.withPrefix("item/");
+    	Identifier overlay=texture.withSuffix("_overlay");
+        Identifier model = BEE_TEMPLATE.create(item.asItem(), new TextureMapping().put(TextureSlot.LAYER0, mat(overlay)).put(TextureSlot.LAYER1, mat(texture)).put(TextureSlot.PARTICLE, mat(texture)), modelOutput);
+        this.itemModelOutput.accept(item.asItem(), ItemModelUtils.tintedModel(model, new BeeTint()));
+    }
+    public Material mat(Identifier path) {
+    	return new Material(path,false);
+    }
+	public void simpleTexture(String name, String par) {
+		this.itemModelOutput.accept(BuiltInRegistries.ITEM.getValue(Beecrasy.rl(name)),
+		ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM.create(Beecrasy.rl("item/" + name),new TextureMapping().put(TextureSlot.LAYER0, new Material(Beecrasy.rl("item/" + par + name),false)), this.modelOutput))
+		);
+
+	}
+	public Unbaked plain(String name) {
+		return plain(name,"");
+	}
+	public Unbaked plain(String name, String par) {
+		return ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM.create(Beecrasy.rl("item/" + name),new TextureMapping().put(TextureSlot.LAYER0, new Material(Beecrasy.rl("item/" + par + name),false)), this.modelOutput))
+		;
+
+	}
+	public void texture(String name) {
+		texture(name, name);
+	}
+	public void texture(Item name, String par) {
+		this.itemModelOutput.accept(name,
+			ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM.create(ModelLocationUtils.getModelLocation(name), TextureMapping.layer0(new Material(Identifier.fromNamespaceAndPath(Beecrasy.MODID, "item/"+par))), this.modelOutput)
+				));
+	}
+	public void texture(String name, String par) {
+		texture(BuiltInRegistries.ITEM.getValue(Beecrasy.rl(name)),par);
+	}
+}

@@ -1,11 +1,14 @@
 package com.khjxiaogu.beecrasy;
 
+import com.khjxiaogu.beecrasy.client.BeeTint;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
@@ -21,4 +24,11 @@ public class BeecrasyClient {
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
     }
+    
+
+	@SubscribeEvent
+	public static void onTint(RegisterColorHandlersEvent.ItemTintSources ev) {
+		ev.register(Beecrasy.rl("bee_product"), BeeTint.MAP_CODEC);
+		
+	}
 }

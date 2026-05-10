@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "beecrasy:item/product_comb",
+    "tints": [
+      {
+        "type": "beecrasy:bee_product",
+        "default": -1
+      }
+    ]
+  }
+}

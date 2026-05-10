@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "beecrasy:item/larva_overlay",
+    "layer1": "beecrasy:item/larva",
+    "particle": "beecrasy:item/larva"
+  }
+}
