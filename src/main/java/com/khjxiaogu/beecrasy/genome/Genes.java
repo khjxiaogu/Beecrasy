@@ -3,27 +3,62 @@ package com.khjxiaogu.beecrasy.genome;
 import java.util.List;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
-import com.khjxiaogu.beecrasy.genome.gene.BaseAllele;
+import com.khjxiaogu.beecrasy.genome.gene.Biotope;
 import com.khjxiaogu.beecrasy.genome.gene.EnumAlleleType;
+import com.khjxiaogu.beecrasy.genome.gene.Humidity;
+import com.khjxiaogu.beecrasy.genome.gene.NumericAllele;
 import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
+import com.khjxiaogu.beecrasy.genome.gene.Temperature;
 import com.mojang.serialization.Codec;
+
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 
 
 public class Genes {
 	public static class Alleles{
-		public static final EnumAlleleType<BaseAllele> BIOTOPE=new EnumAlleleType<>();
-		public static final BaseAllele WILD=BIOTOPE.registerAllele(new BaseAllele("wild"));
-		public static final BaseAllele CRAFT=BIOTOPE.registerAllele(new BaseAllele("craft"));
-		public static final BaseAllele SMELT=BIOTOPE.registerAllele(new BaseAllele("smelt"));
-		public static final BaseAllele CREATURE=BIOTOPE.registerAllele(new BaseAllele("creature"));
+		public static final EnumAlleleType<Temperature> TEMPERATURE=new EnumAlleleType<>();
+		public static final Temperature ENDER_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.DimensionalTemperature("ender",BuiltinDimensionTypes.END));
+		public static final Temperature NETHER_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.DimensionalTemperature("nether",BuiltinDimensionTypes.NETHER));
+		public static final Temperature FREEZE_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.RangedTemperature("freeze",-2f,-.1f));
+		public static final Temperature COLD_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.RangedTemperature("cold",-.1f,.4f));
+		public static final Temperature MODERATE_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.RangedTemperature("moderate",.4f,.85f));
+		public static final Temperature ARDENT_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.RangedTemperature("ardent",.85f,2f));
+		
+
+		public static final EnumAlleleType<Humidity> HUMIDITY=new EnumAlleleType<>();
+		
+		public static final EnumAlleleType<Biotope> BIOTOPE=new EnumAlleleType<>();
+		public static final Biotope WILD=BIOTOPE.registerAllele(new Biotope("wild"));
+		public static final Biotope CRAFT=BIOTOPE.registerAllele(new Biotope("craft"));
+		public static final Biotope SMELT=BIOTOPE.registerAllele(new Biotope("smelt"));
+		public static final Biotope CREATURE=BIOTOPE.registerAllele(new Biotope("creature"));
+		
+		public static final EnumAlleleType<NumericAllele> YIELD=new EnumAlleleType<>();
+		public static final NumericAllele MEAGER_YIELD=YIELD.registerAllele(new NumericAllele("meager",1));
+		public static final NumericAllele MODERATE_YIELD=YIELD.registerAllele(new NumericAllele("moderate",2));
+		public static final NumericAllele ABUNDANT_YIELD=YIELD.registerAllele(new NumericAllele("abundant",4));
+		public static final NumericAllele BUMPER_YIELD=YIELD.registerAllele(new NumericAllele("bumper",6));
+		
+		public static final EnumAlleleType<NumericAllele> FERTILITY=new EnumAlleleType<>();
+		public static final NumericAllele POOR_FERTILITY=FERTILITY.registerAllele(new NumericAllele("poor",1));
+		public static final NumericAllele MODERATE_FERTILITY=FERTILITY.registerAllele(new NumericAllele("moderate",2));
+		public static final NumericAllele HIGH_FERTILITY=FERTILITY.registerAllele(new NumericAllele("high",4));
+		public static final NumericAllele PROLIFIC_FERTILITY=FERTILITY.registerAllele(new NumericAllele("prolific",6));
+		
+		public static final EnumAlleleType<NumericAllele> LIFESPAN=new EnumAlleleType<>();
+		public static final NumericAllele LIMITED_LIFESPAN=LIFESPAN.registerAllele(new NumericAllele("limited",0.5f));
+		public static final NumericAllele AVERAGE_LIFESPAN=LIFESPAN.registerAllele(new NumericAllele("average",1));
+		public static final NumericAllele EXTENDED_LIFESPAN=LIFESPAN.registerAllele(new NumericAllele("extended",2));
+		public static final NumericAllele EXCEPTIONAL_LIFESPAN=LIFESPAN.registerAllele(new NumericAllele("exceptional",4));
 	}
-	public static final Gene<Integer> TEMPERATURE=GeneRegistry.register(Beecrasy.rl("temperature"), Codec.INT, ()->5, 100);
-	public static final Gene<Integer> HUMIDITY=GeneRegistry.register(Beecrasy.rl("humidity"), Codec.INT, ()->5, 200);
-	public static final Gene<Integer> FERTILE=GeneRegistry.register(Beecrasy.rl("fertile"), Codec.INT, ()->2, 300);
-	public static final Gene<BaseAllele> BIOTOPE=GeneRegistry.register(Beecrasy.rl("biotope"), Alleles.BIOTOPE.CODEC, ()->Alleles.WILD, 400);
-	public static final Gene<List<ProductItem>> PRODUCTS=GeneRegistry.register(Beecrasy.rl("product"), Codec.list(ProductItem.CODEC), ()->List.of(), 500);
-	public static final Gene<Integer> YIELD=GeneRegistry.register(Beecrasy.rl("yield"), Codec.INT, ()->1, 600);
-	public static final Gene<Integer> LIFESPAN=GeneRegistry.register(Beecrasy.rl("lifespan"), Codec.INT, ()->10, 700);
+	public static final Gene<Temperature> TEMPERATURE=GeneRegistry.register(Beecrasy.rl("temperature"), Alleles.TEMPERATURE, ()->Alleles.MODERATE_TEMPERATURE, 100);
+	public static final Gene<Humidity> HUMIDITY=GeneRegistry.register(Beecrasy.rl("humidity"), Alleles.HUMIDITY, ()->null, 200);
+	public static final Gene<NumericAllele> FERTILITY=GeneRegistry.register(Beecrasy.rl("fertility"), Alleles.FERTILITY, ()->Alleles.MODERATE_FERTILITY, 300);
+	public static final Gene<Biotope> BIOTOPE=GeneRegistry.register(Beecrasy.rl("biotope"), Alleles.BIOTOPE, ()->Alleles.WILD, 400);
+	public static final Gene<List<ProductItem>> PRODUCTS=GeneRegistry.register(Beecrasy.rl("product"), Codec.list(ProductItem.CODEC),ProductItem.STREAM_CODEC.apply(ByteBufCodecs.list()), ()->List.of(), 500);
+	public static final Gene<NumericAllele> YIELD=GeneRegistry.register(Beecrasy.rl("yield"), Alleles.YIELD, ()->Alleles.MEAGER_YIELD, 600);
+	public static final Gene<NumericAllele> LIFESPAN=GeneRegistry.register(Beecrasy.rl("lifespan"), Alleles.LIFESPAN, ()->Alleles.AVERAGE_LIFESPAN, 700);
 	
 	
 	public static void init() {

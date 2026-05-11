@@ -1,5 +1,8 @@
 package com.khjxiaogu.beecrasy;
 
+import com.khjxiaogu.beecrasy.genome.GenomeComponent;
+
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
@@ -37,13 +40,17 @@ public class BeecrasyRegistries {
 	            .title(Component.translatable("itemGroup.beecrasy")) //The language key for the title of your CreativeModeTab
 	            .withTabsBefore(CreativeModeTabs.COMBAT)
 	            .icon(() -> Items.DRONE.get().getDefaultInstance())
-	            .displayItems((parameters, output) -> {
-	                //output.accept(EXAMPLE_ITEM.get());
-	            }).build());
+	            .build());
 	}
 	public static class Blocks{
 	    // Create a Deferred Register to hold Blocks which will all be registered under the "beecrasy" namespace
 	    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Beecrasy.MODID);
+	}
+	public static class Components{
+	    // Create a Deferred Register to hold Blocks which will all be registered under the "beecrasy" namespace
+	    public static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Beecrasy.MODID);
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<GenomeComponent>> GENOME=COMPONENTS.registerComponentType("genome", t->t.cacheEncoding().persistent(GenomeComponent.CODEC).networkSynchronized(GenomeComponent.NETWORK_CODEC));
+	
 	}
 	
     public static void register(IEventBus modEventBus) {

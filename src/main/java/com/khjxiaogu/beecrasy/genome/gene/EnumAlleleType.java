@@ -1,18 +1,51 @@
 package com.khjxiaogu.beecrasy.genome.gene;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
-public class EnumAlleleType<T extends Allele> {
-	Map<String,T> alleleType=new HashMap<>();
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
+public class EnumAlleleType<T extends Allele> {
+	private Map<String,T> alleleType=new HashMap<>();
+	private List<String> typelist=new ArrayList<>();
+	private Reference2IntOpenHashMap<T> typeId=new Reference2IntOpenHashMap<>();
+	private boolean isSorted=false;
 	public final Codec<T> CODEC=Codec.STRING.comapFlatMap(this::getAlleleType, t->t.getId());
-	public T registerAllele(T allele) {
-		alleleType.put(allele.getId(), allele);
+	public final StreamCodec<RegistryFriendlyByteBuf,T> STREAM_CODEC=ByteBufCodecs.idMapper(this::getByInt, this::getId).cast();
+	public synchronized <O extends T> O registerAllele(O allele) {
+		String id=allele.getId();
+		if(!alleleType.containsKey(id)) {
+			typelist.add(id);
+			isSorted=false;
+		}
+		alleleType.put(id, allele);
 		return allele;
+	}
+	public void makeIndex() {
+		if(!isSorted) {
+			typelist.sort(null);
+			typeId.clear();
+			for(int i=0;i<typelist.size();i++) {
+				typeId.put(alleleType.get(typelist.get(i)), i);
+			}
+			isSorted=true;
+		}
+	}
+	public T getByInt(int num) {
+		makeIndex();
+		return alleleType.get(typelist.get(num));
+	}
+	public int getId(T obj) {
+		makeIndex();
+		return typeId.getOrDefault(obj,-1);
 	}
 	public DataResult<T> getAlleleType(String id){
 		T type=alleleType.get(id);

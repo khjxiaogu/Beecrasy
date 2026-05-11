@@ -37,7 +37,7 @@ public class TintColorCache {
 			NativeImage ni=content.getOriginalImage();
 			if(ni.format()!=NativeImage.Format.RGBA)
 				continue;
-			Bucket processResult=TintColorExtractor.processImage(TintColorExtractor.samplePixels(ni.getPixelsABGR(),ni.getWidth(),ni.getHeight(),0,0,ni.getWidth(),ni.getHeight()));
+			Bucket processResult=TintColorExtractor.processImage(TintColorExtractor.samplePixelsABGR(ni.getPixelsABGR(),ni.getWidth(),ni.getHeight(),0,0,ni.getWidth(),ni.getHeight()));
 			if(processResult==null)
 				continue;
 			int tintColor=TintColorExtractor.extractTintColor(processResult, 8);
