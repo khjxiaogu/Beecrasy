@@ -25,8 +25,8 @@ public class GenomeComponent {
 		.dispatch(t->t.inspected,
 		n->(n?FULL:EMPTY));
 	
-	final boolean inspected;
-	final Genome[] genomes;
+	private final boolean inspected;
+	private final Genome[] genomes;
 	public GenomeComponent() {
 		inspected=false;
 		this.genomes = new Genome[0];
@@ -45,6 +45,12 @@ public class GenomeComponent {
 			this.genomes = new Genome[] {genome1,genome2.get()};
 		else
 			this.genomes = new Genome[] {genome1};
+	}
+	public int size() {
+		return genomes.length;
+	}
+	public Genome getGenome(int index) {
+		return genomes[index];
 	}
 
 }

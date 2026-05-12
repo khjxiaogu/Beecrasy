@@ -1,6 +1,5 @@
 package com.khjxiaogu.beecrasy.genome;
 
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,7 +24,6 @@ public class Genome {
 				GeneRegistry.STREAM_CODEC.encode(output, ent.getKey());
 				((GeneType)ent.getKey()).streamCodec().encode(output, ent.getValue());
 			}
-			
 		}
 		@Override
 		public Genome decode(RegistryFriendlyByteBuf input) {
@@ -45,6 +43,9 @@ public class Genome {
 		super();
 		this.alleles = alleles;
 	}
+	public <T> T getAllele(GeneType<T> type) {
+		return (T) alleles.get(type);
+	}
 	public Builder createBuilder() {
 		return new Builder(this);
 	}
@@ -52,7 +53,7 @@ public class Genome {
 		return new Builder();
 	}
 	public static class Builder{
-		Map<GeneType, Object> alleles=new HashMap<>();
+		Map<GeneType, Object> alleles=new IdentityHashMap<>();
 		public Builder() {
 		}
 		public Builder(Genome genome) {
@@ -63,6 +64,9 @@ public class Genome {
 		public <T> Builder add(GeneType<T> type,T gene) {
 			alleles.put(type, gene);
 			return this;
+		}
+		public <T> T get(GeneType<T> type) {
+			return (T) alleles.get(type);
 		}
 		public Genome build() {
 			Map<GeneType, Object> calleles=new IdentityHashMap<>();

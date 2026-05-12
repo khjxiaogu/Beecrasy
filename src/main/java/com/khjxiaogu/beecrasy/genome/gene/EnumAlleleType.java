@@ -17,26 +17,33 @@ public class EnumAlleleType<T extends Allele> {
 	private Map<String,T> alleleType=new HashMap<>();
 	private List<String> typelist=new ArrayList<>();
 	private Reference2IntOpenHashMap<T> typeId=new Reference2IntOpenHashMap<>();
-	private boolean isSorted=false;
+	private volatile boolean sorted=false;
+	private Object lock=new Object();
 	public final Codec<T> CODEC=Codec.STRING.comapFlatMap(this::getAlleleType, t->t.getId());
 	public final StreamCodec<RegistryFriendlyByteBuf,T> STREAM_CODEC=ByteBufCodecs.idMapper(this::getByInt, this::getId).cast();
 	public synchronized <O extends T> O registerAllele(O allele) {
 		String id=allele.getId();
 		if(!alleleType.containsKey(id)) {
-			typelist.add(id);
-			isSorted=false;
+			synchronized(lock) {
+				typelist.add(id);
+				sorted=false;
+			}
 		}
 		alleleType.put(id, allele);
 		return allele;
 	}
-	public void makeIndex() {
-		if(!isSorted) {
-			typelist.sort(null);
-			typeId.clear();
-			for(int i=0;i<typelist.size();i++) {
-				typeId.put(alleleType.get(typelist.get(i)), i);
+	private void makeIndex() {
+		if(!sorted) {
+			synchronized(lock) {
+				if(!sorted) {
+					typelist.sort(null);
+					typeId.clear();
+					for(int i=0;i<typelist.size();i++) {
+						typeId.put(alleleType.get(typelist.get(i)), i);
+					}
+					sorted=true;
+				}
 			}
-			isSorted=true;
 		}
 	}
 	public T getByInt(int num) {

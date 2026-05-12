@@ -20,13 +20,20 @@ public class Genes {
 		public static final EnumAlleleType<Temperature> TEMPERATURE=new EnumAlleleType<>();
 		public static final Temperature ENDER_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.DimensionalTemperature("ender",BuiltinDimensionTypes.END));
 		public static final Temperature NETHER_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.DimensionalTemperature("nether",BuiltinDimensionTypes.NETHER));
-		public static final Temperature FREEZE_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.RangedTemperature("freeze",-2f,-.1f));
-		public static final Temperature COLD_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.RangedTemperature("cold",-.1f,.4f));
+		public static final Temperature FREEZE_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.RangedTemperature("freeze",-2f,-.15f));
+		public static final Temperature COLD_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.RangedTemperature("cold",-.15f,.4f));
 		public static final Temperature MODERATE_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.RangedTemperature("moderate",.4f,.85f));
 		public static final Temperature ARDENT_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.RangedTemperature("ardent",.85f,2f));
+		public static final Temperature OMNI_TEMPERATURE=TEMPERATURE.registerAllele(new Temperature.OmniTemperature("omni"));
 		
 
 		public static final EnumAlleleType<Humidity> HUMIDITY=new EnumAlleleType<>();
+		public static final Humidity DRY_HUMIDITY=HUMIDITY.registerAllele(new Humidity.RangedHumidity("dry",0,.35f));
+		public static final Humidity MODERATE_HUMIDITY=HUMIDITY.registerAllele(new Humidity.RangedHumidity("moderate",.35f,.65f));
+		public static final Humidity WET_HUMIDITY=HUMIDITY.registerAllele(new Humidity.RangedHumidity("wet",.65f,1f));
+		public static final Humidity OMNI_HUMIDITY=HUMIDITY.registerAllele(new Humidity.OmniHumidity("omni"));
+		
+
 		
 		public static final EnumAlleleType<Biotope> BIOTOPE=new EnumAlleleType<>();
 		public static final Biotope WILD=BIOTOPE.registerAllele(new Biotope("wild"));

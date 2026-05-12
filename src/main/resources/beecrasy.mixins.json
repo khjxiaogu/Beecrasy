@@ -2,7 +2,9 @@
   "required": true,
   "package": "com.khjxiaogu.beecrasy.mixin",
   "compatibilityLevel": "JAVA_25",
-  "mixins": [],
+  "mixins": [
+    "RecipeManagerMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

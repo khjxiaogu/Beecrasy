@@ -1,6 +1,8 @@
 package com.khjxiaogu.beecrasy.genome;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,35 +21,45 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
 public class GeneRegistry {
-	static record GeneType<T>(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> streamCodec,Supplier<T> defaultValueSupplier,int priority,int order)  implements Gene<T>{
+	static record GeneType<T>(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> streamCodec,Supplier<T> defaultValueSupplier,long priority)  implements Gene<T>{
 		public T getDefault() {
 			return defaultValueSupplier.get();
 		}
 	}
 	private static Map<Identifier,GeneType<?>> geneticsMap=new HashMap<>();
 	private static List<Identifier> typelist=new ArrayList<>();
+	private static List<Identifier> displaylist=new ArrayList<>();
 	private static Reference2IntOpenHashMap<GeneType<?>> typeId=new Reference2IntOpenHashMap<>();
-	private static boolean isSorted=false;
+	private static volatile boolean sorted=false;
+	private static volatile boolean displaySorted=false;
+	private static Object lock=new Object();
 	public static final Codec<GeneType<?>> CODEC=Identifier.CODEC.comapFlatMap(GeneRegistry::getGeneType, GeneType::id);
 	public static final StreamCodec<ByteBuf,GeneType<?>> STREAM_CODEC=ByteBufCodecs.idMapper(GeneRegistry::getByInt, GeneRegistry::getIntId);
 	public synchronized static <T> Gene<T> register(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> stream,Supplier<T> defaultValueSupplier,int priority) {
-		GeneType<T> gt=new GeneType<>(id,codec,stream,defaultValueSupplier,priority,geneticsMap.size());
+		GeneType<T> gt=new GeneType<>(id,codec,stream,defaultValueSupplier,(((long)priority)<<32)|geneticsMap.size());
 		if(!geneticsMap.containsKey(id)) {
-			typelist.add(id);
-			isSorted=false;
+			synchronized(lock) {
+				typelist.add(id);
+				sorted=false;
+				displaySorted=false;
+			}
 		}
 		geneticsMap.put(id, gt);
 		return gt;
 	}
 
-	public static void makeIndex() {
-		if(!isSorted) {
-			typelist.sort(Identifier::compareNamespaced);
-			typeId.clear();
-			for(int i=0;i<typelist.size();i++) {
-				typeId.put(geneticsMap.get(typelist.get(i)), i);
+	private static void makeIndex() {
+		if(!sorted) {
+			synchronized(lock) {
+				if(!sorted) {
+					typelist.sort(Identifier::compareNamespaced);
+					typeId.clear();
+					for(int i=0;i<typelist.size();i++) {
+						typeId.put(geneticsMap.get(typelist.get(i)), i);
+					}
+					sorted=true;
+				}
 			}
-			isSorted=true;
 		}
 	}
 	public static <T extends Allele> Gene<T> register(Identifier id, EnumAlleleType<T> type,Supplier<T> defaultValueSupplier,int priority) {
@@ -73,8 +85,33 @@ public class GeneRegistry {
 			return DataResult.error(()->"Genetic type '"+id+"' not present!");
 		return DataResult.success(type);
 	}
-	static Iterable<Identifier> getGeneTypes(){
+	private static void makeDisplayList() {
+		if(!displaySorted) {
+			synchronized(lock) {
+				if(!displaySorted) {
+					displaylist.clear();
+					displaylist.addAll(typelist);
+					displaylist.sort(Comparator.comparingLong(t->geneticsMap.get(t).priority));
+					displaySorted=true;
+				}
+			}
+		}
+	}
+	
+	public static Iterable<Identifier> getGeneTypes(){
 		makeIndex();
 		return typelist;
+	}
+
+	public static Collection<GeneType<?>> getGeneTypesUnordered(){
+		return geneticsMap.values();
+	}
+	public static Iterable<Identifier> getDisplayOrder(){
+		makeDisplayList();
+		return typelist;
+	}
+
+	public static int size() {
+		return geneticsMap.size();
 	}
 }
