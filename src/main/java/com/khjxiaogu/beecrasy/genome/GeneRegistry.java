@@ -22,6 +22,7 @@ import net.minecraft.resources.Identifier;
 
 public class GeneRegistry {
 	static record GeneType<T>(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> streamCodec,Supplier<T> defaultValueSupplier,long priority)  implements Gene<T>{
+		@Override
 		public T getDefault() {
 			return defaultValueSupplier.get();
 		}
@@ -33,8 +34,8 @@ public class GeneRegistry {
 	private static volatile boolean sorted=false;
 	private static volatile boolean displaySorted=false;
 	private static Object lock=new Object();
-	public static final Codec<GeneType<?>> CODEC=Identifier.CODEC.comapFlatMap(GeneRegistry::getGeneType, GeneType::id);
-	public static final StreamCodec<ByteBuf,GeneType<?>> STREAM_CODEC=ByteBufCodecs.idMapper(GeneRegistry::getByInt, GeneRegistry::getIntId);
+	public static final Codec<Gene<?>> CODEC=Identifier.CODEC.comapFlatMap(GeneRegistry::getGeneType, Gene::id);
+	public static final StreamCodec<ByteBuf,Gene<?>> STREAM_CODEC=ByteBufCodecs.idMapper(GeneRegistry::getByInt, GeneRegistry::getIntId);
 	public synchronized static <T> Gene<T> register(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> stream,Supplier<T> defaultValueSupplier,int priority) {
 		GeneType<T> gt=new GeneType<>(id,codec,stream,defaultValueSupplier,(((long)priority)<<32)|geneticsMap.size());
 		if(!geneticsMap.containsKey(id)) {
@@ -66,20 +67,20 @@ public class GeneRegistry {
 		return register(id,type.CODEC,type.STREAM_CODEC,defaultValueSupplier,priority);
 	
 	}
-	public static GeneType<?> getByInt(int num){
+	public static Gene<?> getByInt(int num){
 		makeIndex();
-		GeneType<?> type=geneticsMap.get(typelist.get(num));
+		Gene<?> type=geneticsMap.get(typelist.get(num));
 		return type;
 	}
-	public static int getIntId(GeneType<?> gene){
+	public static int getIntId(Gene<?> gene){
 		makeIndex();
 		return typeId.getOrDefault(gene,-1);
 	}
-	public static GeneType<?> get(Identifier id){
-		GeneType<?> type=geneticsMap.get(id);
+	public static Gene<?> get(Identifier id){
+		Gene<?> type=geneticsMap.get(id);
 		return type;
 	}
-	public static DataResult<GeneType<?>> getGeneType(Identifier id){
+	private static DataResult<Gene<?>> getGeneType(Identifier id){
 		GeneType<?> type=geneticsMap.get(id);
 		if(type==null)
 			return DataResult.error(()->"Genetic type '"+id+"' not present!");
@@ -103,8 +104,8 @@ public class GeneRegistry {
 		return typelist;
 	}
 
-	public static Collection<GeneType<?>> getGeneTypesUnordered(){
-		return geneticsMap.values();
+	public static Collection<Gene<?>> getGeneTypesUnordered(){
+		return (Collection)geneticsMap.values();
 	}
 	public static Iterable<Identifier> getDisplayOrder(){
 		makeDisplayList();

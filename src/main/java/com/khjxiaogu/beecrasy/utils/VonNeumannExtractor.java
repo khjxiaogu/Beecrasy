@@ -35,5 +35,4 @@ public class VonNeumannExtractor {
 		bits=BitSet.valueOf(num);
 		index=0;
 	}
-
 }

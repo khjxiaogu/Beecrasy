@@ -1,6 +1,8 @@
 package com.khjxiaogu.beecrasy;
 
 import com.khjxiaogu.beecrasy.genome.GenomeComponent;
+import com.khjxiaogu.beecrasy.utils.TintColorComponent;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -51,7 +53,8 @@ public class BeecrasyRegistries {
 	    // Create a Deferred Register to hold Blocks which will all be registered under the "beecrasy" namespace
 	    public static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Beecrasy.MODID);
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<GenomeComponent>> GENOME=COMPONENTS.registerComponentType("genome", t->t.cacheEncoding().persistent(GenomeComponent.CODEC).networkSynchronized(GenomeComponent.NETWORK_CODEC));
-	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStack>> TINT_STACK=COMPONENTS.registerComponentType("genome", t->t.cacheEncoding().persistent(ItemStack.CODEC).networkSynchronized(ItemStack.STREAM_CODEC));
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStack>> TINT_STACK=COMPONENTS.registerComponentType("tint_stack", t->t.cacheEncoding().persistent(ItemStack.CODEC).networkSynchronized(ItemStack.STREAM_CODEC));
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<TintColorComponent>> TINT_COLOR=COMPONENTS.registerComponentType("tint_color", t->t.cacheEncoding().persistent(TintColorComponent.CODEC).networkSynchronized(TintColorComponent.NETWORK_CODEC));
 		
 	}
 	

@@ -1,5 +1,5 @@
 package com.khjxiaogu.beecrasy.genome;
 
-public record DiploidGenome(Genome.Builder mat,Genome.Builder par) {
+public record DiploidGenome(Genome.Builder maternal,Genome.Builder paternal) {
 
 }

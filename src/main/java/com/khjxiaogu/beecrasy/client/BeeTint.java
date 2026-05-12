@@ -1,5 +1,7 @@
 package com.khjxiaogu.beecrasy.client;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
+import com.khjxiaogu.beecrasy.utils.TintColorComponent;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -21,18 +23,23 @@ public record BeeTint(int defaultColor) implements ItemTintSource {
     public BeeTint() {
         this(0xffffffff);
     }
-    private static ThreadLocal<Boolean> calculating=ThreadLocal.withInitial(()->false);
+    private static final ThreadLocal<Boolean> calculating=ThreadLocal.withInitial(()->false);
     @Override
     public int calculate(ItemStack itemStack,ClientLevel level,LivingEntity owner) {
+    	
+    	TintColorComponent color=itemStack.get(Components.TINT_COLOR);
+    	if(color!=null)
+    		return color.color();
     	//避免死循环
     	if(!calculating.get()) {
     		try {
     			calculating.set(true);
-		        ItemStack product=itemStack;
+		        ItemStack product=itemStack.get(Components.TINT_STACK);
+		        if(product==null)
+		        	product=itemStack;
 		        ItemStackRenderState irs=new ItemStackRenderState();
 		        Minecraft.getInstance().getItemModelResolver().appendItemLayers(irs, product, ItemDisplayContext.GUI, level, owner, 0);
 		        TextureAtlasSprite sprite=irs.pickParticleMaterial(level.getRandom()).sprite();
-		        System.out.println(sprite);
 		        return TintColorCache.getTintColor(sprite);
     		}finally {
     			calculating.set(false);
