@@ -45,7 +45,10 @@ public class Genome {
 		this.alleles = alleles;
 	}
 	public <T> T getAllele(Gene<T> type) {
-		return (T) alleles.get(type);
+		T alle= (T) alleles.get(type);
+		if(alle==null)
+			return type.getDefault();
+		return alle;
 	}
 	public Builder createBuilder() {
 		return new Builder(this);

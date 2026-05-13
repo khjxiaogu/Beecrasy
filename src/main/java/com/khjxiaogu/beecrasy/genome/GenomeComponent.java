@@ -29,7 +29,7 @@ public class GenomeComponent {
 	private final Genome[] genomes;
 	public GenomeComponent() {
 		inspected=false;
-		this.genomes = new Genome[0];
+		this.genomes = new Genome[1];
 	}
 	
 	public GenomeComponent(List<Genome> genomes) {
