@@ -1,28 +1,44 @@
 package com.khjxiaogu.beecrasy.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.NormalCraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 public class CraftingRecipeSequence {
 
 	public static class SequencedRecipe {
-		NormalCraftingRecipe recipe;
+		RecipeHolder<CraftingRecipe> recipe;
 		List<Ingredient> recipeSequence;
 
-		public SequencedRecipe(NormalCraftingRecipe recipe) {
+		protected SequencedRecipe(RecipeHolder<CraftingRecipe> recipe, List<Ingredient> recipeSequence) {
 			super();
 			this.recipe = recipe;
-			recipeSequence = new ArrayList<>(recipe.placementInfo().ingredients());
+			this.recipeSequence = recipeSequence;
+		}
+
+		public RecipeHolder<CraftingRecipe> getRecipe() {
+			return recipe;
+		}
+
+		public SequencedRecipe(RecipeHolder<CraftingRecipe> recipe) {
+			super();
+			this.recipe = recipe;
+			recipeSequence = new ArrayList<>(recipe.value().placementInfo().ingredients());
 
 		}
 
@@ -30,46 +46,95 @@ public class CraftingRecipeSequence {
 			return recipeSequence.size();
 		}
 
-		public Ingredient get(int idx) {
-			return recipeSequence.get(idx);
+		public boolean match(int idx,ItemStack stack) {
+			return recipeSequence.get(idx).test(stack);
+		}
+		public Stream<Item> getValues(int idx){
+			return recipeSequence.get(idx).getValues().stream().map(t->t.value());
+		}
+	    public static Set<List<Item>> cartesianProduct(List<Ingredient> sets) {
+	        List<List<Item>> result = new ArrayList<>();
+	        result.add(new ArrayList<>());
+
+	        for (Ingredient set : sets) {
+	            List<List<Item>> newResult = new ArrayList<>();
+	            for (List<Item> combination : result) {
+	                for (Holder<Item> item : set.getValues()) {
+	                    List<Item> newComb = new ArrayList<>(combination);
+	                    newComb.add(item.value());
+	                    newResult.add(newComb);
+	                }
+	            }
+	            result = newResult;
+	        }
+	        for (List<Item> combination : result) {
+	            combination.sort(Comparator.comparingInt(Item::hashCode));
+	        }
+
+	        return new HashSet<>(result);
+	    }
+		public List<UnOrderedSequencedRecipe> toUnordered() {
+			Set<List<Item>> li=cartesianProduct(recipeSequence);
+			List<UnOrderedSequencedRecipe> lo=new ArrayList<>(li.size());
+			for(List<Item> i:li) {
+				lo.add(new UnOrderedSequencedRecipe(recipe,recipeSequence,i));
+			}
+			return lo;
 		}
 	}
+	public static class UnOrderedSequencedRecipe extends SequencedRecipe{
+		List<Item> specificItem;
 
-	/** 树节点 */
+	
+
+		public UnOrderedSequencedRecipe(RecipeHolder<CraftingRecipe> recipe, List<Ingredient> recipeSequence, List<Item> specificItem) {
+			super(recipe, recipeSequence);
+			this.specificItem = specificItem;
+		}
+
+		public Stream<Item> getValues(int idx){
+			return Stream.of(specificItem.get(idx));
+		}
+	}
 	private static class Node {
-		/** 当该节点只对应一个模式时，直接保存该模式，不再向下拆分 */
+		/** 当该节点只对应一个配方，不再向下拆分 */
 		SequencedRecipe singlePattern;
 		/** 分支子节点，使用 IdentityHashMap 以确保键的比较使用 == */
 		Map<Item, Node> children;
-		/** 分支节点下，恰好在当前深度结束的模式列表 */
+		/** 分支节点下，恰好在当前深度结束的配方列表 */
 		List<SequencedRecipe> endingPatterns;
 	}
 
 	private final Node root;
 
 	/**
-	 * 根据提供的模式数组构建匹配树。
+	 * 根据提供的配方构建匹配树。
 	 *
-	 * @param patterns 三维数组，第一维为模式索引，第二维为序列位置，第三维为该位置允许的值
 	 */
 	public CraftingRecipeSequence(List<SequencedRecipe> patterns) {
+		this();
+		insertAll(patterns);
+	}
+	public CraftingRecipeSequence() {
 		this.root = new Node();
+	}
+	public void insertAll(List<? extends SequencedRecipe> patterns) {
 		for (SequencedRecipe pattern : patterns) {
-			insert(root, pattern, 0);
+			insert(pattern);
 		}
 	}
-
+	public void insert(SequencedRecipe pattern) {
+		insert(root, pattern, 0);
+	}
 	/**
-	 * 将模式插入树中（递归实现）。
+	 * 将配方插入树中（递归实现）。
 	 */
 	private void insert(Node node, SequencedRecipe pattern, int depth) {
-		// 1. 当前节点是单模式节点
+		// 1. 当前节点是单节点
 		if (node.singlePattern != null) {
-			// 如果就是同一个模式，无需重复插入
 			if (node.singlePattern == pattern) {
 				return;
 			}
-			// 否则需要展开该节点：取出原有模式，转为分支节点，然后重新插入两个模式
 			SequencedRecipe oldPattern = node.singlePattern;
 			node.singlePattern = null;
 			node.children = new IdentityHashMap<>();
@@ -80,80 +145,76 @@ public class CraftingRecipeSequence {
 
 		// 2. 当前节点已经是分支节点
 		if (node.children != null) {
-			if (depth == pattern.length()) { // 模式在此结束
+			if (depth == pattern.length()) {
 				if (node.endingPatterns == null) {
 					node.endingPatterns = new ArrayList<>();
 				}
 				node.endingPatterns.add(pattern);
 				return;
 			}
-			// 对当前深度允许的每个值，递归插入
-			Ingredient allowed = pattern.get(depth);
-			for (Holder<Item> val : allowed.getValues()) {
-				Node child = node.children.get(val.value());
+			Stream<Item> allowed = pattern.getValues(depth);
+			allowed.forEach(val->{
+				Node child = node.children.get(val);
 				if (child == null) {
 					child = new Node();
-					node.children.put(val.value(), child);
+					node.children.put(val, child);
 				}
 				insert(child, pattern, depth + 1);
-			}
+			});
 			return;
 		}
 
-		// 3. 空节点：第一次有模式到达此处，不拆分，直接保留完整模式
 		node.singlePattern = pattern;
 	}
 
 	/**
-	 * 对输入序列进行匹配，返回所有匹配的模式列表。
+	 * 对输入序列进行匹配，返回所有匹配的配方列表。
 	 *
 	 * @param sequence 输入序列
-	 * @return 所有匹配的模式（无特定顺序）
+	 * @return 所有匹配的配方（无特定顺序）
 	 */
-	public List<SequencedRecipe> match(List<ItemStack> sequence) {
-		// 使用 Set 自动去重（当模式在树中有多条路径时可能出现重复引用，实际上不会）
-		Set<SequencedRecipe> results = new LinkedHashSet<>();
+	public Collection<RecipeHolder<CraftingRecipe>> match(List<ItemStack> sequence) {
+		Set<RecipeHolder<CraftingRecipe>> results = new LinkedHashSet<>();
 		matchRecursive(root, sequence, 0, results);
-		return new ArrayList<>(results);
+		return results;
 	}
 
 	/**
 	 * 递归匹配。
 	 */
-	private void matchRecursive(Node node, List<ItemStack> sequence, int index, Set<SequencedRecipe> results) {
-		// 情形 A：单模式节点 -> 检查剩余序列是否完全匹配该模式
+	private void matchRecursive(Node node, List<ItemStack> sequence, int index, Set<RecipeHolder<CraftingRecipe>> results) {
 		if (node.singlePattern != null) {
 			SequencedRecipe pattern = node.singlePattern;
-			// 长度必须一致
 			if (pattern.length() != sequence.size()) {
 				return;
 			}
-			// 检查从 index 开始的所有位置
-			for (int i = index; i < pattern.length(); i++) {
+			for (int i = 0; i < pattern.length(); i++) {
 				ItemStack seqItem = sequence.get(i);
-				Ingredient allowed = pattern.get(i);
 
-				if (allowed.test(seqItem)) {
+				if (!pattern.match(i,seqItem)) {
 					return;
 				}
 			}
-			results.add(pattern);
+			results.add(pattern.recipe);
 			return;
 		}
-
-		// 情形 B：分支节点
-		// 序列已耗尽，收集所有在此节点结束的模式
 		if (index == sequence.size()) {
 			if (node.endingPatterns != null) {
-				results.addAll(node.endingPatterns);
+				outer:for(SequencedRecipe recipe:node.endingPatterns) {
+					for(int i=0;i<sequence.size();i++) {
+						if (!recipe.match(i,sequence.get(i))) {
+							 continue outer;
+						}
+					}
+					results.add(recipe.recipe);
+				}
 			}
 			return;
 		}
 
-		// 序列还有元素，沿对应的子树继续匹配
 		if (node.children != null) {
 			ItemStack item = sequence.get(index);
-			Node child = node.children.get(item.getItem()); // IdentityHashMap 使用 == 比较
+			Node child = node.children.get(item.getItem()); 
 			if (child != null) {
 				matchRecursive(child, sequence, index + 1, results);
 			}

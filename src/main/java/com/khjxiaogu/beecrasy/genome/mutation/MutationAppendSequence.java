@@ -3,6 +3,7 @@ package com.khjxiaogu.beecrasy.genome.mutation;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.khjxiaogu.beecrasy.genome.BeeHiveParameters;
 import com.khjxiaogu.beecrasy.genome.DiploidGenome;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Mutation;
@@ -16,7 +17,7 @@ public class MutationAppendSequence implements Mutation {
 	}
 
 	@Override
-	public boolean mutate(DiploidGenome genome,RandomSource rnd) {
+	public boolean mutate(BeeHiveParameters params,DiploidGenome genome,RandomSource rnd) {
 		if(genome.maternal().get(Genes.BIOTOPE)==genome.paternal().get(Genes.BIOTOPE)) {
 			if(rnd.nextFloat()<.075f) {
 				List<ProductItem> matSeqOriginal=genome.maternal().get(Genes.PRODUCTS);

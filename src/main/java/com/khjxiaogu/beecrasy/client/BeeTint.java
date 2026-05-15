@@ -1,7 +1,7 @@
 package com.khjxiaogu.beecrasy.client;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
-import com.khjxiaogu.beecrasy.utils.TintColorComponent;
+import com.khjxiaogu.beecrasy.components.TintColorComponent;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 

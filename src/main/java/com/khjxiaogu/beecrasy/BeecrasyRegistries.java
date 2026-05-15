@@ -1,8 +1,7 @@
 package com.khjxiaogu.beecrasy;
 
-import com.khjxiaogu.beecrasy.genome.GenomeComponent;
-import com.khjxiaogu.beecrasy.utils.TintColorComponent;
-import com.mojang.serialization.Codec;
+import com.khjxiaogu.beecrasy.components.GenomeComponent;
+import com.khjxiaogu.beecrasy.components.TintColorComponent;
 
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;

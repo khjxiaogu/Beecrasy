@@ -10,7 +10,7 @@ public interface Mutation {
 	 * @return 是否继续执行后续突变
 	 * 
 	 * */
-	boolean mutate(DiploidGenome genome,RandomSource rnd);
+	boolean mutate(BeeHiveParameters params,DiploidGenome genome,RandomSource rnd);
 	
 	default int priority(){
 		return 1000;

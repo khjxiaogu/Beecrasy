@@ -1,0 +1,71 @@
+package com.khjxiaogu.beecrasy.genome.mutation;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import com.khjxiaogu.beecrasy.genome.BeeHiveParameters;
+import com.khjxiaogu.beecrasy.genome.DiploidGenome;
+import com.khjxiaogu.beecrasy.genome.Genes;
+import com.khjxiaogu.beecrasy.genome.Genome;
+import com.khjxiaogu.beecrasy.genome.Mutation;
+import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
+import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
+import com.khjxiaogu.beecrasy.utils.Utils;
+
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.crafting.SmeltingRecipe;
+
+public class MutationSmelting implements Mutation {
+
+	@Override
+	public boolean mutate(BeeHiveParameters params, DiploidGenome genome, RandomSource rnd) {
+		
+		boolean succeed=false;
+		boolean flag1=genome.maternal().get(Genes.BIOTOPE)==Genes.Alleles.SMELT;
+		boolean flag2=genome.paternal().get(Genes.BIOTOPE)==Genes.Alleles.SMELT;
+		if(!flag1&&!flag2)return false;
+		if(rnd.nextFloat()>.075f)return false;
+		
+		if(flag1&&flag2) {
+			int r=rnd.nextInt(8);
+			if (r < 3) {
+				succeed|=handleCraft(params,genome.maternal(),rnd);
+            } else if (r < 6) {
+            	succeed|=handleCraft(params,genome.paternal(),rnd);
+            } else {
+				succeed|=handleCraft(params,genome.maternal(),rnd);
+				succeed|=handleCraft(params,genome.paternal(),rnd);
+            }
+			return succeed;
+		}else if(flag1) {
+			return handleCraft(params,genome.maternal(),rnd);
+		}else if(flag2) {
+			return handleCraft(params,genome.paternal(),rnd);
+		}
+		return false;
+	}
+	public static boolean handleCraft(BeeHiveParameters param,Genome.Builder genome, RandomSource random) {
+		List<ProductItem> products=genome.get(Genes.PRODUCTS);
+		SingleRecipeInput sri=new SingleRecipeInput(products.get(products.size()-1).stack().create());
+		Optional<RecipeHolder<SmeltingRecipe>> recipe=param.level().recipeAccess().getRecipeFor(RecipeType.SMELTING, sri, param.level());
+		if(!recipe.isEmpty()) {
+			RecipeHolder<SmeltingRecipe> selected=recipe.get();
+			ItemStack ist=selected.value().assemble(sri);
+			if(ist!=null&&!ist.isEmpty()) {
+				genome.add(Genes.PRODUCTS, List.of(new ProductItem(Genes.Alleles.CRAFT,Optional.of(selected.id().identifier()),new ItemStackTemplate(ist.getItem(),ist.getCount(),ist.getComponentsPatch()))));
+				return true;
+			}
+			
+		}
+		return false;
+	}
+}

@@ -18,9 +18,9 @@ public class MutationRegistry {
 		if(type!=null)
 			mutations.add(new MutationRecord(id,type));
 	}
-	public static void handleMutation(DiploidGenome genome,RandomSource random) {
+	public static void handleMutation(BeeHiveParameters params,DiploidGenome genome,RandomSource random) {
 		for(MutationRecord mr:mutations) {
-			if(mr.mutation.mutate(genome,random))
+			if(mr.mutation.mutate(params,genome,random))
 				break;
 		}
 	}

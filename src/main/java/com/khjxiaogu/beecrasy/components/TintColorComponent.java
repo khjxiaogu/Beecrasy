@@ -1,4 +1,4 @@
-package com.khjxiaogu.beecrasy.utils;
+package com.khjxiaogu.beecrasy.components;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

@@ -11,7 +11,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
-public class Genome {
+public class Genome implements AllelesHolder {
 	public static final Codec<Genome> CODEC=RecordCodecBuilder.create(t->t
 			.group(Codec.dispatchedMap(GeneRegistry.CODEC,a->a.codec())
 				.fieldOf("alleles")
@@ -39,6 +39,7 @@ public class Genome {
 			return new Genome((Map)alleles);
 		}
 	};
+	public static final Genome DEFAULT=new Genome(Map.of());
 	private Map<Gene<?>, ?> alleles;
 	Genome(Map<Gene<?>, ?> alleles) {
 		super();
@@ -56,8 +57,8 @@ public class Genome {
 	public static Builder builder() {
 		return new Builder();
 	}
-	public static class Builder{
-		Map<Gene<?>, Object> alleles=new IdentityHashMap<>();
+	public static class Builder implements AllelesHolder {
+		private Map<Gene<?>, Object> alleles=new IdentityHashMap<>();
 		public Builder() {
 		}
 		public Builder(Genome genome) {
@@ -71,6 +72,12 @@ public class Genome {
 		}
 		public <T> T get(Gene<T> type) {
 			return (T) alleles.get(type);
+		}
+		public <T> T getAllele(Gene<T> type) {
+			T alle= (T) alleles.get(type);
+			if(alle==null)
+				return type.getDefault();
+			return alle;
 		}
 		public Genome build() {
 			Map<Gene, Object> calleles=new IdentityHashMap<>();
