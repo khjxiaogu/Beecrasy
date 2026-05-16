@@ -23,6 +23,7 @@ public class CraftingSequenceMatcher {
 	public static CraftingRecipeSequence unordered;
 	public static void bake(Collection<RecipeHolder<CraftingRecipe>> recipes) {
 		ordered=new CraftingRecipeSequence();
+		unordered=new CraftingRecipeSequence();
 		outer:for(RecipeHolder<CraftingRecipe> recipe:recipes) {
 			CraftingRecipe rcp=recipe.value();
 			if(rcp instanceof ShapedRecipe sr&&rcp.getClass()==ShapedRecipe.class) {
