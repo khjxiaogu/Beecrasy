@@ -20,7 +20,10 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
-
+/**
+ * 配方索引缓存，用于构建变异所需的配方匹配树。
+ * 
+ * */
 public class CraftingSequenceMatcher {
 	public static CraftingRecipeSequence ordered;
 	public static UnordererRecipeSequence unordered;
@@ -73,6 +76,7 @@ public class CraftingSequenceMatcher {
 				.thenApplyAsync(CraftingSequenceMatcher::createSequencedRecipe));
 			
 		}
+		Beecrasy.LOGGER.info("Awaiting task completion.");
 		try {
 			CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).get();
 		} catch (InterruptedException e) {
@@ -83,13 +87,14 @@ public class CraftingSequenceMatcher {
 			e.printStackTrace();
 			throw new RuntimeException("Error when baking recipe",e);
 		}
-		
+
+		Beecrasy.LOGGER.info("All Recipe proceded, begin indexing.");
 		try {
-			Beecrasy.LOGGER.info("Baking Ordered Recipe Index");
+			Beecrasy.LOGGER.info("Baking ordered recipe index.");
 			for(CompletableFuture<List<SequencedRecipe>> rss:futures) {
 				ordered.insertAll(rss.get());
 			}
-			Beecrasy.LOGGER.info("Baking Unordered Recipe Index");
+			Beecrasy.LOGGER.info("Baking unordered recipe index.");
 			for(CompletableFuture<List<SequencedRecipe>> rss:futures) {
 				unordered.insertAll(rss.get());
 			}
@@ -97,7 +102,7 @@ public class CraftingSequenceMatcher {
 			e.printStackTrace();
 			throw new RuntimeException("Error when baking recipe",e);
 		}
-		Beecrasy.LOGGER.info("Recipe Baking Complete");
+		Beecrasy.LOGGER.info("Recipe Baking Complete.");
 	}
 	public static List<SequencedRecipe> createSequencedRecipe(List<RecipeHolder<CraftingRecipe>> param){
 		List<SequencedRecipe> list=new ArrayList<>(param.size());

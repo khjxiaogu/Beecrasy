@@ -1,7 +1,5 @@
 package com.khjxiaogu.beecrasy.genome.mutation;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,14 +9,10 @@ import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.Mutation;
 import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
-import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
-import com.khjxiaogu.beecrasy.utils.Utils;
 
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;

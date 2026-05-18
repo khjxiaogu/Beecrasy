@@ -24,7 +24,7 @@ public class Beecrasy {
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public Beecrasy(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
-    	LOGGER.info("Say hello to Beecracy!");
+    	LOGGER.info("Say hello to Beecracy(Not a typo)!");
         modEventBus.addListener(this::commonSetup);
 
         BeecrasyRegistries.register(modEventBus);
