@@ -3,6 +3,7 @@ package com.khjxiaogu.beecrasy.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
@@ -11,12 +12,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.mojang.datafixers.util.Pair;
+
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.NormalCraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
 public class CraftingRecipeSequence {
@@ -24,11 +27,13 @@ public class CraftingRecipeSequence {
 	public static class SequencedRecipe {
 		RecipeHolder<CraftingRecipe> recipe;
 		List<Ingredient> recipeSequence;
-
+		Set<Pair<Item,Item>> cartesianProduct;
 		protected SequencedRecipe(RecipeHolder<CraftingRecipe> recipe, List<Ingredient> recipeSequence) {
 			super();
 			this.recipe = recipe;
 			this.recipeSequence = recipeSequence;
+			if(recipeSequence.size()>=2)
+			this.cartesianProduct=SequencedRecipe.cartesianProduct(recipeSequence);
 		}
 
 		public RecipeHolder<CraftingRecipe> getRecipe() {
@@ -36,9 +41,7 @@ public class CraftingRecipeSequence {
 		}
 
 		public SequencedRecipe(RecipeHolder<CraftingRecipe> recipe) {
-			super();
-			this.recipe = recipe;
-			recipeSequence = new ArrayList<>(recipe.value().placementInfo().ingredients());
+			this(recipe,recipe.value().placementInfo().ingredients());
 
 		}
 
@@ -52,49 +55,104 @@ public class CraftingRecipeSequence {
 		public Stream<Item> getValues(int idx){
 			return recipeSequence.get(idx).getValues().stream().map(t->t.value());
 		}
-	    public static Set<List<Item>> cartesianProduct(List<Ingredient> sets) {
-	        List<List<Item>> result = new ArrayList<>();
-	        result.add(new ArrayList<>());
-
-	        for (Ingredient set : sets) {
-	            List<List<Item>> newResult = new ArrayList<>();
-	            for (List<Item> combination : result) {
-	                for (Holder<Item> item : set.getValues()) {
-	                    List<Item> newComb = new ArrayList<>(combination);
-	                    newComb.add(item.value());
-	                    newResult.add(newComb);
-	                }
+	    public static Set<Pair<Item,Item>> cartesianProduct(List<Ingredient> sets) {
+	    	Set<Pair<Item,Item>> result = new HashSet<>(160000);
+	        for (Holder<Item> i1 : sets.get(0).getValues()) {
+	            for (Holder<Item> i2 : sets.get(1).getValues()) {
+	            	Item e1=i1.value();
+	            	Item e2=i2.value();
+	            	if(e1.hashCode()<=e2.hashCode())
+	            		result.add(Pair.of(e1, e2));
+	            	else
+	            		result.add(Pair.of(e2, e1));
 	            }
-	            result = newResult;
 	        }
-	        for (List<Item> combination : result) {
-	            combination.sort(Comparator.comparingInt(Item::hashCode));
-	        }
+	        if(sets.size()>2) {
 
-	        return new HashSet<>(result);
+	        	Set<Pair<Item,Item>> newResult = new HashSet<>(Math.max(result.size(), 160000));
+	        	Set<Pair<Item,Item>> temp=null;
+		        for (Ingredient set : sets) {
+		            for (Pair<Item,Item> combination : result) {
+		                for (Holder<Item> item : set.getValues()) {
+		                	Item it=item.value();
+		                	int hash=it.hashCode();
+		                	Item elm1=combination.getFirst();
+		                	if(elm1.hashCode()>hash) {
+			                	Item elm0=combination.getSecond();
+		                		if(elm0.hashCode()>hash) {
+			                		newResult.add(Pair.of(it, elm0));
+		                		}else {
+
+			                		newResult.add(Pair.of(elm0,it));
+		                		}
+		                	}else {
+		                		newResult.add(combination);
+		                	}
+		                }
+		            }
+		            temp = result;
+		            result = newResult;
+		            newResult = temp;
+		            newResult.clear();
+		        }
+	        }
+	        return result;
 	    }
-		public List<UnOrderedSequencedRecipe> toUnordered() {
-			Set<List<Item>> li=cartesianProduct(recipeSequence);
-			List<UnOrderedSequencedRecipe> lo=new ArrayList<>(li.size());
-			for(List<Item> i:li) {
-				lo.add(new UnOrderedSequencedRecipe(recipe,recipeSequence,i));
-			}
-			return lo;
+
+		public boolean matches(List<ItemStack> sequence) {
+			
+			return BeecrasyMath.canMatch(sequence, this.recipeSequence);
 		}
 	}
-	public static class UnOrderedSequencedRecipe extends SequencedRecipe{
-		List<Item> specificItem;
-
-	
-
-		public UnOrderedSequencedRecipe(RecipeHolder<CraftingRecipe> recipe, List<Ingredient> recipeSequence, List<Item> specificItem) {
-			super(recipe, recipeSequence);
-			this.specificItem = specificItem;
+	public static class UnordererRecipeSequence{
+		
+		Map<Pair<Item,Item>, List<SequencedRecipe>> unorderedIndex=new HashMap<>(BuiltInRegistries.ITEM.size()*BuiltInRegistries.ITEM.size());
+		private final List<SequencedRecipe> shortUnordered = new ArrayList<>(10);
+	    // 无序配方插入：基于所有可能的（排序后）前两个物品建立索引
+	    public void insert(SequencedRecipe pattern) {
+	        List<Ingredient> ingredients = pattern.recipeSequence;
+	        int len = ingredients.size();
+	        if (len < 2) {
+	            shortUnordered.add(pattern);
+	            return;
+	        }
+	        for (Pair<Item, Item> pair : pattern.cartesianProduct) {
+	            unorderedIndex.computeIfAbsent(pair, _ -> new ArrayList<>()).add(pattern);
+	        }
+	    }
+	    public void insertAll(List<? extends SequencedRecipe> patterns) {
+			for (SequencedRecipe pattern : patterns) {
+				insert(pattern);
+			}
 		}
-
-		public Stream<Item> getValues(int idx){
-			return Stream.of(specificItem.get(idx));
-		}
+	    public Collection<RecipeHolder<CraftingRecipe>> match(List<ItemStack> sequence) {
+	        Set<RecipeHolder<CraftingRecipe>> results = new LinkedHashSet<>();
+	        if (!sequence.isEmpty()) {
+	            // 对输入序列排序，取前两个物品作为索引键
+	            List<ItemStack> sorted = new ArrayList<>(sequence);
+	            sorted.sort(Comparator.comparingInt(t->t.getItem().hashCode()));
+	            if (sorted.size() >= 2) {
+	                Item a = sorted.get(0).getItem();
+	                Item b = sorted.get(1).getItem();
+	                Pair<Item, Item> key = Pair.of(a, b);
+	                List<SequencedRecipe> candidates = unorderedIndex.get(key);
+	                if (candidates != null) {
+	                    for (SequencedRecipe pattern : candidates) {
+	                        if (pattern.matches(sequence)) {
+	                            results.add(pattern.recipe);
+	                        }
+	                    }
+	                }
+	            }else {
+		            for (SequencedRecipe pattern : shortUnordered) {
+		                if (pattern.matches(sequence)) {
+		                    results.add(pattern.recipe);
+		                }
+		            }
+	            }
+	        }
+	        return results;
+	    }
 	}
 	private static class Node {
 		/** 当该节点只对应一个配方，不再向下拆分 */
