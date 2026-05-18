@@ -2,17 +2,17 @@ package com.khjxiaogu.beecrasy.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.utils.CraftingRecipeSequence.SequencedRecipe;
 import com.khjxiaogu.beecrasy.utils.CraftingRecipeSequence.UnordererRecipeSequence;
 
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -24,11 +24,15 @@ import net.minecraft.world.item.crafting.ShapelessRecipe;
 public class CraftingSequenceMatcher {
 	public static CraftingRecipeSequence ordered;
 	public static UnordererRecipeSequence unordered;
+	//每个任务的建议数量
+	private static final float TASK_EFFORT=300;
 	public static void bake(Collection<RecipeHolder<CraftingRecipe>> recipes) {
 		ordered=new CraftingRecipeSequence();
 		unordered=new UnordererRecipeSequence();
-		Beecrasy.LOGGER.info("Baking Recipe Ingredients");
-		List<SequencedRecipe> toadd=new ArrayList<>(recipes.size());
+		Beecrasy.LOGGER.info("Filtering Recipe From "+recipes.size()+" Recipes");
+		
+
+		List<RecipeHolder<CraftingRecipe>> toindex=new ArrayList<>(recipes.size());
 		outer:for(RecipeHolder<CraftingRecipe> recipe:recipes) {
 			CraftingRecipe rcp=recipe.value();
 			if(rcp instanceof ShapedRecipe sr&&rcp.getClass()==ShapedRecipe.class) {
@@ -45,8 +49,7 @@ public class CraftingSequenceMatcher {
 							continue outer;
 					}
 				}
-				SequencedRecipe seqr=new SequencedRecipe(recipe);
-				toadd.add(seqr);
+				toindex.add(recipe);
 			}else if(rcp instanceof ShapelessRecipe sr&&rcp.getClass()==ShapelessRecipe.class) {
 				ItemStackTemplate result=sr.result;
 				
@@ -59,17 +62,49 @@ public class CraftingSequenceMatcher {
 						continue outer;
 				
 				}
-				SequencedRecipe seqr=new SequencedRecipe(recipe);
-				toadd.add(seqr);
+				toindex.add(recipe);
 			}
 		}
-		Beecrasy.LOGGER.info("Baking Ordered Recipe Index");
-		ordered.insertAll(toadd);
-		Beecrasy.LOGGER.info("Baking Unordered Recipe Index");
-	
-		unordered.insertAll(toadd);
+		List<List<RecipeHolder<CraftingRecipe>>> ltasks=Utils.splitTasks(toindex,TASK_EFFORT);
+		Beecrasy.LOGGER.info("Filtered "+toindex.size()+" Recipes, creating "+ltasks.size()+" tasks.");
+		List<CompletableFuture<List<SequencedRecipe>>> futures=new ArrayList<>(ltasks.size());
+		for(List<RecipeHolder<CraftingRecipe>> task:ltasks) {
+			futures.add(CompletableFuture.completedFuture(task)
+				.thenApplyAsync(CraftingSequenceMatcher::createSequencedRecipe));
+			
+		}
+		try {
+			CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).get();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			Thread.currentThread().interrupt();
+			throw new RuntimeException("Interrupted when baking recipe",e);
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error when baking recipe",e);
+		}
 		
+		try {
+			Beecrasy.LOGGER.info("Baking Ordered Recipe Index");
+			for(CompletableFuture<List<SequencedRecipe>> rss:futures) {
+				ordered.insertAll(rss.get());
+			}
+			Beecrasy.LOGGER.info("Baking Unordered Recipe Index");
+			for(CompletableFuture<List<SequencedRecipe>> rss:futures) {
+				unordered.insertAll(rss.get());
+			}
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error when baking recipe",e);
+		}
 		Beecrasy.LOGGER.info("Recipe Baking Complete");
+	}
+	public static List<SequencedRecipe> createSequencedRecipe(List<RecipeHolder<CraftingRecipe>> param){
+		List<SequencedRecipe> list=new ArrayList<>(param.size());
+		for(RecipeHolder<CraftingRecipe> recipe:param) {
+			list.add(new SequencedRecipe(recipe));
+		}
+		return list;
 	}
 	public static boolean isValidIngredient(Ingredient igd) {
 		return igd.isSimple()&&!igd.isCustom();
