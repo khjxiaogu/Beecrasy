@@ -24,6 +24,7 @@ public class Beecrasy {
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public Beecrasy(IEventBus modEventBus, ModContainer modContainer) {
         // Register the commonSetup method for modloading
+    	LOGGER.info("Say hello to Beecracy!");
         modEventBus.addListener(this::commonSetup);
 
         BeecrasyRegistries.register(modEventBus);
@@ -31,6 +32,7 @@ public class Beecrasy {
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         BeecrasyConfig.register();
+        
     }
     private void commonSetup(FMLCommonSetupEvent event) {
     }

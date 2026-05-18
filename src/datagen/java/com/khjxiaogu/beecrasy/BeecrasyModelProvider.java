@@ -1,7 +1,5 @@
 package com.khjxiaogu.beecrasy;
 
-import java.util.stream.Stream;
-
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ModelProvider;
@@ -18,13 +16,13 @@ public class BeecrasyModelProvider extends ModelProvider {
 	}
     @Override
     protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-        //new BeecrasyStatesProvider(resource, blockModels.blockStateOutput,blockModels.itemModelOutput,blockModels.modelOutput,modId).run();
+        new BeecrasyBlockModelProvider(resource, blockModels.blockStateOutput,blockModels.itemModelOutput,blockModels.modelOutput,modId).run();
         new BeecrasyItemModelProvider(blockModels.itemModelOutput,blockModels.modelOutput).run();
     
     }
     protected java.util.stream.Stream<? extends net.minecraft.core.Holder<Block>> getKnownBlocks() {
-    	return Stream.empty();
-        //return BeecrasyRegistries.Blocks.BLOCKS.getEntries().stream().filter(t->!resource.getResource(t.getId().withPrefix("blockstates/").withSuffix(".json")).isPresent());
+    	//return Stream.empty();
+        return BeecrasyRegistries.Blocks.BLOCKS.getEntries().stream().filter(t->!resource.getResource(t.getId().withPrefix("blockstates/").withSuffix(".json")).isPresent());
     }
 
     protected java.util.stream.Stream<? extends net.minecraft.core.Holder<Item>> getKnownItems() {

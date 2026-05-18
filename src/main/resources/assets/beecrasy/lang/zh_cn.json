@@ -1,7 +1,7 @@
 {
-  "itemGroup.beecrasy": "Beecrasy",
+  "itemGroup.beecrasy": "蜂会",
 
-  "beecrasy.configuration.title": "Beecrasy Configs",
+  "beecrasy.configuration.title": "蜂会 配置",
   "beecrasy.configuration.section.beecrasy.common.toml": "Beecrasy Configs",
   "beecrasy.configuration.section.beecrasy.common.toml.title": "Beecrasy Configs"
 }

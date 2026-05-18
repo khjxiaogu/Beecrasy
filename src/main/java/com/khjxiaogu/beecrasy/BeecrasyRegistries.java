@@ -1,20 +1,29 @@
 package com.khjxiaogu.beecrasy;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
+
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
 
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -32,7 +41,8 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> LARVA=ITEMS.registerSimpleItem("larva");
 	    public static final DeferredItem<Item> PRODUCT_COMB=ITEMS.registerSimpleItem("product_comb");
 	    public static final DeferredItem<Item> QUEEN_BEE=ITEMS.registerSimpleItem("queen_bee");
-	    
+	    //工具
+	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerSimpleItem("handheld_sequencer");
 	}
 	public static class Tabs{
 	    // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "beecrasy" namespace
@@ -47,6 +57,20 @@ public class BeecrasyRegistries {
 	public static class Blocks{
 	    // Create a Deferred Register to hold Blocks which will all be registered under the "beecrasy" namespace
 	    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Beecrasy.MODID);
+	    public static final DeferredBlock<Block> HONEY_PRESS=register("honey_press");
+	    public static final DeferredBlock<Block> SEQUENCER=register("sequencer");
+	    public static final DeferredBlock<Block> SKEP=register("skep");
+	    public static DeferredBlock<Block> register(String name){
+	    	return register(name,Block::new,UnaryOperator.identity(),UnaryOperator.identity());
+	    }
+	    public static <B extends Block> DeferredBlock<B> register(String name,Function<BlockBehaviour.Properties, ? extends B> func,UnaryOperator<BlockBehaviour.Properties> properties, UnaryOperator<Item.Properties> itemProperties){
+	    	return register(name,func,BlockItem::new,properties,itemProperties);
+	    }
+	    public static <B extends Block> DeferredBlock<B> register(String name,Function<BlockBehaviour.Properties, ? extends B> func,BiFunction<B,Item.Properties, ? extends BlockItem> itemfunc, UnaryOperator<BlockBehaviour.Properties> properties, UnaryOperator<Item.Properties> itemProperties){
+	    	DeferredBlock<B> db=BLOCKS.registerBlock(name, func,properties);
+	    	Items.ITEMS.registerItem(name,p->itemfunc.apply(db.get(), p),itemProperties);
+	    	return db;
+	    }
 	}
 	public static class Components{
 	    // Create a Deferred Register to hold Blocks which will all be registered under the "beecrasy" namespace

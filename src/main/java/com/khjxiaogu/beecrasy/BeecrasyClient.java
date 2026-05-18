@@ -23,6 +23,7 @@ public class BeecrasyClient {
 
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
+    	Beecrasy.LOGGER.info("Beecracy has landed.");
     }
     
 

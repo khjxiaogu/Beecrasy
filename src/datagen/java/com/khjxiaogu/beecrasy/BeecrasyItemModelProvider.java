@@ -59,7 +59,7 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 		this.texture("beeswax");
 		this.texture("comb_foundation");
 		this.texture("honey_drop");
-
+		this.texture("handheld_sequencer");
 	}
     public void generateBeeTint(ItemLike item) {
     	Identifier rkey=BuiltInRegistries.ITEM.getKey(item.asItem());
