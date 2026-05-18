@@ -4,9 +4,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import com.khjxiaogu.beecrasy.blocks.SequencerBlock;
+import com.khjxiaogu.beecrasy.blocks.SkepBlock;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -15,9 +18,13 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.neoforged.api.distmarker.Dist;
+import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -26,7 +33,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-@EventBusSubscriber(modid = Beecrasy.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Beecrasy.MODID)
 public class BeecrasyRegistries {
 	public static class Items{
 	    // Create a Deferred Register to hold Items which will all be registered under the "beecrasy" namespace
@@ -57,8 +64,8 @@ public class BeecrasyRegistries {
 	    // Create a Deferred Register to hold Blocks which will all be registered under the "beecrasy" namespace
 	    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Beecrasy.MODID);
 	    public static final DeferredBlock<Block> HONEY_PRESS=register("honey_press");
-	    public static final DeferredBlock<Block> SEQUENCER=register("sequencer");
-	    public static final DeferredBlock<Block> SKEP=register("skep");
+	    public static final DeferredBlock<SequencerBlock> SEQUENCER=register("sequencer",SequencerBlock::new,Blocks::machineProps,UnaryOperator.identity());
+	    public static final DeferredBlock<Block> SKEP=register("skep",SkepBlock::new,Blocks::skepProps,UnaryOperator.identity());
 	    public static DeferredBlock<Block> register(String name){
 	    	return register(name,Block::new,UnaryOperator.identity(),UnaryOperator.identity());
 	    }
@@ -70,6 +77,19 @@ public class BeecrasyRegistries {
 	    	Items.ITEMS.registerItem(name,p->itemfunc.apply(db.get(), p),itemProperties);
 	    	return db;
 	    }
+		private static Properties machineProps(Properties properties) {
+			return properties.mapColor(MapColor.METAL).sound(SoundType.METAL).requiresCorrectToolForDrops()
+					.strength(3.5f, 10).noOcclusion()
+					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
+		}
+		private static Properties skepProps(Properties properties) {
+			return properties.mapColor(MapColor.COLOR_YELLOW).sound(SoundType.GRASS).requiresCorrectToolForDrops()
+					.strength(3.5f, 10).noOcclusion()
+					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
+		}
+		private static boolean notSolid(BlockState state, BlockGetter reader, BlockPos pos) {
+			return false;
+		}
 	}
 	public static class Components{
 	    // Create a Deferred Register to hold Blocks which will all be registered under the "beecrasy" namespace

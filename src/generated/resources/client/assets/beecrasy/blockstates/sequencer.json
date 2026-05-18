@@ -1,7 +1,39 @@
 {
-  "variants": {
-    "": {
-      "model": "beecrasy:block/sequencer"
+  "multipart": [
+    {
+      "apply": {
+        "model": "beecrasy:block/sequencer"
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/sequencer",
+        "y": 90
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/sequencer",
+        "y": 180
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/sequencer",
+        "y": 270
+      },
+      "when": {
+        "facing": "west"
+      }
     }
-  }
+  ]
 }

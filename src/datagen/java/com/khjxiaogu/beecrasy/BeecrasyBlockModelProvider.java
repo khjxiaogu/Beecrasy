@@ -59,6 +59,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.neoforged.neoforge.registries.DeferredBlock;
 
 public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 	protected static final List<Vec3i> COLUMN_THREE = ImmutableList.of(BlockPos.ZERO, BlockPos.ZERO.above(),
@@ -76,10 +77,21 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 
 	@Override
 	public void run() {
-		this.simpleBlockItem(Blocks.SKEP.get());
-		this.simpleBlockItem(Blocks.SEQUENCER.get());
+		this.blockItemModel(Blocks.SKEP);
+		this.blockStateOutput.accept(
+			this.horizontalMultipart(bmf("skep_0"),t->t.term(BlockStateProperties.AGE_2, 0),
+			this.horizontalMultipart(bmf("skep_1"),t->t.term(BlockStateProperties.AGE_2, 1),
+			this.horizontalMultipart(bmf("skep_2"),t->t.term(BlockStateProperties.AGE_2, 2),
+			this.getMultipartBuilder(Blocks.SKEP.get())))));
+		
+			
+		this.blockItemModel(Blocks.SEQUENCER);
+		this.blockStateOutput.accept(
+		this.horizontalMultipart(bmf("sequencer"),
+			this.getMultipartBuilder(Blocks.SEQUENCER.get())
+			));
 		this.simpleBlockItem(Blocks.HONEY_PRESS.get());
-
+ 
 	}
 
 	protected Empty getVariantBuilder(Block blk) {
@@ -88,7 +100,9 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 	private Block cpblock(String name) {
 		return BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath(this.modid, name));
 	}
-
+	protected void blockItemModel(DeferredBlock<?> n) {
+		blockItemModel(n.getId().getPath(), "");
+	}
 	protected void blockItemModel(String n) {
 		blockItemModel(n, "");
 	}
@@ -199,13 +213,13 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 
 	}
 
-	public MultiPartGenerator horizontalMultipart(MultiPartGenerator generator, MultiVariant variant) {
+	public MultiPartGenerator horizontalMultipart( MultiVariant variant,MultiPartGenerator generator) {
 		forEachHorizontalDirection((direction, rotation) -> generator.with(condition(BlockStateProperties.HORIZONTAL_FACING, direction), variant.with(rotation)));
 		return generator;
 	}
 
-	public MultiPartGenerator horizontalMultipart(MultiPartGenerator generator, MultiVariant variant,
-		UnaryOperator<ConditionBuilder> act) {
+	public MultiPartGenerator horizontalMultipart(MultiVariant variant,
+		UnaryOperator<ConditionBuilder> act,MultiPartGenerator generator) {
 		forEachHorizontalDirection((direction, rotation) -> generator.with(act.apply(condition(BlockStateProperties.HORIZONTAL_FACING, direction)), variant.with(rotation)));
 
 		return generator;
@@ -214,5 +228,6 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 	protected MultiPartGenerator getMultipartBuilder(Block block) {
 		return MultiPartGenerator.multiPart(block);
 	}
+	
 
 }

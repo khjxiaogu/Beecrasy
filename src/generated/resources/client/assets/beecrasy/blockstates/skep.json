@@ -1,7 +1,121 @@
 {
-  "variants": {
-    "": {
-      "model": "beecrasy:block/skep_0"
+  "multipart": [
+    {
+      "apply": {
+        "model": "beecrasy:block/skep_2"
+      },
+      "when": {
+        "age": "2",
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/skep_2",
+        "y": 90
+      },
+      "when": {
+        "age": "2",
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/skep_2",
+        "y": 180
+      },
+      "when": {
+        "age": "2",
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/skep_2",
+        "y": 270
+      },
+      "when": {
+        "age": "2",
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/skep_1"
+      },
+      "when": {
+        "age": "1",
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/skep_1",
+        "y": 90
+      },
+      "when": {
+        "age": "1",
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/skep_1",
+        "y": 180
+      },
+      "when": {
+        "age": "1",
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/skep_1",
+        "y": 270
+      },
+      "when": {
+        "age": "1",
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/skep_0"
+      },
+      "when": {
+        "age": "0",
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/skep_0",
+        "y": 90
+      },
+      "when": {
+        "age": "0",
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/skep_0",
+        "y": 180
+      },
+      "when": {
+        "age": "0",
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "beecrasy:block/skep_0",
+        "y": 270
+      },
+      "when": {
+        "age": "0",
+        "facing": "west"
+      }
     }
-  }
+  ]
 }
