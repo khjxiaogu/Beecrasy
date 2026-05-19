@@ -8,11 +8,13 @@ import com.khjxiaogu.beecrasy.blocks.SequencerBlock;
 import com.khjxiaogu.beecrasy.blocks.SkepBlock;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -24,15 +26,18 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.RandomSupport;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 @EventBusSubscriber(modid = Beecrasy.MODID)
 public class BeecrasyRegistries {
 	public static class Items{
@@ -92,11 +97,15 @@ public class BeecrasyRegistries {
 		}
 	}
 	public static class Components{
-	    // Create a Deferred Register to hold Blocks which will all be registered under the "beecrasy" namespace
 	    public static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Beecrasy.MODID);
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<GenomeComponent>> GENOME=COMPONENTS.registerComponentType("genome", t->t.cacheEncoding().persistent(GenomeComponent.CODEC).networkSynchronized(GenomeComponent.NETWORK_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStack>> TINT_STACK=COMPONENTS.registerComponentType("tint_stack", t->t.cacheEncoding().persistent(ItemStack.CODEC).networkSynchronized(ItemStack.STREAM_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<TintColorComponent>> TINT_COLOR=COMPONENTS.registerComponentType("tint_color", t->t.cacheEncoding().persistent(TintColorComponent.CODEC).networkSynchronized(TintColorComponent.NETWORK_CODEC));
+	    
+	}
+	public static class Attachments{
+		public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Beecrasy.MODID);
+		public static final DeferredHolder<AttachmentType<?>, AttachmentType<Long>> RANDOM_SEED=ATTACHMENTS.register("seed", ()->AttachmentType.builder(RandomSupport::generateUniqueSeed).serialize(Codec.LONG.fieldOf("seed")).sync(ByteBufCodecs.LONG).copyOnDeath().build());
 		
 	}
 	
@@ -107,6 +116,7 @@ public class BeecrasyRegistries {
     	Items.ITEMS.register(modEventBus);
     	
     	Components.COMPONENTS.register(modEventBus);
+    	Attachments.ATTACHMENTS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         Tabs.CREATIVE_MODE_TABS.register(modEventBus);
     }

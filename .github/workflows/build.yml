@@ -17,14 +17,26 @@ jobs:
         with:
           java-version: '25'
           distribution: 'temurin'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      # This is needed to be able to run ./gradlew below
-      # You can run `git update-index --chmod +x gradlew` then remove this step.
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Read mod version from properties
+        id: read_property
+        uses: christian-draeger/read-properties@1.1.1
+        with:
+          path: './gradle.properties'
+          properties: 'mod_version'
+      - name: Run client data generation
+        run: ./gradlew runClientData -Pmod_version="${{steps.read_property.outputs.mod_version}}-snapshot${{github.run_number}}"
+      - name: Run server data generation
+        run: ./gradlew runServerData -Pmod_version="${{steps.read_property.outputs.mod_version}}-snapshot${{github.run_number}}"     
+      - name: Run build jar
+        run: ./gradlew jar -Pmod_version="${{steps.read_property.outputs.mod_version}}-snapshot${{github.run_number}}"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: beecrasy-binary
+          path: build/libs/*.jar
+          if-no-files-found: error
+          overwrite: true

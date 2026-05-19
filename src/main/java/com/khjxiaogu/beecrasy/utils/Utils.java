@@ -3,12 +3,20 @@ package com.khjxiaogu.beecrasy.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
+
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.level.levelgen.RandomSupport;
 
 public final class Utils {
 	public static ItemStackTemplate getRecipeOutput(List<ItemStack> stacks,CraftingRecipe recipe) {
@@ -24,6 +32,12 @@ public final class Utils {
 			yield null;
 		}
 		};
+	}
+	public static RandomSource getSyncedRandom(Player p) {
+		@Nullable Long comp=p.getData(Attachments.RANDOM_SEED);
+		RandomSource rnd=RandomSource.create(comp);
+		p.setData(Attachments.RANDOM_SEED.get(), rnd.nextLong());
+		return rnd;
 	}
 	/**
 	 * 将任务列表均匀拆分为若干个子集合。
