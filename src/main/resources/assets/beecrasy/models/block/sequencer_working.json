@@ -6,6 +6,7 @@
 	"textures": {
 		"particle": "beecrasy:block/sequencer_working"
 	},
+	"render_type": "cutout",
 	"elements": [
 		{
 			"name": "base",
