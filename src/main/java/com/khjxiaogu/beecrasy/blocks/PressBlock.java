@@ -36,24 +36,27 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class PressBlock extends Block {
 
 	private static final VoxelShape CYLINDER = Block.box( 3,  8,  3, 13,  16, 13);
-	private static final VoxelShape CYLINDER_TOP = Block.box( 2,  12,  2, 14,  16, 14);
+	private static final VoxelShape CYLINDER_TOP = Block.box( 2,  13,  2, 14,  16, 14);
 	private static final VoxelShape BASE  = Block.box( 1,  1,  1, 15,  8, 15);
 	private static final VoxelShape FOOT1 = Block.box( 0,  0,  0,  3,  3,  3);
 	private static final VoxelShape FOOT2 = Block.box(13,  0, 13, 16,  3, 16);
 	private static final VoxelShape FOOT3 = Block.box(13,  0,  0, 16,  3,  3);
 	private static final VoxelShape FOOT4 = Block.box( 0,  0, 13,  3,  3, 16);
-	private static final VoxelShape BOTTOM=Shapes.or(BASE, FOOT1,FOOT2,FOOT3,FOOT4,CYLINDER,CYLINDER_TOP);
+	private static final VoxelShape BOTTOM=Shapes.or(BASE, FOOT1,FOOT2,FOOT3,FOOT4,CYLINDER,CYLINDER_TOP).optimize();
 	
 	private static final VoxelShape HANDLE      = Block.box( 5,  0,  5, 11, 16, 11);
 	private static final VoxelShape HANDLE_BASE = Block.box( 2,  0,  2, 14,  3, 14);
 	private static final VoxelShape HANDLE_TOP  = Block.box( 2, 12,  2, 14, 16, 14);
-	private static final VoxelShape TOP = Shapes.or(HANDLE_BASE, HANDLE,HANDLE_TOP);
+	private static final VoxelShape TOP = Shapes.or(HANDLE_BASE, HANDLE,HANDLE_TOP).optimize();
+	
+	private static final VoxelShape ALL=Shapes.or(TOP.move(0, 1, 0), BOTTOM).optimize();
+	private static final VoxelShape ALL_TOP=Shapes.or(HANDLE,HANDLE_TOP).optimize();
 	public PressBlock(Properties properties) {
 		super(properties);
 		   this.registerDefaultState(
 	            this.stateDefinition
 	                .any()
-	                .setValue(BlockStateProperties.HORIZONTAL_AXIS, Axis.X)
+	                .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
 	                .setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.LOWER)
 	        );
 	}
@@ -120,7 +123,7 @@ public class PressBlock extends Block {
         Level level = context.getLevel();
         if (pos.getY() < level.getMaxY() && level.getBlockState(pos.above()).canBeReplaced(context)) {
             return this.defaultBlockState()
-                .setValue(BlockStateProperties.HORIZONTAL_AXIS, context.getHorizontalDirection().getAxis())
+                .setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite())
                 .setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.LOWER);
         } else {
             return null;
@@ -142,21 +145,26 @@ public class PressBlock extends Block {
 
     @Override
     protected BlockState rotate(BlockState state, Rotation rotation) {
-        return state.cycle(BlockStateProperties.HORIZONTAL_AXIS);
+        return state.setValue(BlockStateProperties.HORIZONTAL_FACING, rotation.rotate(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
     }
 
     @Override
     protected BlockState mirror(BlockState state, Mirror mirror) {
-        return mirror == Mirror.NONE ? state : state.cycle(BlockStateProperties.HORIZONTAL_AXIS);
+        return mirror == Mirror.NONE ? state : state.setValue(BlockStateProperties.HORIZONTAL_FACING, state.getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite());
     }
 	@Override
 	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-		return state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF)==DoubleBlockHalf.UPPER?TOP:BOTTOM;
+		
+		return state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF)==DoubleBlockHalf.UPPER?ALL_TOP:ALL;
 	}
+	@Override
+	public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+		return state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF)==DoubleBlockHalf.UPPER?TOP:BOTTOM;
+    }
 	@Override
 	protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
-		builder.add(BlockStateProperties.HORIZONTAL_AXIS);
+		builder.add(BlockStateProperties.HORIZONTAL_FACING);
 		builder.add(BlockStateProperties.DOUBLE_BLOCK_HALF);
 	}
 }

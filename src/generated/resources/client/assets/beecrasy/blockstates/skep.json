@@ -1,121 +1,49 @@
 {
-  "multipart": [
-    {
-      "apply": {
-        "model": "beecrasy:block/skep_2"
-      },
-      "when": {
-        "age": "2",
-        "facing": "north"
-      }
+  "variants": {
+    "age=0,facing=east": {
+      "model": "beecrasy:block/skep_0",
+      "y": 90
     },
-    {
-      "apply": {
-        "model": "beecrasy:block/skep_2",
-        "y": 90
-      },
-      "when": {
-        "age": "2",
-        "facing": "east"
-      }
+    "age=0,facing=north": {
+      "model": "beecrasy:block/skep_0"
     },
-    {
-      "apply": {
-        "model": "beecrasy:block/skep_2",
-        "y": 180
-      },
-      "when": {
-        "age": "2",
-        "facing": "south"
-      }
+    "age=0,facing=south": {
+      "model": "beecrasy:block/skep_0",
+      "y": 180
     },
-    {
-      "apply": {
-        "model": "beecrasy:block/skep_2",
-        "y": 270
-      },
-      "when": {
-        "age": "2",
-        "facing": "west"
-      }
+    "age=0,facing=west": {
+      "model": "beecrasy:block/skep_0",
+      "y": 270
     },
-    {
-      "apply": {
-        "model": "beecrasy:block/skep_1"
-      },
-      "when": {
-        "age": "1",
-        "facing": "north"
-      }
+    "age=1,facing=east": {
+      "model": "beecrasy:block/skep_1",
+      "y": 90
     },
-    {
-      "apply": {
-        "model": "beecrasy:block/skep_1",
-        "y": 90
-      },
-      "when": {
-        "age": "1",
-        "facing": "east"
-      }
+    "age=1,facing=north": {
+      "model": "beecrasy:block/skep_1"
     },
-    {
-      "apply": {
-        "model": "beecrasy:block/skep_1",
-        "y": 180
-      },
-      "when": {
-        "age": "1",
-        "facing": "south"
-      }
+    "age=1,facing=south": {
+      "model": "beecrasy:block/skep_1",
+      "y": 180
     },
-    {
-      "apply": {
-        "model": "beecrasy:block/skep_1",
-        "y": 270
-      },
-      "when": {
-        "age": "1",
-        "facing": "west"
-      }
+    "age=1,facing=west": {
+      "model": "beecrasy:block/skep_1",
+      "y": 270
     },
-    {
-      "apply": {
-        "model": "beecrasy:block/skep_0"
-      },
-      "when": {
-        "age": "0",
-        "facing": "north"
-      }
+    "age=2,facing=east": {
+      "model": "beecrasy:block/skep_2",
+      "y": 90
     },
-    {
-      "apply": {
-        "model": "beecrasy:block/skep_0",
-        "y": 90
-      },
-      "when": {
-        "age": "0",
-        "facing": "east"
-      }
+    "age=2,facing=north": {
+      "model": "beecrasy:block/skep_2"
     },
-    {
-      "apply": {
-        "model": "beecrasy:block/skep_0",
-        "y": 180
-      },
-      "when": {
-        "age": "0",
-        "facing": "south"
-      }
+    "age=2,facing=south": {
+      "model": "beecrasy:block/skep_2",
+      "y": 180
     },
-    {
-      "apply": {
-        "model": "beecrasy:block/skep_0",
-        "y": 270
-      },
-      "when": {
-        "age": "0",
-        "facing": "west"
-      }
+    "age=2,facing=west": {
+      "model": "beecrasy:block/skep_2",
+      "y": 270
     }
-  ]
+  }
 }

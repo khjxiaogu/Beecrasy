@@ -22,7 +22,7 @@ public class SequencerBlock extends Block {
 	private static final VoxelShape SCREEN    = Block.box( 4,  4, 10, 16, 14, 16);
 	private static final VoxelShape ANALYZER1 = Block.box( 0, 11,  2,  5, 15,  6);
 	private static final VoxelShape ANALYZER2 = Block.box( 0,  6,  2,  5, 10,  6);
-	private static final VoxelShape ALL=Shapes.or(BASE, SCREEN,MACHINE,ANALYZER1,ANALYZER2);
+	private static final VoxelShape ALL=Shapes.or(BASE, SCREEN,MACHINE,ANALYZER1,ANALYZER2).optimize();
 	private static final Map<Direction,VoxelShape> SHAPE_BY_FACING=Shapes.rotateHorizontal(ALL);
 	public SequencerBlock(Properties properties) {
 		super(properties);

@@ -32,6 +32,7 @@ import java.util.function.UnaryOperator;
 
 import com.google.common.collect.ImmutableList;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelOutput;
@@ -51,6 +52,7 @@ import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.block.dispatch.Variant;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -68,7 +70,6 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 	protected static final Map<Identifier, String> generatedParticleTextures = new HashMap<>();
 	String modid;
 	ResourceManager input;
-
 	public BeecrasyBlockModelProvider(ResourceManager input, Consumer<BlockModelDefinitionGenerator> blockStateOutput, ItemModelOutput itemModelOutput, BiConsumer<Identifier, ModelInstance> modelOutput,
 		String modid) {
 		super(blockStateOutput, itemModelOutput, modelOutput);
@@ -80,39 +81,43 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 	public void run() {
 		this.blockItemModel(Blocks.SKEP);
 		this.blockStateOutput.accept(
-			this.horizontalMultipart(bmf("skep_0"),t->t.term(BlockStateProperties.AGE_2, 0),
-			this.horizontalMultipart(bmf("skep_1"),t->t.term(BlockStateProperties.AGE_2, 1),
-			this.horizontalMultipart(bmf("skep_2"),t->t.term(BlockStateProperties.AGE_2, 2),
-			this.getMultipartBuilder(Blocks.SKEP.get())))));
+			this.getVariantBuilder(Blocks.SKEP.get()).with(
+				PropertyDispatch.initial(BlockStateProperties.AGE_2)
+				.generate(t->bmf("skep_"+t))
+			).with(ROTATION_HORIZONTAL_FACING)
+			);
 		
-			
+		
 		this.blockItemModel(Blocks.SEQUENCER);
 		this.blockStateOutput.accept(
-		this.horizontalMultipart(bmf("sequencer"),
-			this.getMultipartBuilder(Blocks.SEQUENCER.get())
-			));
+			this.getVariantBuilder(Blocks.SEQUENCER.get(),bmf("sequencer"))
+			.with(ROTATION_HORIZONTAL_FACING)
+			);
 		this.blockItemModel(Blocks.HONEY_PRESS);
 		MultiVariant pressModel=bmf("honey_press");
 		MultiVariant empty=plainVariant(ModelTemplates.PARTICLE_ONLY.createWithSuffix(Blocks.HONEY_PRESS.get(),"_top", TextureMapping.particle(Blocks.HONEY_PRESS.get()), this.modelOutput));
 		this.blockStateOutput.accept(
 		this.getVariantBuilder(Blocks.HONEY_PRESS.get()).with(
-			PropertyDispatch.initial(BlockStateProperties.DOUBLE_BLOCK_HALF, BlockStateProperties.HORIZONTAL_AXIS)
+			PropertyDispatch.initial(BlockStateProperties.DOUBLE_BLOCK_HALF)
 
-			.generate((half,axis)->{
+			.generate((half)->{
 				if(half==DoubleBlockHalf.LOWER) {
-					return axis==Axis.Z?pressModel:pressModel.with(Y_ROT_90);
+					return pressModel;
 					
 				}else
 					return empty;
 				
 			})
-		));
+		).with(ROTATION_HORIZONTAL_FACING));
 		
  
 	}
 
 	protected Empty getVariantBuilder(Block blk) {
 		return MultiVariantGenerator.dispatch(blk);
+	}
+	protected MultiVariantGenerator getVariantBuilder(Block blk,MultiVariant model) {
+		return MultiVariantGenerator.dispatch(blk,model);
 	}
 	private Block cpblock(String name) {
 		return BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath(this.modid, name));

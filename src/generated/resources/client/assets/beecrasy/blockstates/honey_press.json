@@ -1,17 +1,34 @@
 {
   "variants": {
-    "axis=x,half=lower": {
+    "facing=east,half=lower": {
       "model": "beecrasy:block/honey_press",
       "y": 90
     },
-    "axis=x,half=upper": {
-      "model": "beecrasy:block/honey_press_top"
+    "facing=east,half=upper": {
+      "model": "beecrasy:block/honey_press_top",
+      "y": 90
     },
-    "axis=z,half=lower": {
+    "facing=north,half=lower": {
       "model": "beecrasy:block/honey_press"
     },
-    "axis=z,half=upper": {
+    "facing=north,half=upper": {
       "model": "beecrasy:block/honey_press_top"
+    },
+    "facing=south,half=lower": {
+      "model": "beecrasy:block/honey_press",
+      "y": 180
+    },
+    "facing=south,half=upper": {
+      "model": "beecrasy:block/honey_press_top",
+      "y": 180
+    },
+    "facing=west,half=lower": {
+      "model": "beecrasy:block/honey_press",
+      "y": 270
+    },
+    "facing=west,half=upper": {
+      "model": "beecrasy:block/honey_press_top",
+      "y": 270
     }
   }
 }

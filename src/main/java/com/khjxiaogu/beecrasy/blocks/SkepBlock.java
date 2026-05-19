@@ -20,7 +20,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class SkepBlock extends Block {
 	private static final VoxelShape SKEP2 = Block.box( 2,  0,  2, 14,  12, 14);
 
-	private static final VoxelShape SKEP1 = Shapes.or(Block.box( 1,  0,  1, 15,  12, 15), Block.box( 3,  12,  3, 13,  14, 13));
+	private static final VoxelShape SKEP1 = Shapes.or(Block.box( 1,  0,  1, 15,  12, 15), Block.box( 3,  12,  3, 13,  14, 13)).optimize();
 	public SkepBlock(Properties properties) {
 		super(properties);
 		
