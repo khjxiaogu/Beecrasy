@@ -59,6 +59,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.neoforged.neoforge.registries.DeferredBlock;
 
 public class BeecrasyBlockModelProvider extends BlockModelGenerators {
@@ -90,7 +91,23 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 		this.horizontalMultipart(bmf("sequencer"),
 			this.getMultipartBuilder(Blocks.SEQUENCER.get())
 			));
-		this.simpleBlockItem(Blocks.HONEY_PRESS.get());
+		this.blockItemModel(Blocks.HONEY_PRESS);
+		MultiVariant pressModel=bmf("honey_press");
+		MultiVariant empty=plainVariant(ModelTemplates.PARTICLE_ONLY.createWithSuffix(Blocks.HONEY_PRESS.get(),"_top", TextureMapping.particle(Blocks.HONEY_PRESS.get()), this.modelOutput));
+		this.blockStateOutput.accept(
+		this.getVariantBuilder(Blocks.HONEY_PRESS.get()).with(
+			PropertyDispatch.initial(BlockStateProperties.DOUBLE_BLOCK_HALF, BlockStateProperties.HORIZONTAL_AXIS)
+
+			.generate((half,axis)->{
+				if(half==DoubleBlockHalf.LOWER) {
+					return axis==Axis.Z?pressModel:pressModel.with(Y_ROT_90);
+					
+				}else
+					return empty;
+				
+			})
+		));
+		
  
 	}
 

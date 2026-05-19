@@ -4,6 +4,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import com.khjxiaogu.beecrasy.blocks.PressBlock;
 import com.khjxiaogu.beecrasy.blocks.SequencerBlock;
 import com.khjxiaogu.beecrasy.blocks.SkepBlock;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
@@ -68,7 +69,7 @@ public class BeecrasyRegistries {
 	public static class Blocks{
 	    // Create a Deferred Register to hold Blocks which will all be registered under the "beecrasy" namespace
 	    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Beecrasy.MODID);
-	    public static final DeferredBlock<Block> HONEY_PRESS=register("honey_press");
+	    public static final DeferredBlock<Block> HONEY_PRESS=register("honey_press",PressBlock::new,Blocks::machineProps,UnaryOperator.identity());
 	    public static final DeferredBlock<SequencerBlock> SEQUENCER=register("sequencer",SequencerBlock::new,Blocks::machineProps,UnaryOperator.identity());
 	    public static final DeferredBlock<Block> SKEP=register("skep",SkepBlock::new,Blocks::skepProps,UnaryOperator.identity());
 	    public static DeferredBlock<Block> register(String name){

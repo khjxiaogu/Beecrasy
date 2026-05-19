@@ -1,7 +1,17 @@
 {
   "variants": {
-    "": {
+    "axis=x,half=lower": {
+      "model": "beecrasy:block/honey_press",
+      "y": 90
+    },
+    "axis=x,half=upper": {
+      "model": "beecrasy:block/honey_press_top"
+    },
+    "axis=z,half=lower": {
       "model": "beecrasy:block/honey_press"
+    },
+    "axis=z,half=upper": {
+      "model": "beecrasy:block/honey_press_top"
     }
   }
 }

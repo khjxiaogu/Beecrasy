@@ -1,5 +1,5 @@
-// 26.1.2	2026-05-18T16:13:04.0387272	Model Definitions - beecrasy
-4e527021c6a3e2439a97eb7891eb1ffa640b2425 assets/beecrasy/blockstates/honey_press.json
+// 26.1.2	2026-05-19T12:33:03.8850002	Model Definitions - beecrasy
+5b49ce46f0dedd9c23a4ed26afbe824964804add assets/beecrasy/blockstates/honey_press.json
 d0db9f22ae1a5d3e8d2eed903849be4c7f9d2b4a assets/beecrasy/blockstates/sequencer.json
 6186939a5ecf53fdf8ff113d3f9fe05306c40817 assets/beecrasy/blockstates/skep.json
 5bc948201b4d7c12fedc6ff4dc09679a4c4f1904 assets/beecrasy/items/beeswax.json
@@ -13,6 +13,7 @@ ad9870e0141fa4c4474e59f1fa12270795c074bd assets/beecrasy/items/honey_press.json
 acf2909014c79b4d48c92242195a349a81c2d7fd assets/beecrasy/items/queen_bee.json
 4bd6c4da6d092e47eeef22f2dc4f7e887e42dd94 assets/beecrasy/items/sequencer.json
 7fd1954a87eedde5b940287b5b3e21e5dd5d9a35 assets/beecrasy/items/skep.json
+a227fb1ad89e68c5e695a95c6a19e768447487a9 assets/beecrasy/models/block/honey_press_top.json
 a1cbd16160b4e6514b5bf41e63f69efbfc2414f6 assets/beecrasy/models/item/beeswax.json
 1eb3bd25374e25ce0471cd6393e984a43d31fb59 assets/beecrasy/models/item/comb_foundation.json
 c7a383d258306e5aa54d72e30a62d869925c3200 assets/beecrasy/models/item/drone.json
