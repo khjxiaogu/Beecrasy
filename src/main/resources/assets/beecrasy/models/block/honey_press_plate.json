@@ -1,0 +1,35 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/block",
+	"texture_size": [64, 32],
+	"textures": {
+		"0": "beecrasy:block/honey_press",
+		"particle": "beecrasy:block/honey_press"
+	},
+	"elements": [
+		{
+			"name": "presserHead",
+			"from": [4, 15, 4],
+			"to": [12, 16, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7, 14, 7]},
+			"faces": {
+				"north": {"uv": [6, 0, 8, 0.5], "texture": "#0"},
+				"east": {"uv": [7.75, 0, 8, 4], "rotation": 270, "texture": "#0"},
+				"south": {"uv": [6, 3.5, 8, 4], "rotation": 180, "texture": "#0"},
+				"west": {"uv": [6, 0, 6.25, 4], "rotation": 90, "texture": "#0"},
+				"up": {"uv": [6, 0, 8, 4], "texture": "#0"},
+				"down": {"uv": [6, 0, 8, 4], "rotation": 180, "texture": "#0"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "PresserHead",
+			"origin": [7, 13, 7],
+			"scope": 0,
+			"color": 0,
+			"children": [0]
+		}
+	]
+}
