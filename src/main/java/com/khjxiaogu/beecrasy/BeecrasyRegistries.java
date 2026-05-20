@@ -42,7 +42,6 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 @EventBusSubscriber(modid = Beecrasy.MODID)
 public class BeecrasyRegistries {
 	public static class Items{
-	    // Create a Deferred Register to hold Items which will all be registered under the "beecrasy" namespace
 	    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Beecrasy.MODID);
 	    //基础原料
 	    public static final DeferredItem<Item> BEESWAX=ITEMS.registerSimpleItem("beeswax");
@@ -57,23 +56,22 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerSimpleItem("handheld_sequencer");
 	}
 	public static class Tabs{
-	    // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "beecrasy" namespace
 	    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Beecrasy.MODID);
-	    // Creates a creative tab with the id "beecrasy:example_tab" for the example item, that is placed after the combat tab
 	    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BEECRASY_TAB = CREATIVE_MODE_TABS.register("aaa_beacrasy_amain", () -> CreativeModeTab.builder()
-	            .title(Component.translatable("itemGroup.beecrasy")) //The language key for the title of your CreativeModeTab
+	            .title(Component.translatable("itemGroup.beecrasy"))
 	            .withTabsBefore(CreativeModeTabs.COMBAT)
 	            .icon(() -> Items.DRONE.get().getDefaultInstance())
 	            .build());
 	}
 	public static class Blocks{
-	    // Create a Deferred Register to hold Blocks which will all be registered under the "beecrasy" namespace
 	    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Beecrasy.MODID);
 	    public static final DeferredBlock<Block> HONEY_PRESS=register("honey_press",PressBlock::new,Blocks::machineProps,UnaryOperator.identity());
 	    public static final DeferredBlock<SequencerBlock> SEQUENCER=register("sequencer",SequencerBlock::new,Blocks::machineProps,UnaryOperator.identity());
 	    public static final DeferredBlock<Block> SKEP=register("skep",SkepBlock::new,Blocks::skepProps,UnaryOperator.identity());
+	    public static final DeferredBlock<Block> EMPTY_COMB_BLOCK=register("empty_comb_block");
+	    public static final DeferredBlock<Block> HONEY_COMB_BLOCK=register("honey_comb_block");
 	    public static DeferredBlock<Block> register(String name){
-	    	return register(name,Block::new,UnaryOperator.identity(),UnaryOperator.identity());
+	    	return register(name,Block::new,Blocks::genalDeco,UnaryOperator.identity());
 	    }
 	    public static <B extends Block> DeferredBlock<B> register(String name,Function<BlockBehaviour.Properties, ? extends B> func,UnaryOperator<BlockBehaviour.Properties> properties, UnaryOperator<Item.Properties> itemProperties){
 	    	return register(name,func,BlockItem::new,properties,itemProperties);
@@ -83,14 +81,19 @@ public class BeecrasyRegistries {
 	    	Items.ITEMS.registerItem(name,p->itemfunc.apply(db.get(), p),itemProperties);
 	    	return db;
 	    }
+		private static Properties genalDeco(Properties properties) {
+			return properties.mapColor(MapColor.COLOR_YELLOW).sound(SoundType.WOOD)
+					.strength(0.5f).noOcclusion()
+					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
+		}
 		private static Properties machineProps(Properties properties) {
 			return properties.mapColor(MapColor.METAL).sound(SoundType.METAL).requiresCorrectToolForDrops()
-					.strength(3.5f, 10).noOcclusion()
+					.strength(5f, 6f).noOcclusion()
 					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
 		}
 		private static Properties skepProps(Properties properties) {
 			return properties.mapColor(MapColor.COLOR_YELLOW).sound(SoundType.GRASS).requiresCorrectToolForDrops()
-					.strength(3.5f, 10).noOcclusion()
+					.strength(0.5f).noOcclusion()
 					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
 		}
 		private static boolean notSolid(BlockState state, BlockGetter reader, BlockPos pos) {

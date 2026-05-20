@@ -24,16 +24,16 @@ package com.khjxiaogu.beecrasy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 import com.google.common.collect.ImmutableList;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
-import com.mojang.datafixers.util.Pair;
-
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelOutput;
 import net.minecraft.client.data.models.MultiVariant;
@@ -52,7 +52,6 @@ import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.block.dispatch.Variant;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -70,9 +69,13 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 	protected static final Map<Identifier, String> generatedParticleTextures = new HashMap<>();
 	String modid;
 	ResourceManager input;
+	public static final Set<Identifier> generatedModels=new HashSet<>();
 	public BeecrasyBlockModelProvider(ResourceManager input, Consumer<BlockModelDefinitionGenerator> blockStateOutput, ItemModelOutput itemModelOutput, BiConsumer<Identifier, ModelInstance> modelOutput,
 		String modid) {
-		super(blockStateOutput, itemModelOutput, modelOutput);
+		super(blockStateOutput, itemModelOutput,(rl,m)->{
+			generatedModels.add(rl);
+			modelOutput.accept(rl, m);
+			});
 		this.modid = modid;
 		this.input = input;
 	}
@@ -87,7 +90,10 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 			).with(ROTATION_HORIZONTAL_FACING)
 			);
 		
-		
+		this.blockStateOutput.accept(this.getVariantBuilder(Blocks.EMPTY_COMB_BLOCK.get(),genBlock("empty_comb_block")));
+		this.blockItemModel(Blocks.EMPTY_COMB_BLOCK);
+		this.blockStateOutput.accept(this.getVariantBuilder(Blocks.HONEY_COMB_BLOCK.get(),genBlock("honey_comb_block")));
+		this.blockItemModel(Blocks.HONEY_COMB_BLOCK);
 		this.blockItemModel(Blocks.SEQUENCER);
 		this.blockStateOutput.accept(
 			this.getVariantBuilder(Blocks.SEQUENCER.get(),bmf("sequencer"))
@@ -99,15 +105,7 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 		this.blockStateOutput.accept(
 		this.getVariantBuilder(Blocks.HONEY_PRESS.get()).with(
 			PropertyDispatch.initial(BlockStateProperties.DOUBLE_BLOCK_HALF)
-
-			.generate((half)->{
-				if(half==DoubleBlockHalf.LOWER) {
-					return pressModel;
-					
-				}else
-					return empty;
-				
-			})
+			.generate((half)->half==DoubleBlockHalf.LOWER?pressModel:empty)
 		).with(ROTATION_HORIZONTAL_FACING));
 		
  
@@ -178,14 +176,21 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 				}
 			}
 			
-
+		
 			throw new IllegalArgumentException("model does not exists: "+p);
 		}
 	}
 	public boolean existsModel(Identifier id) {
+		if(generatedModels.contains(id))
+			return true;
 		return input.getResource(id.withPrefix("models/").withSuffix(".json")).isPresent();
 
 	}
+	public boolean existsTexture(Identifier id) {
+		return input.getResource(id.withPrefix("textures/").withSuffix(".png")).isPresent();
+
+	}
+
 
 	public MultiVariant bmf(String name) {
 		return super.variant(bmfs(name));
@@ -209,7 +214,31 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 		Beecrasy.LOGGER.warn("Model file " + orl + " not exists, using unchecked");
 		return super.plainModel(rl);
 	}
+	public MultiVariant genBlock(String name) {
+		Identifier orl = Identifier.fromNamespaceAndPath(this.modid, "block/" + name);
+		Identifier rl = orl;
 
+		if (!existsModel(rl)) {// not exists, let's generate
+			List<Variant> ids=new ArrayList<>();
+			
+			int i=0;
+			while (true) {
+
+				rl = Identifier.fromNamespaceAndPath(this.modid, "block/" + name + "_"+i);
+				if (existsModel(rl))
+					ids.add(super.plainModel(rl));
+				if (existsTexture(rl))
+					ids.add(super.plainModel(ModelTemplates.CUBE_ALL.create(rl, TextureMapping.cube(new Material(rl,false)), modelOutput)));
+				else
+					break;
+				i++;
+			}
+			
+
+			return super.variants(ids.toArray(Variant[]::new));
+		}
+		return super.plainVariant(rl);
+	}
 	public MultiVariant bmf(Identifier name) {
 		return super.variant(bmfs(name));
 	}

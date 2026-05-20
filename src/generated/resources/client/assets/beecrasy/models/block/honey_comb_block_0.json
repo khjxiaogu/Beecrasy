@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "beecrasy:block/honey_comb_block_0"
+  }
+}

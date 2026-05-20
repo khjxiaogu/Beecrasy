@@ -1,0 +1,15 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "beecrasy:block/honey_comb_block_0"
+      },
+      {
+        "model": "beecrasy:block/honey_comb_block_1"
+      },
+      {
+        "model": "beecrasy:block/honey_comb_block_2"
+      }
+    ]
+  }
+}
