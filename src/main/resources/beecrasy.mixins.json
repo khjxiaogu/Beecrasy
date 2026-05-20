@@ -5,6 +5,9 @@
   "mixins": [
     "RecipeManagerMixin"
   ],
+  "client": [
+    "SplashManagerMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },
