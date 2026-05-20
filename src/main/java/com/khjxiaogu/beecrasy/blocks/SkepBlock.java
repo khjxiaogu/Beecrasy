@@ -1,7 +1,5 @@
 package com.khjxiaogu.beecrasy.blocks;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.utils.Utils;
 
 import net.minecraft.core.BlockPos;
@@ -12,7 +10,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -36,7 +33,7 @@ public class SkepBlock extends Block {
 		builder.add(BlockStateProperties.AGE_2);
 	}
 	@Override
-	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		RandomSource rnd=Utils.getSyncedRandom(context.getPlayer());
 		return this.defaultBlockState().setValue(BlockStateProperties.AGE_2, rnd.nextInt(3))
 			.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());

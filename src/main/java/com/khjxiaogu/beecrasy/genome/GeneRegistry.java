@@ -104,6 +104,7 @@ public class GeneRegistry {
 		return typelist;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Collection<Gene<?>> getGeneTypesUnordered(){
 		return (Collection)geneticsMap.values();
 	}

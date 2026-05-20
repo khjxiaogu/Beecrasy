@@ -1,9 +1,15 @@
 package com.khjxiaogu.beecrasy;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.client.BeeTint;
 import com.khjxiaogu.beecrasy.client.DynamicModelReference;
+import com.khjxiaogu.beecrasy.client.renderer.PressBlockEntityRenderer;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
+import net.minecraft.client.renderer.blockentity.StandingSignRenderer;
+import net.minecraft.client.renderer.entity.BoatRenderer;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -13,6 +19,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.model.standalone.SimpleUnbakedStandaloneModel;
@@ -47,4 +54,8 @@ public class BeecrasyClient {
 			ev.register(DynamicModelReference.createKey(id).name(),SimpleUnbakedStandaloneModel.quadCollection(id));	
 		});
 	}
+	@SubscribeEvent
+	public static void onRegisterRenderer(RegisterRenderers event) {
+		event.registerBlockEntityRenderer(Blocks.PRESS_BLOCKENTITY.get(), PressBlockEntityRenderer::new);
+		}
 }

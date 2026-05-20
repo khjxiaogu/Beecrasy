@@ -6,8 +6,6 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
-import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
-
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -19,7 +17,6 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
-import net.minecraft.world.level.levelgen.RandomSupport;
 
 public final class Utils {
 	public static ItemStackTemplate getRecipeOutput(List<ItemStack> stacks,CraftingRecipe recipe) {

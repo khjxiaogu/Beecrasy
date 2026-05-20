@@ -9,6 +9,7 @@ public class RecombinationHelper {
 	public RecombinationHelper(Genome[] genomeSet) {
 		genomes=genomeSet;
 	}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Genome.Builder makeHaploid(Genome[] genome,BooleanSupplier extractor) {
 		Genome.Builder b=genome[0].createBuilder();
 		for(Identifier i:GeneRegistry.getGeneTypes()) {
@@ -23,6 +24,7 @@ public class RecombinationHelper {
 	public Genome.Builder getHaploid(BooleanSupplier extractor) {
 		return makeHaploid(genomes,extractor);
 	}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public DiploidGenome getDiploid(Genome genome,BooleanSupplier extractor) {
 		Genome.Builder mat=makeHaploid(genomes,extractor);
 		Genome.Builder par=genome.createBuilder();

@@ -12,12 +12,14 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
 public class Genome implements AllelesHolder {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static final Codec<Genome> CODEC=RecordCodecBuilder.create(t->t
 			.group(Codec.dispatchedMap(GeneRegistry.CODEC,a->a.codec())
 				.fieldOf("alleles")
 				.forGetter(o->(Map)o.alleles))
 			.apply(t,Genome::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf,Genome> STREAM_CODEC=new StreamCodec<>() {
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
 		public void encode(RegistryFriendlyByteBuf output, Genome value) {
 			output.writeVarInt(value.alleles.size());
@@ -26,6 +28,7 @@ public class Genome implements AllelesHolder {
 				((Gene)ent.getKey()).streamCodec().encode(output, ent.getValue());
 			}
 		}
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
 		public Genome decode(RegistryFriendlyByteBuf input) {
 			int size=input.readVarInt();
@@ -46,6 +49,7 @@ public class Genome implements AllelesHolder {
 		this.alleles = alleles;
 	}
 	public <T> T getAllele(Gene<T> type) {
+		@SuppressWarnings("unchecked")
 		T alle= (T) alleles.get(type);
 		if(alle==null)
 			return type.getDefault();
@@ -70,15 +74,18 @@ public class Genome implements AllelesHolder {
 			alleles.put(type, gene);
 			return this;
 		}
+		@SuppressWarnings("unchecked")
 		public <T> T get(Gene<T> type) {
 			return (T) alleles.get(type);
 		}
 		public <T> T getAllele(Gene<T> type) {
+			@SuppressWarnings("unchecked")
 			T alle= (T) alleles.get(type);
 			if(alle==null)
 				return type.getDefault();
 			return alle;
 		}
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public Genome build() {
 			Map<Gene, Object> calleles=new IdentityHashMap<>();
 			for(Identifier id:GeneRegistry.getGeneTypes()) {

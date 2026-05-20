@@ -5,6 +5,8 @@ import java.util.function.BiConsumer;
 
 import org.jspecify.annotations.Nullable;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -24,6 +26,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -32,8 +36,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
-public class PressBlock extends Block {
+public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockEntity>{
 
 	private static final VoxelShape CYLINDER = Block.box( 3,  8,  3, 13,  16, 13);
 	private static final VoxelShape CYLINDER_TOP = Block.box( 2,  13,  2, 14,  16, 14);
@@ -167,4 +172,22 @@ public class PressBlock extends Block {
 		builder.add(BlockStateProperties.HORIZONTAL_FACING);
 		builder.add(BlockStateProperties.DOUBLE_BLOCK_HALF);
 	}
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		if(state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF)==DoubleBlockHalf.LOWER)
+			return getBlock().get().create(pos, state);
+		return null;
+	}
+
+
+
+
+
+	@Override
+	public DeferredHolder<BlockEntityType<?>, BlockEntityType<PressBlockEntity>> getBlock() {
+		return BeecrasyRegistries.Blocks.PRESS_BLOCKENTITY;
+	}
+
+
+
+
 }

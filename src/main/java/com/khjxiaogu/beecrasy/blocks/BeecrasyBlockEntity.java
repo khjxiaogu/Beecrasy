@@ -21,10 +21,7 @@
 
 package com.khjxiaogu.beecrasy.blocks;
 
-import org.slf4j.Logger;
-
 import com.khjxiaogu.beecrasy.Beecrasy;
-import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;

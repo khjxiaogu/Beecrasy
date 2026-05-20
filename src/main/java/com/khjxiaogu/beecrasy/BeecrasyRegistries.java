@@ -1,10 +1,15 @@
 package com.khjxiaogu.beecrasy;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
+import com.google.common.collect.ImmutableSet;
 import com.khjxiaogu.beecrasy.blocks.PressBlock;
+import com.khjxiaogu.beecrasy.blocks.PressBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.SequencerBlock;
 import com.khjxiaogu.beecrasy.blocks.SkepBlock;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
@@ -13,6 +18,7 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -24,6 +30,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
@@ -70,6 +79,11 @@ public class BeecrasyRegistries {
 	    public static final DeferredBlock<Block> SKEP=register("skep",SkepBlock::new,Blocks::skepProps,UnaryOperator.identity());
 	    public static final DeferredBlock<Block> EMPTY_COMB_BLOCK=register("empty_comb_block");
 	    public static final DeferredBlock<Block> HONEY_COMB_BLOCK=register("honey_comb_block");
+	    
+	    
+	    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Beecrasy.MODID);
+	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PressBlockEntity>> PRESS_BLOCKENTITY=BLOCK_ENTITIES.register("honey_press", makeBlockEntityType(PressBlockEntity::new, HONEY_PRESS));
+	    
 	    public static DeferredBlock<Block> register(String name){
 	    	return register(name,Block::new,Blocks::genalDeco,UnaryOperator.identity());
 	    }
@@ -99,6 +113,14 @@ public class BeecrasyRegistries {
 		private static boolean notSolid(BlockState state, BlockGetter reader, BlockPos pos) {
 			return false;
 		}
+		private static <T extends BlockEntity> Supplier<BlockEntityType<T>> makeBlockEntityType(BlockEntitySupplier<T> create,
+			DeferredHolder<Block,? extends Block> valid) {
+			return () -> new BlockEntityType<>(create, ImmutableSet.of(valid.get()));
+		}
+		private static <T extends BlockEntity> Supplier<BlockEntityType<T>> makeBlockEntityTypes(BlockEntitySupplier<T> create,
+				List<? extends Supplier<? extends Block>> valid) {
+			return () -> new BlockEntityType<>(create, valid.stream().map(Supplier::get).collect(Collectors.toSet()));
+		}
 	}
 	public static class Components{
 	    public static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Beecrasy.MODID);
@@ -116,6 +138,7 @@ public class BeecrasyRegistries {
     public static void register(IEventBus modEventBus) {
     	// Register the Deferred Register to the mod event bus so blocks get registered
     	Blocks.BLOCKS.register(modEventBus);
+    	Blocks.BLOCK_ENTITIES.register(modEventBus);
         // Register the Deferred Register to the mod event bus so items get registered
     	Items.ITEMS.register(modEventBus);
     	
