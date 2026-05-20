@@ -8,6 +8,9 @@ import org.jspecify.annotations.Nullable;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.PlainTextContents;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -85,4 +88,24 @@ public final class Utils {
         }
         return result;
     }
+	public static MutableComponent translate(String format, Object... objects) {
+		return translateWithFallback(format, null, objects);
+	}
+
+	public static MutableComponent translate(String format) {
+		return translate(format, new Object[0]);
+	}
+
+	public static MutableComponent translateWithFallback(String format, String fallback, Object... objects) {
+		return MutableComponent.create(new TranslatableContents(format, fallback, objects));
+	}
+
+	public static MutableComponent translateWithFallback(String format, String fallback) {
+		return translate(format, fallback, new Object[0]);
+	}
+
+	public static MutableComponent string(String content) {
+		return MutableComponent.create(PlainTextContents.create(content));
+	}
+
 }

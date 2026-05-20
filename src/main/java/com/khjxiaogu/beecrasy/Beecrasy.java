@@ -2,6 +2,7 @@ package com.khjxiaogu.beecrasy;
 
 import org.slf4j.Logger;
 
+import com.khjxiaogu.beecrasy.network.PacketHandler;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.resources.Identifier;
@@ -27,6 +28,7 @@ public class Beecrasy {
     	LOGGER.info("Say hello to Beecracy(Not a typo)!");
         modEventBus.addListener(this::commonSetup);
 
+        modEventBus.addListener(PacketHandler::registerPackets);
         BeecrasyRegistries.register(modEventBus);
 
 

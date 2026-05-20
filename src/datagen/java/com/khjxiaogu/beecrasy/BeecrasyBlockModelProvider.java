@@ -21,6 +21,7 @@
 
 package com.khjxiaogu.beecrasy;
 
+import java.awt.ItemSelectable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +35,8 @@ import java.util.function.UnaryOperator;
 
 import com.google.common.collect.ImmutableList;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelOutput;
 import net.minecraft.client.data.models.MultiVariant;
@@ -50,6 +53,9 @@ import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.block.dispatch.Variant;
+import net.minecraft.client.renderer.block.model.CompositeBlockModel;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.ItemModel.Unbaked;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
@@ -96,11 +102,19 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 		this.blockItemModel(Blocks.HONEY_COMB_BLOCK);
 		this.blockItemModel(Blocks.SEQUENCER);
 		this.blockStateOutput.accept(
-			this.getVariantBuilder(Blocks.SEQUENCER.get(),bmf("sequencer"))
+			this.getVariantBuilder(Blocks.SEQUENCER.get()).with(PropertyDispatch.initial(BlockStateProperties.LIT)
+				.select(false, bmf("sequencer"))
+				.select(true, bmf("sequencer_active")))
 			.with(ROTATION_HORIZONTAL_FACING)
 			);
-		this.blockItemModel(Blocks.HONEY_PRESS);
-		MultiVariant pressModel=bmf("honey_press");
+		
+		this.itemModelOutput.accept(Blocks.HONEY_PRESS.asItem(), 
+			ItemModelUtils.composite(
+				this.plainBlockModel(Beecrasy.rl("honey_press_base")),
+				this.plainBlockModel(Beecrasy.rl("dynamic/honey_press_plate")),
+				this.plainBlockModel(Beecrasy.rl("dynamic/honey_press_screw"))
+				));
+		MultiVariant pressModel=bmf("honey_press_base");
 		MultiVariant empty=plainVariant(ModelTemplates.PARTICLE_ONLY.createWithSuffix(Blocks.HONEY_PRESS.get(),"_top", TextureMapping.particle(Blocks.HONEY_PRESS.get()), this.modelOutput));
 		this.blockStateOutput.accept(
 		this.getVariantBuilder(Blocks.HONEY_PRESS.get()).with(
@@ -157,7 +171,9 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 			blockItemModel(cpblock(n), Beecrasy.rl(n + p));
 		}
 	}
-
+	protected ItemModel.Unbaked plainBlockModel(Identifier blockModelId) {
+		return ItemModelUtils.plainModel(blockModelId.withPrefix("block/"));
+	}
 	protected void blockItemModel(Block n, Identifier p) {
 		Identifier blockModelId=p.withPrefix("block/");
 		String name=p.getPath();
@@ -209,9 +225,9 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 				if (existsModel(rl))
 					return super.plainModel(rl);
 			}
-
+			Beecrasy.LOGGER.warn("Model file " + orl + " not exists, using unchecked");
 		}
-		Beecrasy.LOGGER.warn("Model file " + orl + " not exists, using unchecked");
+		
 		return super.plainModel(rl);
 	}
 	public MultiVariant genBlock(String name) {

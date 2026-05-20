@@ -1,18 +1,33 @@
 {
   "variants": {
-    "facing=east": {
+    "facing=east,lit=false": {
       "model": "beecrasy:block/sequencer",
       "y": 90
     },
-    "facing=north": {
+    "facing=east,lit=true": {
+      "model": "beecrasy:block/sequencer_active",
+      "y": 90
+    },
+    "facing=north,lit=false": {
       "model": "beecrasy:block/sequencer"
     },
-    "facing=south": {
+    "facing=north,lit=true": {
+      "model": "beecrasy:block/sequencer_active"
+    },
+    "facing=south,lit=false": {
       "model": "beecrasy:block/sequencer",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,lit=true": {
+      "model": "beecrasy:block/sequencer_active",
+      "y": 180
+    },
+    "facing=west,lit=false": {
       "model": "beecrasy:block/sequencer",
+      "y": 270
+    },
+    "facing=west,lit=true": {
+      "model": "beecrasy:block/sequencer_active",
       "y": 270
     }
   }

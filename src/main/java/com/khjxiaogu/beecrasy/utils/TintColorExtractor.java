@@ -5,22 +5,23 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.IntUnaryOperator;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.util.ARGB;
 
 /**
  * 图片主色调提取工具类。
  * <p>
- * 该类提供了从图片像素数据中提取代表性颜色的功能。它通过颜色量化、中位切分算法
- * 和基于饱和度、明度的评分机制，从图片中选出视觉效果最佳的主色调。
+ * 该类提供了从图片像素数据中提取代表性颜色的功能。它通过颜色量化、中位切分算法 和基于饱和度、明度的评分机制，从图片中选出视觉效果最佳的主色调。
  * <p>
  * 主要流程：
  * <ol>
- *   <li>对像素进行采样和9bit颜色量化，统计颜色分布；</li>
- *   <li>使用中位切分算法将颜色空间划分为指定数量的桶；</li>
- *   <li>计算每个桶的加权平均色；</li>
- *   <li>根据饱和度、明度和颜色权重对候选色进行评分，选择最高分颜色作为主色调。</li>
+ * <li>对像素进行采样和9bit颜色量化，统计颜色分布；</li>
+ * <li>使用中位切分算法将颜色空间划分为指定数量的桶；</li>
+ * <li>计算每个桶的加权平均色；</li>
+ * <li>根据饱和度、明度和颜色权重对候选色进行评分，选择最高分颜色作为主色调。</li>
  * </ol>
  * 内部定义了饱和度容忍区间（SAT_LOW～SAT_HIGH）和最佳明度区间（LIGHTNESS_MIN～LIGHTNESS_MAX），
  * 用来平滑地评估颜色的视觉质量。
@@ -54,6 +55,7 @@ public class TintColorExtractor {
 			this.weight = totalWeight;
 		}
 	}
+
 	/**
 	 * 颜色簇类。
 	 * <p>
@@ -72,6 +74,7 @@ public class TintColorExtractor {
 	private static final Comparator<WeightedColor> COMPARING_R = Comparator.comparingInt(c -> c.color.r);
 	private static final Comparator<WeightedColor> COMPARING_G = Comparator.comparingInt(c -> c.color.g);
 	private static final Comparator<WeightedColor> COMPARING_B = Comparator.comparingInt(c -> c.color.b);
+
 	/**
 	 * 从图片像素数组中采样指定矩形区域的像素，并进行尺寸自适应缩放。
 	 * <p>
@@ -89,15 +92,58 @@ public class TintColorExtractor {
 	 * @return ARGB格式的采样像素数组
 	 */
 	public static int[] samplePixelsABGR(int[] pixels, int width, int height, int x, int y,
-			int rectW, int rectH) {
+		int rectW, int rectH) {
+
+		return samplePixels(pixels, width, height, x, y, rectW, rectH, ARGB::fromABGR);
+	}
+	/**
+	 * 从图片像素数组中采样指定矩形区域的像素，并进行尺寸自适应缩放。
+	 * <p>
+	 * 如果目标采样区域（rectW × rectH）的尺寸小于等于{@link #MAX_IMAGE_SIZE}，
+	 * 则直接复制该区域像素并转换为ARGB格式；否则对区域进行降采样，使结果像素总数
+	 * 不超过{@code MAX_IMAGE_SIZE × MAX_IMAGE_SIZE}
+	 *
+	 * @param pixels 原始像素数组（ARGB格式）
+	 * @param width  原图宽度
+	 * @param height 原图高度
+	 * @param x      采样区域左上角X坐标
+	 * @param y      采样区域左上角Y坐标
+	 * @param rectW  采样区域宽度
+	 * @param rectH  采样区域高度
+	 * @return ARGB格式的采样像素数组
+	 */
+	public static int[] samplePixelsARGB(int[] pixels, int width, int height, int x, int y,
+		int rectW, int rectH) {
+
+		return samplePixels(pixels, width, height, x, y, rectW, rectH, IntUnaryOperator.identity());
+	}
+	/**
+	 * 从图片像素数组中采样指定矩形区域的像素，并进行尺寸自适应缩放。
+	 * <p>
+	 * 如果目标采样区域（rectW × rectH）的尺寸小于等于{@link #MAX_IMAGE_SIZE}，
+	 * 则直接复制该区域像素并转换为ARGB格式；否则对区域进行降采样，使结果像素总数
+	 * 不超过{@code MAX_IMAGE_SIZE × MAX_IMAGE_SIZE}，并同时完成指定的像素格式转换。
+	 *
+	 * @param pixels   原始像素数组
+	 * @param width    原图宽度
+	 * @param height   原图高度
+	 * @param x        采样区域左上角X坐标
+	 * @param y        采样区域左上角Y坐标
+	 * @param rectW    采样区域宽度
+	 * @param rectH    采样区域高度
+	 * @param colorMap 像素格式转换函数
+	 * @return 采样像素数组
+	 */
+	public static int[] samplePixels(int[] pixels, int width, int height, int x, int y,
+		int rectW, int rectH, IntUnaryOperator colorMap) {
 		if (rectW <= MAX_IMAGE_SIZE && rectH <= MAX_IMAGE_SIZE) {
 			int[] result = new int[rectW * rectH];
 			for (int r = 0; r < rectH; r++) {
 				int srcRow = y + r;
 				int srcIndexStart = srcRow * width + x;
-				int destIndexStart=r * rectW;
-				for(int w=0;w<rectW;w++) {
-					result[destIndexStart+w]=ARGB.fromABGR(pixels[srcIndexStart+w]);
+				int destIndexStart = r * rectW;
+				for (int w = 0; w < rectW; w++) {
+					result[destIndexStart + w] = colorMap.applyAsInt(pixels[srcIndexStart + w]);
 				}
 			}
 			return result;
@@ -105,20 +151,20 @@ public class TintColorExtractor {
 		int[] result = new int[MAX_IMAGE_SIZE * MAX_IMAGE_SIZE];
 		for (int r = 0; r < MAX_IMAGE_SIZE; r++) {
 			int srcAbsY = y + r * rectH / MAX_IMAGE_SIZE;
-			int destIndexStart=r * MAX_IMAGE_SIZE;
-			int srcIndexStart= srcAbsY * width+x;
+			int destIndexStart = r * MAX_IMAGE_SIZE;
+			int srcIndexStart = srcAbsY * width + x;
 			for (int c = 0; c < MAX_IMAGE_SIZE; c++) {
-				result[destIndexStart+c] = ARGB.fromABGR(pixels[srcIndexStart + c * rectW / MAX_IMAGE_SIZE]);
+				result[destIndexStart + c] = colorMap.applyAsInt(pixels[srcIndexStart + c * rectW / MAX_IMAGE_SIZE]);
 			}
 		}
 		return result;
 	}
+
 	/**
 	 * 对像素数组进行颜色量化与分布统计。
 	 * <p>
 	 * 将每个像素的RGB分量进行9bit量化，每个分量3bit，合并成一个索引，
-	 * 统计每个量化颜色出现的次数。然后根据索引还原近似的RGB值，构建带权重的颜色列表，
-	 * 封装为{@link Bucket}对象返回。
+	 * 统计每个量化颜色出现的次数。然后根据索引还原近似的RGB值，构建带权重的颜色列表， 封装为{@link Bucket}对象返回。
 	 *
 	 * @param pixels ARGB32格式的像素数组（Alpha为0的像素将被忽略）
 	 * @return 包含颜色分布统计的{@code Bucket}对象；如果没有有效像素则返回{@code null}
@@ -207,18 +253,19 @@ public class TintColorExtractor {
 
 		return bestColor.toARGB32();
 	}
+
 	/**
 	 * 中位切分算法实现。
 	 * <p>
 	 * 递归地将给定的颜色桶按颜色范围最大的一维进行切分，直到桶数量达到{@code targetBuckets}。
 	 * 切分点的选择依据所有颜色的权重和的中位数，将桶分裂为两个子桶。
 	 *
-	 * @param initalbucket 初始颜色桶（通常为整个图片的颜色分布）
+	 * @param initalbucket  初始颜色桶（通常为整个图片的颜色分布）
 	 * @param targetBuckets 目标桶数量
 	 * @return 切分后的桶集合
 	 */
 	private static Set<Bucket> medianCut(Bucket initalbucket, int targetBuckets) {
-		Set<Bucket> buckets = new HashSet<>(8);
+		Set<Bucket> buckets = new HashSet<>(targetBuckets);
 		buckets.add(initalbucket);
 
 		while (buckets.size() < targetBuckets) {
@@ -296,15 +343,16 @@ public class TintColorExtractor {
 
 		return buckets;
 	}
+
 	/**
 	 * 评估一个候选颜色作为主色调的得分。
 	 * <p>
 	 * 综合颜色的饱和度、明度以及在整体颜色中的权重占比进行评分。
 	 * <ul>
-	 *   <li>饱和度分数：低于{@link #SAT_LOW}得0，高于{@link #SAT_HIGH}得1，中间线性插值；</li>
-	 *   <li>明度分数：不在{@link #LIGHTNESS_MIN}～{@link #LIGHTNESS_MAX}区间内得0，
-	 *       否则按抛物线函数计算（中心0.5处得分最高为1）；</li>
-	 *   <li>权重占比：当前桶权重与总权重的比值。</li>
+	 * <li>饱和度分数：低于{@link #SAT_LOW}得0，高于{@link #SAT_HIGH}得1，中间线性插值；</li>
+	 * <li>明度分数：不在{@link #LIGHTNESS_MIN}～{@link #LIGHTNESS_MAX}区间内得0，
+	 * 否则按抛物线函数计算（中心0.5处得分最高为1）；</li>
+	 * <li>权重占比：当前桶权重与总权重的比值。</li>
 	 * </ul>
 	 * 最终得分为三者乘积。
 	 *
