@@ -54,7 +54,7 @@ public record DynamicModelReference(StandaloneModelKey<QuadCollection> name) imp
 		return models.get(rl);
 	}
 	public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector,QuadInstance quadInstance) {
-		submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.solidMovingBlock(), (pose,buffer)->{
+		submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.cutoutMovingBlock(), (pose,buffer)->{
 			for(BakedQuad quad:get().getAll()) {
 				buffer.putBakedQuad(pose, quad, quadInstance);
 			}

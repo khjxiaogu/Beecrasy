@@ -51,11 +51,11 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
 	
 	private static final VoxelShape HANDLE      = Block.box( 5,  0,  5, 11, 16, 11);
 	private static final VoxelShape HANDLE_BASE = Block.box( 2,  0,  2, 14,  3, 14);
-	private static final VoxelShape HANDLE_TOP  = Block.box( 2, 12,  2, 14, 16, 14);
-	private static final VoxelShape TOP = Shapes.or(HANDLE_BASE, HANDLE,HANDLE_TOP).optimize();
+	//private static final VoxelShape HANDLE_TOP  = Block.box( 2, 12,  2, 14, 16, 14);
+	private static final VoxelShape TOP = Shapes.or(HANDLE_BASE, HANDLE).optimize();
 	
 	private static final VoxelShape ALL=Shapes.or(TOP.move(0, 1, 0), BOTTOM).optimize();
-	private static final VoxelShape ALL_TOP=Shapes.or(HANDLE,HANDLE_TOP).optimize();
+	private static final VoxelShape ALL_TOP=Shapes.or(HANDLE).optimize();
 	public PressBlock(Properties properties) {
 		super(properties);
 		   this.registerDefaultState(
