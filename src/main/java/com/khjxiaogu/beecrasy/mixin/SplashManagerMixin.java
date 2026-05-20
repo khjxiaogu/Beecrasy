@@ -10,10 +10,11 @@ import com.khjxiaogu.beecrasy.utils.Utils;
 
 import net.minecraft.client.gui.components.SplashRenderer;
 import net.minecraft.client.resources.SplashManager;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.SpecialDates;
 @Mixin(SplashManager.class)
 public class SplashManagerMixin {
-	private static final SplashRenderer WORLD_BEE_DAY=new SplashRenderer(Utils.translate("splash.beecrasy.world_bee_day"));
+	private static final SplashRenderer WORLD_BEE_DAY=new SplashRenderer(Utils.translate("splash.beecrasy.world_bee_day").withStyle(Style.EMPTY.withColor(-256)));
 	@Inject(at=@At("HEAD"),require=1,expect=1,allow=1,cancellable=true,method="Lnet/minecraft/client/resources/SplashManager;getSplash()Lnet/minecraft/client/gui/components/SplashRenderer;")
 	public void by$getSplash(CallbackInfoReturnable<SplashRenderer> callback) {
 		if(SpecialDates.dayNow().equals(DateHelper.WORLD_BEE_DAY)) {
