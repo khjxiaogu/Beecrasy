@@ -37,7 +37,7 @@ public class PressBlockEntityRenderer implements BlockEntityRenderer<PressBlockE
 	public void extractRenderState(PressBlockEntity blockEntity, PressRenderState state, float partialTicks, Vec3 cameraPosition, @Nullable CrumblingOverlay breakProgress) {
 		BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-		state.animateProcess=new Quaternionf().rotateY(getAngle((blockEntity.ticks+partialTicks)/20f,8f,16f)*Mth.PI*2);
+		state.animateProcess=new Quaternionf().rotateY(getAngle((blockEntity.ticks+partialTicks)/20f,16f)*Mth.PI*2);
 		state.process=getPosition((blockEntity.ticks+partialTicks)/20f,16f);
 	}
 	/**
