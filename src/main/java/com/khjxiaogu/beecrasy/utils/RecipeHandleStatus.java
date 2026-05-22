@@ -15,18 +15,14 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
 */
-package com.khjxiaogu.beecrasy.genome.gene;
+package com.khjxiaogu.beecrasy.utils;
 
-public class NumericAllele extends BaseAllele {
-	private final float number;
-
-	public NumericAllele(String id, float number) {
-		super(id);
-		this.number = number;
+public enum RecipeHandleStatus {
+	SUCCEED,BLOCKED,FAILED;
+	public static RecipeHandleStatus success(boolean isSuccess) {
+		return isSuccess?SUCCEED:BLOCKED;
 	}
-
-	public float getNumber() {
-		return number;
+	public boolean resetsProcess() {
+		return this==SUCCEED||this==FAILED;
 	}
-
 }

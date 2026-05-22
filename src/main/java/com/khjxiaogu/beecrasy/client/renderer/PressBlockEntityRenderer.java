@@ -1,3 +1,20 @@
+/** 
+* Copyright (c) 2026 khjxiaogu
+*
+* This file is part of Beecrasy.
+*
+* Beecrasy is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation, version 3.
+* 
+* Beecrasy is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
+* 
+* You should have received a copy of the GNU Lesser General Public License
+* along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
+*/
 package com.khjxiaogu.beecrasy.client.renderer;
 
 import org.joml.Quaternionf;
@@ -5,7 +22,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.blocks.PressBlockEntity;
-import com.khjxiaogu.beecrasy.client.DynamicModelReference;
+import com.khjxiaogu.beecrasy.client.ModelReference;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.QuadInstance;
 
@@ -19,14 +36,14 @@ import net.minecraft.world.phys.Vec3;
 
 public class PressBlockEntityRenderer implements BlockEntityRenderer<PressBlockEntity, PressRenderState> {
 	private final QuadInstance quadInstance = new QuadInstance();
-	private final DynamicModelReference PLATE;
-	private final DynamicModelReference SCREW;
+	private final ModelReference PLATE;
+	private final ModelReference SCREW;
 	/**
 	 * @param rendererDispatcherIn
 	 */
 	public PressBlockEntityRenderer(BlockEntityRendererProvider.Context rendererDispatcherIn) {
-		PLATE=DynamicModelReference.getModel(Beecrasy.rl("block/dynamic/honey_press_plate"));
-		SCREW=DynamicModelReference.getModel(Beecrasy.rl("block/dynamic/honey_press_screw"));
+		PLATE=ModelReference.getModel("block/dynamic/honey_press_plate");
+		SCREW=ModelReference.getModel("block/dynamic/honey_press_screw");
 	}
 	@Override
 	public PressRenderState createRenderState() {
