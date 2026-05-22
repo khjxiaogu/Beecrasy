@@ -32,9 +32,9 @@ public record ContainerOperationMessage(int containerId,short opCode,int opData)
 
 	public static final Type<ContainerOperationMessage> TYPE=new Type<>(Beecrasy.rl("container_operation"));
 	public static final StreamCodec<ByteBuf, ContainerOperationMessage> CODEC=StreamCodec.composite(
-		ByteBufCodecs.INT,ContainerOperationMessage::containerId,
+		ByteBufCodecs.VAR_INT,ContainerOperationMessage::containerId,
 		ByteBufCodecs.SHORT, ContainerOperationMessage::opCode,
-		ByteBufCodecs.INT,ContainerOperationMessage::opData,
+		ByteBufCodecs.VAR_INT,ContainerOperationMessage::opData,
 		ContainerOperationMessage::new);
 	void handle(IPayloadContext context) {
 		context.enqueueWork(()->{

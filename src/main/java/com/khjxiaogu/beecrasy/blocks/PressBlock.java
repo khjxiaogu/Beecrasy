@@ -23,11 +23,11 @@ import java.util.function.BiConsumer;
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -116,6 +116,12 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
 	    	if(half==DoubleBlockHalf.UPPER) {
 	    		onTrigger(state,serverLevel,pos);
 	    		return InteractionResult.SUCCESS_SERVER;
+	    	}else {
+	    		if(level.getBlockEntity(pos) instanceof PressBlockEntity press) {
+					if (!level.isClientSide())
+						((ServerPlayer) player).openMenu(press, press.getBlockPos());
+						
+				}
 	    	}
     	}
 		return super.useWithoutItem(state, level, pos, player, hitResult);
@@ -130,7 +136,9 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
         super.onExplosionHit(state, level, pos, explosion, onHit);
     }
     public void onTrigger(BlockState state, ServerLevel level, BlockPos pos) {
-    	
+    	if(level.getBlockEntity(pos) instanceof PressBlockEntity press) {
+    		press.refillPower();
+    	}
     }
 
     @Override

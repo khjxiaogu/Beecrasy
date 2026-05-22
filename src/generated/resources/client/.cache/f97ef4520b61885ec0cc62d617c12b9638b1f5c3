@@ -1,10 +1,13 @@
-// 26.1.2	2026-05-20T10:09:00.6329868	Model Definitions - beecrasy
+// 26.1.2	2026-05-22T15:36:37.6250267	Model Definitions - beecrasy
 0421f7d00984c72d386246ba35ac6ad901ad20a0 assets/beecrasy/blockstates/empty_comb_block.json
 934b37cd81699370380cc4c660d5fefaf7c38378 assets/beecrasy/blockstates/honey_comb_block.json
 4033c97bfe7bdf13bd4322943e4a3d1e34959fe8 assets/beecrasy/blockstates/honey_press.json
 43bfa6273baf4f8e7fd03c9a10455924aef6f2fe assets/beecrasy/blockstates/sequencer.json
 490b7132bf36d3df7974797a3f15d0159d3d5b39 assets/beecrasy/blockstates/skep.json
+7bb29d5e7184ee156bdf67a3fea4183dd53592cc assets/beecrasy/items/apite.json
 5bc948201b4d7c12fedc6ff4dc09679a4c4f1904 assets/beecrasy/items/beeswax.json
+017add17bee591b6c2ebbb0f491693cc964d6786 assets/beecrasy/items/bumblebee_jasper.json
+2a3622776abd3de1c57730ddebd209f2d053757e assets/beecrasy/items/butterfly_net.json
 3be828cb4f6143daec68282662d52071b09877cf assets/beecrasy/items/comb_foundation.json
 1620b022d57f99dc6fc8d1f39d2ace3f48628838 assets/beecrasy/items/drone.json
 05220e930b51e5c6496ac9396f0c75262b6ab8af assets/beecrasy/items/empty_comb_block.json
@@ -13,6 +16,7 @@
 88b831928662fd644abc074d423f403f1edafa2d assets/beecrasy/items/honey_drop.json
 9f66cbe6514e27de0ee8b2dfa793d760775d1b97 assets/beecrasy/items/honey_press.json
 4057d3acbc1e604c45fb43c17f9d4df8a0711d3a assets/beecrasy/items/larva.json
+a4766d0e1c4afd00c4dfc26d4e1b7bf6989ae508 assets/beecrasy/items/pheromone.json
 409cb43de0068ea6e52cbe634881e7c4b021659e assets/beecrasy/items/product_comb.json
 acf2909014c79b4d48c92242195a349a81c2d7fd assets/beecrasy/items/queen_bee.json
 4bd6c4da6d092e47eeef22f2dc4f7e887e42dd94 assets/beecrasy/items/sequencer.json
@@ -24,11 +28,15 @@ e44fd8c3c29021db95976df9827280bcb522f318 assets/beecrasy/models/block/empty_comb
 a2b9e417b9357d53be8d1a756cc753fc52e4b5ed assets/beecrasy/models/block/honey_comb_block_1.json
 6649ea97880dcc219879c18f870140c298213c53 assets/beecrasy/models/block/honey_comb_block_2.json
 a227fb1ad89e68c5e695a95c6a19e768447487a9 assets/beecrasy/models/block/honey_press_top.json
+1164839749546bb42d6ef5f815f3689824b796ed assets/beecrasy/models/item/apite.json
 a1cbd16160b4e6514b5bf41e63f69efbfc2414f6 assets/beecrasy/models/item/beeswax.json
+b44c73fde11d8e2fe10d22f8c55c3cc41f766697 assets/beecrasy/models/item/bumblebee_jasper.json
+9acd8f19fa4322da282b7475007f3623f59dc56e assets/beecrasy/models/item/butterfly_net.json
 1eb3bd25374e25ce0471cd6393e984a43d31fb59 assets/beecrasy/models/item/comb_foundation.json
 c7a383d258306e5aa54d72e30a62d869925c3200 assets/beecrasy/models/item/drone.json
 e0079aaa498e64a952216e2aa13ef41f59517d7a assets/beecrasy/models/item/handheld_sequencer.json
 aaee3c0a458b336056f6ddfe662c240678a4d543 assets/beecrasy/models/item/honey_drop.json
 313ee95e06d7990b9e02f915ef83e1d1981918b0 assets/beecrasy/models/item/larva.json
+011a3306f6f32b0b8f1197892dae022eea948010 assets/beecrasy/models/item/pheromone.json
 2bf3324e99c913df6803ceae3e8cb8f789b3db14 assets/beecrasy/models/item/product_comb.json
 6868d800428f538044ad49ac56ef692e4fbecfb4 assets/beecrasy/models/item/queen_bee.json

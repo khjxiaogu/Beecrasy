@@ -37,6 +37,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.registries.DeferredItem;
 
 
 public class BeecrasyItemModelProvider extends ItemModelGenerators {
@@ -52,10 +53,15 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 		this.generateBeeTint(Items.PRODUCT_COMB);
 		this.generateBeeTint(Items.QUEEN_BEE);
 		
-		this.texture("beeswax");
-		this.texture("comb_foundation");
-		this.texture("honey_drop");
-		this.texture("handheld_sequencer");
+		this.texture(Items.BEESWAX);
+		this.texture(Items.COMB_FOUNDATION);
+		this.texture(Items.HONEY_DROP);
+		this.texture(Items.SEQUENCER);
+		this.texture(Items.APITE);
+		this.texture(Items.BUMBLEBEE_JASPER);
+		this.texture(Items.PHEROMONO);
+		this.texture(Items.BUTTERFLY_NET);
+		
 	}
     public void generateBeeTint(ItemLike item) {
     	Identifier rkey=BuiltInRegistries.ITEM.getKey(item.asItem());
@@ -80,6 +86,9 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 		return ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM.create(Beecrasy.rl("item/" + name),new TextureMapping().put(TextureSlot.LAYER0, new Material(Beecrasy.rl("item/" + par + name),false)), this.modelOutput))
 		;
 
+	}
+	public void texture(DeferredItem<?> item) {
+		texture(item.getId().getPath());
 	}
 	public void texture(String name) {
 		texture(name, name);

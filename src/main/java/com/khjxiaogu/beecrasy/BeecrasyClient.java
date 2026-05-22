@@ -23,10 +23,6 @@ import com.khjxiaogu.beecrasy.client.ModelReference;
 import com.khjxiaogu.beecrasy.client.renderer.PressBlockEntityRenderer;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.renderer.blockentity.HangingSignRenderer;
-import net.minecraft.client.renderer.blockentity.StandingSignRenderer;
-import net.minecraft.client.renderer.entity.BoatRenderer;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;

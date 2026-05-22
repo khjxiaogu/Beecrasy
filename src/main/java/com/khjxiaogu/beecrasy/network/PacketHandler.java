@@ -21,7 +21,9 @@ package com.khjxiaogu.beecrasy.network;
 import com.khjxiaogu.beecrasy.Beecrasy;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -30,10 +32,14 @@ public class PacketHandler {
 	public static void sendToServer(CustomPacketPayload message) {
 		ClientPacketDistributor.sendToServer(message);
 	}
+	public static void sendToPlayer(ServerPlayer player,CustomPacketPayload message) {
+		PacketDistributor.sendToPlayer(player, message);
+	}
 	public static void registerPackets(RegisterPayloadHandlersEvent ev) {
 		
 		PayloadRegistrar registry=ev.registrar(Beecrasy.MODID);
 		registry.playToServer(ContainerOperationMessage.TYPE, ContainerOperationMessage.CODEC,ContainerOperationMessage::handle);
+		registry.playToClient(ContainerTankMessage.TYPE, ContainerTankMessage.CODEC, ContainerTankMessage::handle);
 		registry.versioned("1");
 	}
 }

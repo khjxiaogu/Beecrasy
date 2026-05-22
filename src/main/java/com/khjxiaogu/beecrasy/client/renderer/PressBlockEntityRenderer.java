@@ -20,7 +20,6 @@ package com.khjxiaogu.beecrasy.client.renderer;
 import org.joml.Quaternionf;
 import org.jspecify.annotations.Nullable;
 
-import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.blocks.PressBlockEntity;
 import com.khjxiaogu.beecrasy.client.ModelReference;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -54,8 +53,8 @@ public class PressBlockEntityRenderer implements BlockEntityRenderer<PressBlockE
 	public void extractRenderState(PressBlockEntity blockEntity, PressRenderState state, float partialTicks, Vec3 cameraPosition, @Nullable CrumblingOverlay breakProgress) {
 		BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-		state.animateProcess=new Quaternionf().rotateY(getAngle((blockEntity.ticks+partialTicks)/20f,16f)*Mth.PI*2);
-		state.process=getPosition((blockEntity.ticks+partialTicks)/20f,16f);
+		state.animateProcess=new Quaternionf().rotateY(getAngle((blockEntity.currentTicks+partialTicks)/20f,blockEntity.maxTicks/20f)*Mth.PI*2);
+		state.process=getPosition((blockEntity.currentTicks+partialTicks)/20f,blockEntity.maxTicks/20f);
 	}
 	/**
 	 * 计算转盘当前位置。

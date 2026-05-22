@@ -31,19 +31,31 @@ import com.khjxiaogu.beecrasy.blocks.SequencerBlock;
 import com.khjxiaogu.beecrasy.blocks.SkepBlock;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
+import com.khjxiaogu.beecrasy.data.PressRecipe;
+import com.khjxiaogu.beecrasy.menu.PressMenu;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -59,6 +71,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -73,6 +86,10 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> BEESWAX=ITEMS.registerSimpleItem("beeswax");
 	    public static final DeferredItem<Item> COMB_FOUNDATION=ITEMS.registerSimpleItem("comb_foundation");
 	    public static final DeferredItem<Item> HONEY_DROP=ITEMS.registerSimpleItem("honey_drop");
+	    public static final DeferredItem<Item> APITE=ITEMS.registerSimpleItem("apite");
+	    public static final DeferredItem<Item> BUMBLEBEE_JASPER=ITEMS.registerSimpleItem("bumblebee_jasper");
+	    public static final DeferredItem<Item> PHEROMONO=ITEMS.registerSimpleItem("pheromone");
+	    
 	    //蜜蜂相关
 	    public static final DeferredItem<Item> DRONE=ITEMS.registerSimpleItem("drone");
 	    public static final DeferredItem<Item> LARVA=ITEMS.registerSimpleItem("larva");
@@ -80,6 +97,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> QUEEN_BEE=ITEMS.registerSimpleItem("queen_bee");
 	    //工具
 	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerSimpleItem("handheld_sequencer");
+	    public static final DeferredItem<Item> BUTTERFLY_NET=ITEMS.registerSimpleItem("butterfly_net",s->s.tool(ToolMaterial.WOOD,Tags.MINABLE_NET, 1.0f, -2.8f, 0));
 	}
 	public static class Tabs{
 	    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Beecrasy.MODID);
@@ -151,7 +169,31 @@ public class BeecrasyRegistries {
 		public static final DeferredHolder<AttachmentType<?>, AttachmentType<Long>> RANDOM_SEED=ATTACHMENTS.register("seed", ()->AttachmentType.builder(RandomSupport::generateUniqueSeed).serialize(Codec.LONG.fieldOf("seed")).sync(ByteBufCodecs.LONG).copyOnDeath().build());
 		
 	}
-	
+	public static class Tags{
+		public static final TagKey<Block> MINABLE_NET=BlockTags.create(Beecrasy.rl("minable_net"));
+		
+	}
+	public static class Recipes{
+		public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister
+			.create(Registries.RECIPE_SERIALIZER, Beecrasy.MODID);
+		public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister
+				.create(Registries.RECIPE_TYPE, Beecrasy.MODID);
+		public static final DeferredHolder<RecipeType<?>, RecipeType<PressRecipe>> PRESS_TYPE=createType("press");
+
+		public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<PressRecipe>> PRESS_SERIALIZER=createSerializer("press",PressRecipe.CODEC,PressRecipe.STREAM_CODEC);
+		public static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> createType(String name) {
+			return RECIPE_TYPES.register(name,RecipeType::simple);
+		}
+		public static <T extends Recipe<?>> DeferredHolder<RecipeSerializer<?>, RecipeSerializer<T>> createSerializer(String name,MapCodec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> stream){
+			return RECIPE_SERIALIZERS.register(name,()->new RecipeSerializer<>(codec,stream));
+		}
+	}
+
+	public static class Menus{
+		public static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister
+			.create(Registries.MENU, Beecrasy.MODID);
+		public static final DeferredHolder<MenuType<?>, MenuType<PressMenu>> PRESS_MENU=MENU_TYPES.register("press", () -> IMenuTypeExtension.create(PressMenu::new));
+	}
     public static void register(IEventBus modEventBus) {
     	// Register the Deferred Register to the mod event bus so blocks get registered
     	Blocks.BLOCKS.register(modEventBus);
@@ -163,6 +205,7 @@ public class BeecrasyRegistries {
     	Attachments.ATTACHMENTS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         Tabs.CREATIVE_MODE_TABS.register(modEventBus);
+        
     }
     @SubscribeEvent
     public static void onBuildTabs(BuildCreativeModeTabContentsEvent ev) {
