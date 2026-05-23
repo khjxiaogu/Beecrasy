@@ -203,6 +203,10 @@ public class BeecrasyRegistries {
     	
     	Components.COMPONENTS.register(modEventBus);
     	Attachments.ATTACHMENTS.register(modEventBus);
+    	Recipes.RECIPE_SERIALIZERS.register(modEventBus);
+    	Recipes.RECIPE_TYPES.register(modEventBus);
+    	Menus.MENU_TYPES.register(modEventBus);
+    	
         // Register the Deferred Register to the mod event bus so tabs get registered
         Tabs.CREATIVE_MODE_TABS.register(modEventBus);
         

@@ -218,6 +218,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 artifacts {
     archives sourcesJar
 }
+processResources.finalizedBy("spotlessJavaApply")
 publish.finalizedBy('publishToMavenLocal')
 publishing {
     publications {
