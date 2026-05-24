@@ -108,9 +108,9 @@ public class CraftingSequenceMatcher {
 		Beecrasy.LOGGER.info("All Recipe proceded, begin indexing.");
 		try {
 			Beecrasy.LOGGER.info("Baking ordered recipe index.");
-			for(CompletableFuture<List<SequencedRecipe>> rss:futures) {
-				ordered.insertAll(rss.get());
-			}
+			//for(CompletableFuture<List<SequencedRecipe>> rss:futures) {
+			//	ordered.insertAll(rss.get());
+			//}
 			Beecrasy.LOGGER.info("Baking unordered recipe index.");
 			for(CompletableFuture<List<SequencedRecipe>> rss:futures) {
 				unordered.insertAll(rss.get());
