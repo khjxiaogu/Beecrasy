@@ -1,0 +1,8 @@
+{
+	"format_version": "1.21.11",
+	"parent": "beecrasy:block/template_bee_nest_corner_big",
+	"textures": {
+		"nest": "beecrasy:block/bee_nest",
+		"particle": "beecrasy:block/empty_comb_block_0"
+	}
+}

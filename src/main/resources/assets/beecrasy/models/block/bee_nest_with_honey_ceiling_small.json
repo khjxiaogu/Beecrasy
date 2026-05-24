@@ -1,0 +1,8 @@
+{
+	"format_version": "1.21.11",
+	"parent": "beecrasy:block/template_bee_nest_ceiling_small",
+	"textures": {
+		"nest": "beecrasy:block/bee_nest_with_honey",
+		"particle": "beecrasy:block/honey_comb_block_0"
+	}
+}
