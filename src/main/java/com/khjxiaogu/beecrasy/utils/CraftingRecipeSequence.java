@@ -255,7 +255,6 @@ public class CraftingRecipeSequence {
 		matchRecursive(root, sequence, 0, results);
 		return results;
 	}
-
 	/**
 	 * 递归匹配。
 	 */
