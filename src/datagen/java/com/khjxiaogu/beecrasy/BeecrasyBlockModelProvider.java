@@ -1,23 +1,24 @@
-/** 
-* Copyright (c) 2026 khjxiaogu
-*
-* This file is part of Beecrasy.
-*
-* Beecrasy is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation, version 3.
-* 
-* Beecrasy is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU Lesser General Public License for more details.
-* 
-* You should have received a copy of the GNU Lesser General Public License
-* along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
-*/
+/*
+ *
+ * Copyright (C) 2026 khjxiaogu
+ *
+ * This file is part of Beecrasy.
+ *
+ * Beecrasy is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, version 3.
+ *
+ * Beecrasy is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.khjxiaogu.beecrasy;
 
-import java.awt.ItemSelectable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,8 +32,6 @@ import java.util.function.UnaryOperator;
 
 import com.google.common.collect.ImmutableList;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
-import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
-
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelOutput;
 import net.minecraft.client.data.models.MultiVariant;
@@ -49,9 +48,7 @@ import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.block.dispatch.Variant;
-import net.minecraft.client.renderer.block.model.CompositeBlockModel;
 import net.minecraft.client.renderer.item.ItemModel;
-import net.minecraft.client.renderer.item.ItemModel.Unbaked;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;

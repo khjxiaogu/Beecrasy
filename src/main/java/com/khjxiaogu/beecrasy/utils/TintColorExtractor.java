@@ -1,20 +1,22 @@
-/** 
-* Copyright (c) 2026 khjxiaogu
-*
-* This file is part of Beecrasy.
-*
-* Beecrasy is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation, version 3.
-* 
-* Beecrasy is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU Lesser General Public License for more details.
-* 
-* You should have received a copy of the GNU Lesser General Public License
-* along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
-*/
+/*
+ *
+ * Copyright (C) 2026 khjxiaogu
+ *
+ * This file is part of Beecrasy.
+ *
+ * Beecrasy is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, version 3.
+ *
+ * Beecrasy is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.khjxiaogu.beecrasy.utils;
 
 import java.util.ArrayList;
@@ -28,23 +30,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.util.ARGB;
 
-/**
- * 图片主色调提取工具类。
- * <p>
- * 该类提供了从图片像素数据中提取代表性颜色的功能。它通过颜色量化、中位切分算法 和基于饱和度、明度的评分机制，从图片中选出视觉效果最佳的主色调。
- * <p>
- * 主要流程：
- * <ol>
- * <li>对像素进行采样和9bit颜色量化，统计颜色分布；</li>
- * <li>使用中位切分算法将颜色空间划分为指定数量的桶；</li>
- * <li>计算每个桶的加权平均色；</li>
- * <li>根据饱和度、明度和颜色权重对候选色进行评分，选择最高分颜色作为主色调。</li>
- * </ol>
- * 内部定义了饱和度容忍区间（SAT_LOW～SAT_HIGH）和最佳明度区间（LIGHTNESS_MIN～LIGHTNESS_MAX），
- * 用来平滑地评估颜色的视觉质量。
- *
- * @author khjxiaogu
- */
+
 
 public class TintColorExtractor {
 	// 饱和度容忍区间，高于SAT_HIGH的视为最佳饱和度，低于SAT_LOW的视为最差饱和度。
