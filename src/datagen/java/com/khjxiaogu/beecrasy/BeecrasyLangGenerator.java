@@ -19,6 +19,8 @@
 
 package com.khjxiaogu.beecrasy;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.genome.GeneRegistry;
 import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.khjxiaogu.beecrasy.genome.gene.Allele;
@@ -26,7 +28,10 @@ import com.khjxiaogu.beecrasy.genome.gene.EnumAlleleType;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class BeecrasyLangGenerator extends LanguageProvider{
 
@@ -48,7 +53,12 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 		addAllele(Alleles.FERTILITY);
 		addAllele(Alleles.LIFESPAN);
 		addAllele(Alleles.YIELD);
-		
+		for(DeferredHolder<Block, ? extends Block> blk:Blocks.BLOCKS.getEntries()) {
+			this.add(blk.get(), capitalizeWords(blk.getId().getPath()));
+		}
+		for(DeferredHolder<Item, ? extends Item> blk:Items.ITEMS.getEntries()) {
+			this.add(blk.get(), capitalizeWords(blk.getId().getPath()));
+		}
 	}
 	public <T extends Allele> void addAllele(EnumAlleleType<T> type) {
 		for(T t:type) {

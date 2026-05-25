@@ -32,31 +32,38 @@ public final class GenomeDataHelper {
 	private GenomeDataHelper() {
 		
 	}
-	public void setHaploidGenome(MutableDataComponentHolder stack,Genome genome) {
+	public static void setHaploidGenome(MutableDataComponentHolder stack,Genome genome) {
 		List<ProductItem> products=genome.getAllele(Genes.PRODUCTS);
 		if(!products.isEmpty()) {
 			stack.set(Components.TINT_STACK, products.get(0).stack().create());
 		}
 		stack.set(Components.GENOME, new GenomeComponent(false,genome));
 	}
-	public void setDiploidGenome(MutableDataComponentHolder stack,DiploidGenome genome) {
+	public static void setDiploidGenome(MutableDataComponentHolder stack,DiploidGenome genome) {
 		List<ProductItem> products=genome.maternal().getAllele(Genes.PRODUCTS);
 		if(!products.isEmpty()) {
 			stack.set(Components.TINT_STACK, products.get(0).stack().create());
 		}
 		stack.set(Components.GENOME, new GenomeComponent(false,genome.maternal().build(),genome.paternal().build()));
 	}
-	public void setGenomeInspected(MutableDataComponentHolder stack) {
+	public static void setDiploidGenome(MutableDataComponentHolder stack,Genome genome1,Genome genome2) {
+		List<ProductItem> products=genome1.getAllele(Genes.PRODUCTS);
+		if(!products.isEmpty()) {
+			stack.set(Components.TINT_STACK, products.get(0).stack().create());
+		}
+		stack.set(Components.GENOME, new GenomeComponent(false,genome1,genome2));
+	}
+	public static void setGenomeInspected(MutableDataComponentHolder stack) {
 		GenomeComponent component=stack.get(Components.GENOME);
 		if(component!=null) {
 			stack.set(Components.GENOME, component.asInspected());
 			
 		}
 	}
-	public AllelesHolder getPhenoType(GenomeComponent component) {
+	public static AllelesHolder getPhenoType(GenomeComponent component) {
 		return component.getGenome(0);
 	}
-	public AllelesHolder getPhenoType(MutableDataComponentHolder stack) {
+	public static AllelesHolder getPhenoType(MutableDataComponentHolder stack) {
 		GenomeComponent component=stack.get(Components.GENOME);
 		if(component!=null) {
 			return getPhenoType(component);

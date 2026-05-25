@@ -21,6 +21,7 @@ package com.khjxiaogu.beecrasy;
 
 import java.util.concurrent.CompletableFuture;
 
+
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.registries.VanillaRegistries;
@@ -39,7 +40,7 @@ public class BeecrasyDataGenerator {
 
 		
 		CompletableFuture<HolderLookup.Provider> completablefuture = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
-
+		gen.addProvider(true,new BeecrasyBlockTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
 		
 	}
 	@SubscribeEvent

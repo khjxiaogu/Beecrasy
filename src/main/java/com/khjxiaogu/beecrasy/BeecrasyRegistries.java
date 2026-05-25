@@ -27,6 +27,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableSet;
+import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
 import com.khjxiaogu.beecrasy.blocks.PressBlock;
 import com.khjxiaogu.beecrasy.blocks.PressBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.SequencerBlock;
@@ -94,10 +95,10 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> PHEROMONO=ITEMS.registerSimpleItem("pheromone");
 	    
 	    //蜜蜂相关
-	    public static final DeferredItem<Item> DRONE=ITEMS.registerSimpleItem("drone",t->t.component(Components.GENOME, GenomeComponent.EMPTY.asInspected()));
-	    public static final DeferredItem<Item> LARVA=ITEMS.registerSimpleItem("larva",t->t.component(Components.GENOME, GenomeComponent.EMPTY.asInspected()));
+	    public static final DeferredItem<Item> DRONE=ITEMS.registerSimpleItem("drone",t->t.component(Components.GENOME, GenomeComponent.HAPLOID_EMPTY.asInspected()));
+	    public static final DeferredItem<Item> LARVA=ITEMS.registerSimpleItem("larva",t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY.asInspected()));
 	    public static final DeferredItem<Item> PRODUCT_COMB=ITEMS.registerSimpleItem("product_comb");
-	    public static final DeferredItem<Item> QUEEN_BEE=ITEMS.registerSimpleItem("queen_bee",t->t.component(Components.GENOME, GenomeComponent.EMPTY.asInspected()));
+	    public static final DeferredItem<Item> QUEEN_BEE=ITEMS.registerSimpleItem("queen_bee",t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY.asInspected()));
 	    //工具
 	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerSimpleItem("handheld_sequencer");
 	    public static final DeferredItem<Item> BUTTERFLY_NET=ITEMS.registerSimpleItem("butterfly_net",s->s.tool(ToolMaterial.WOOD,Tags.MINABLE_NET, 1.0f, -2.8f, 0));
@@ -112,11 +113,16 @@ public class BeecrasyRegistries {
 	}
 	public static class Blocks{
 	    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Beecrasy.MODID);
-	    public static final DeferredBlock<Block> HONEY_PRESS=register("honey_press",PressBlock::new,Blocks::machineProps,UnaryOperator.identity());
+	    public static final DeferredBlock<PressBlock> HONEY_PRESS=register("honey_press",PressBlock::new,Blocks::machineProps,UnaryOperator.identity());
 	    public static final DeferredBlock<SequencerBlock> SEQUENCER=register("sequencer",SequencerBlock::new,Blocks::machineProps,UnaryOperator.identity());
 	    public static final DeferredBlock<Block> SKEP=register("skep",SkepBlock::new,Blocks::skepProps,UnaryOperator.identity());
 	    public static final DeferredBlock<Block> EMPTY_COMB_BLOCK=register("empty_comb_block");
 	    public static final DeferredBlock<Block> HONEY_COMB_BLOCK=register("honey_comb_block");
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_SMALL=register("bee_nest_small",BeeNestBlock::new,Blocks::skepProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_NASCENT=register("bee_nest_nascent",BeeNestBlock::new,Blocks::skepProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_MEDIUM=register("bee_nest_medium",BeeNestBlock::new,Blocks::skepProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_BIG=register("bee_nest_big",BeeNestBlock::new,Blocks::skepProps,UnaryOperator.identity());
+	    
 	    
 	    
 	    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Beecrasy.MODID);
@@ -144,6 +150,11 @@ public class BeecrasyRegistries {
 					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
 		}
 		static Properties skepProps(Properties properties) {
+			return properties.mapColor(MapColor.COLOR_YELLOW).sound(SoundType.GRASS)
+					.strength(0.5f).noOcclusion()
+					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
+		}
+		static Properties nestProps(Properties properties) {
 			return properties.mapColor(MapColor.COLOR_YELLOW).sound(SoundType.GRASS).requiresCorrectToolForDrops()
 					.strength(0.5f).noOcclusion()
 					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);

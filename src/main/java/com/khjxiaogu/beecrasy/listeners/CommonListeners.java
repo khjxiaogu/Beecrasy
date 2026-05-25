@@ -23,8 +23,16 @@ import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
+import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
+import com.khjxiaogu.beecrasy.genome.Genes;
+import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
+import com.khjxiaogu.beecrasy.genome.gene.Humidity;
+import com.khjxiaogu.beecrasy.genome.gene.Temperature;
 
+import net.minecraft.data.worldgen.DimensionTypes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.levelgen.RandomSupport;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -42,4 +50,27 @@ public class CommonListeners {
 			p.setData(Attachments.RANDOM_SEED, comp);
 		}
 	}
+	@SubscribeEvent
+	public static void onGenomeBuild(NaturalBeeGenomeGenerateEvent event) {
+		if(event.level.dimensionTypeRegistration().is(BuiltinDimensionTypes.NETHER)) {
+			event.genome.add(Genes.TEMPERATURE, Alleles.NETHER_TEMPERATURE);
+		}else if(event.level.dimensionTypeRegistration().is(BuiltinDimensionTypes.NETHER)) {
+			event.genome.add(Genes.TEMPERATURE, Alleles.ENDER_TEMPERATURE);
+		}else{
+			for(Humidity humid:Alleles.HUMIDITY) {
+				if(humid.isNatural()&&humid.isValidFor(event.level, event.pos)) {
+					event.genome.add(Genes.HUMIDITY, humid);
+					break;
+				}
+			}
+			Humidity humid=event.genome.get(Genes.HUMIDITY);
+			for(Temperature temp:Alleles.TEMPERATURE) {
+				if(temp.isNatural()&&temp.isValidFor(event.level, event.pos,humid)) {
+					event.genome.add(Genes.TEMPERATURE, temp);
+					break;
+				}
+			}
+		}
+	}
+	
 }

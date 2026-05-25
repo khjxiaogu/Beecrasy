@@ -36,14 +36,15 @@ import net.minecraft.network.codec.StreamCodec;
 
 public class GenomeComponent implements Iterable<Genome>{
 
-	public static final GenomeComponent EMPTY=new GenomeComponent();
+	public static final GenomeComponent HAPLOID_EMPTY=new GenomeComponent(true);
+	public static final GenomeComponent DIPLOID_EMPTY=new GenomeComponent(false);
 	public static final Codec<GenomeComponent> CODEC=RecordCodecBuilder.create(t->t.group(
 		Codec.BOOL.fieldOf("inspected").forGetter(o->o.inspected),
 		Genome.CODEC.fieldOf("genome_1").forGetter(o->o.genomes[0]),
 		Genome.CODEC.optionalFieldOf("genome_2").forGetter(o->o.genomes.length>1?Optional.of(o.genomes[1]):Optional.empty())
 		).apply(t, GenomeComponent::new)
 		);
-	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> EMPTY_CODEC=StreamCodec.unit(EMPTY);
+	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> EMPTY_CODEC=StreamCodec.unit(HAPLOID_EMPTY);
 	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> FULL_CODEC=Genome.STREAM_CODEC.apply(ByteBufCodecs.list())
 		.map(t->new GenomeComponent(true,t), t->List.of(t.genomes));
 	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> NETWORK_CODEC=ByteBufCodecs.BOOL
@@ -52,9 +53,12 @@ public class GenomeComponent implements Iterable<Genome>{
 		n->(n?FULL_CODEC:EMPTY_CODEC));
 	private final boolean inspected;
 	private final Genome[] genomes;
-	private GenomeComponent() {
+	private GenomeComponent(boolean haploid) {
 		inspected=false;
-		this.genomes = new Genome[] {Genome.DEFAULT};
+		if(haploid)
+			this.genomes = new Genome[] {Genome.DEFAULT};
+		else
+			this.genomes = new Genome[] {Genome.DEFAULT,Genome.DEFAULT};
 	}
 	
 	public GenomeComponent(boolean inspected,List<Genome> genomes) {

@@ -48,10 +48,16 @@ public abstract class Humidity extends BaseAllele {
 		public boolean isValidFor(Level l, BlockPos pos) {
 			return true;
 		}
+		@Override
+		public boolean isNatural() {
+			return false;
+		}
 	}
 	public Humidity(String id) {
 		super(id);
 	}
 	public abstract boolean isValidFor(Level l, BlockPos pos);
-
+	public boolean isNatural() {
+		return true;
+	}
 }

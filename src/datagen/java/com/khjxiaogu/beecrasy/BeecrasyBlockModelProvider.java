@@ -32,6 +32,8 @@ import java.util.function.UnaryOperator;
 
 import com.google.common.collect.ImmutableList;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
+
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelOutput;
 import net.minecraft.client.data.models.MultiVariant;
@@ -114,7 +116,13 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 			PropertyDispatch.initial(BlockStateProperties.DOUBLE_BLOCK_HALF)
 			.generate((half)->half==DoubleBlockHalf.LOWER?pressModel:empty)
 		).with(ROTATION_HORIZONTAL_FACING));
-		
+		for(String s:List.of("small","nascent","medium","big")) {
+			this.blockStateOutput.accept(
+					this.getVariantBuilder(modBlock("bee_nest_"+s)).with(PropertyDispatch.initial(BeeNestBlock.BEE_NEST_FACING,BeeNestBlock.HAS_HONEY)
+							.generate((facing,honey)->bmf("bee_nest_"+(honey?"with_honey_":"")+facing.getSerializedName()+"_"+s))
+					).with(ROTATION_HORIZONTAL_FACING));
+			blockItemModel(modBlock("bee_nest_"+s), Beecrasy.rl("bee_nest_with_honey_ceiling_"+s));
+		}
  
 	}
 
@@ -124,7 +132,7 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 	protected MultiVariantGenerator getVariantBuilder(Block blk,MultiVariant model) {
 		return MultiVariantGenerator.dispatch(blk,model);
 	}
-	private Block cpblock(String name) {
+	private Block modBlock(String name) {
 		return BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath(this.modid, name));
 	}
 	protected void blockItemModel(DeferredBlock<?> n) {
@@ -161,7 +169,7 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 
 			texture(n, n + p);
 		} else {
-			blockItemModel(cpblock(n), Beecrasy.rl(n + p));
+			blockItemModel(modBlock(n), Beecrasy.rl(n + p));
 		}
 	}
 	protected ItemModel.Unbaked plainBlockModel(Identifier blockModelId) {

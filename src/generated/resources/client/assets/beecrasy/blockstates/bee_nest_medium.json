@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "faces=ceiling,facing=east,honey=false": {
+      "model": "beecrasy:block/bee_nest_ceiling_medium",
+      "y": 90
+    },
+    "faces=ceiling,facing=east,honey=true": {
+      "model": "beecrasy:block/bee_nest_with_honey_ceiling_medium",
+      "y": 90
+    },
+    "faces=ceiling,facing=north,honey=false": {
+      "model": "beecrasy:block/bee_nest_ceiling_medium"
+    },
+    "faces=ceiling,facing=north,honey=true": {
+      "model": "beecrasy:block/bee_nest_with_honey_ceiling_medium"
+    },
+    "faces=ceiling,facing=south,honey=false": {
+      "model": "beecrasy:block/bee_nest_ceiling_medium",
+      "y": 180
+    },
+    "faces=ceiling,facing=south,honey=true": {
+      "model": "beecrasy:block/bee_nest_with_honey_ceiling_medium",
+      "y": 180
+    },
+    "faces=ceiling,facing=west,honey=false": {
+      "model": "beecrasy:block/bee_nest_ceiling_medium",
+      "y": 270
+    },
+    "faces=ceiling,facing=west,honey=true": {
+      "model": "beecrasy:block/bee_nest_with_honey_ceiling_medium",
+      "y": 270
+    },
+    "faces=corner,facing=east,honey=false": {
+      "model": "beecrasy:block/bee_nest_corner_medium",
+      "y": 90
+    },
+    "faces=corner,facing=east,honey=true": {
+      "model": "beecrasy:block/bee_nest_with_honey_corner_medium",
+      "y": 90
+    },
+    "faces=corner,facing=north,honey=false": {
+      "model": "beecrasy:block/bee_nest_corner_medium"
+    },
+    "faces=corner,facing=north,honey=true": {
+      "model": "beecrasy:block/bee_nest_with_honey_corner_medium"
+    },
+    "faces=corner,facing=south,honey=false": {
+      "model": "beecrasy:block/bee_nest_corner_medium",
+      "y": 180
+    },
+    "faces=corner,facing=south,honey=true": {
+      "model": "beecrasy:block/bee_nest_with_honey_corner_medium",
+      "y": 180
+    },
+    "faces=corner,facing=west,honey=false": {
+      "model": "beecrasy:block/bee_nest_corner_medium",
+      "y": 270
+    },
+    "faces=corner,facing=west,honey=true": {
+      "model": "beecrasy:block/bee_nest_with_honey_corner_medium",
+      "y": 270
+    }
+  }
+}

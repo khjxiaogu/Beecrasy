@@ -6,5 +6,9 @@
   "tooltip.beecrasy.no_special_product":"No special product",
   "beecrasy.configuration.title": "Beecrasy Configs",
   "beecrasy.configuration.section.beecrasy.common.toml": "Beecrasy Configs",
-  "beecrasy.configuration.section.beecrasy.common.toml.title": "Beecrasy Configs"
+  "beecrasy.configuration.section.beecrasy.common.toml.title": "Beecrasy Configs",
+  "beecrasy.configuration.section.beecrasy.client.toml": "Beecrasy Client Configs",
+  "beecrasy.configuration.section.beecrasy.client.toml.title": "Beecrasy Client Configs",
+  "beecrasy.configuration.section.beecrasy.server.toml": "Beecrasy World Configs",
+  "beecrasy.configuration.section.beecrasy.server.toml.title": "Beecrasy World Configs"
 }

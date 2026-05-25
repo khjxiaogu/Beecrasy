@@ -54,6 +54,10 @@ public abstract class Temperature extends BaseAllele {
 			return l.dimensionTypeRegistration().is(type);
 			
 		}
+		@Override
+		public boolean isNatural() {
+			return false;
+		}
 	}
 	public static class OmniTemperature extends Temperature{
 		public OmniTemperature(String id) {
@@ -65,9 +69,16 @@ public abstract class Temperature extends BaseAllele {
 			return humidity.isValidFor(l, pos);
 			
 		}
+		@Override
+		public boolean isNatural() {
+			return false;
+		}
 	}
 	public Temperature(String id) {
 		super(id);
 	}
 	public abstract boolean isValidFor(Level l,BlockPos pos,Humidity humidity);
+	public boolean isNatural() {
+		return true;
+	}
 }

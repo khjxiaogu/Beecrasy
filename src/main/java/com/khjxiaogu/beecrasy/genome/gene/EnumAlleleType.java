@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,7 +42,7 @@ import net.minecraft.resources.Identifier;
 public class EnumAlleleType<T extends Allele> implements Iterable<T>{
 	private final Identifier id;
 
-	private Map<String,T> alleleType=new HashMap<>(10);
+	private Map<String,T> alleleType=new LinkedHashMap<>(10);
 	private Map<T,String> alleleName=new IdentityHashMap<>(10);
 	private List<String> typelist=new ArrayList<>(10);
 	private Reference2IntOpenHashMap<T> typeId=new Reference2IntOpenHashMap<>(10);
