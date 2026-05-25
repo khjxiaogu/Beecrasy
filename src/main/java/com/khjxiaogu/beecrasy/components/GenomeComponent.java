@@ -44,7 +44,17 @@ public class GenomeComponent implements Iterable<Genome>{
 		Genome.CODEC.optionalFieldOf("genome_2").forGetter(o->o.genomes.length>1?Optional.of(o.genomes[1]):Optional.empty())
 		).apply(t, GenomeComponent::new)
 		);
-	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> EMPTY_CODEC=StreamCodec.unit(HAPLOID_EMPTY);
+	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> EMPTY_CODEC= new StreamCodec<>() {
+        @Override
+        public GenomeComponent decode(RegistryFriendlyByteBuf input) {
+            return HAPLOID_EMPTY;
+        }
+
+        @Override
+        public void encode(RegistryFriendlyByteBuf output, GenomeComponent value) {
+            
+        }
+    };
 	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> FULL_CODEC=Genome.STREAM_CODEC.apply(ByteBufCodecs.list())
 		.map(t->new GenomeComponent(true,t), t->List.of(t.genomes));
 	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> NETWORK_CODEC=ByteBufCodecs.BOOL
