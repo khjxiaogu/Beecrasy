@@ -90,6 +90,8 @@ public class GenomeComponent implements Iterable<Genome>{
 			this.genomes = new Genome[] {genome1};
 	}
 	public GenomeComponent asInspected() {
+		if(inspected)
+			return this;
 		return new GenomeComponent(true,genomes);
 	}
 	public int size() {

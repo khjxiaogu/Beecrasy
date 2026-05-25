@@ -19,23 +19,37 @@
 
 package com.khjxiaogu.beecrasy.listeners;
 
+import java.util.function.Consumer;
+
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
+import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
+import com.khjxiaogu.beecrasy.genome.GeneRegistry;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
+import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.gene.Humidity;
 import com.khjxiaogu.beecrasy.genome.gene.Temperature;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
-import net.minecraft.data.worldgen.DimensionTypes;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.levelgen.RandomSupport;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 
 @EventBusSubscriber(modid = Beecrasy.MODID)
@@ -72,5 +86,31 @@ public class CommonListeners {
 			}
 		}
 	}
+	@SubscribeEvent
+	public static void addCommands(RegisterCommandsEvent event) {
+		LiteralArgumentBuilder<CommandSourceStack> inspect = Commands.literal("beecrasy").then(Commands.literal("inspect").executes((ctx)->{
+			ServerPlayer sp=ctx.getSource().getPlayerOrException();
+			ItemStack stack=sp.getMainHandItem();
+			GenomeComponent genome=stack.get(Components.GENOME);
+			
+			if(genome!=null) {
+				Consumer<Component> textAdder=sp::sendSystemMessage;
+				genome=genome.asInspected();
+				int i=0;
+				for(Genome cgenome:genome) {
+					textAdder.accept(Component.translatable("genome.beecrasy.genome"+i).withStyle(ChatFormatting.GOLD));
+					for(Identifier gene:GeneRegistry.getDisplayOrder()) {
+						GeneRegistry.get(gene).getReadableText(cgenome, textAdder);
+					}
+					i++;
+				}
+				stack.set(Components.GENOME,genome);
+			}
+			return Command.SINGLE_SUCCESS;
+		}));
+		event.getDispatcher().register(inspect);
+	}
+	
+	
 	
 }

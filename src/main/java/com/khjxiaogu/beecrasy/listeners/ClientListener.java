@@ -19,8 +19,6 @@
 
 package com.khjxiaogu.beecrasy.listeners;
 
-import java.util.function.Consumer;
-
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
@@ -36,28 +34,32 @@ import net.minecraft.world.item.ItemStackTemplate;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.AddAttributeTooltipsEvent;
 
 @EventBusSubscriber(modid = Beecrasy.MODID, value=Dist.CLIENT)
 public class ClientListener {
 	@SubscribeEvent
-	public static void addTooltip(ItemTooltipEvent event) {
-		ItemStack stack=event.getItemStack();
+	public static void addTooltip(AddAttributeTooltipsEvent event) {
+		ItemStack stack=event.getStack();
 		GenomeComponent genome=stack.get(Components.GENOME);
 		
-		if(genome!=null&&genome.isInspected()) {
-			Consumer<Component> tooltipAdder=event.getToolTip()::add;
-			Genes.TEMPERATURE.getReadableText(genome.getGenome(0), tooltipAdder);
-			Genes.HUMIDITY.getReadableText(genome.getGenome(0), tooltipAdder);
-			Genes.BIOTOPE.getReadableText(genome.getGenome(0), tooltipAdder);
+		if(genome!=null) {
+			if(genome.isInspected()) {
+				Genes.TEMPERATURE.getReadableText(genome.getGenome(0), event::addTooltipLines);
+				Genes.HUMIDITY.getReadableText(genome.getGenome(0), event::addTooltipLines);
+				Genes.BIOTOPE.getReadableText(genome.getGenome(0), event::addTooltipLines);
+			}else {
+
+				event.addTooltipLines(Component.translatable("tooltip.beecrasy.to_be_inspected"));
+			}
 		}
 		if(stack.is(Items.PRODUCT_COMB)) {
 
 			@Nullable ItemStackTemplate product=stack.get(Components.COMB_PRODUCT);
 			if(product==null) {
-				event.getToolTip().add(Component.translatable("tooltip.beecrasy.no_special_product"));
+				event.addTooltipLines(Component.translatable("tooltip.beecrasy.no_special_product"));
 			}else {
-				event.getToolTip().add(Component.translatable("tooltip.beecrasy.possible_product", product.get(DataComponents.ITEM_NAME)));
+				event.addTooltipLines(Component.translatable("tooltip.beecrasy.possible_product", product.get(DataComponents.ITEM_NAME)));
 			}
 		}
 	}
