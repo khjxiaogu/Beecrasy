@@ -19,9 +19,12 @@
 
 package com.khjxiaogu.beecrasy.genome;
 
+import java.util.Set;
+
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 
-public record BeeHiveParameters(ServerLevel level,BlockPos position) {
+public record BeeHiveParameters(ServerLevel level,BlockPos position,Set<Identifier> disabledMutation) {
 
 }

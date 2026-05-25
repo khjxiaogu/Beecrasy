@@ -21,25 +21,40 @@ package com.khjxiaogu.beecrasy.genome.gene;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 
 public class EnumAlleleType<T extends Allele> {
-	private Map<String,T> alleleType=new HashMap<>();
-	private List<String> typelist=new ArrayList<>();
-	private Reference2IntOpenHashMap<T> typeId=new Reference2IntOpenHashMap<>();
+	private final Identifier id;
+
+	private Map<String,T> alleleType=new HashMap<>(10);
+	private Map<T,String> alleleName=new IdentityHashMap<>(10);
+	private List<String> typelist=new ArrayList<>(10);
+	private Reference2IntOpenHashMap<T> typeId=new Reference2IntOpenHashMap<>(10);
 	private volatile boolean sorted=false;
 	private Object lock=new Object();
 	public final Codec<T> CODEC=Codec.STRING.comapFlatMap(this::getAlleleType, t->t.getId());
-	public final StreamCodec<RegistryFriendlyByteBuf,T> STREAM_CODEC=ByteBufCodecs.idMapper(this::getByInt, this::getId).cast();
+	public final StreamCodec<RegistryFriendlyByteBuf,T> STREAM_CODEC=ByteBufCodecs.idMapper(this::getByInt, this::getIntId).cast();
+	public EnumAlleleType(Identifier id) {
+		super();
+		this.id = id;
+	}
+	public Identifier getId() {
+		return id;
+	}
 	public synchronized <O extends T> O registerAllele(O allele) {
 		String id=allele.getId();
 		if(!alleleType.containsKey(id)) {
@@ -49,7 +64,11 @@ public class EnumAlleleType<T extends Allele> {
 			}
 		}
 		alleleType.put(id, allele);
+		alleleName.put(allele, this.id.toLanguageKey("allele", id));
 		return allele;
+	}
+	public void getReadableText(T allele,Consumer<Component> text) {
+		text.accept(Component.translatable(alleleName.getOrDefault(allele,"missing")));
 	}
 	private void makeIndex() {
 		if(!sorted) {
@@ -69,7 +88,14 @@ public class EnumAlleleType<T extends Allele> {
 		makeIndex();
 		return alleleType.get(typelist.get(num));
 	}
-	public int getId(T obj) {
+	public String getId(T obj) {
+		for(Entry<String, T> pair:alleleType.entrySet()) {
+			if(pair.getValue()==obj)
+				return pair.getKey();
+		}
+		return "unknown";
+	}
+	public int getIntId(T obj) {
 		makeIndex();
 		return typeId.getOrDefault(obj,-1);
 	}

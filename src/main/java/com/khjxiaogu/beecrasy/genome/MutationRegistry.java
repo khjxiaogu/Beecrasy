@@ -32,14 +32,23 @@ public class MutationRegistry {
 	private static PriorityQueue<MutationRecord> mutations=new PriorityQueue<>(Comparator.<MutationRecord>comparingInt(r->r.mutation.priority()).reversed());
 	private MutationRegistry() {
 	}
-	public static synchronized void register(Identifier id,Mutation type) {
+	public static synchronized Mutation register(Identifier id,Mutation type) {
 		mutations.removeIf(t->t.id.equals(id));
 		if(type!=null)
 			mutations.add(new MutationRecord(id,type));
+		return type;
 	}
 	public static void handleMutation(BeeHiveParameters params,DiploidGenome genome,RandomSource random) {
 		for(MutationRecord mr:mutations) {
 			if(mr.mutation.mutate(params,genome,random))
+				break;
+		}
+	}
+	public static void handleMutation(BeeHiveParameters params,Genome.Builder genome,RandomSource random) {
+		for(MutationRecord mr:mutations) {
+			if(params.disabledMutation().contains(mr.id))
+				continue;
+			if(mr.mutation.mutate(params,new DiploidGenome(genome,genome.copy()),random))
 				break;
 		}
 	}

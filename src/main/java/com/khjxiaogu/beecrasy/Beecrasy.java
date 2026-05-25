@@ -21,6 +21,7 @@ package com.khjxiaogu.beecrasy;
 
 import org.slf4j.Logger;
 
+import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.network.PacketHandler;
 import com.mojang.logging.LogUtils;
 
@@ -51,7 +52,7 @@ public class Beecrasy {
         BeecrasyRegistries.register(modEventBus);
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         BeecrasyConfig.register();
-        
+        Genes.init();
     }
     private void commonSetup(FMLCommonSetupEvent event) {
     }

@@ -89,6 +89,14 @@ public class Genome implements AllelesHolder {
 				alleles.put(ent.getKey(), ent.getValue());
 			}
 		}
+		public Builder(Builder genome) {
+			for(Entry<Gene<?>, ?> ent:genome.alleles.entrySet()) {
+				alleles.put(ent.getKey(), ent.getValue());
+			}
+		}
+		public Builder copy() {
+			return new Builder(this);
+		}
 		public <T> Builder add(Gene<T> type,T gene) {
 			alleles.put(type, gene);
 			return this;

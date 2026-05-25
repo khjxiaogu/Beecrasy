@@ -25,6 +25,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.khjxiaogu.beecrasy.genome.gene.Allele;
@@ -35,15 +37,29 @@ import com.mojang.serialization.DataResult;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
 public class GeneRegistry {
-	static record GeneType<T>(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> streamCodec,Supplier<T> defaultValueSupplier,long priority)  implements Gene<T>{
+	static record GeneType<T>(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> streamCodec,BiConsumer<T,Consumer<Component>> toReadableName,Supplier<T> defaultValueSupplier,long priority)  implements Gene<T>{
 		@Override
 		public T getDefault() {
 			return defaultValueSupplier.get();
+		}
+
+		@Override
+		public void getReadableText(T allele, Consumer<Component> text) {
+			List<Component> tl=new ArrayList<>();
+			toReadableName.accept(allele, tl::add);
+			if(tl.size()==0)
+				return;
+			if(tl.size()==1) {
+				text.accept(Component.translatable(id.toLanguageKey("gene"), tl.get(0)));
+			}
+			text.accept(Component.translatable(id.toLanguageKey("gene"), ""));
+			tl.forEach(text::accept);
 		}
 	}
 	private static Map<Identifier,GeneType<?>> geneticsMap=new HashMap<>();
@@ -55,8 +71,8 @@ public class GeneRegistry {
 	private static Object lock=new Object();
 	public static final Codec<Gene<?>> CODEC=Identifier.CODEC.comapFlatMap(GeneRegistry::getGeneType, Gene::id);
 	public static final StreamCodec<ByteBuf,Gene<?>> STREAM_CODEC=ByteBufCodecs.idMapper(GeneRegistry::getByInt, GeneRegistry::getIntId);
-	public synchronized static <T> Gene<T> register(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> stream,Supplier<T> defaultValueSupplier,int priority) {
-		GeneType<T> gt=new GeneType<>(id,codec,stream,defaultValueSupplier,(((long)priority)<<32)|geneticsMap.size());
+	public synchronized static <T> Gene<T> register(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> stream,BiConsumer<T,Consumer<Component>> toReadableName,Supplier<T> defaultValueSupplier,int priority) {
+		GeneType<T> gt=new GeneType<>(id,codec,stream,toReadableName,defaultValueSupplier,(((long)priority)<<32)|geneticsMap.size());
 		if(!geneticsMap.containsKey(id)) {
 			synchronized(lock) {
 				typelist.add(id);
@@ -82,8 +98,8 @@ public class GeneRegistry {
 			}
 		}
 	}
-	public static <T extends Allele> Gene<T> register(Identifier id, EnumAlleleType<T> type,Supplier<T> defaultValueSupplier,int priority) {
-		return register(id,type.CODEC,type.STREAM_CODEC,defaultValueSupplier,priority);
+	public static <T extends Allele> Gene<T> register(EnumAlleleType<T> type,Supplier<T> defaultValueSupplier,int priority) {
+		return register(type.getId(),type.CODEC,type.STREAM_CODEC,type::getReadableText,defaultValueSupplier,priority);
 	
 	}
 	public static Gene<?> getByInt(int num){

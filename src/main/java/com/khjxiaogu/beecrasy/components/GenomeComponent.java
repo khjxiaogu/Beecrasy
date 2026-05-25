@@ -19,6 +19,7 @@
 
 package com.khjxiaogu.beecrasy.components;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +32,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-public class GenomeComponent {
+public class GenomeComponent implements Iterable<Genome>{
 
 	public static final GenomeComponent EMPTY=new GenomeComponent();
 	public static final Codec<GenomeComponent> CODEC=RecordCodecBuilder.create(t->t.group(
@@ -80,6 +81,15 @@ public class GenomeComponent {
 	}
 	public AllelesHolder getGenome(int index) {
 		return genomes[index];
+	}
+
+	public boolean isInspected() {
+		return inspected;
+	}
+
+	@Override
+	public Iterator<Genome> iterator() {
+		return List.of(genomes).iterator();
 	}
 
 }
