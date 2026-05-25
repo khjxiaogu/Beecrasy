@@ -30,7 +30,6 @@ import java.util.concurrent.ExecutionException;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.utils.CraftingRecipeSequence.SequencedRecipe;
-import com.khjxiaogu.beecrasy.utils.CraftingRecipeSequence.UnordererRecipeSequence;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -41,13 +40,11 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 
 public class CraftingSequenceMatcher {
-	public static CraftingRecipeSequence ordered;
-	public static UnordererRecipeSequence unordered;
+	public static CraftingRecipeSequence unordered;
 	//每个任务的建议数量
 	private static final float TASK_EFFORT=300;
 	public static void bake(Collection<RecipeHolder<CraftingRecipe>> recipes) {
-		ordered=new CraftingRecipeSequence();
-		unordered=new UnordererRecipeSequence();
+		unordered=new CraftingRecipeSequence();
 		Beecrasy.LOGGER.info("Filtering Recipe From "+recipes.size()+" Recipes");
 		
 
@@ -104,41 +101,23 @@ public class CraftingSequenceMatcher {
 			throw new RuntimeException("Error when baking recipe",e);
 		}
 
-		Beecrasy.LOGGER.info("All Recipe proceded, begin indexing.");
-		try {
-			if(futures.size()>0)
-			futures.get(0).get();
-//			Beecrasy.LOGGER.info("Baking ordered recipe index.");
-//			for(CompletableFuture<List<SequencedRecipe>> rss:futures) {
-//				ordered.insertAll(rss.get());
-//			}
-//			Beecrasy.LOGGER.info("Baking unordered recipe index.");
-//			
-//			for(CompletableFuture<List<SequencedRecipe>> rss:futures) {
-//				unordered.insertAll(rss.get());
-//			}
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error when baking recipe",e);
-		}
+		Beecrasy.LOGGER.info("All Recipe proceded, begin optimizing.");
+		unordered.bake();
+		Beecrasy.LOGGER.info("Baked "+unordered.size()+" recipe.");
 		Beecrasy.LOGGER.info("Recipe Baking Complete.");
 	}
 	public static List<SequencedRecipe> createSequencedRecipe(List<RecipeHolder<CraftingRecipe>> param){
-		List<SequencedRecipe> list=new ArrayList<>(param.size());
 		for(RecipeHolder<CraftingRecipe> recipe:param) {
-			list.add(new SequencedRecipe(recipe));
+			SequencedRecipe seqr=new SequencedRecipe(recipe);
+			unordered.insert(seqr);
+			seqr.optimize();
 		}
-		return list;
+		return List.of();
 	}
 	public static boolean isValidIngredient(Ingredient igd) {
 		return igd.isSimple()&&!igd.isCustom();
 	}
-	public static Collection<RecipeHolder<CraftingRecipe>> matchOrdered(List<ItemStack> matcher) {
-		if(ordered==null)
-			return Set.of();
-		return ordered.match(matcher);
-	};
-	public static Collection<RecipeHolder<CraftingRecipe>> matchUnordered(List<ItemStack> matcher) {
+	public static Collection<SequencedRecipe> match(List<ItemStack> matcher) {
 		if(unordered==null)
 			return Set.of();
 		List<ItemStack> sorted=new ArrayList<>(matcher);

@@ -26,8 +26,8 @@ import com.mojang.logging.LogUtils;
 
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
@@ -49,8 +49,6 @@ public class Beecrasy {
 
         modEventBus.addListener(PacketHandler::registerPackets);
         BeecrasyRegistries.register(modEventBus);
-
-
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         BeecrasyConfig.register();
         

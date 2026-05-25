@@ -21,6 +21,7 @@ package com.khjxiaogu.beecrasy.genome.mutation;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.Mutation;
 import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
-import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
+import com.khjxiaogu.beecrasy.utils.CraftingRecipeSequence.SequencedRecipe;
 import com.khjxiaogu.beecrasy.utils.CraftingSequenceMatcher;
 import com.khjxiaogu.beecrasy.utils.Utils;
 
@@ -77,10 +78,10 @@ public class MutationCrafting implements Mutation{
 		for(ProductItem product:products) {
 			pending.add(product.stack().create());
 		}
-		Collection<RecipeHolder<CraftingRecipe>> seq=getRecipeSequence(pending);
+		List<RecipeHolder<CraftingRecipe>> seq=getRecipeSequence(pending);
 		if(!seq.isEmpty()) {
 			
-			RecipeHolder<CraftingRecipe> selected=BeecrasyMath.getRandomElement(seq, random);
+			RecipeHolder<CraftingRecipe> selected=seq.get(random.nextInt(seq.size()));
 			if(selected!=null) {
 				ItemStackTemplate ist=Utils.getRecipeOutput(pending, selected.value());
 				if(ist!=null) {
@@ -91,12 +92,20 @@ public class MutationCrafting implements Mutation{
 		}
 		return false;
 	}
-	public static Collection<RecipeHolder<CraftingRecipe>> getRecipeSequence(List<ItemStack> products){
-		
-		
-		Collection<RecipeHolder<CraftingRecipe>> sequence=CraftingSequenceMatcher.matchOrdered(products);
+	public static List<RecipeHolder<CraftingRecipe>> getRecipeSequence(List<ItemStack> products){
+		Collection<SequencedRecipe> sequence=CraftingSequenceMatcher.match(products);
 		if(sequence.isEmpty())
-			sequence=CraftingSequenceMatcher.matchUnordered(products);
-		return sequence;
+			return Collections.emptyList();
+		List<RecipeHolder<CraftingRecipe>> orderedMatch=new ArrayList<>();
+		outer:for(SequencedRecipe rh:sequence) {
+			for(int i=0;i<products.size();i++) {
+				if(!rh.match(i, products.get(i)))
+					continue outer;
+			}
+			orderedMatch.add(rh.getRecipe());
+		}
+		if(!orderedMatch.isEmpty())
+			return orderedMatch;
+		return sequence.stream().map(SequencedRecipe::getRecipe).toList();
 	}
 }

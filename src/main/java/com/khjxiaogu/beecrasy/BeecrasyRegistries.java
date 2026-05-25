@@ -132,29 +132,29 @@ public class BeecrasyRegistries {
 	    	Items.ITEMS.registerItem(name,p->itemfunc.apply(db.get(), p),itemProperties);
 	    	return db;
 	    }
-		private static Properties genalDeco(Properties properties) {
+		static Properties genalDeco(Properties properties) {
 			return properties.mapColor(MapColor.COLOR_YELLOW).sound(SoundType.WOOD)
 					.strength(0.5f).noOcclusion()
 					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
 		}
-		private static Properties machineProps(Properties properties) {
+		static Properties machineProps(Properties properties) {
 			return properties.mapColor(MapColor.METAL).sound(SoundType.METAL).requiresCorrectToolForDrops()
 					.strength(5f, 6f).noOcclusion()
 					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
 		}
-		private static Properties skepProps(Properties properties) {
+		static Properties skepProps(Properties properties) {
 			return properties.mapColor(MapColor.COLOR_YELLOW).sound(SoundType.GRASS).requiresCorrectToolForDrops()
 					.strength(0.5f).noOcclusion()
 					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
 		}
-		private static boolean notSolid(BlockState state, BlockGetter reader, BlockPos pos) {
+		static boolean notSolid(BlockState state, BlockGetter reader, BlockPos pos) {
 			return false;
 		}
-		private static <T extends BlockEntity> Supplier<BlockEntityType<T>> makeBlockEntityType(BlockEntitySupplier<T> create,
+		static <T extends BlockEntity> Supplier<BlockEntityType<T>> makeBlockEntityType(BlockEntitySupplier<T> create,
 			DeferredHolder<Block,? extends Block> valid) {
 			return () -> new BlockEntityType<>(create, ImmutableSet.of(valid.get()));
 		}
-		private static <T extends BlockEntity> Supplier<BlockEntityType<T>> makeBlockEntityTypes(BlockEntitySupplier<T> create,
+		static <T extends BlockEntity> Supplier<BlockEntityType<T>> makeBlockEntityTypes(BlockEntitySupplier<T> create,
 				List<? extends Supplier<? extends Block>> valid) {
 			return () -> new BlockEntityType<>(create, valid.stream().map(Supplier::get).collect(Collectors.toSet()));
 		}
