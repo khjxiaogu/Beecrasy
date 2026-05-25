@@ -38,13 +38,45 @@ sourceSets {
 		    exclude("**/*.bbmodel") // BlockBench project files
 		    exclude("src/generated/**/.cache") // datagen cache files
 		    exclude("src/generated/.cache") // datagen cache files
+		    exclude('src/generated/resources/client/assets/${mod_id}/lang')// original language file
+		    exclude('assets/${mod_id}/lang')// original language file
         }
     }
 	datagen {
         compileClasspath += main.compileClasspath
         compileClasspath += main.output
+        resources {
+            exclude('assets/${mod_id}/lang')
+        }
     }
     client {}
+}
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+tasks.register('mergeLangFiles') {
+    def buildDir=new File(rootProject.buildDir,"mergeLangFiles");
+    def inputDir=rootProject.file("src/main/resources/assets/${mod_id}/lang")
+    def generatedDir=rootProject.file("src/generated/resources/client/assets/${mod_id}/lang")
+	inputs.dir inputDir
+	if(generatedDir.exists())
+		inputs.dir generatedDir
+	outputs.dir buildDir
+	
+    doLast{
+        def langList=inputDir.listFiles({ f -> f.isFile() } as FileFilter)
+        langList.each{fn->
+        	
+        	def langFile=new TreeMap<String, String>();
+        	def generatedLang=new File(generatedDir,fn.name)
+        	if(generatedLang.exists())
+        		new JsonSlurper().parse(generatedLang).each{key,value->langFile.put(key,value)}
+			new JsonSlurper().parse(fn).each{key,value->langFile.put(key,value)}
+			//write to output
+			buildDir.mkdirs()
+			new File(buildDir,fn.name).text=JsonOutput.prettyPrint(JsonOutput.toJson(langFile))
+        
+        }
+    }
 }
 
 repositories {
@@ -208,12 +240,15 @@ tasks.withType(ProcessResources).configureEach {
             mod_version            : mod_version,
     ]
     inputs.properties replaceProperties
-
+	duplicatesStrategy = DuplicatesStrategy.WARN
     filesMatching(['META-INF/neoforge.mods.toml']) {
         expand replaceProperties
     }
 }
-
+processResources.dependsOn(mergeLangFiles)
+processResources{
+	from(tasks.mergeLangFiles.outputs.files){ into 'assets/beecrasy/lang/'}
+}
 task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
     archiveClassifier.set('sources')

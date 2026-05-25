@@ -22,6 +22,7 @@ package com.khjxiaogu.beecrasy.genome.gene;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,7 +38,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
-public class EnumAlleleType<T extends Allele> {
+public class EnumAlleleType<T extends Allele> implements Iterable<T>{
 	private final Identifier id;
 
 	private Map<String,T> alleleType=new HashMap<>(10);
@@ -66,6 +67,9 @@ public class EnumAlleleType<T extends Allele> {
 		alleleType.put(id, allele);
 		alleleName.put(allele, this.id.toLanguageKey("allele", id));
 		return allele;
+	}
+	public String getLanguageKey(T allele) {
+		return alleleName.getOrDefault(allele,"missing");
 	}
 	public void getReadableText(T allele,Consumer<Component> text) {
 		text.accept(Component.translatable(alleleName.getOrDefault(allele,"missing")));
@@ -104,5 +108,9 @@ public class EnumAlleleType<T extends Allele> {
 		if(type==null)
 			return DataResult.error(()->"Allele '"+id+"' not present!");
 		return DataResult.success(type);
+	}
+	@Override
+	public Iterator<T> iterator() {
+		return alleleType.values().iterator();
 	}
 }

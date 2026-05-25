@@ -48,7 +48,11 @@ public class GeneRegistry {
 		public T getDefault() {
 			return defaultValueSupplier.get();
 		}
-
+		@Override
+		public String getLanguageKey() {
+			return id.toLanguageKey("gene");
+		}
+		
 		@Override
 		public void getReadableText(T allele, Consumer<Component> text) {
 			List<Component> tl=new ArrayList<>();
@@ -57,9 +61,10 @@ public class GeneRegistry {
 				return;
 			if(tl.size()==1) {
 				text.accept(Component.translatable(id.toLanguageKey("gene"), tl.get(0)));
+			}else {
+				text.accept(Component.translatable(id.toLanguageKey("gene"), ""));
+				tl.forEach(text::accept);
 			}
-			text.accept(Component.translatable(id.toLanguageKey("gene"), ""));
-			tl.forEach(text::accept);
 		}
 	}
 	private static Map<Identifier,GeneType<?>> geneticsMap=new HashMap<>();

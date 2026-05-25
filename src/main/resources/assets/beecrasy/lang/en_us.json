@@ -2,6 +2,8 @@
   "itemGroup.beecrasy": "Beecrasy",
   "splash.beecrasy.world_bee_day": "Crazy for the World Bee Day!",
   "allele.beecrasy.product.empty": "No Product",
+  "tooltip.beecrasy.possible_product":"Possible product: %s",
+  "tooltip.beecrasy.no_special_product":"No special product",
   "beecrasy.configuration.title": "Beecrasy Configs",
   "beecrasy.configuration.section.beecrasy.common.toml": "Beecrasy Configs",
   "beecrasy.configuration.section.beecrasy.common.toml.title": "Beecrasy Configs"

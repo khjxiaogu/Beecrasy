@@ -22,6 +22,7 @@ package com.khjxiaogu.beecrasy.genome;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -73,6 +74,21 @@ public class Genome implements AllelesHolder {
 		if(alle==null)
 			return type.getDefault();
 		return alle;
+	}
+	@Override
+	public int hashCode() {
+		return Objects.hash(alleles);
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Genome other = (Genome) obj;
+		return Objects.equals(alleles, other.alleles);
 	}
 	public Builder createBuilder() {
 		return new Builder(this);

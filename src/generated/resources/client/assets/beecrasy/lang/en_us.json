@@ -1,10 +1,4 @@
 {
-  "itemGroup.beecrasy": "蜂会",
-  "splash.beecrasy.world_bee_day": "520？世界蜜蜂日！",
-
-  "beecrasy.configuration.title": "蜂会 配置",
-  "tooltip.beecrasy.possible_product":"可能产物: %s",
-  "tooltip.beecrasy.no_special_product":"无特殊产物",
   "allele.beecrasy.biotope.craft": "Craft",
   "allele.beecrasy.biotope.creature": "Creature",
   "allele.beecrasy.biotope.smelt": "Smelt",
@@ -32,13 +26,11 @@
   "allele.beecrasy.yield.bumper": "Bumper",
   "allele.beecrasy.yield.meager": "Meager",
   "allele.beecrasy.yield.moderate": "Moderate",
-  "gene.beecrasy.biotope": "生境: %s",
-  "gene.beecrasy.fertility": "生育力: %s",
-  "gene.beecrasy.humidity": "湿度: %s",
-  "gene.beecrasy.lifespan": "寿命: %s",
-  "gene.beecrasy.product": "特殊产物: %s",
-  "gene.beecrasy.temperature": "温度: %s",
-  "gene.beecrasy.yield": "产量: %s",
-  "beecrasy.configuration.section.beecrasy.common.toml": "Beecrasy Configs",
-  "beecrasy.configuration.section.beecrasy.common.toml.title": "Beecrasy Configs"
+  "gene.beecrasy.biotope": "Biotope: %s",
+  "gene.beecrasy.fertility": "Fertility: %s",
+  "gene.beecrasy.humidity": "Humidity: %s",
+  "gene.beecrasy.lifespan": "Lifespan: %s",
+  "gene.beecrasy.product": "Product: %s",
+  "gene.beecrasy.temperature": "Temperature: %s",
+  "gene.beecrasy.yield": "Yield: %s"
 }

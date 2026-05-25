@@ -19,8 +19,10 @@
 
 package com.khjxiaogu.beecrasy.components;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.khjxiaogu.beecrasy.genome.AllelesHolder;
@@ -90,6 +92,27 @@ public class GenomeComponent implements Iterable<Genome>{
 	@Override
 	public Iterator<Genome> iterator() {
 		return List.of(genomes).iterator();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(genomes);
+		result = prime * result + Objects.hash(inspected);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GenomeComponent other = (GenomeComponent) obj;
+		return Arrays.equals(genomes, other.genomes) && inspected == other.inspected;
 	}
 
 }

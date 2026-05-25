@@ -37,5 +37,6 @@ public interface Gene<T>{
 
 	public default void getReadableText(AllelesHolder genome,Consumer<Component> text) {
 		getReadableText(genome.getAllele(this),text);
-	};
+	}
+	public String getLanguageKey();;
 }
