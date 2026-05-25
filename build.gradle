@@ -251,6 +251,7 @@ processResources{
 }
 task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
+	duplicatesStrategy = DuplicatesStrategy.WARN
     archiveClassifier.set('sources')
 }
 artifacts {
