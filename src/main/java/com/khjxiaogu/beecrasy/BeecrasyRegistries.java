@@ -34,6 +34,7 @@ import com.khjxiaogu.beecrasy.blocks.SequencerBlock;
 import com.khjxiaogu.beecrasy.blocks.SkepBlock;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
+import com.khjxiaogu.beecrasy.data.GenomePresets;
 import com.khjxiaogu.beecrasy.data.PressRecipe;
 import com.khjxiaogu.beecrasy.menu.PressMenu;
 import com.mojang.serialization.Codec;
@@ -118,10 +119,10 @@ public class BeecrasyRegistries {
 	    public static final DeferredBlock<Block> SKEP=register("skep",SkepBlock::new,Blocks::skepProps,UnaryOperator.identity());
 	    public static final DeferredBlock<Block> EMPTY_COMB_BLOCK=register("empty_comb_block");
 	    public static final DeferredBlock<Block> HONEY_COMB_BLOCK=register("honey_comb_block");
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_SMALL=register("bee_nest_small",BeeNestBlock::new,Blocks::skepProps,UnaryOperator.identity());
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_NASCENT=register("bee_nest_nascent",BeeNestBlock::new,Blocks::skepProps,UnaryOperator.identity());
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_MEDIUM=register("bee_nest_medium",BeeNestBlock::new,Blocks::skepProps,UnaryOperator.identity());
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_BIG=register("bee_nest_big",BeeNestBlock::new,Blocks::skepProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_SMALL=register("bee_nest_small",p->new BeeNestBlock(p,0,2),Blocks::skepProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_NASCENT=register("bee_nest_nascent",p->new BeeNestBlock(p,0,3),Blocks::skepProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_MEDIUM=register("bee_nest_medium",p->new BeeNestBlock(p,1,3),Blocks::skepProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_BIG=register("bee_nest_big",p->new BeeNestBlock(p,2,4),Blocks::skepProps,UnaryOperator.identity());
 	    
 	    
 	    
@@ -193,9 +194,13 @@ public class BeecrasyRegistries {
 			.create(Registries.RECIPE_SERIALIZER, Beecrasy.MODID);
 		public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister
 				.create(Registries.RECIPE_TYPE, Beecrasy.MODID);
+		
 		public static final DeferredHolder<RecipeType<?>, RecipeType<PressRecipe>> PRESS_TYPE=createType("press");
-
 		public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<PressRecipe>> PRESS_SERIALIZER=createSerializer("press",PressRecipe.CODEC,PressRecipe.STREAM_CODEC);
+		
+		public static final DeferredHolder<RecipeType<?>, RecipeType<GenomePresets>> GENOME_PRESET_TYPE=createType("genome_preset");
+		public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<GenomePresets>> GENOME_PRESET=createSerializer("genome_preset",GenomePresets.CODEC,GenomePresets.STREAM_CODEC);
+		
 		public static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> createType(String name) {
 			return RECIPE_TYPES.register(name,RecipeType::simple);
 		}

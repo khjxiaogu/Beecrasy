@@ -30,6 +30,7 @@ import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 import com.khjxiaogu.beecrasy.genome.gene.Temperature;
 import com.khjxiaogu.beecrasy.genome.mutation.MutationAppendSequence;
 import com.khjxiaogu.beecrasy.genome.mutation.MutationCrafting;
+import com.khjxiaogu.beecrasy.genome.mutation.MutationDecreaseSequence;
 import com.khjxiaogu.beecrasy.genome.mutation.MutationSmelting;
 import com.mojang.serialization.Codec;
 
@@ -66,10 +67,10 @@ public class Genes {
 		public static final Biotope CREATURE=BIOTOPE.registerAllele(new Biotope("creature"));
 		
 		public static final EnumAlleleType<NumericAllele> YIELD=new EnumAlleleType<>(Beecrasy.rl("yield"));
-		public static final NumericAllele MEAGER_YIELD=YIELD.registerAllele(new NumericAllele("meager",1));
-		public static final NumericAllele MODERATE_YIELD=YIELD.registerAllele(new NumericAllele("moderate",2));
-		public static final NumericAllele ABUNDANT_YIELD=YIELD.registerAllele(new NumericAllele("abundant",4));
-		public static final NumericAllele BUMPER_YIELD=YIELD.registerAllele(new NumericAllele("bumper",6));
+		public static final NumericAllele MEAGER_YIELD=YIELD.registerAllele(new NumericAllele("meager",.5f));
+		public static final NumericAllele MODERATE_YIELD=YIELD.registerAllele(new NumericAllele("moderate",1f));
+		public static final NumericAllele ABUNDANT_YIELD=YIELD.registerAllele(new NumericAllele("abundant",3f));
+		public static final NumericAllele BUMPER_YIELD=YIELD.registerAllele(new NumericAllele("bumper",5f));
 		
 		public static final EnumAlleleType<NumericAllele> FERTILITY=new EnumAlleleType<>(Beecrasy.rl("fertility"));
 		public static final NumericAllele POOR_FERTILITY=FERTILITY.registerAllele(new NumericAllele("poor",1));
@@ -84,7 +85,8 @@ public class Genes {
 		public static final NumericAllele EXCEPTIONAL_LIFESPAN=LIFESPAN.registerAllele(new NumericAllele("exceptional",4));
 	}
 	public static class Mutations{
-		public static final Mutation APPEND_SEQUENCE=MutationRegistry.register(Beecrasy.rl("append"),new MutationAppendSequence());
+		public static final Mutation APPEND_SEQUENCE=MutationRegistry.register(Beecrasy.rl("append"), new MutationAppendSequence());
+		public static final Mutation REMOVE_SEQUENCE=MutationRegistry.register(Beecrasy.rl("remove"), new MutationDecreaseSequence());
 		public static final Mutation CRAFTING=MutationRegistry.register(Beecrasy.rl("crafting"), new MutationCrafting());
 		public static final Mutation SMELTING=MutationRegistry.register(Beecrasy.rl("smelting"), new MutationSmelting());
 	}

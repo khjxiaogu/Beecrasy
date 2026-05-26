@@ -52,7 +52,7 @@ public class MutationCrafting implements Mutation{
 		boolean flag1=genome.maternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
 		boolean flag2=genome.paternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
 		if(!flag1&&!flag2)return false;
-		if(rnd.nextFloat()>.075f)return false;
+		if(rnd.nextFloat()>.05f)return false;
 		
 		if(flag1&&flag2) {
 			int r=rnd.nextInt(8);

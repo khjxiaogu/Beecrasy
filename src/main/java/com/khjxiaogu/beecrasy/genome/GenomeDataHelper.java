@@ -21,6 +21,7 @@ package com.khjxiaogu.beecrasy.genome;
 
 import java.util.List;
 
+import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
@@ -69,5 +70,8 @@ public final class GenomeDataHelper {
 			return getPhenoType(component);
 		}
 		return Genome.DEFAULT;
+	}
+	public static int getLifespanTicks(AllelesHolder allele) {
+		return (int) (allele.getAllele(Genes.LIFESPAN).getNumber()*BeecrasyConfig.SERVER.LIFESPAN.getAsInt());
 	}
 }

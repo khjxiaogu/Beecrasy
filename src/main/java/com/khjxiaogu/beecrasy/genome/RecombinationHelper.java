@@ -24,12 +24,8 @@ import java.util.function.BooleanSupplier;
 import net.minecraft.resources.Identifier;
 
 public class RecombinationHelper {
-	Genome[] genomes;
-	public RecombinationHelper(Genome[] genomeSet) {
-		genomes=genomeSet;
-	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static Genome.Builder makeHaploid(Genome[] genome,BooleanSupplier extractor) {
+	public static Genome.Builder makeHaploid(Genome[] genome,BooleanSupplier extractor) {
 		Genome.Builder b=genome[0].createBuilder();
 		for(Identifier i:GeneRegistry.getGeneTypes()) {
 			if(extractor.getAsBoolean()) {
@@ -40,11 +36,8 @@ public class RecombinationHelper {
 		return b;
 	}
 
-	public Genome.Builder getHaploid(BooleanSupplier extractor) {
-		return makeHaploid(genomes,extractor);
-	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public DiploidGenome getDiploid(Genome genome,BooleanSupplier extractor) {
+	public static DiploidGenome makeDiploid(Genome[] genomes,Genome genome,BooleanSupplier extractor) {
 		Genome.Builder mat=makeHaploid(genomes,extractor);
 		Genome.Builder par=genome.createBuilder();
 		for(Identifier i:GeneRegistry.getGeneTypes()) {

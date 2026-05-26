@@ -20,7 +20,6 @@
 package com.khjxiaogu.beecrasy.genome.gene;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;

@@ -19,7 +19,10 @@
 
 package com.khjxiaogu.beecrasy;
 
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 
 // An example config class. This is not required, but it's a good idea to have one to keep your config organized.
 // Demonstrates how to use Neo's config APIs
@@ -28,7 +31,7 @@ public class BeecrasyConfig {
 	public static void register() {
 		//ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.CLIENT, CLIENT_CONFIG);
 		//ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.COMMON, COMMON_CONFIG);
-		//ModLoadingContext.get().getActiveContainer().registerConfig(ModConfig.Type.SERVER, SERVER_CONFIG);
+		ModLoadingContext.get().getActiveContainer().registerConfig(Type.SERVER, SERVER_CONFIG);
 	}
 
 	public static class Client {
@@ -45,9 +48,11 @@ public class BeecrasyConfig {
 	}
 
 	public static class Server {
-
+		public final IntValue LIFESPAN;
 		Server(ModConfigSpec.Builder builder) {
-
+			builder.push("allele");
+			LIFESPAN=builder.defineInRange("averageLifespan", 12000, 20, Integer.MAX_VALUE);
+			builder.pop();
 		}
 	}
 

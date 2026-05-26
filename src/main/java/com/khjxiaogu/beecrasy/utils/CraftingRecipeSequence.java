@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -127,8 +126,8 @@ public class CraftingRecipeSequence {
 		}
 	}
 	
-	protected Map<Pair<Item,Item>, List<SequencedRecipe>> unorderedIndex=new HashMap<>(BuiltInRegistries.ITEM.size()*200);
-	protected List<SequencedRecipe> shortUnordered = new ArrayList<>(200);
+	protected HashMap<Pair<Item,Item>, List<SequencedRecipe>> unorderedIndex=new HashMap<>(BuiltInRegistries.ITEM.size()*200);
+	protected ArrayList<SequencedRecipe> shortUnordered = new ArrayList<>(2000);
 
 	public CraftingRecipeSequence() {
 	}
@@ -191,7 +190,7 @@ public class CraftingRecipeSequence {
     }
     public void bake() {
     	unorderedIndex=new HashMap<>(unorderedIndex);
-    	shortUnordered=new ArrayList<>(shortUnordered);
+    	shortUnordered.trimToSize();
     }
 
 	/**

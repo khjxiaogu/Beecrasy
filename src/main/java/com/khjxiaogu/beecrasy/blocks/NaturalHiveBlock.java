@@ -25,20 +25,12 @@ import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
-import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
-import com.khjxiaogu.beecrasy.genome.ProductHelper;
-import com.khjxiaogu.beecrasy.genome.ProductHelper.ProductWithCount;
-import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -52,40 +44,16 @@ import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.neoforged.neoforge.common.NeoForge;
 
-public class BeeNestBlock extends Block {
-	public static enum Facing implements StringRepresentable {
-		CEILING,
-		CORNER;
+public class NaturalHiveBlock extends Block{
 
-		@Override
-		public String getSerializedName() {
-			return name().toLowerCase();
-		}
-	}
-
-	public static final EnumProperty<Facing> BEE_NEST_FACING = EnumProperty.create("faces", Facing.class);
-	public static final BooleanProperty HAS_HONEY = BooleanProperty.create("honey");
-	protected final int combCountMin, combCountMax;
-
-	public BeeNestBlock(Properties properties, int combCountMin, int combCountMaxExclusive) {
+	public NaturalHiveBlock(Properties properties) {
 		super(properties);
-		this.registerDefaultState(
-			this.stateDefinition
-				.any()
-				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
-				.setValue(BEE_NEST_FACING, Facing.CEILING)
-				.setValue(HAS_HONEY, false));
-
-		this.combCountMin = combCountMin;
-		this.combCountMax = combCountMaxExclusive;
+		// TODO Auto-generated constructor stub
 	}
-
 	@Override
 	protected BlockState updateShape(
 		BlockState state,
@@ -96,17 +64,10 @@ public class BeeNestBlock extends Block {
 		BlockPos neighbourPos,
 		BlockState neighbourState,
 		RandomSource random) {
-		if (directionToNeighbour == Direction.UP)
+		if (directionToNeighbour == Direction.DOWN)
 			return isValidSupport(level, neighbourPos, neighbourState)
 				? state
 				: Blocks.AIR.defaultBlockState();
-		if (state.getValue(BEE_NEST_FACING) == Facing.CORNER) {
-			Direction facing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
-			if (directionToNeighbour == facing.getClockWise()) {
-				return getFacedState(level, pos, state);
-			}
-
-		}
 		return state;
 
 	}
@@ -128,50 +89,32 @@ public class BeeNestBlock extends Block {
 		ItemStack queen = Items.QUEEN_BEE.toStack();
 		GenomeDataHelper.setDiploidGenome(queen, genome, genome);
 		loot.add(queen);
-		List<ProductItem> product = genome.getAllele(Genes.PRODUCTS);
-		if (!product.isEmpty()) {
-			for (ProductWithCount i : ProductHelper.pickProduct(genome.getAllele(Genes.BIOTOPE), product, level.getRandom(), Mth.lerpInt(level.getRandom().nextFloat(), combCountMin, combCountMax))) {
-				loot.add(ProductHelper.createProductComb(i));
-			}
-		}
+
 		return loot;
 	}
 
 	@Override
 	protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
-		BlockPos above = pos.above();
-		return isValidSupport(level, above, level.getBlockState(above));
+		BlockPos below = pos.below();
+		return isValidSupport(level, below, level.getBlockState(below));
 	}
 
 	public static boolean isValidSupport(LevelReader level, BlockPos above, BlockState aboveState) {
-		return Block.isFaceFull(aboveState.getCollisionShape(level, above), Direction.DOWN);
+		return Block.isFaceFull(aboveState.getCollisionShape(level, above), Direction.UP);
 	}
 
 	@SuppressWarnings("resource")
 	@Override
 	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
 		BlockPos pos = context.getClickedPos();
-		BlockPos above = pos.above();
+		BlockPos below = pos.below();
 		Level level = context.getLevel();
-		if (isValidSupport(level, above, level.getBlockState(above))) {
+		if (isValidSupport(level, below, level.getBlockState(below))) {
 			Direction facing = context.getHorizontalDirection().getOpposite();
-			return getFacedState(level, pos, this.defaultBlockState()
-				.setValue(BlockStateProperties.HORIZONTAL_FACING, facing));
+			return this.defaultBlockState()
+				.setValue(BlockStateProperties.HORIZONTAL_FACING, facing);
 		}
 		return null;
-	}
-
-	public static BlockState getFacedState(LevelReader level, BlockPos pos, BlockState state) {
-		Direction nxtFacing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
-		for (int i = 0; i < 4; i++) {
-			BlockPos nxtPos = pos.relative(nxtFacing);
-
-			if (Block.isFaceFull(level.getBlockState(nxtPos).getCollisionShape(level, nxtPos), nxtFacing.getOpposite())) {
-				return state.setValue(BlockStateProperties.HORIZONTAL_FACING, nxtFacing.getCounterClockWise()).setValue(BEE_NEST_FACING, Facing.CORNER);
-			}
-			nxtFacing = nxtFacing.getCounterClockWise();
-		}
-		return state.setValue(BEE_NEST_FACING, Facing.CEILING);
 	}
 
 	@Override
@@ -188,7 +131,5 @@ public class BeeNestBlock extends Block {
 	protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
 		builder.add(BlockStateProperties.HORIZONTAL_FACING);
-		builder.add(BEE_NEST_FACING);
-		builder.add(HAS_HONEY);
 	}
 }

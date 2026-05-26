@@ -22,8 +22,10 @@ package com.khjxiaogu.beecrasy.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 import net.minecraft.util.RandomSource;
@@ -92,4 +94,27 @@ public final class BeecrasyMath {
        }
        return false;
    }
+   public static <T> int countCommonElements(List<T> list1, List<T> list2) {
+       if (list1 == null || list2 == null) {
+           return 0;
+       }
+
+       // 使用 HashMap 统计 list1 中每个元素的出现次数
+       Map<T, Integer> freqMap = new HashMap<>();
+       for (T element : list1) {
+           freqMap.put(element, freqMap.getOrDefault(element, 0) + 1);
+       }
+
+       int commonCount = 0;
+       // 遍历 list2，匹配可用的元素
+       for (T element : list2) {
+           Integer count = freqMap.get(element);
+           if (count != null && count > 0) {
+               commonCount++;
+               freqMap.put(element, count - 1);
+           }
+       }
+       return commonCount;
+   }
+
 }

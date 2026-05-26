@@ -30,29 +30,48 @@ import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 
 import net.minecraft.util.RandomSource;
 
-public class MutationAppendSequence implements Mutation {
+public class MutationDecreaseSequence implements Mutation {
 
-	public MutationAppendSequence() {
+	public MutationDecreaseSequence() {
 	}
 
 	@Override
 	public boolean mutate(BeeHiveParameters params,DiploidGenome genome,RandomSource rnd) {
 		if(genome.maternal().get(Genes.BIOTOPE)==genome.paternal().get(Genes.BIOTOPE)) {
-			if(rnd.nextFloat()<.05f) {
-				List<ProductItem> matSeqOriginal=genome.maternal().get(Genes.PRODUCTS);
-				List<ProductItem> parSeqOriginal=genome.paternal().get(Genes.PRODUCTS);
-				List<ProductItem> matSeq=new ArrayList<>(matSeqOriginal);
-				List<ProductItem> parSeq=new ArrayList<>(parSeqOriginal);
-				parSeq.addAll(matSeqOriginal);
-				matSeq.addAll(parSeqOriginal);
-				while(parSeq.size()>9)
-					parSeq.remove(parSeq.size()-1);
-				while(matSeq.size()>9)
+
+			List<ProductItem> matSeqOriginal=genome.maternal().get(Genes.PRODUCTS);
+			List<ProductItem> parSeqOriginal=genome.paternal().get(Genes.PRODUCTS);
+			boolean flag1=matSeqOriginal.size()>1;
+			boolean flag2=parSeqOriginal.size()>1;
+			
+			if(!flag1&&!flag2)return false;
+			if(rnd.nextFloat()>.05f)return false;
+			
+			if(flag1&&flag2) {
+				ArrayList<ProductItem> matSeq=new ArrayList<>(matSeqOriginal);
+				ArrayList<ProductItem> parSeq=new ArrayList<>(parSeqOriginal);
+				int r=rnd.nextInt(8);
+				if (r < 3) {
 					matSeq.remove(matSeq.size()-1);
+	            } else if (r < 6) {
+	            	parSeq.remove(parSeq.size()-1);
+	            } else {
+	            	matSeq.remove(matSeq.size()-1);
+	            	parSeq.remove(parSeq.size()-1);
+	            }
 				genome.maternal().add(Genes.PRODUCTS, matSeq);
 				genome.paternal().add(Genes.PRODUCTS, parSeq);
-				return true;
+				
+			}else if(flag1) {
+				ArrayList<ProductItem> matSeq=new ArrayList<>(matSeqOriginal);
+            	matSeq.remove(matSeq.size()-1);
+				genome.maternal().add(Genes.PRODUCTS, matSeq);
+			}else if(flag2) {
+				ArrayList<ProductItem> parSeq=new ArrayList<>(parSeqOriginal);
+				parSeq.remove(parSeq.size()-1);
+				genome.paternal().add(Genes.PRODUCTS, parSeq);
 			}
+			return true;
 		}
 		return false;
 	}
