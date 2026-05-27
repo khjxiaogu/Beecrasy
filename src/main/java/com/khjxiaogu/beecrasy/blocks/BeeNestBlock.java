@@ -42,6 +42,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
@@ -56,6 +57,8 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.NeoForge;
 
 public class BeeNestBlock extends Block {
@@ -85,7 +88,7 @@ public class BeeNestBlock extends Block {
 		this.combCountMin = combCountMin;
 		this.combCountMax = combCountMaxExclusive;
 	}
-
+	public static final VoxelShape shape=Block.box(3, 3, 3, 13, 16, 13);
 	@Override
 	protected BlockState updateShape(
 		BlockState state,
@@ -159,6 +162,11 @@ public class BeeNestBlock extends Block {
 				.setValue(BlockStateProperties.HORIZONTAL_FACING, facing));
 		}
 		return null;
+	}
+
+	@Override
+	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+		return shape;
 	}
 
 	public static BlockState getFacedState(LevelReader level, BlockPos pos, BlockState state) {

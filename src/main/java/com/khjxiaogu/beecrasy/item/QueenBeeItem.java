@@ -26,6 +26,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class QueenBeeItem extends Item {
@@ -43,7 +44,7 @@ public class QueenBeeItem extends Item {
 				if(entity.level().getBlockState(pos).canBeReplaced()) {
 					BlockState state=Blocks.NATURAL_HIVE.get().defaultBlockState();
 					if(state.canSurvive(entity.level(), pos)) {
-						entity.level().setBlock(pos, state, 260);
+						entity.level().setBlock(pos, state, Block.UPDATE_ALL_IMMEDIATE);
 						if(entity.level().getBlockEntity(pos) instanceof NaturalHiveBlockEntity be) {
 							be.setQueen(stack.split(1));
 							return true;

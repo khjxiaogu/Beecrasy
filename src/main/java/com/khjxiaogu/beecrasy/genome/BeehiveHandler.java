@@ -154,8 +154,7 @@ public class BeehiveHandler implements ValueIOSerializable,ContainerData{
 				break;
 			if(hi.isEmpty()) {
 				HiveSlotPriority queen=queens.poll();
-				ItemStack queenStack=Items.QUEEN_BEE.toStack();
-				queenStack.applyComponents(queen.slot().getItem().getComponentsPatch());
+				ItemStack queenStack=queen.slot().getItem().transmuteCopy(Items.QUEEN_BEE);
 				hi.setItem(queenStack);
 			}
 		}
