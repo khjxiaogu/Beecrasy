@@ -181,7 +181,6 @@ public class BeehiveHandler implements ValueIOSerializable,ContainerData{
 				hi.setItem(stack);
 			}
 		}
-		fillDrone(params);
 	}
 	public void fillDrone(BeeHiveParameters params) {
 		if(droneCount<=0)
