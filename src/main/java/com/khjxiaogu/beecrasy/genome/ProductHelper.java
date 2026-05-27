@@ -34,11 +34,7 @@ import net.minecraft.world.item.ItemStack;
 public class ProductHelper {
 	public static record ProductWithCount(ProductItem product,int count) {}
 	public static List<ProductWithCount> pickProduct(Biotope biotope,Collection<ProductItem> product,RandomSource rand,int count) {
-		List<ProductItem> products=new ArrayList<>(product.size());
-		for(ProductItem pi:products) {
-			if(pi.biotope()==biotope)
-				products.add(pi);
-		}
+		List<ProductItem> products=filterProduct(biotope,product);
 		if(products.size()==0)
 			return List.of();
 		if(products.size()==1) {
@@ -55,6 +51,24 @@ public class ProductHelper {
 			}
 		}
 		return out;
+	}
+	public static ProductWithCount pickSingleProduct(Biotope biotope,Collection<ProductItem> product,RandomSource rand,int count) {
+		List<ProductItem> products=filterProduct(biotope,product);
+		if(products.size()==0)
+			return null;
+		if(products.size()==1) {
+			return new ProductWithCount(products.get(0),count);
+		}
+		return new ProductWithCount(products.get(rand.nextInt(products.size())),count);
+		
+	}
+	public static List<ProductItem> filterProduct(Biotope biotope,Collection<ProductItem> product) {
+		List<ProductItem> products=new ArrayList<>(product.size());
+		for(ProductItem pi:products) {
+			if(pi.biotope()==biotope)
+				products.add(pi);
+		}
+		return products;
 	}
 	public static ItemStack createProductComb(ProductWithCount product) {
 		ItemStack is=Items.PRODUCT_COMB.toStack(product.count());

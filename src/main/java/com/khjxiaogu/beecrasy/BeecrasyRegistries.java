@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableSet;
 import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
+import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlock;
+import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.PressBlock;
 import com.khjxiaogu.beecrasy.blocks.PressBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.SequencerBlock;
@@ -36,6 +38,7 @@ import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
 import com.khjxiaogu.beecrasy.data.GenomePresets;
 import com.khjxiaogu.beecrasy.data.PressRecipe;
+import com.khjxiaogu.beecrasy.item.QueenBeeItem;
 import com.khjxiaogu.beecrasy.menu.PressMenu;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -99,7 +102,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> DRONE=ITEMS.registerSimpleItem("drone",t->t.component(Components.GENOME, GenomeComponent.HAPLOID_EMPTY.asInspected()));
 	    public static final DeferredItem<Item> LARVA=ITEMS.registerSimpleItem("larva",t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY.asInspected()));
 	    public static final DeferredItem<Item> PRODUCT_COMB=ITEMS.registerSimpleItem("product_comb");
-	    public static final DeferredItem<Item> QUEEN_BEE=ITEMS.registerSimpleItem("queen_bee",t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY.asInspected()));
+	    public static final DeferredItem<Item> QUEEN_BEE=ITEMS.registerItem("queen_bee",QueenBeeItem::new,t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY.asInspected()));
 	    //工具
 	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerSimpleItem("handheld_sequencer");
 	    public static final DeferredItem<Item> BUTTERFLY_NET=ITEMS.registerSimpleItem("butterfly_net",s->s.tool(ToolMaterial.WOOD,Tags.MINABLE_NET, 1.0f, -2.8f, 0));
@@ -119,15 +122,17 @@ public class BeecrasyRegistries {
 	    public static final DeferredBlock<Block> SKEP=register("skep",SkepBlock::new,Blocks::skepProps,UnaryOperator.identity());
 	    public static final DeferredBlock<Block> EMPTY_COMB_BLOCK=register("empty_comb_block");
 	    public static final DeferredBlock<Block> HONEY_COMB_BLOCK=register("honey_comb_block");
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_SMALL=register("bee_nest_small",p->new BeeNestBlock(p,0,2),Blocks::skepProps,UnaryOperator.identity());
 	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_NASCENT=register("bee_nest_nascent",p->new BeeNestBlock(p,0,3),Blocks::skepProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_SMALL=register("bee_nest_small",p->new BeeNestBlock(p,0,2),Blocks::skepProps,UnaryOperator.identity());
 	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_MEDIUM=register("bee_nest_medium",p->new BeeNestBlock(p,1,3),Blocks::skepProps,UnaryOperator.identity());
 	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_BIG=register("bee_nest_big",p->new BeeNestBlock(p,2,4),Blocks::skepProps,UnaryOperator.identity());
+	    public static final DeferredBlock<NaturalHiveBlock> NATURAL_HIVE=register("natural_hive",NaturalHiveBlock::new,Blocks::skepProps,UnaryOperator.identity());
 	    
 	    
 	    
 	    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Beecrasy.MODID);
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PressBlockEntity>> PRESS_BLOCKENTITY=BLOCK_ENTITIES.register("honey_press", makeBlockEntityType(PressBlockEntity::new, HONEY_PRESS));
+	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NaturalHiveBlockEntity>> NATURAL_HIVE_BLOCKENTITY=BLOCK_ENTITIES.register("natural_hive",makeBlockEntityType(NaturalHiveBlockEntity::new, NATURAL_HIVE));
 	    
 	    public static DeferredBlock<Block> register(String name){
 	    	return register(name,Block::new,Blocks::genalDeco,UnaryOperator.identity());

@@ -19,10 +19,10 @@
 
 package com.khjxiaogu.beecrasy.genome;
 
-import com.khjxiaogu.beecrasy.components.GenomeComponent;
+import net.minecraft.world.item.ItemStack;
 
-public record DiploidGenome(Genome.Builder maternal,Genome.Builder paternal) {
-	public GenomeComponent toComponent() {
-		return new GenomeComponent(false,maternal.build(),paternal.build());
-	}
+public interface HiveSlot {
+	public ItemStack getItem();
+	public void setItem(ItemStack stack);
+	public boolean isEmpty();
 }

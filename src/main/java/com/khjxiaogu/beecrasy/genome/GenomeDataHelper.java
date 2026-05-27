@@ -45,7 +45,7 @@ public final class GenomeDataHelper {
 		if(!products.isEmpty()) {
 			stack.set(Components.TINT_STACK, products.get(0).stack().create());
 		}
-		stack.set(Components.GENOME, new GenomeComponent(false,genome.maternal().build(),genome.paternal().build()));
+		stack.set(Components.GENOME, genome.toComponent());
 	}
 	public static void setDiploidGenome(MutableDataComponentHolder stack,Genome genome1,Genome genome2) {
 		List<ProductItem> products=genome1.getAllele(Genes.PRODUCTS);
@@ -61,10 +61,25 @@ public final class GenomeDataHelper {
 			
 		}
 	}
-	public static AllelesHolder getPhenoType(GenomeComponent component) {
+	public static Genome getPhenoType(GenomeComponent component) {
 		return component.getGenome(0);
 	}
-	public static AllelesHolder getPhenoType(MutableDataComponentHolder stack) {
+	public static Genome[] getAsDiploid(GenomeComponent component) {
+		if(component.size()<=0)
+			return new Genome[] {Genome.DEFAULT,Genome.DEFAULT};
+		if(component.size()==1)
+			return new Genome[] {component.getGenome(0),component.getGenome(0)};
+
+		return new Genome[] {component.getGenome(0),component.getGenome(1)};
+	}
+	public static Genome[] getAsDiploid(MutableDataComponentHolder stack) {
+		GenomeComponent component=stack.get(Components.GENOME);
+		if(component!=null) {
+			return getAsDiploid(component);
+		}
+		return new Genome[] {Genome.DEFAULT,Genome.DEFAULT};
+	}
+	public static Genome getPhenoType(MutableDataComponentHolder stack) {
 		GenomeComponent component=stack.get(Components.GENOME);
 		if(component!=null) {
 			return getPhenoType(component);

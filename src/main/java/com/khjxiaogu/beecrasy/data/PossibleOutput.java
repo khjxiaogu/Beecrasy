@@ -19,13 +19,13 @@
 
 package com.khjxiaogu.beecrasy.data;
 
+import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -42,9 +42,7 @@ public record PossibleOutput(ItemStackTemplate stack,float chance) {
 		PossibleOutput::new
 		);
 	public ItemStack createOutput(RandomSource rnd) {
-		int count=Mth.floor(chance);
-		if(rnd.nextFloat()<Mth.frac(chance))
-			count++;
+		int count=BeecrasyMath.getRandomRate(chance, rnd);
 		if(count>0) {
 			count*=stack.count();
 			ItemStack ret=stack.create();

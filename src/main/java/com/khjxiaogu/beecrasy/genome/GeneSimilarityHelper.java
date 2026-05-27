@@ -26,10 +26,10 @@ import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 
 public class GeneSimilarityHelper {
-	public static long checkSimilarityPoint(Genome[] template,Genome[] subject) {
+	public static <T extends AllelesHolder> long checkSimilarityPoint(T[] template,T[] subject) {
 		return (checkSimilarityPoint(template[0],subject[0])<<32)+checkSimilarityPoint(template[1],subject[1]);
 	}
-	public static long checkSimilarityPoint(Genome template,Genome subject) {
+	public static long checkSimilarityPoint(AllelesHolder template,AllelesHolder subject) {
 		int point=0;
 		List<ProductItem> tproduct=template.getAllele(Genes.PRODUCTS);
 		List<ProductItem> sproduct=subject.getAllele(Genes.PRODUCTS);

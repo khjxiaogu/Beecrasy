@@ -19,9 +19,14 @@
 
 package com.khjxiaogu.beecrasy.item;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlockEntity;
+
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class QueenBeeItem extends Item {
 
@@ -29,14 +34,25 @@ public class QueenBeeItem extends Item {
 		super(properties);
 	}
 
-	/*@Override
+	@Override
 	public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
 		boolean updated = super.onEntityItemUpdate(stack, entity);
 		if(entity.getAge()>200) {
 			if(entity.onGround()) {
-				
+				BlockPos pos=entity.getOnPos().above();
+				if(entity.level().getBlockState(pos).canBeReplaced()) {
+					BlockState state=Blocks.NATURAL_HIVE.get().defaultBlockState();
+					if(state.canSurvive(entity.level(), pos)) {
+						entity.level().setBlock(pos, state, 260);
+						if(entity.level().getBlockEntity(pos) instanceof NaturalHiveBlockEntity be) {
+							be.setQueen(stack.split(1));
+							return true;
+						}
+					}
+				}
 			}
 		}
-	}*/
+		return false;
+	}
 
 }

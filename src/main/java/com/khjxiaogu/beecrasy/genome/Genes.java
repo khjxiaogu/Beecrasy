@@ -91,7 +91,7 @@ public class Genes {
 		public static final Mutation SMELTING=MutationRegistry.register(Beecrasy.rl("smelting"), new MutationSmelting());
 	}
 	public static final Gene<Temperature> TEMPERATURE=GeneRegistry.register(Alleles.TEMPERATURE, ()->Alleles.MODERATE_TEMPERATURE, 100);
-	public static final Gene<Humidity> HUMIDITY=GeneRegistry.register(Alleles.HUMIDITY, ()->null, 200);
+	public static final Gene<Humidity> HUMIDITY=GeneRegistry.register(Alleles.HUMIDITY, ()->Alleles.MODERATE_HUMIDITY, 200);
 	public static final Gene<NumericAllele> FERTILITY=GeneRegistry.register(Alleles.FERTILITY, ()->Alleles.MODERATE_FERTILITY, 300);
 	public static final Gene<Biotope> BIOTOPE=GeneRegistry.register(Alleles.BIOTOPE, ()->Alleles.WILD, 400);
 	public static final Gene<List<ProductItem>> PRODUCTS=GeneRegistry.register(Beecrasy.rl("product"),

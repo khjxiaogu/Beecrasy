@@ -123,7 +123,14 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 					).with(ROTATION_HORIZONTAL_FACING));
 			blockItemModel(modBlock("bee_nest_"+s), Beecrasy.rl("bee_nest_with_honey_ceiling_"+s));
 		}
- 
+		this.blockStateOutput.accept(
+			this.getVariantBuilder(Blocks.NATURAL_HIVE.get()).with(PropertyDispatch.initial(BlockStateProperties.AGE_2)
+					.select(0, bmf("bee_nest_ceiling_nascent").with(X_ROT_180))
+					.select(1, bmf("bee_nest_ceiling_small").with(X_ROT_180))
+					.select(2, bmf("bee_nest_with_honey_ceiling_small").with(X_ROT_180))
+			).with(ROTATION_HORIZONTAL_FACING));
+		blockItemModel(Blocks.NATURAL_HIVE.get(), Beecrasy.rl("bee_nest_ceiling_small"));
+		
 	}
 
 	protected Empty getVariantBuilder(Block blk) {

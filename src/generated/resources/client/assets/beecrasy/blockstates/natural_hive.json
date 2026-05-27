@@ -1,0 +1,61 @@
+{
+  "variants": {
+    "age=0,facing=east": {
+      "model": "beecrasy:block/bee_nest_ceiling_nascent",
+      "x": 180,
+      "y": 90
+    },
+    "age=0,facing=north": {
+      "model": "beecrasy:block/bee_nest_ceiling_nascent",
+      "x": 180
+    },
+    "age=0,facing=south": {
+      "model": "beecrasy:block/bee_nest_ceiling_nascent",
+      "x": 180,
+      "y": 180
+    },
+    "age=0,facing=west": {
+      "model": "beecrasy:block/bee_nest_ceiling_nascent",
+      "x": 180,
+      "y": 270
+    },
+    "age=1,facing=east": {
+      "model": "beecrasy:block/bee_nest_ceiling_small",
+      "x": 180,
+      "y": 90
+    },
+    "age=1,facing=north": {
+      "model": "beecrasy:block/bee_nest_ceiling_small",
+      "x": 180
+    },
+    "age=1,facing=south": {
+      "model": "beecrasy:block/bee_nest_ceiling_small",
+      "x": 180,
+      "y": 180
+    },
+    "age=1,facing=west": {
+      "model": "beecrasy:block/bee_nest_ceiling_small",
+      "x": 180,
+      "y": 270
+    },
+    "age=2,facing=east": {
+      "model": "beecrasy:block/bee_nest_with_honey_ceiling_small",
+      "x": 180,
+      "y": 90
+    },
+    "age=2,facing=north": {
+      "model": "beecrasy:block/bee_nest_with_honey_ceiling_small",
+      "x": 180
+    },
+    "age=2,facing=south": {
+      "model": "beecrasy:block/bee_nest_with_honey_ceiling_small",
+      "x": 180,
+      "y": 180
+    },
+    "age=2,facing=west": {
+      "model": "beecrasy:block/bee_nest_with_honey_ceiling_small",
+      "x": 180,
+      "y": 270
+    }
+  }
+}

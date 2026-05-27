@@ -25,6 +25,7 @@ import java.util.function.BiConsumer;
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -51,11 +52,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockEntity>{
 
@@ -143,10 +148,20 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
     }
 
     @Override
-	protected List<ItemStack> getDrops(BlockState state, net.minecraft.world.level.storage.loot.LootParams.Builder params) {
-		
-		return super.getDrops(state, params);
+	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+    	List<ItemStack> list=super.getDrops(state, params);
+		if (params.getParameter(LootContextParams.BLOCK_ENTITY) instanceof PressBlockEntity press) {
+			ItemStacksResourceHandler inv=press.getInternInv();
+			for (int i = 0; i < inv.size(); i++) {
+				ItemResource is = inv.getResource(i);
+				if (!is.isEmpty()) {
+					list.add(is.toStack(inv.getAmountAsInt(i)));
+				}
+			}
+		}
+		return list;
 	}
+
 
 	@Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {

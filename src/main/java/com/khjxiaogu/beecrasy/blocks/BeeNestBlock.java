@@ -115,7 +115,7 @@ public class BeeNestBlock extends Block {
 	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
 		BlockPos pos = BlockPos.containing(params.getParameter(LootContextParams.ORIGIN));
 		ServerLevel level = params.getLevel();
-		NaturalBeeGenomeGenerateEvent event = new NaturalBeeGenomeGenerateEvent(level, pos, level.getBiome(pos), state, Genome.builder());
+		NaturalBeeGenomeGenerateEvent event = new NaturalBeeGenomeGenerateEvent(level, pos, state, Genome.builder());
 		NeoForge.EVENT_BUS.post(event);
 		List<ItemStack> loot = super.getDrops(state, params);
 		Genome genome = event.genome.build();

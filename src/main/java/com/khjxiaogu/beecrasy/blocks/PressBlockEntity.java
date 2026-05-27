@@ -86,7 +86,7 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 		if(recipe!=null&&recipe.id().identifier().equals(id)) {
 			try(Transaction trans=Transaction.openRoot()){
 				int inputCount=recipe.value().input().count();
-				if(internInv.extract(internInv.getResource(0), inputCount, trans)!=inputCount) {
+				if(getInternInv().extract(getInternInv().getResource(0), inputCount, trans)!=inputCount) {
 					return RecipeHandleStatus.FAILED;
 				}
 				if(recipe.value().fluid().isPresent()) {
@@ -97,9 +97,9 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 				for(ItemStack is:recipe.value().getOutputs(input)) {
 					ItemResource resource=ItemResource.of(is);
 					int reminder=is.count();
-			        int size = internInv.size();
+			        int size = getInternInv().size();
 			        for (int index = 0; index < size; index++) {
-			        	reminder -= internInv.insert(index, resource, reminder, trans);
+			        	reminder -= getInternInv().insert(index, resource, reminder, trans);
 			            if (reminder<=0) break;
 			        }
 			        if (reminder>0) 
@@ -115,7 +115,7 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 		super(Blocks.PRESS_BLOCKENTITY.get(), pWorldPosition, pBlockState);
 	}
 	public RandomizableRecipeInput getInput() {
-		return new RandomizableRecipeInput(new SingleRecipeInput(internInv.getResource(0).toStack(internInv.getAmountAsInt(0))),level.getRandom());
+		return new RandomizableRecipeInput(new SingleRecipeInput(getInternInv().getResource(0).toStack(getInternInv().getAmountAsInt(0))),level.getRandom());
 	}
 	public RecipeHolder<PressRecipe> getRecipe(RandomizableRecipeInput input){
 		if(this.level.recipeAccess() instanceof RecipeManager manager)
@@ -125,7 +125,7 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 	@Override
 	public void readCustomNBT(ValueInput nbt, boolean isClient) {
 		if(!isClient) {
-			internInv.deserialize(nbt.childOrEmpty("inventory"));
+			getInternInv().deserialize(nbt.childOrEmpty("inventory"));
 			tank.deserialize(nbt.childOrEmpty("tank"));
 			getRecipeHandler().readCustomNBT(nbt, isClient);
 		}else {
@@ -141,7 +141,7 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 	@Override
 	public void writeCustomNBT(ValueOutput nbt, boolean isClient) {
 		if(!isClient) {
-			internInv.serialize(nbt.child("inventory"));
+			getInternInv().serialize(nbt.child("inventory"));
 			tank.serialize(nbt.child("tank"));
 			getRecipeHandler().writeCustomNBT(nbt, isClient);
 		}else {
@@ -195,6 +195,9 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 	@Override
 	public Component getDisplayName() {
 		return Component.translatable("block.beecrasy.honey_press");
+	}
+	public ItemStacksResourceHandler getInternInv() {
+		return internInv;
 	}
 
 }

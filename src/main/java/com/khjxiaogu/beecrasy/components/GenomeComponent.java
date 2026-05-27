@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.khjxiaogu.beecrasy.genome.AllelesHolder;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -97,7 +96,7 @@ public class GenomeComponent implements Iterable<Genome>{
 	public int size() {
 		return genomes.length;
 	}
-	public AllelesHolder getGenome(int index) {
+	public Genome getGenome(int index) {
 		return genomes[index];
 	}
 

@@ -119,7 +119,7 @@ runs {
     	modSource project.sourceSets.client
         // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
         systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-        jvmArgument '-Xmx2048m'
+        jvmArgument '-Xmx1024m'
     }
 
     server {

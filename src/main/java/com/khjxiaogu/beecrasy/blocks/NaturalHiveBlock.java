@@ -23,15 +23,12 @@ import java.util.List;
 
 import org.jspecify.annotations.Nullable;
 
-import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
-import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
-import com.khjxiaogu.beecrasy.genome.Genome;
-import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries;
+import com.khjxiaogu.beecrasy.genome.slot.StacksHiveSlot;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -41,18 +38,23 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
-public class NaturalHiveBlock extends Block{
+public class NaturalHiveBlock extends Block implements BeecrasyEntityBlock<NaturalHiveBlockEntity>{
 
 	public NaturalHiveBlock(Properties properties) {
 		super(properties);
-		// TODO Auto-generated constructor stub
+		this.registerDefaultState(
+			this.stateDefinition
+				.any()
+				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
+				.setValue(BlockStateProperties.AGE_2, 0));
 	}
 	@Override
 	protected BlockState updateShape(
@@ -72,25 +74,25 @@ public class NaturalHiveBlock extends Block{
 
 	}
 
-	@Override
+    @Override
 	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-		BlockPos pos = BlockPos.containing(params.getParameter(LootContextParams.ORIGIN));
-		ServerLevel level = params.getLevel();
-		NaturalBeeGenomeGenerateEvent event = new NaturalBeeGenomeGenerateEvent(level, pos, level.getBiome(pos), state, Genome.builder());
-		NeoForge.EVENT_BUS.post(event);
-		List<ItemStack> loot = super.getDrops(state, params);
-		Genome genome = event.genome.build();
-		@Nullable ItemInstance tool=params.getOptionalParameter(LootContextParams.TOOL);
-		if(tool!=null&&tool.count()>0) {
-			ItemStack drone = Items.DRONE.toStack(2);
-			GenomeDataHelper.setHaploidGenome(drone, genome);
-			loot.add(drone);
+    	List<ItemStack> list=super.getDrops(state, params);
+		if (params.getParameter(LootContextParams.BLOCK_ENTITY) instanceof NaturalHiveBlockEntity hive) {
+			if(hive.isGrowthStarted&&!hive.hiveInfo.isWorking()) {
+				for(StacksHiveSlot slot:hive.queenSlot) {
+					list.add(slot.getItem().copy());
+				}
+				for(StacksHiveSlot slot:hive.combSlot) {
+					list.add(slot.getItem().copy());
+				}
+				for(StacksHiveSlot slot:hive.droneSlot) {
+					list.add(slot.getItem().copy());
+				}
+			}else {
+				list.add(hive.queen.copy());
+			}
 		}
-		ItemStack queen = Items.QUEEN_BEE.toStack();
-		GenomeDataHelper.setDiploidGenome(queen, genome, genome);
-		loot.add(queen);
-
-		return loot;
+		return list;
 	}
 
 	@Override
@@ -131,5 +133,10 @@ public class NaturalHiveBlock extends Block{
 	protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
 		builder.add(BlockStateProperties.HORIZONTAL_FACING);
+		builder.add(BlockStateProperties.AGE_2);
+	}
+	@Override
+	public DeferredHolder<BlockEntityType<?>, BlockEntityType<NaturalHiveBlockEntity>> getBlock() {
+		return BeecrasyRegistries.Blocks.NATURAL_HIVE_BLOCKENTITY;
 	}
 }

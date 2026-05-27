@@ -19,38 +19,87 @@
 
 package com.khjxiaogu.beecrasy.blocks;
 
-import com.khjxiaogu.beecrasy.genome.RecombinationHelper;
+import java.util.List;
+import java.util.Set;
+
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
+import com.khjxiaogu.beecrasy.components.GenomeComponent;
+import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
+import com.khjxiaogu.beecrasy.genome.BeeHiveParameters;
+import com.khjxiaogu.beecrasy.genome.BeehiveHandler;
+import com.khjxiaogu.beecrasy.genome.Genome;
+import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
+import com.khjxiaogu.beecrasy.genome.slot.StacksHiveSlot;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.NeoForge;
 
 public class NaturalHiveBlockEntity extends BeecrasyBlockEntity{
-	RecombinationHelper hiveInfo;
-	ItemStack queen;
-	public NaturalHiveBlockEntity(BlockEntityType<?> pType, BlockPos pWorldPosition, BlockState pBlockState) {
-		super(pType, pWorldPosition, pBlockState);
+	BeehiveHandler hiveInfo;
+	ItemStack queen=ItemStack.EMPTY;
+	List<StacksHiveSlot> queenSlot=StacksHiveSlot.createSlots(1);
+	List<StacksHiveSlot> combSlot=StacksHiveSlot.createSlots(2);
+	List<StacksHiveSlot> droneSlot=StacksHiveSlot.createSlots(2);
+	boolean isGrowthStarted=false;
+	public NaturalHiveBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
+		super(Blocks.NATURAL_HIVE_BLOCKENTITY.get(), pWorldPosition, pBlockState);
+		hiveInfo=new BeehiveHandler(queenSlot, droneSlot, combSlot);
 	}
-
+	public void beginGrowth(ServerLevel level,BeeHiveParameters param) {
+		if(isGrowthStarted)return;
+		GenomeComponent comp=queen.get(Components.GENOME);
+		if(comp!=null) {
+			NaturalBeeGenomeGenerateEvent event = new NaturalBeeGenomeGenerateEvent(level, this.worldPosition, getBlockState(), Genome.builder());
+			NeoForge.EVENT_BUS.post(event);
+			hiveInfo.beginWork(param, GenomeDataHelper.getAsDiploid(comp), List.of(event.genome.build()));
+			isGrowthStarted=true;
+		}
+	}
+	
+	public void setQueen(ItemStack queen) {
+		this.queen = queen;
+	}
 	@Override
 	public void readCustomNBT(ValueInput nbt, boolean isClient) {
-		// TODO Auto-generated method stub
-		
+		StacksHiveSlot.deserialize(queenSlot, nbt.childrenListOrEmpty("queen"));
+		StacksHiveSlot.deserialize(combSlot, nbt.childrenListOrEmpty("comb"));
+		StacksHiveSlot.deserialize(droneSlot, nbt.childrenListOrEmpty("drone"));
+		nbt.readChild("hiveInfo", hiveInfo);
+		isGrowthStarted=nbt.getBooleanOr("growthStarted", false);
+		queen=nbt.read("queenItem", ItemStack.CODEC).orElse(ItemStack.EMPTY);
 	}
 
 	@Override
 	public void writeCustomNBT(ValueOutput nbt, boolean isClient) {
-		// TODO Auto-generated method stub
-		
+		StacksHiveSlot.serialize(queenSlot, nbt.childrenList("queen"));
+		StacksHiveSlot.serialize(combSlot, nbt.childrenList("comb"));
+		StacksHiveSlot.serialize(droneSlot, nbt.childrenList("drone"));
+		nbt.putChild("hiveInfo", hiveInfo);
+		nbt.putBoolean("growthStarted", isGrowthStarted);
+		nbt.store("queenItem", ItemStack.CODEC, queen);
 	}
 
 	@Override
 	public void tick() {
-		// TODO Auto-generated method stub
-		
+		if(level instanceof ServerLevel serverLevel) {
+			BeeHiveParameters params=new BeeHiveParameters(serverLevel,worldPosition,Set.of());
+			beginGrowth(serverLevel,params);
+			hiveInfo.tick(params);
+			int oldstate=this.getBlockState().getValue(BlockStateProperties.AGE_2);
+			int newstate=hiveInfo.isWorking()?(hiveInfo.getProcess()<hiveInfo.getProcessMax()/2?1:0):2;
+			if(oldstate!=newstate) {
+				BlockState nextstate=getBlockState().setValue(BlockStateProperties.AGE_2, newstate);
+				this.level.setBlockAndUpdate(worldPosition, nextstate);
+			}
+		}
 	}
 
 }

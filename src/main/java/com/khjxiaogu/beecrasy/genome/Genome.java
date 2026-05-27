@@ -20,6 +20,7 @@
 package com.khjxiaogu.beecrasy.genome;
 
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -38,6 +39,7 @@ public class Genome implements AllelesHolder {
 				.fieldOf("alleles")
 				.forGetter(o->(Map)o.alleles))
 			.apply(t,Genome::new));
+	public static final Codec<List<Genome>> LIST_CODEC=CODEC.listOf();
 	public static final StreamCodec<RegistryFriendlyByteBuf,Genome> STREAM_CODEC=new StreamCodec<>() {
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		@Override
