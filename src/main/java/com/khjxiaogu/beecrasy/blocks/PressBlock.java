@@ -52,6 +52,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
@@ -105,17 +107,21 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
         BlockState neighbourState,
         RandomSource random
     ) {
+    	System.out.println(1);
         DoubleBlockHalf half = state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF);
         if(directionToNeighbour.getAxis()==Axis.Y&&
         	((half == DoubleBlockHalf.LOWER) == (directionToNeighbour == Direction.UP))) {
+
+        	System.out.println(2);
             return  neighbourState.getBlock()==state.getBlock()&&neighbourState.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF)!=half
                 ? state
                 : Blocks.AIR.defaultBlockState();
         }
+
+    	System.out.println(3);
         return state;
         
     }
-
     @Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
     	DoubleBlockHalf half = state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF);
@@ -150,7 +156,7 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
     @Override
 	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
     	List<ItemStack> list=super.getDrops(state, params);
-		if (params.getParameter(LootContextParams.BLOCK_ENTITY) instanceof PressBlockEntity press) {
+		if (state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER&&params.getParameter(LootContextParams.BLOCK_ENTITY) instanceof PressBlockEntity press) {
 			ItemStacksResourceHandler inv=press.getInternInv();
 			for (int i = 0; i < inv.size(); i++) {
 				ItemResource is = inv.getResource(i);
