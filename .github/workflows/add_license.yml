@@ -1,4 +1,4 @@
-name: Auto Add License Header
+name: Check And Apply License Header
 
 on: push
 
@@ -24,7 +24,7 @@ jobs:
         run: chmod +x ./gradlew
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-      - name: Check And Apply License Header
+      - name: Check and apply license header
         run: ./gradlew licenseFormat
       - name: Commit and push if changes exist
         run: |
