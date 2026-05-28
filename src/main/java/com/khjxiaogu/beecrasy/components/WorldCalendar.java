@@ -19,10 +19,12 @@
 
 package com.khjxiaogu.beecrasy.components;
 
+import com.khjxiaogu.beecrasy.Beecrasy;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
 public class WorldCalendar extends SavedData {
 	public static final Codec<WorldCalendar> CODEC=RecordCodecBuilder.create(t->t.group(
@@ -31,10 +33,13 @@ public class WorldCalendar extends SavedData {
 			Codec.LONG.fieldOf("lastTicks").forGetter(WorldCalendar::getLastTicks)
 			
 			).apply(t, WorldCalendar::new));
-
+	public static final SavedDataType<WorldCalendar> TYPE=new SavedDataType<>(Beecrasy.rl("calendar"),WorldCalendar::new,WorldCalendar.CODEC);
 	long seconds;
 	int partialSecs;
 	long lastTicks;
+	public WorldCalendar() {
+		super();
+	}
 	public WorldCalendar(long seconds, int partialSecs, long lastTicks) {
 		super();
 		this.seconds = seconds;

@@ -28,6 +28,7 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.Constants;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
+import com.khjxiaogu.beecrasy.components.WorldCalendar;
 import com.khjxiaogu.beecrasy.data.GenomePresets;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
 import com.khjxiaogu.beecrasy.genome.GeneRegistry;
@@ -116,7 +117,8 @@ public class CommonListeners {
 		event.getDispatcher().register(inspect);
 	}
 	public static void tick(ServerTickEvent.Pre event) {
-		event.getServer().getDataStorage().set(null, null);
+		long clock=event.getServer().overworld().getOverworldClockTime();
+		event.getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).tick(clock);
 	}
 	
 	
