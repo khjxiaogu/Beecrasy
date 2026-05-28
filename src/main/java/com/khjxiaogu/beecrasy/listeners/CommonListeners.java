@@ -116,6 +116,7 @@ public class CommonListeners {
 		}));
 		event.getDispatcher().register(inspect);
 	}
+	@SubscribeEvent
 	public static void tick(ServerTickEvent.Pre event) {
 		long clock=event.getServer().overworld().getOverworldClockTime();
 		event.getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).tick(clock);

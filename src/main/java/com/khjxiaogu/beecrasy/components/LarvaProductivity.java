@@ -19,8 +19,17 @@
 
 package com.khjxiaogu.beecrasy.components;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.genome.Genes;
+import com.khjxiaogu.beecrasy.genome.Genome;
+import com.khjxiaogu.beecrasy.genome.ProductHelper;
+import com.khjxiaogu.beecrasy.genome.ProductHelper.ProductWithCount;
+import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
 
 public record LarvaProductivity(float biotopeProductive,float wildcardProductive) {
 	public static final Codec<LarvaProductivity> CODEC=RecordCodecBuilder.create(t->t.group(
@@ -36,5 +45,13 @@ public record LarvaProductivity(float biotopeProductive,float wildcardProductive
 	}
 	public LarvaProductivity increaseWildcard(float value) {
 		return new LarvaProductivity(biotopeProductive,wildcardProductive+value);
+	}
+	public ItemStack getProduction(Genome genome,RandomSource rs) {
+		if(biotopeProductive()<wildcardProductive()) {
+			return Items.PRODUCT_COMB.toStack(BeecrasyMath.getRandomRate(wildcardProductive(), rs));
+		}else {
+			ProductWithCount product=ProductHelper.pickSingleProduct(genome.getAllele(Genes.BIOTOPE), genome.getAllele(Genes.PRODUCTS), rs, BeecrasyMath.getRandomRate(biotopeProductive(), rs));
+			return product.createProductComb();
+		}
 	}
 }

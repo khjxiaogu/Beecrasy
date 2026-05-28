@@ -30,6 +30,7 @@ import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.components.LarvaProductivity;
+import com.khjxiaogu.beecrasy.components.WorldCalendar;
 import com.khjxiaogu.beecrasy.genome.DiploidGenome;
 import com.khjxiaogu.beecrasy.genome.GeneSimilarityHelper;
 import com.khjxiaogu.beecrasy.genome.Genes;
@@ -108,6 +109,22 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			process--;
 			if(process%interval==0) {
 				boolean isPre=process>=(processMax/2);
+				long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
+				
+				for(HiveSlot slot:combSlot) {
+					ItemStack stack=slot.getItem();
+					if(stack.is(Items.LARVA)) {
+						stack.set(Components.LARVA_EXPIRES,secs);
+						slot.setItem(stack);
+					}
+				}
+				for(HiveSlot slot:queenSlot) {
+					ItemStack stack=slot.getItem();
+					if(stack.is(Items.LARVA)) {
+						stack.set(Components.LARVA_EXPIRES,secs);
+						slot.setItem(stack);
+					}
+				}
 				if(isPre) {
 					if(!fillLarva(params))
 						fillDrone(params);
@@ -213,16 +230,9 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 					continue;
 				hi.setItem(ItemStack.EMPTY);
 				Genome pheno=GenomeDataHelper.getPhenoType(item);
-				
-				List<ProductItem> products=pheno.getAllele(Genes.PRODUCTS);
 				LarvaProductivity lp=item.get(Components.LARVA_PRODUCT);
 				if(lp!=null) {
-					if(lp.biotopeProductive()<lp.wildcardProductive()) {
-						hi.setItem(Items.PRODUCT_COMB.toStack(BeecrasyMath.getRandomRate(lp.wildcardProductive(), rs)));
-					}else {
-						ProductWithCount product=ProductHelper.pickSingleProduct(pheno.getAllele(Genes.BIOTOPE), products, rs, BeecrasyMath.getRandomRate(lp.biotopeProductive(), rs));
-						hi.setItem(product.createProductComb());
-					}
+					hi.setItem(lp.getProduction(pheno, rs));
 				}
 			}
 		}
