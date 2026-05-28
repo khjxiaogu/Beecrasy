@@ -53,6 +53,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 @EventBusSubscriber(modid = Beecrasy.MODID)
 public class CommonListeners {
@@ -114,7 +115,9 @@ public class CommonListeners {
 		}));
 		event.getDispatcher().register(inspect);
 	}
-	
+	public static void tick(ServerTickEvent.Pre event) {
+		event.getServer().getDataStorage().set(null, null);
+	}
 	
 	
 }
