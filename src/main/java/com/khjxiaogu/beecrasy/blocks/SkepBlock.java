@@ -39,7 +39,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
@@ -85,7 +84,7 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 			if(level.getBlockEntity(pos) instanceof SkepBlockEntity blockEntity) {
 				if (!level.isClientSide())
 					((ServerPlayer) player).openMenu(blockEntity);
-					
+				return InteractionResult.SUCCESS;
 			}
     	}
 		return super.useWithoutItem(state, level, pos, player, hitResult);

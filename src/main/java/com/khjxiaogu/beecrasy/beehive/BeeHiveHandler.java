@@ -37,10 +37,7 @@ import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
 import com.khjxiaogu.beecrasy.genome.MutationRegistry;
-import com.khjxiaogu.beecrasy.genome.ProductHelper;
-import com.khjxiaogu.beecrasy.genome.ProductHelper.ProductWithCount;
 import com.khjxiaogu.beecrasy.genome.RecombinationHelper;
-import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 import com.khjxiaogu.beecrasy.utils.SerializableRandomSource;
 import com.mojang.serialization.Codec;
@@ -84,6 +81,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	boolean noBiotope=false;
 	transient int interval;
 	transient float lsAgainstInterval;
+	transient int cooldown;
 	public BeeHiveHandler(List<? extends HiveSlot> queenSlot, List<? extends HiveSlot> droneSlot, List<? extends HiveSlot> combSlot) {
 		super();
 		this.queenSlot = queenSlot;
@@ -109,43 +107,57 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			process--;
 			if(process%interval==0) {
 				boolean isPre=process>=(processMax/2);
-				long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
 				
-				for(HiveSlot slot:combSlot) {
-					ItemStack stack=slot.getItem();
-					if(stack.is(Items.LARVA)) {
-						stack.set(Components.LARVA_EXPIRES,secs);
-						slot.setItem(stack);
-					}
-				}
-				for(HiveSlot slot:queenSlot) {
-					ItemStack stack=slot.getItem();
-					if(stack.is(Items.LARVA)) {
-						stack.set(Components.LARVA_EXPIRES,secs);
-						slot.setItem(stack);
-					}
-				}
 				if(isPre) {
+					long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
+					for(HiveSlot slot:combSlot) {
+						ItemStack stack=slot.getItem();
+						if(stack.is(Items.LARVA)) {
+							stack.set(Components.LARVA_EXPIRES,secs);
+							slot.setItem(stack);
+						}
+					}
+					for(HiveSlot slot:queenSlot) {
+						ItemStack stack=slot.getItem();
+						if(stack.is(Items.LARVA)) {
+							stack.set(Components.LARVA_EXPIRES,secs);
+							slot.setItem(stack);
+						}
+					}
 					if(!fillLarva(params))
 						fillDrone(params);
 				}else {
-					if(process%(interval*6)==0)
+					if(process%(processMax/8)==0)
 						elecQueen();
 					increaseProduction(params);
 				}
 			}
 		}else if(processMax>0){
-			
-			if(finishProduct(params)) {
-				processMax=process=0;
-				reset();
+			if(cooldown<=0) {
+				cooldown=0;
+				if(finishProduct(params)) {
+					processMax=process=0;
+					reset();
+				}else {
+					blocked=true;
+					cooldown=20;
+				}
 			}else {
-				blocked=true;
+				cooldown--;
 			}
 		}
 	}
 	private void increaseProduction(BeeHiveParameterSet params) {
 		noBiotope=false;
+
+		long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
+		for(HiveSlot slot:queenSlot) {
+			ItemStack stack=slot.getItem();
+			if(stack.is(Items.LARVA)) {
+				stack.set(Components.LARVA_EXPIRES,secs);
+				slot.setItem(stack);
+			}
+		}
 		for(HiveSlot hi:combSlot) {
 			if(!hi.isEmpty()) {
 				ItemStack item=hi.getItem();
@@ -164,6 +176,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 					lp=lp.increaseWildcard(yield);
 					noBiotope=true;
 				}
+				item.set(Components.LARVA_EXPIRES,secs);
 				item.set(Components.LARVA_PRODUCT, lp);
 				hi.setItem(item);
 			}
@@ -180,13 +193,13 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			if(queenGenome.length==0) {
 				queenGenome=new Genome[] {Genome.DEFAULT,Genome.DEFAULT};
 			}else if(queenGenome.length==1) {
-				queenGenome=new Genome[] {queenGenome[0],queenGenome[1]};
+				queenGenome=new Genome[] {queenGenome[0],queenGenome[0]};
 			}
 		}
 		this.queenGenome=queenGenome;
 	}
 	@SuppressWarnings("deprecation")
-	public void beginWork(BeeHiveParameterSet params,	Genome[] queenGenome,List<Genome> droneGenomes) {
+	public void beginWork(BeeHiveParameterSet params,Genome[] queenGenome,List<Genome> droneGenomes) {
 		rs=SerializableRandomSource.create(Mth.getSeed(params.position())^params.level().getRandom().nextLong());
 		setQueen(queenGenome);
 		this.droneGenomes=droneGenomes;
@@ -210,6 +223,8 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	}
 	private boolean finishProduct(BeeHiveParameterSet params) {
 		boolean hasQueen=false;
+		long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
+
 		for(HiveSlot hi:queenSlot) {
 			if(hi.isEmpty())
 				continue;
@@ -217,12 +232,33 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			if(item.is(Items.LARVA)) {
 				ItemStack queenStack=item.transmuteCopy(Items.QUEEN_BEE);
 				queenStack.remove(Components.LARVA_PRODUCT);
+				queenStack.remove(Components.LARVA_EXPIRES);
 				hi.setItem(queenStack);
 				hasQueen=true;
 			}
 		}
-		if(!hasQueen)
-			return false;
+		if(!hasQueen) {
+			boolean hasLarva=false;
+			for(HiveSlot hi:combSlot) {
+				if(!hi.isEmpty()) {
+					ItemStack stack=hi.getItem();
+						if(stack.is(Items.LARVA)) {
+						stack.set(Components.LARVA_EXPIRES,secs);
+						hi.setItem(stack);
+						hasLarva=true;
+					}
+				}
+			}
+			if(hasLarva) {
+				return false;
+			}
+			for(HiveSlot hi:queenSlot) {
+				if(!hi.isEmpty())
+					continue;
+				hi.setItem(Items.ROYAL_JELLY.toStack());
+				return true;
+			}
+		}
 		for(HiveSlot hi:combSlot) {
 			if(!hi.isEmpty()) {
 				ItemStack item=hi.getItem();
@@ -258,8 +294,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				break;
 			if(hi.isEmpty()) {
 				HiveSlotPriority queen=queens.poll();
-				ItemStack queenStack=queen.slot().getItem().transmuteCopy(Items.QUEEN_BEE);
-				hi.setItem(queenStack);
+				hi.setItem(queen.slot().getItem());
 				queen.slot().setItem(ItemStack.EMPTY);
 			}
 		}

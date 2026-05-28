@@ -59,6 +59,7 @@ public record DynamicModelReference(StandaloneModelKey<QuadCollection> name) imp
 		});
 		
 	}
+	@SuppressWarnings("resource")
 	@Override
 	public QuadCollection get()
 	{

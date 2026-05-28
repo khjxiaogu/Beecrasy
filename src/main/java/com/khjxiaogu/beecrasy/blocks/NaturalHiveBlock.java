@@ -77,7 +77,7 @@ public class NaturalHiveBlock extends Block implements BeecrasyEntityBlock<Natur
     @Override
 	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
     	List<ItemStack> list=super.getDrops(state, params);
-		if (params.getParameter(LootContextParams.BLOCK_ENTITY) instanceof NaturalHiveBlockEntity hive) {
+		if (params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof NaturalHiveBlockEntity hive) {
 			if(hive.isGrowthStarted&&!hive.hiveInfo.isWorking()) {
 				for(StacksHiveSlot slot:hive.queenSlot) {
 					list.add(slot.getItem().copy());
@@ -105,6 +105,7 @@ public class NaturalHiveBlock extends Block implements BeecrasyEntityBlock<Natur
 		return Block.isFaceFull(aboveState.getCollisionShape(level, above), Direction.UP);
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
 		BlockPos pos = context.getClickedPos();

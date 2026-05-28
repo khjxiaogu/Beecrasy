@@ -1,4 +1,4 @@
-// 26.1.2	2026-05-27T16:44:29.3284802	Model Definitions - beecrasy
+// 26.1.2	2026-05-29T02:01:06.2974676	Model Definitions - beecrasy
 4c7cf0e4438c3d08128faa6e528770e3dde1c048 assets/beecrasy/blockstates/bee_nest_big.json
 2ec8c8a692b2ead7a010c6a08f4f7e90599bd066 assets/beecrasy/blockstates/bee_nest_medium.json
 809435de1f5dafa7eb21969f597c32b89a31100d assets/beecrasy/blockstates/bee_nest_nascent.json
@@ -29,6 +29,7 @@ fee78f5ff2576eed19bc1a43b362134a781c1271 assets/beecrasy/items/bee_nest_medium.j
 a4766d0e1c4afd00c4dfc26d4e1b7bf6989ae508 assets/beecrasy/items/pheromone.json
 409cb43de0068ea6e52cbe634881e7c4b021659e assets/beecrasy/items/product_comb.json
 acf2909014c79b4d48c92242195a349a81c2d7fd assets/beecrasy/items/queen_bee.json
+5ded0302ccde35853a3e2bb124df600e5a3c8a67 assets/beecrasy/items/royal_jelly.json
 4bd6c4da6d092e47eeef22f2dc4f7e887e42dd94 assets/beecrasy/items/sequencer.json
 7fd1954a87eedde5b940287b5b3e21e5dd5d9a35 assets/beecrasy/items/skep.json
 e44fd8c3c29021db95976df9827280bcb522f318 assets/beecrasy/models/block/empty_comb_block_0.json
@@ -50,3 +51,4 @@ aaee3c0a458b336056f6ddfe662c240678a4d543 assets/beecrasy/models/item/honey_drop.
 011a3306f6f32b0b8f1197892dae022eea948010 assets/beecrasy/models/item/pheromone.json
 2bf3324e99c913df6803ceae3e8cb8f789b3db14 assets/beecrasy/models/item/product_comb.json
 6868d800428f538044ad49ac56ef692e4fbecfb4 assets/beecrasy/models/item/queen_bee.json
+59242751c12bccf3d31f3d48f65358e91671895f assets/beecrasy/models/item/royal_jelly.json

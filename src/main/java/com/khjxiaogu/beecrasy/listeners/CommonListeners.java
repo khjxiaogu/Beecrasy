@@ -23,25 +23,23 @@ import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
 
+import com.ibm.icu.util.Calendar;
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.Constants;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.WorldCalendar;
-import com.khjxiaogu.beecrasy.data.GenomePresets;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
 import com.khjxiaogu.beecrasy.genome.GeneRegistry;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
+import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.gene.Humidity;
 import com.khjxiaogu.beecrasy.genome.gene.Temperature;
-import com.khjxiaogu.beecrasy.genome.Genome;
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -94,7 +92,7 @@ public class CommonListeners {
 	}
 	@SubscribeEvent
 	public static void addCommands(RegisterCommandsEvent event) {
-		LiteralArgumentBuilder<CommandSourceStack> inspect = Commands.literal("beecrasy").then(Commands.literal("inspect").executes((ctx)->{
+		var inspect = Commands.literal("inspect").executes((ctx)->{
 			ServerPlayer sp=ctx.getSource().getPlayerOrException();
 			ItemStack stack=sp.getMainHandItem();
 			GenomeComponent genome=stack.get(Components.GENOME);
@@ -113,8 +111,20 @@ public class CommonListeners {
 				stack.set(Components.GENOME,genome);
 			}
 			return Command.SINGLE_SUCCESS;
-		}));
-		event.getDispatcher().register(inspect);
+		});
+		var calend=Commands.literal("calendar").executes((ctx)->{
+			WorldCalendar secs=ctx.getSource().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE);
+			Calendar calendar=Calendar.getInstance();
+			calendar.set(2025, 5, 20,8,0,0);
+			calendar.setTimeInMillis(calendar.getTimeInMillis()+secs.getSeconds() * 60000L);
+			calendar.add(Calendar.SECOND, secs.getPartialSecs()*3);
+			ctx.getSource().sendSystemMessage(Component.literal(String.format("%s-%02d-%02d %02d:%02d:%02d B.C.",
+					calendar.get(Calendar.YEAR)-1734,calendar.get(Calendar.MONTH)+1,
+					calendar.get(Calendar.DAY_OF_MONTH),calendar.get(Calendar.HOUR_OF_DAY),
+					calendar.get(Calendar.MINUTE),calendar.get(Calendar.SECOND))));
+			return Command.SINGLE_SUCCESS;
+		});
+		event.getDispatcher().register(Commands.literal("beecrasy").then(inspect).then(calend));
 	}
 	@SubscribeEvent
 	public static void tick(ServerTickEvent.Pre event) {

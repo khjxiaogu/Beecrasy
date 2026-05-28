@@ -113,6 +113,7 @@ public class BeeNestBlock extends Block {
 
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
 		BlockPos pos = BlockPos.containing(params.getParameter(LootContextParams.ORIGIN));
@@ -149,6 +150,7 @@ public class BeeNestBlock extends Block {
 		return Block.isFaceFull(aboveState.getCollisionShape(level, above), Direction.DOWN);
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
 		BlockPos pos = context.getClickedPos();

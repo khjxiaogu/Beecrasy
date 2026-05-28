@@ -44,6 +44,7 @@ import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 public class TintColorCache {
 	private static Reference2IntOpenHashMap<TextureAtlasSprite> colorMap=new Reference2IntOpenHashMap<>(1024);
 	
+	@SuppressWarnings("resource")
 	@SubscribeEvent
 	public static void onTextureStitched(TextureAtlasStitchedEvent ev) {
 
@@ -68,6 +69,7 @@ public class TintColorCache {
 	public static int getTintColor(TextureAtlasSprite id) {
 		return colorMap.getOrDefault(id, 0xffffffff);
 	}
+	@SuppressWarnings("resource")
 	public static void dumpTintColor() {
 
     	try {

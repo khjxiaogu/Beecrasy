@@ -43,7 +43,8 @@ public record BeeTint(int defaultColor) implements ItemTintSource {
         this(0xffffffff);
     }
     private static final ThreadLocal<Boolean> calculating=ThreadLocal.withInitial(()->false);
-    @Override
+    @SuppressWarnings("resource")
+	@Override
     public int calculate(ItemStack itemStack,ClientLevel level,LivingEntity owner) {
     	
     	TintColorComponent color=itemStack.get(Components.TINT_COLOR);

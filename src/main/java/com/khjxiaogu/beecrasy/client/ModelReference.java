@@ -68,6 +68,7 @@ public record ModelReference(StandaloneModelKey<QuadCollection> name) implements
 		});
 		
 	}
+	@SuppressWarnings("resource")
 	@Override
 	public QuadCollection get()
 	{

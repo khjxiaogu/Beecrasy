@@ -101,6 +101,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> APITE=ITEMS.registerSimpleItem("apite");
 	    public static final DeferredItem<Item> BUMBLEBEE_JASPER=ITEMS.registerSimpleItem("bumblebee_jasper");
 	    public static final DeferredItem<Item> PHEROMONO=ITEMS.registerSimpleItem("pheromone");
+	    public static final DeferredItem<Item> ROYAL_JELLY=ITEMS.registerSimpleItem("royal_jelly");
 	    
 	    //蜜蜂相关
 	    public static final DeferredItem<Item> DRONE=ITEMS.registerSimpleItem("drone",t->t.component(Components.GENOME, GenomeComponent.HAPLOID_EMPTY.asInspected()).stacksTo(1));

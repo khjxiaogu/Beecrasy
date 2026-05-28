@@ -100,7 +100,7 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 		internInv = new ItemStacksResourceHandler(queen+drone+comb+extra) {
 			@Override
 			protected void onContentsChanged(int slot, ItemStack stack) {
-				if(slot<queen&&this.getAmountAsInt(slot)>0) {
+				if(slot<queen&&this.getAmountAsInt(slot)>0&&!hiveInfo.isWorking()) {
 					shouldWork=true;
 				}
 				beginingTicks=0;
@@ -300,7 +300,7 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 					beginingTicks=0;
 					if(canBeginWork()) {
 						
-
+						shouldWork=false;
 						updateBiotopes();
 						if(beginGrowth(serverLevel)) {
 							this.setChanged();

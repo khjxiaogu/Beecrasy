@@ -65,7 +65,7 @@ public class LarvaItem extends Item {
 					p.getInventory().placeItemBackInInventory(ret);
 				}else {
 					ItemEntity entityitem = new ItemEntity(level, owner.getX(), owner.getY() , owner.getZ(),ret);
-		            entityitem.setPickUpDelay(40);
+		            entityitem.setPickUpDelay(0);
 		            entityitem.setDeltaMovement(entityitem.getDeltaMovement().multiply(0, 1, 0));
 
 		            level.addFreshEntity(entityitem);

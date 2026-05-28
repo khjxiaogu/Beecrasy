@@ -21,11 +21,10 @@ package com.khjxiaogu.beecrasy.events;
 
 import java.util.List;
 
-import com.khjxiaogu.beecrasy.Constants;
 import com.khjxiaogu.beecrasy.data.GenomePresets;
 import com.khjxiaogu.beecrasy.genome.Genome;
-import com.khjxiaogu.beecrasy.genome.PartialGenome;
 import com.khjxiaogu.beecrasy.genome.Genome.Builder;
+import com.khjxiaogu.beecrasy.genome.PartialGenome;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
