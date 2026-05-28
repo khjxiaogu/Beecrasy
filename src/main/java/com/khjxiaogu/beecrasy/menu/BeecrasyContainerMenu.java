@@ -85,8 +85,8 @@ public abstract class BeecrasyContainerMenu extends AbstractContainerMenu implem
 
 	private final List<TankStack> tanks = new ArrayList<>();
 
-	protected void sendOperation(short opCode, int opData) {
-		PacketHandler.sendToServer(new ContainerOperationMessage(containerId, opCode, opData));
+	protected void sendOperation(int opCode, int opData) {
+		PacketHandler.sendToServer(new ContainerOperationMessage(containerId,(short) opCode, opData));
 	}
 
 	protected BlockEntity blockEntity;

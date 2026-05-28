@@ -17,14 +17,11 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.genome;
+package com.khjxiaogu.beecrasy;
 
-import java.util.Set;
-
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.level.ServerLevel;
 
-public record BeeHiveParameters(ServerLevel level,BlockPos position,Set<Identifier> disabledMutation) {
+public class Constants {
 
+	public static final Identifier BASE_ID=Beecrasy.rl("base");
 }

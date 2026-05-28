@@ -17,7 +17,7 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.genome;
+package com.khjxiaogu.beecrasy.beehive;
 
 import net.minecraft.world.item.ItemStack;
 

@@ -20,14 +20,21 @@
 package com.khjxiaogu.beecrasy.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
 
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -122,6 +129,30 @@ public final class Utils {
 
 	public static MutableComponent string(String content) {
 		return MutableComponent.create(PlainTextContents.create(content));
+	}
+	public static <K,V,B extends ByteBuf> StreamCodec<B,Map<K,V>> streamDispatchedMap(StreamCodec<? super B,K> keyCodec,Function<K,StreamCodec<? super B,V>> toCodec) {
+		return new StreamCodec<>() {
+			@Override
+			public void encode(B output, Map<K,V> value) {
+				ByteBufCodecs.VAR_INT.encode(output, value.size());
+				for(Entry<K, V> ent:value.entrySet()) {
+					keyCodec.encode(output, ent.getKey());
+					toCodec.apply(ent.getKey()).encode(output, ent.getValue());
+				}
+			}
+			@Override
+			public Map<K,V> decode(B input) {
+				int size=ByteBufCodecs.VAR_INT.decode(input);
+				Map<K, V> values=new HashMap<>(size);
+				if(size>0)
+				for(int i=0;i<size;i++) {
+					K key=keyCodec.decode(input);
+					V value=toCodec.apply(key).decode(input);
+					values.put(key, value);
+				}
+				return values;
+			}
+		};
 	}
 
 }

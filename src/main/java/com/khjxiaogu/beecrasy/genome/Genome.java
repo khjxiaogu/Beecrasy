@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import com.khjxiaogu.beecrasy.utils.Utils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -40,35 +41,17 @@ public class Genome implements AllelesHolder {
 				.forGetter(o->(Map)o.alleles))
 			.apply(t,Genome::new));
 	public static final Codec<List<Genome>> LIST_CODEC=CODEC.listOf();
-	public static final StreamCodec<RegistryFriendlyByteBuf,Genome> STREAM_CODEC=new StreamCodec<>() {
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		@Override
-		public void encode(RegistryFriendlyByteBuf output, Genome value) {
-			output.writeVarInt(value.alleles.size());
-			for(Entry<Gene<?>, ?> ent:value.alleles.entrySet()) {
-				GeneRegistry.STREAM_CODEC.encode(output, ent.getKey());
-				((Gene)ent.getKey()).streamCodec().encode(output, ent.getValue());
-			}
-		}
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		@Override
-		public Genome decode(RegistryFriendlyByteBuf input) {
-			int size=input.readVarInt();
-			Map<Gene, Object> alleles=new IdentityHashMap<>(size);
-			if(size>0)
-			for(int i=0;i<size;i++) {
-				Gene key=GeneRegistry.STREAM_CODEC.decode(input);
-				Object value=key.streamCodec().decode(input);
-				alleles.put(key, value);
-			}
-			return new Genome((Map)alleles);
-		}
-	};
+	public static final StreamCodec<RegistryFriendlyByteBuf,Genome> STREAM_CODEC=
+			Utils.streamDispatchedMap(GeneRegistry.STREAM_CODEC, Gene::streamCodec).map(Genome::new, Genome::alleles);
 	public static final Genome DEFAULT=new Genome(Map.of());
 	private Map<Gene<?>, ?> alleles;
 	Genome(Map<Gene<?>, ?> alleles) {
 		super();
 		this.alleles = alleles;
+	}
+	@SuppressWarnings("rawtypes")
+	Map alleles(){
+		return alleles;
 	}
 	public <T> T getAllele(Gene<T> type) {
 		@SuppressWarnings("unchecked")

@@ -38,6 +38,8 @@ public class QueenBeeItem extends Item {
 	@Override
 	public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
 		boolean updated = super.onEntityItemUpdate(stack, entity);
+		if(updated)
+			return true;
 		if(entity.getAge()>200) {
 			if(entity.onGround()) {
 				BlockPos pos=entity.getOnPos().above();

@@ -22,7 +22,7 @@ package com.khjxiaogu.beecrasy.genome.mutation;
 import java.util.List;
 import java.util.Optional;
 
-import com.khjxiaogu.beecrasy.genome.BeeHiveParameters;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
 import com.khjxiaogu.beecrasy.genome.DiploidGenome;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genome;
@@ -40,13 +40,12 @@ import net.minecraft.world.item.crafting.SmeltingRecipe;
 public class MutationSmelting implements Mutation {
 
 	@Override
-	public boolean mutate(BeeHiveParameters params, DiploidGenome genome, RandomSource rnd) {
+	public boolean mutate(BeeHiveParameterSet params, DiploidGenome genome, RandomSource rnd) {
 		
 		boolean succeed=false;
 		boolean flag1=genome.maternal().get(Genes.BIOTOPE)==Genes.Alleles.SMELT;
 		boolean flag2=genome.paternal().get(Genes.BIOTOPE)==Genes.Alleles.SMELT;
 		if(!flag1&&!flag2)return false;
-		if(rnd.nextFloat()>.05f)return false;
 		
 		if(flag1&&flag2) {
 			int r=rnd.nextInt(8);
@@ -66,7 +65,7 @@ public class MutationSmelting implements Mutation {
 		}
 		return false;
 	}
-	public static boolean handleCraft(BeeHiveParameters param,Genome.Builder genome, RandomSource random) {
+	public static boolean handleCraft(BeeHiveParameterSet param,Genome.Builder genome, RandomSource random) {
 		List<ProductItem> products=genome.get(Genes.PRODUCTS);
 		SingleRecipeInput sri=new SingleRecipeInput(products.get(products.size()-1).stack().create());
 		Optional<RecipeHolder<SmeltingRecipe>> recipe=param.level().recipeAccess().getRecipeFor(RecipeType.SMELTING, sri, param.level());
@@ -80,5 +79,15 @@ public class MutationSmelting implements Mutation {
 			
 		}
 		return false;
+	}
+	@Override
+	public float getChance() {
+		return .05f;
+	}
+	@Override
+	public boolean isApplicable(BeeHiveParameterSet params, DiploidGenome genome) {
+		boolean flag1=genome.maternal().get(Genes.BIOTOPE)==Genes.Alleles.SMELT;
+		boolean flag2=genome.paternal().get(Genes.BIOTOPE)==Genes.Alleles.SMELT;
+		return flag1||flag2;
 	}
 }

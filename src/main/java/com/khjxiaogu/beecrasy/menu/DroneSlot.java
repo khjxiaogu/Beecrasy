@@ -17,32 +17,25 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.genome.slot;
+package com.khjxiaogu.beecrasy.menu;
 
-import com.khjxiaogu.beecrasy.genome.HiveSlot;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.StacksResourceHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
-public class ResourceStackHiveSlot implements HiveSlot {
-	protected final StacksResourceHandler<ItemStack,ItemResource> handler;
-	protected final int slot;
-	public ResourceStackHiveSlot(StacksResourceHandler<ItemStack,ItemResource> handler, int slot) {
-		super();
-		this.handler = handler;
-		this.slot = slot;
+public class DroneSlot extends ResourceHandlerSlot {
+
+	public DroneSlot(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier, int handlerSlot,
+			int xPosition, int yPosition) {
+		super(handler, slotModifier, handlerSlot, xPosition, yPosition);
 	}
 	@Override
-	public ItemStack getItem() {
-		return handler.getResource(slot).toStack();
-	}
-	@Override
-	public void setItem(ItemStack stack) {
-		handler.set(slot, ItemResource.of(stack), stack.getCount());
-	}
-	@Override
-	public boolean isEmpty() {
-		return handler.getAmountAsInt(slot)==0;
+	public boolean mayPlace(ItemStack stack) {
+
+		return super.mayPlace(stack)&&(stack.is(Items.DRONE));
 	}
 }

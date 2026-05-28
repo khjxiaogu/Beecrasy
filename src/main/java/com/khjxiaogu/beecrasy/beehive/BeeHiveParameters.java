@@ -17,21 +17,8 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.genome;
+package com.khjxiaogu.beecrasy.beehive;
 
-import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
-
-import net.minecraft.util.RandomSource;
-
-public interface Mutation {
-	/**
-	 * 执行突变
-	 * @param genome 子代的基因组
-	 * @param rnd 随机序列
-	 * @return 是否继续执行后续突变
-	 * 
-	 * */
-	boolean mutate(BeeHiveParameterSet params,DiploidGenome genome,RandomSource rnd);
-	float getChance();
-	boolean isApplicable(BeeHiveParameterSet params,DiploidGenome genome);
+public class BeeHiveParameters {
+	private BeeHiveParameters() {}
 }

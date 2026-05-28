@@ -22,7 +22,7 @@ package com.khjxiaogu.beecrasy.genome.mutation;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.khjxiaogu.beecrasy.genome.BeeHiveParameters;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
 import com.khjxiaogu.beecrasy.genome.DiploidGenome;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Mutation;
@@ -36,30 +36,31 @@ public class MutationAppendSequence implements Mutation {
 	}
 
 	@Override
-	public boolean mutate(BeeHiveParameters params,DiploidGenome genome,RandomSource rnd) {
-		if(genome.maternal().get(Genes.BIOTOPE)==genome.paternal().get(Genes.BIOTOPE)) {
-			if(rnd.nextFloat()<.05f) {
-				List<ProductItem> matSeqOriginal=genome.maternal().get(Genes.PRODUCTS);
-				List<ProductItem> parSeqOriginal=genome.paternal().get(Genes.PRODUCTS);
-				List<ProductItem> matSeq=new ArrayList<>(matSeqOriginal);
-				List<ProductItem> parSeq=new ArrayList<>(parSeqOriginal);
-				parSeq.addAll(matSeqOriginal);
-				matSeq.addAll(parSeqOriginal);
-				while(parSeq.size()>9)
-					parSeq.remove(parSeq.size()-1);
-				while(matSeq.size()>9)
-					matSeq.remove(matSeq.size()-1);
-				genome.maternal().add(Genes.PRODUCTS, matSeq);
-				genome.paternal().add(Genes.PRODUCTS, parSeq);
-				return true;
-			}
-		}
-		return false;
+	public boolean mutate(BeeHiveParameterSet params,DiploidGenome genome,RandomSource rnd) {
+
+		List<ProductItem> matSeqOriginal=genome.maternal().get(Genes.PRODUCTS);
+		List<ProductItem> parSeqOriginal=genome.paternal().get(Genes.PRODUCTS);
+		List<ProductItem> matSeq=new ArrayList<>(matSeqOriginal);
+		List<ProductItem> parSeq=new ArrayList<>(parSeqOriginal);
+		parSeq.addAll(matSeqOriginal);
+		matSeq.addAll(parSeqOriginal);
+		while(parSeq.size()>9)
+			parSeq.remove(parSeq.size()-1);
+		while(matSeq.size()>9)
+			matSeq.remove(matSeq.size()-1);
+		genome.maternal().add(Genes.PRODUCTS, matSeq);
+		genome.paternal().add(Genes.PRODUCTS, parSeq);
+		return true;
 	}
 
 	@Override
-	public int priority() {
-		return Mutation.super.priority()+100;
+	public float getChance() {
+		return .05f;
+	}
+
+	@Override
+	public boolean isApplicable(BeeHiveParameterSet params, DiploidGenome genome) {
+		return genome.maternal().get(Genes.BIOTOPE)==genome.paternal().get(Genes.BIOTOPE);
 	}
 
 }

@@ -20,9 +20,11 @@
 package com.khjxiaogu.beecrasy;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
 import com.khjxiaogu.beecrasy.client.BeeTint;
 import com.khjxiaogu.beecrasy.client.ModelReference;
 import com.khjxiaogu.beecrasy.client.renderer.PressBlockEntityRenderer;
+import com.khjxiaogu.beecrasy.client.screens.SkepScreen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -34,6 +36,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -53,7 +56,10 @@ public class BeecrasyClient {
     	Beecrasy.LOGGER.info("Beecracy has landed(Not a typo).");
     }
     
-
+	@SubscribeEvent
+	public static void registerMenuScreens(RegisterMenuScreensEvent event) {
+		event.register(Menus.SKEP_MENU.get(), SkepScreen::new);
+	}
 	@SubscribeEvent
 	public static void registerItemTint(RegisterColorHandlersEvent.ItemTintSources ev) {
 		ev.register(Beecrasy.rl("bee_product"), BeeTint.MAP_CODEC);
@@ -72,5 +78,6 @@ public class BeecrasyClient {
 	@SubscribeEvent
 	public static void onRegisterRenderer(RegisterRenderers event) {
 		event.registerBlockEntityRenderer(Blocks.PRESS_BLOCKENTITY.get(), PressBlockEntityRenderer::new);
-		}
+		
+	}
 }

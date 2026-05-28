@@ -17,12 +17,12 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.genome.slot;
+package com.khjxiaogu.beecrasy.beehive.slot;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.khjxiaogu.beecrasy.genome.HiveSlot;
+import com.khjxiaogu.beecrasy.beehive.HiveSlot;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.world.item.ItemStack;

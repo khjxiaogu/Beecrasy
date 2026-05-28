@@ -38,7 +38,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -134,7 +133,7 @@ public class BeeNestBlock extends Block {
 		List<ProductItem> product = genome.getAllele(Genes.PRODUCTS);
 		if (!product.isEmpty()) {
 			for (ProductWithCount i : ProductHelper.pickProduct(genome.getAllele(Genes.BIOTOPE), product, level.getRandom(), Mth.lerpInt(level.getRandom().nextFloat(), combCountMin, combCountMax))) {
-				loot.add(ProductHelper.createProductComb(i));
+				loot.add(i.createProductComb());
 			}
 		}
 		return loot;
@@ -150,7 +149,6 @@ public class BeeNestBlock extends Block {
 		return Block.isFaceFull(aboveState.getCollisionShape(level, above), Direction.DOWN);
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
 		BlockPos pos = context.getClickedPos();

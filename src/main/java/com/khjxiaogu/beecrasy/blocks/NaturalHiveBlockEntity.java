@@ -20,22 +20,20 @@
 package com.khjxiaogu.beecrasy.blocks;
 
 import java.util.List;
-import java.util.Set;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveHandler;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
+import com.khjxiaogu.beecrasy.beehive.slot.StacksHiveSlot;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
-import com.khjxiaogu.beecrasy.genome.BeeHiveParameters;
-import com.khjxiaogu.beecrasy.genome.BeehiveHandler;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
-import com.khjxiaogu.beecrasy.genome.slot.StacksHiveSlot;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.ValueInput;
@@ -43,7 +41,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.NeoForge;
 
 public class NaturalHiveBlockEntity extends BeecrasyBlockEntity{
-	BeehiveHandler hiveInfo;
+	BeeHiveHandler hiveInfo;
 	ItemStack queen=ItemStack.EMPTY;
 	List<StacksHiveSlot> queenSlot=StacksHiveSlot.createSlots(1);
 	List<StacksHiveSlot> combSlot=StacksHiveSlot.createSlots(2);
@@ -51,9 +49,9 @@ public class NaturalHiveBlockEntity extends BeecrasyBlockEntity{
 	boolean isGrowthStarted=false;
 	public NaturalHiveBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
 		super(Blocks.NATURAL_HIVE_BLOCKENTITY.get(), pWorldPosition, pBlockState);
-		hiveInfo=new BeehiveHandler(queenSlot, droneSlot, combSlot);
+		hiveInfo=new BeeHiveHandler(queenSlot, droneSlot, combSlot);
 	}
-	public void beginGrowth(ServerLevel level,BeeHiveParameters param) {
+	public void beginGrowth(ServerLevel level,BeeHiveParameterSet param) {
 		if(isGrowthStarted)return;
 		GenomeComponent comp=queen.get(Components.GENOME);
 		if(comp!=null) {
@@ -90,7 +88,7 @@ public class NaturalHiveBlockEntity extends BeecrasyBlockEntity{
 	@Override
 	public void tick() {
 		if(level instanceof ServerLevel serverLevel) {
-			BeeHiveParameters params=new BeeHiveParameters(serverLevel,worldPosition,Set.of());
+			BeeHiveParameterSet params=new BeeHiveParameterSet.Builder(serverLevel,worldPosition).build();
 			beginGrowth(serverLevel,params);
 			hiveInfo.tick(params);
 			int oldstate=this.getBlockState().getValue(BlockStateProperties.AGE_2);

@@ -59,7 +59,9 @@ public class BeecrasyBlockTagGenerator extends TagsProvider<Block> {
 		pickaxe.add(rk(SEQUENCER)).add(rk(HONEY_PRESS));
 
 		TagAppender<ResourceKey<Block>, Block> net = tag(Tags.MINABLE_NET);
-		net.add(rk(BEE_NEST_SMALL)).add(rk(BEE_NEST_NASCENT)).add(rk(BEE_NEST_MEDIUM)).add(rk(BEE_NEST_BIG));
+		net.add(rk(BEE_NEST_SMALL)).add(rk(BEE_NEST_NASCENT)).add(rk(BEE_NEST_MEDIUM)).add(rk(BEE_NEST_BIG)).add(rk(NATURAL_HIVE));
+		TagAppender<ResourceKey<Block>, Block> flowers = tag(Tags.FLOWERS);
+		flowers.addTag(BlockTags.FLOWERS);
 	}
 	@SuppressWarnings("unchecked")
 	@SafeVarargs

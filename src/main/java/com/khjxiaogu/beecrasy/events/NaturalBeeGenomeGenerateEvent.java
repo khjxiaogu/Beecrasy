@@ -19,11 +19,18 @@
 
 package com.khjxiaogu.beecrasy.events;
 
+import java.util.List;
+
+import com.khjxiaogu.beecrasy.Constants;
+import com.khjxiaogu.beecrasy.data.GenomePresets;
 import com.khjxiaogu.beecrasy.genome.Genome;
+import com.khjxiaogu.beecrasy.genome.PartialGenome;
 import com.khjxiaogu.beecrasy.genome.Genome.Builder;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.Event;
 
@@ -39,5 +46,14 @@ public class NaturalBeeGenomeGenerateEvent extends Event{
 		this.pos = pos;
 		this.requester = requester;
 		this.genome = genome;
+	}
+	
+	public void applyPools(Identifier id) {
+		applyPools(GenomePresets.getPools(level, id));
+	}
+	public void applyPools(List<WeightedList<PartialGenome>> list) {
+		for(WeightedList<PartialGenome> li:list) {
+			li.getRandom(level.getRandom()).ifPresent(t->t.apply(genome));
+		}
 	}
 }

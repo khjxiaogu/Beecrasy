@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.khjxiaogu.beecrasy.genome.BeeHiveParameters;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
 import com.khjxiaogu.beecrasy.genome.DiploidGenome;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genome;
@@ -47,12 +47,10 @@ public class MutationCrafting implements Mutation{
 	}
 
 	@Override
-	public boolean mutate(BeeHiveParameters params,DiploidGenome genome, RandomSource rnd) {
+	public boolean mutate(BeeHiveParameterSet params,DiploidGenome genome, RandomSource rnd) {
 		boolean succeed=false;
 		boolean flag1=genome.maternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
 		boolean flag2=genome.paternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
-		if(!flag1&&!flag2)return false;
-		if(rnd.nextFloat()>.05f)return false;
 		
 		if(flag1&&flag2) {
 			int r=rnd.nextInt(8);
@@ -107,5 +105,17 @@ public class MutationCrafting implements Mutation{
 		if(!orderedMatch.isEmpty())
 			return orderedMatch;
 		return sequence.stream().map(SequencedRecipe::getRecipe).toList();
+	}
+
+	@Override
+	public float getChance() {
+		return .05f;
+	}
+
+	@Override
+	public boolean isApplicable(BeeHiveParameterSet params, DiploidGenome genome) {
+		boolean flag1=genome.maternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
+		boolean flag2=genome.paternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
+		return flag1||flag2;
 	}
 }

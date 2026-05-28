@@ -26,14 +26,16 @@ import org.jspecify.annotations.Nullable;
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
+import com.khjxiaogu.beecrasy.Constants;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
+import com.khjxiaogu.beecrasy.data.GenomePresets;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
 import com.khjxiaogu.beecrasy.genome.GeneRegistry;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
-import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.gene.Humidity;
 import com.khjxiaogu.beecrasy.genome.gene.Temperature;
+import com.khjxiaogu.beecrasy.genome.Genome;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
@@ -77,6 +79,7 @@ public class CommonListeners {
 					break;
 				}
 			}
+			
 			Humidity humid=event.genome.get(Genes.HUMIDITY);
 			for(Temperature temp:Alleles.TEMPERATURE) {
 				if(temp.isNatural()&&temp.isValidFor(event.level, event.pos,humid)) {
@@ -85,6 +88,7 @@ public class CommonListeners {
 				}
 			}
 		}
+		event.applyPools(Constants.BASE_ID);
 	}
 	@SubscribeEvent
 	public static void addCommands(RegisterCommandsEvent event) {

@@ -49,9 +49,13 @@ public class BeecrasyConfig {
 
 	public static class Server {
 		public final IntValue LIFESPAN;
+		public final IntValue INTERVAL;
+		public final IntValue RADIUS;
 		Server(ModConfigSpec.Builder builder) {
-			builder.push("allele");
+			builder.push("beehive");
 			LIFESPAN=builder.defineInRange("averageLifespan", 12000, 20, Integer.MAX_VALUE);
+			INTERVAL=builder.defineInRange("hiveInterval", 100, 20, Integer.MAX_VALUE);
+			RADIUS=builder.defineInRange("hiveWorkingRadius", 3, 1, Integer.MAX_VALUE);
 			builder.pop();
 		}
 	}

@@ -24,7 +24,7 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries;
-import com.khjxiaogu.beecrasy.genome.slot.StacksHiveSlot;
+import com.khjxiaogu.beecrasy.beehive.slot.StacksHiveSlot;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -105,7 +105,6 @@ public class NaturalHiveBlock extends Block implements BeecrasyEntityBlock<Natur
 		return Block.isFaceFull(aboveState.getCollisionShape(level, above), Direction.UP);
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
 		BlockPos pos = context.getClickedPos();

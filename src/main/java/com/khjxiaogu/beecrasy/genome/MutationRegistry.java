@@ -19,8 +19,9 @@
 
 package com.khjxiaogu.beecrasy.genome;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.ArrayList;
+import java.util.List;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
@@ -29,7 +30,7 @@ public class MutationRegistry {
 	private static record MutationRecord(Identifier id,Mutation mutation) {
 		
 	}
-	private static PriorityQueue<MutationRecord> mutations=new PriorityQueue<>(Comparator.<MutationRecord>comparingInt(r->r.mutation.priority()).reversed());
+	private static List<MutationRecord> mutations=new ArrayList<>();
 	private MutationRegistry() {
 	}
 	public static synchronized Mutation register(Identifier id,Mutation type) {
@@ -38,13 +39,13 @@ public class MutationRegistry {
 			mutations.add(new MutationRecord(id,type));
 		return type;
 	}
-	public static void handleMutation(BeeHiveParameters params,DiploidGenome genome,RandomSource random) {
+	public static void handleMutation(BeeHiveParameterSet params,DiploidGenome genome,RandomSource random) {
 		for(MutationRecord mr:mutations) {
 			if(mr.mutation.mutate(params,genome,random))
 				break;
 		}
 	}
-	public static void handleMutation(BeeHiveParameters params,Genome.Builder genome,RandomSource random) {
+	public static void handleMutation(BeeHiveParameterSet params,Genome.Builder genome,RandomSource random) {
 		for(MutationRecord mr:mutations) {
 			if(params.disabledMutation().contains(mr.id))
 				continue;

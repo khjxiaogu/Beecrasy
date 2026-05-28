@@ -19,7 +19,14 @@
 
 package com.khjxiaogu.beecrasy.data;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Recipes;
 import com.khjxiaogu.beecrasy.genome.PartialGenome;
@@ -31,12 +38,15 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.random.Weighted;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeBookCategories;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -53,6 +63,21 @@ public record GenomePresets(Identifier name,Identifier geneticGroup,List<Weighte
 			Identifier.STREAM_CODEC, GenomePresets::geneticGroup,
 			Weighted.streamCodec(PartialGenome.STREAM_CODEC).apply(ByteBufCodecs.list()), GenomePresets::genome,
 			GenomePresets::new);
+	public static List<WeightedList<PartialGenome>> getPools(ServerLevel level,Identifier name) {
+		Collection<RecipeHolder<GenomePresets>> recipes=level.recipeAccess().recipeMap().byType(Recipes.GENOME_PRESET_TYPE.get());
+		Map<Identifier,List<Weighted<PartialGenome>>> maps=new LinkedHashMap<>();
+		Function<Identifier,List<Weighted<PartialGenome>>> getter=t->maps.computeIfAbsent(t, _->new ArrayList<>(10));
+		for(RecipeHolder<GenomePresets> recipe:recipes) {
+			if(recipe.value().name().equals(name)) {
+				getter.apply(recipe.value().geneticGroup()).addAll(recipe.value().genome());
+			}
+		}
+		List<WeightedList<PartialGenome>> li=new ArrayList<>();
+		for(Entry<Identifier, List<Weighted<PartialGenome>>> ent:maps.entrySet()) {
+			li.add(WeightedList.of(ent.getValue()));
+		}
+		return li;
+	}
 	@Override
 	public boolean matches(RecipeInput input, Level level) {
 		return false;

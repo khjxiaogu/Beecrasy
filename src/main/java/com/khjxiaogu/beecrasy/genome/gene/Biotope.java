@@ -19,10 +19,21 @@
 
 package com.khjxiaogu.beecrasy.genome.gene;
 
-public class Biotope extends BaseAllele {
+import com.khjxiaogu.beecrasy.Beecrasy;
 
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
+
+public class Biotope extends BaseAllele {
+	final TagKey<Block> tag;
 	public Biotope(String id) {
 		super(id);
+		tag=BlockTags.create(Beecrasy.rl("flowers/biotope_"+id));
 	}
+	public TagKey<Block> getTag() {
+		return tag;
+	}
+	
 
 }

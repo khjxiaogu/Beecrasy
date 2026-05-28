@@ -99,7 +99,9 @@ public class GenomeComponent implements Iterable<Genome>{
 	public Genome getGenome(int index) {
 		return genomes[index];
 	}
-
+	public Genome[] toArray() {
+		return Arrays.copyOf(genomes, genomes.length);
+	}
 	public boolean isInspected() {
 		return inspected;
 	}
