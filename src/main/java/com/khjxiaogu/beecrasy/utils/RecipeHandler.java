@@ -51,20 +51,24 @@ public class RecipeHandler<T extends Recipe<?>> implements ContainerData{
 	public boolean isRecipeFinished() {
 		return recipeFinished;
 	}
-	public void setRecipe(RecipeHolder<T> recipe,int calculatedProcessTime) {
+	public boolean setRecipe(RecipeHolder<T> recipe,int calculatedProcessTime) {
 		//System.out.println("revalidate return "+recipe);
 		if (recipe!= null) {
 			if(!recipe.id().identifier().equals(lastRecipe)) {
 				process=processMax=calculatedProcessTime;
 				lastRecipe=recipe.id().identifier();
 				recipeFinished=false;
+				return true;
 			}
 		}else {
+			boolean ret=processMax>0;
 			process=processMax=0;
 			lastRecipe=null;
 			recipeFinished=false;
+			return ret;
 		}
 		recipeTested=true;
+		return false;
 	}
 	public boolean shouldTick() {
 		return process>0;

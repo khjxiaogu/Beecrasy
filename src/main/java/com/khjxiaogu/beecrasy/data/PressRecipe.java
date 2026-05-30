@@ -31,18 +31,69 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeBookCategories;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 import net.neoforged.neoforge.fluids.FluidStackTemplate;
 
 public record PressRecipe(SizedIngredient input,List<PossibleOutput> output,int time,Optional<FluidStackTemplate> fluid) implements Recipe<RandomizableRecipeInput> {
+	public static class Builder{
+		private SizedIngredient input;
+		private List<PossibleOutput> output=new ArrayList<>();
+		private int time=200;
+		private Optional<FluidStackTemplate> fluid=Optional.empty();
+		public Builder(SizedIngredient input) {
+			super();
+			this.input = input;
+		}
+		public Builder(Ingredient input,int count) {
+			super();
+			this.input = new SizedIngredient(input,count);
+		}
+		public Builder(ItemLike input,int count) {
+			super();
+			this.input = SizedIngredient.of(input,count);
+		}
+		public Builder addOutput(ItemStackTemplate stack,float chance) {
+			output.add(new PossibleOutput(stack,chance));
+			return this;
+		}
+		public Builder addOutput(ItemStackTemplate stack) {
+			output.add(new PossibleOutput(stack,1));
+			return this;
+		}
+		public Builder addOutput(Item stack,int count) {
+			return addOutput(new ItemStackTemplate(stack,count));
+		}
+		public Builder addOutput(Item stack,int count,float chance) {
+			return addOutput(new ItemStackTemplate(stack,count),chance);
+		}
+		public Builder addFluid(FluidStackTemplate stack) {
+			fluid=Optional.of(stack);
+			return this;
+		}
+		public Builder addFluid(Fluid fluid,int amount) {
+			return addFluid(new FluidStackTemplate(fluid,amount));
+		}
+		public Builder setTime(int time) {
+			this.time=time;
+			return this;
+		}
+		public PressRecipe create() {
+			return new PressRecipe(input,output,time,fluid);
+		};
+	}
 	public static final MapCodec<PressRecipe> CODEC=RecordCodecBuilder.mapCodec(t->t
 		.group(SizedIngredient.NESTED_CODEC.fieldOf("input").forGetter(PressRecipe::input),
 			PossibleOutput.CODEC.listOf().fieldOf("outputs").forGetter(PressRecipe::output),

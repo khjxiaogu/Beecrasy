@@ -40,8 +40,9 @@ import net.neoforged.neoforge.transfer.IndexModifier;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-public abstract class BeecrasyContainerMenu extends AbstractContainerMenu implements OperatableMenu {
+public abstract class BeecrasyContainerMenu extends AbstractContainerMenu implements OperatableMenu,ResourceHandler<FluidResource>{
 	public static record TankSlot(ResourceHandler<FluidResource> handler, IndexModifier<FluidResource> slotModifier, int index) {
 
 	}
@@ -80,6 +81,9 @@ public abstract class BeecrasyContainerMenu extends AbstractContainerMenu implem
 
 		public int getAmount() {
 			return slot.handler().getAmountAsInt(slot.index());
+		}
+		public int getCapacity(FluidResource resource) {
+			return slot.handler().getCapacityAsInt(slot.index(), resource);
 		}
 	}
 
@@ -161,12 +165,16 @@ public abstract class BeecrasyContainerMenu extends AbstractContainerMenu implem
 		
 		addFluidTank(tank,tank::set,0);
 	}
+	@Override
 	public FluidResource getResource(int index) {
 		return tanks.get(index).getResource();
 	}
 
 	public int getAmount(int index) {
 		return tanks.get(index).getAmount();
+	}
+	public int getCapacity(int index,FluidResource resource) {
+		return tanks.get(index).getCapacity(resource);
 	}
 	public void processPacket(ContainerTankMessage packets) {
 		for (MessagePair packet : packets.list()) {
@@ -211,5 +219,55 @@ public abstract class BeecrasyContainerMenu extends AbstractContainerMenu implem
 		if (blockEntity == null)
 			return true;
 		return !blockEntity.isRemoved() && pPlayer.distanceToSqr(blockEntity.getBlockPos().getCenter()) <= 100;
+	}
+
+	@Override
+	public int size() {
+		return 0;
+	}
+
+	@Override
+	public long getAmountAsLong(int index) {
+		return getAmount(index);
+	}
+
+	@Override
+	public long getCapacityAsLong(int index, FluidResource resource) {
+		return getCapacity(index,resource);
+	}
+
+	@Override
+	public boolean isValid(int index, FluidResource resource) {
+		return false;
+	}
+
+	@Override
+	public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
+		return 0;
+	}
+
+	@Override
+	public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
+		return 0;
+	}
+
+	@Override
+	public int getAmountAsInt(int index) {
+		return getAmount(index);
+	}
+
+	@Override
+	public int getCapacityAsInt(int index, FluidResource resource) {
+		return getCapacity(index,resource);
+	}
+
+	@Override
+	public int insert(FluidResource resource, int amount, TransactionContext transaction) {
+		return 0;
+	}
+
+	@Override
+	public int extract(FluidResource resource, int amount, TransactionContext transaction) {
+		return 0;
 	}
 }

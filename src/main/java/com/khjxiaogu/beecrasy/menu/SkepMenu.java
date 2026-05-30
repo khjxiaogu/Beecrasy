@@ -44,19 +44,19 @@ public class SkepMenu extends BeecrasyContainerMenu {
 		super.blockEntity=blockEntity;
 	}
 
-	protected SkepMenu(int containerId, Inventory inventory, ItemStacksResourceHandler machineSlotCount) {
+	protected SkepMenu(int containerId, Inventory inventory, ItemStacksResourceHandler slots) {
 		super(Menus.SKEP_MENU.get(), containerId, inventory, 11);
-		this.addSlot(new QueenSlot(machineSlotCount,machineSlotCount::set,0,152,32));
-		this.addSlot(new DroneSlot(machineSlotCount,machineSlotCount::set,1,49,21));
-		this.addSlot(new DroneSlot(machineSlotCount,machineSlotCount::set,2,70,16));
-		this.addSlot(new DroneSlot(machineSlotCount,machineSlotCount::set,3,44,42));
-		this.addSlot(new DroneSlot(machineSlotCount,machineSlotCount::set,4,65,37));
-		this.addSlot(new CombSlot(machineSlotCount,machineSlotCount::set,5,86,32));
-		this.addSlot(new CombSlot(machineSlotCount,machineSlotCount::set,6,107,27));
-		this.addSlot(new CombSlot(machineSlotCount,machineSlotCount::set,7,81,53));
-		this.addSlot(new CombSlot(machineSlotCount,machineSlotCount::set,8,102,48));
-		this.addSlot(new ResourceHandlerSlot(machineSlotCount,machineSlotCount::set,9,14,29));
-		this.addSlot(new ResourceHandlerSlot(machineSlotCount,machineSlotCount::set,10,14,47));
+		this.addSlot(new QueenSlot(slots,slots::set,0,152,32));
+		this.addSlot(new DroneSlot(slots,slots::set,1,49,21));
+		this.addSlot(new DroneSlot(slots,slots::set,2,70,16));
+		this.addSlot(new DroneSlot(slots,slots::set,3,44,42));
+		this.addSlot(new DroneSlot(slots,slots::set,4,65,37));
+		this.addSlot(new CombSlot(slots,slots::set,5,86,32));
+		this.addSlot(new CombSlot(slots,slots::set,6,107,27));
+		this.addSlot(new CombSlot(slots,slots::set,7,81,53));
+		this.addSlot(new CombSlot(slots,slots::set,8,102,48));
+		this.addSlot(new ResourceHandlerSlot(slots,slots::set,9,14,29));
+		this.addSlot(new ResourceHandlerSlot(slots,slots::set,10,14,47));
 		this.addPlayerInventory(8, 84, 142);
 	}
 	public void cycleWork() {

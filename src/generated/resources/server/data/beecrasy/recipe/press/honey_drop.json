@@ -1,0 +1,13 @@
+{
+  "type": "beecrasy:press",
+  "fluid": {
+    "amount": 100,
+    "id": "beecrasy:honey"
+  },
+  "input": {
+    "count": 1,
+    "ingredient": "beecrasy:honey_drop"
+  },
+  "outputs": [],
+  "time": 100
+}

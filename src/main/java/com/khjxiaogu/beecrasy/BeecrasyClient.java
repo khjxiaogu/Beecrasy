@@ -20,13 +20,17 @@
 package com.khjxiaogu.beecrasy;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Fluids;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
 import com.khjxiaogu.beecrasy.client.BeeTint;
 import com.khjxiaogu.beecrasy.client.ModelReference;
 import com.khjxiaogu.beecrasy.client.renderer.PressBlockEntityRenderer;
+import com.khjxiaogu.beecrasy.client.screens.PressScreen;
 import com.khjxiaogu.beecrasy.client.screens.SkepScreen;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -37,6 +41,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -59,6 +64,8 @@ public class BeecrasyClient {
 	@SubscribeEvent
 	public static void registerMenuScreens(RegisterMenuScreensEvent event) {
 		event.register(Menus.SKEP_MENU.get(), SkepScreen::new);
+		event.register(Menus.PRESS_MENU.get(), PressScreen::new);
+		
 	}
 	@SubscribeEvent
 	public static void registerItemTint(RegisterColorHandlersEvent.ItemTintSources ev) {
@@ -80,4 +87,14 @@ public class BeecrasyClient {
 		event.registerBlockEntityRenderer(Blocks.PRESS_BLOCKENTITY.get(), PressBlockEntityRenderer::new);
 		
 	}
+    @SubscribeEvent
+    static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
+
+		event.register(new FluidModel.Unbaked(
+                new Material(Beecrasy.rl("block/honey")),
+                new Material(Beecrasy.rl("block/honey_flow")),
+                null,
+                null),Fluids.HONEY_STILL,Fluids.HONEY_FLOWING);
+	}
+    
 }

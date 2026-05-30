@@ -1,0 +1,22 @@
+{
+  "type": "beecrasy:press",
+  "input": {
+    "count": 1,
+    "ingredient": "beecrasy:product_comb"
+  },
+  "outputs": [
+    {
+      "chance": 1.0,
+      "stack": {
+        "id": "beecrasy:beeswax"
+      }
+    },
+    {
+      "chance": 0.8,
+      "stack": {
+        "id": "beecrasy:honey_drop"
+      }
+    }
+  ],
+  "time": 200
+}

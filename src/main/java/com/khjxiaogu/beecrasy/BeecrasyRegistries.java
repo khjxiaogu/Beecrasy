@@ -25,7 +25,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
-
 import com.google.common.collect.ImmutableSet;
 import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
 import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlock;
@@ -59,11 +58,13 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -78,6 +79,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.RandomSupport;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -85,11 +87,14 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.NeoForgeRegistries.Keys;
 @EventBusSubscriber(modid = Beecrasy.MODID)
 public class BeecrasyRegistries {
 	public static class Items{
@@ -102,6 +107,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> BUMBLEBEE_JASPER=ITEMS.registerSimpleItem("bumblebee_jasper");
 	    public static final DeferredItem<Item> PHEROMONO=ITEMS.registerSimpleItem("pheromone");
 	    public static final DeferredItem<Item> ROYAL_JELLY=ITEMS.registerSimpleItem("royal_jelly");
+	    public static final DeferredItem<Item> HONEY_BUCKET=ITEMS.registerItem("honey_bucket",p->new BucketItem(Fluids.HONEY_STILL.get(),p),p->p.craftRemainder(net.minecraft.world.item.Items.BUCKET).stacksTo(1));
 	    
 	    //蜜蜂相关
 	    public static final DeferredItem<Item> DRONE=ITEMS.registerSimpleItem("drone",t->t.component(Components.GENOME, GenomeComponent.HAPLOID_EMPTY.asInspected()).stacksTo(1));
@@ -119,6 +125,20 @@ public class BeecrasyRegistries {
 	            .withTabsBefore(CreativeModeTabs.COMBAT)
 	            .icon(() -> Items.DRONE.get().getDefaultInstance())
 	            .build());
+	}
+	public static class Fluids{
+		public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(Registries.FLUID, Beecrasy.MODID);
+		public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(Keys.FLUID_TYPES, Beecrasy.MODID);
+		public static final DeferredHolder<FluidType,FluidType> HONEY=FLUID_TYPES.register("honey",()->new FluidType(FluidType.Properties.create().viscosity(1200)
+				.temperature(333).rarity(Rarity.UNCOMMON)));
+		
+		public static final DeferredHolder<Fluid,Fluid> HONEY_STILL=FLUIDS.register("honey",()->new BaseFlowingFluid.Source(honeyProps()));
+		public static final DeferredHolder<Fluid,Fluid> HONEY_FLOWING=FLUIDS.register("honey_flow",()->new BaseFlowingFluid.Flowing(honeyProps()));
+		public static BaseFlowingFluid.Properties honeyProps() {
+			return new BaseFlowingFluid.Properties(HONEY,HONEY_STILL,HONEY_FLOWING)
+			.slopeFindDistance(1)
+			.explosionResistance(100F).bucket(Items.HONEY_BUCKET);
+		}
 	}
 	public static class Blocks{
 	    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Beecrasy.MODID);
@@ -242,7 +262,8 @@ public class BeecrasyRegistries {
     	Recipes.RECIPE_SERIALIZERS.register(modEventBus);
     	Recipes.RECIPE_TYPES.register(modEventBus);
     	Menus.MENU_TYPES.register(modEventBus);
-    	
+    	Fluids.FLUID_TYPES.register(modEventBus);
+    	Fluids.FLUIDS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         Tabs.CREATIVE_MODE_TABS.register(modEventBus);
         

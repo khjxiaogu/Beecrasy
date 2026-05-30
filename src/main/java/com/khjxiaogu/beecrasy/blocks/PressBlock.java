@@ -32,6 +32,7 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -59,6 +60,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
@@ -117,13 +120,29 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
         return state;
         
     }
+	@Override
+	protected InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos,
+			Player player, InteractionHand hand, BlockHitResult hitResult) {
+		InteractionResult p = super.useItemOn(itemStack,state, level, pos, player, hand, hitResult);
+		if (p.consumesAction())
+			return p;
+		if(level.getBlockEntity(pos) instanceof PressBlockEntity press) {
+			if (itemStack.isEmpty() && player.isShiftKeyDown()) {
+				press.tank.set(0,FluidResource.EMPTY,0);
+				return InteractionResult.SUCCESS;
+			}
+			if (FluidUtil.interactWithFluidHandler(player, hand, pos, press.modtank))
+				return InteractionResult.SUCCESS;
+		}
+		return p;
+	}
     @Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
     	DoubleBlockHalf half = state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF);
     	if(level instanceof ServerLevel serverLevel) {
 	    	if(half==DoubleBlockHalf.UPPER) {
-	    		onTrigger(state,serverLevel,pos);
-	    		return InteractionResult.SUCCESS_SERVER;
+	    		onTrigger(state,serverLevel,pos.below());
+	    		return InteractionResult.SUCCESS;
 	    	}
 			if(level.getBlockEntity(pos) instanceof PressBlockEntity press) {
 				if (!level.isClientSide())
@@ -228,6 +247,9 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
 	public DeferredHolder<BlockEntityType<?>, BlockEntityType<PressBlockEntity>> getBlock() {
 		return BeecrasyRegistries.Blocks.PRESS_BLOCKENTITY;
 	}
+
+
+
 
 
 

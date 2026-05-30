@@ -22,6 +22,7 @@ package com.khjxiaogu.beecrasy.blocks;
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Recipes;
 import com.khjxiaogu.beecrasy.data.PressRecipe;
 import com.khjxiaogu.beecrasy.data.RandomizableRecipeInput;
@@ -36,6 +37,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
@@ -43,11 +45,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.DelegatingResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvider{
 	public int currentTicks;
@@ -80,13 +84,28 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 		}
 	
 	};
+	public final DelegatingResourceHandler<FluidResource> modtank = new DelegatingResourceHandler<>(tank) {
+
+		@Override
+		public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
+			return 0;
+		}
+
+		@Override
+		public int insert(FluidResource resource, int amount, TransactionContext transaction) {
+			return 0;
+		}
+
+	
+	};
 	protected final RecipeHandler<PressRecipe> recipeHandler=new RecipeHandler<>(id->{
 		RandomizableRecipeInput input=getInput();
 		RecipeHolder<PressRecipe> recipe =getRecipe(input);
 		if(recipe!=null&&recipe.id().identifier().equals(id)) {
 			try(Transaction trans=Transaction.openRoot()){
 				int inputCount=recipe.value().input().count();
-				if(getInternInv().extract(getInternInv().getResource(0), inputCount, trans)!=inputCount) {
+				ItemResource inrs=getInternInv().getResource(0);
+				if(getInternInv().extract(inrs, inputCount, trans)!=inputCount) {
 					return RecipeHandleStatus.FAILED;
 				}
 				if(recipe.value().fluid().isPresent()) {
@@ -94,11 +113,17 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 					if(tank.insert(FluidResource.of(stack), stack.amount(), trans)!=stack.amount())
 						return RecipeHandleStatus.BLOCKED;
 				}
+				ItemStackTemplate ist=inrs.get(Components.COMB_PRODUCT);
+				if(ist!=null&&level.getRandom().nextFloat()<=0.33) {
+					if(getInternInv().insert(ItemResource.of(ist), 1, trans)!=1)
+						return RecipeHandleStatus.BLOCKED;
+				}
+				
 				for(ItemStack is:recipe.value().getOutputs(input)) {
 					ItemResource resource=ItemResource.of(is);
 					int reminder=is.count();
 			        int size = getInternInv().size();
-			        for (int index = 0; index < size; index++) {
+			        for (int index = 1; index < size; index++) {
 			        	reminder -= getInternInv().insert(index, resource, reminder, trans);
 			            if (reminder<=0) break;
 			        }
@@ -106,6 +131,7 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 			        	return RecipeHandleStatus.BLOCKED;
 				}
 				trans.commit();
+				powerRemain=0;
 				return RecipeHandleStatus.SUCCEED;
 			}
 		}
@@ -124,15 +150,14 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 	}
 	@Override
 	public void readCustomNBT(ValueInput nbt, boolean isClient) {
+
 		if(!isClient) {
 			getInternInv().deserialize(nbt.childOrEmpty("inventory"));
 			tank.deserialize(nbt.childOrEmpty("tank"));
 			getRecipeHandler().readCustomNBT(nbt, isClient);
 		}else {
-			int ticks=nbt.getIntOr("current", 0);
-			if(ticks<currentTicks)
-				currentTicks=0;
-			maxTicks=nbt.getIntOr("max", 0);
+			currentTicks=nbt.getIntOr("process", 0);
+			maxTicks=nbt.getIntOr("processMax", 0);
 			currentMaxTicks=nbt.getIntOr("currentMax", 0);
 		}
 		powerRemain=nbt.getIntOr("power", powerRemain);
@@ -144,10 +169,11 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 			getInternInv().serialize(nbt.child("inventory"));
 			tank.serialize(nbt.child("tank"));
 			getRecipeHandler().writeCustomNBT(nbt, isClient);
+			
 		}else {
-			nbt.putInt("current", getRecipeHandler().getFinishedProgress());
+			nbt.putInt("process", getRecipeHandler().getFinishedProgress());
 			nbt.putInt("processMax", getRecipeHandler().getProcessMax());
-			if(getRecipeHandler().getProcess()>=getRecipeHandler().getProcessMax()/2)
+			if(getRecipeHandler().getFinishedProgress()>=getRecipeHandler().getProcessMax()/2)
 				nbt.putInt("currentMax", getRecipeHandler().getProcessMax());
 			else
 				nbt.putInt("currentMax", getRecipeHandler().getProcessMax()/2);
@@ -163,16 +189,23 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 	@Override
 	public void tick() {
 		if (this.level.isClientSide()) {
-			if(currentTicks<currentMaxTicks) {
-				currentTicks++;
+			if(powerRemain>0) {
+				if(currentTicks<currentMaxTicks) {
+					currentTicks++;
+					powerRemain--;
+				}
 			}
 			return;
 		}
 		
 		if(getRecipeHandler().shouldTestRecipe()){
 			RecipeHolder<PressRecipe> recipe=getRecipe(getInput());
-			getRecipeHandler().setRecipe(recipe,recipe==null?0:recipe.value().time());
-			this.sendUpdated();
+			if(getRecipeHandler().setRecipe(recipe,recipe==null?0:recipe.value().time())) {
+
+				powerRemain=0;
+				this.sendUpdated();
+			}
+			
 		}
 		if(powerRemain>0) {
 			if (getRecipeHandler().tickProcess(1)) {

@@ -100,4 +100,14 @@ public abstract class BeecrasyBlockEntity extends BlockEntity {
 	public boolean isHandlingMessage() {
 		return loadingMessage;
 	}
+
+	@Override
+	public void handleUpdateTag(ValueInput input) {
+		try {
+			loadingMessage = true;
+			super.handleUpdateTag(input);
+		} finally {
+			loadingMessage = false;
+		}
+	}
 }
