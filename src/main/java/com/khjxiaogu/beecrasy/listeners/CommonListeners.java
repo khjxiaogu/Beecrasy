@@ -77,10 +77,10 @@ public class CommonListeners {
 				return be.getProductInv();
 			return be.getExternInv();
 		});
-		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.PRESS_BLOCKENTITY.get(), (be,ctx)->{
+		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.PRESS_BLOCKENTITY.get(), (be,_)->{
 			return be.getExternInv();
 		});
-		event.registerBlockEntity(Capabilities.Fluid.BLOCK, Blocks.PRESS_BLOCKENTITY.get(), (be,ctx)->{
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, Blocks.PRESS_BLOCKENTITY.get(), (be,_)->{
 			return be.getExternTank();
 		});
 	}

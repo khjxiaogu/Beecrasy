@@ -26,6 +26,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+
 import com.google.common.collect.ImmutableSet;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
 import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
@@ -47,13 +48,13 @@ import com.khjxiaogu.beecrasy.item.QueenBeeItem;
 import com.khjxiaogu.beecrasy.item.SequencerHandHeld;
 import com.khjxiaogu.beecrasy.menu.PressMenu;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuHandHeld;
+import com.khjxiaogu.beecrasy.menu.SequencerMenuBlock;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -61,6 +62,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -117,12 +120,12 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> HONEY_BUCKET=ITEMS.registerItem("honey_bucket",p->new BucketItem(Fluids.HONEY_STILL.get(),p),p->p.craftRemainder(net.minecraft.world.item.Items.BUCKET).stacksTo(1));
 	    
 	    //蜜蜂相关
-	    public static final DeferredItem<Item> DRONE=ITEMS.registerSimpleItem("drone",t->t.component(Components.GENOME, GenomeComponent.HAPLOID_EMPTY.asInspected()).stacksTo(1));
+	    public static final DeferredItem<Item> DRONE=ITEMS.registerSimpleItem("drone",t->t.component(Components.GENOME, GenomeComponent.HAPLOID_EMPTY).stacksTo(1));
 	    public static final DeferredItem<Item> LARVA=ITEMS.registerItem("larva",LarvaItem::new,t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY.asInspected()).stacksTo(1));
 	    public static final DeferredItem<Item> PRODUCT_COMB=ITEMS.registerSimpleItem("product_comb");
-	    public static final DeferredItem<Item> QUEEN_BEE=ITEMS.registerItem("queen_bee",QueenBeeItem::new,t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY.asInspected()).stacksTo(1));
+	    public static final DeferredItem<Item> QUEEN_BEE=ITEMS.registerItem("queen_bee",QueenBeeItem::new,t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY).stacksTo(1));
 	    //工具
-	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerItem("handheld_sequencer",SequencerHandHeld::new,t->t.component(DataComponents.CONTAINER, ItemContainerContents.EMPTY).stacksTo(1));
+	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerItem("handheld_sequencer",SequencerHandHeld::new,t->t.component(Components.CONTAINER, ItemContainerContents.EMPTY).stacksTo(1));
 	    public static final DeferredItem<Item> BUTTERFLY_NET=ITEMS.registerSimpleItem("butterfly_net",s->s.tool(ToolMaterial.WOOD,Tags.MINABLE_NET, 1.0f, -2.8f, 0).stacksTo(1));
 	}
 	public static class Tabs{
@@ -220,6 +223,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<LarvaProductivity>> LARVA_PRODUCT=COMPONENTS.registerComponentType("larva_product", t->t.cacheEncoding().persistent(LarvaProductivity.CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> LARVA_EXPIRES=COMPONENTS.registerComponentType("larva_expire", t->t.cacheEncoding().persistent(Codec.LONG));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeeHiveArgumentation>> ARGUMENTATION=COMPONENTS.registerComponentType("beehive_argumentation", t->t.cacheEncoding().persistent(BeeHiveArgumentation.CODEC).networkSynchronized(BeeHiveArgumentation.STREAM_CODEC));
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContainerContents>> CONTAINER=COMPONENTS.registerComponentType("container", t->t.cacheEncoding().persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC));
 
 	    
 	}
@@ -231,6 +235,8 @@ public class BeecrasyRegistries {
 	public static class Tags{
 		public static final TagKey<Block> MINABLE_NET=BlockTags.create(Beecrasy.rl("minable_net"));
 		public static final TagKey<Block> FLOWERS=BlockTags.create(Beecrasy.rl("flowers"));
+		public static final TagKey<Fluid> HONEY=FluidTags.create(Beecrasy.rl("honey"));
+		public static final TagKey<Item> HONEY_DROP=ItemTags.create(Beecrasy.rl("honey"));
 		
 	}
 	public static class Recipes{
@@ -259,6 +265,7 @@ public class BeecrasyRegistries {
 		public static final DeferredHolder<MenuType<?>, MenuType<PressMenu>> PRESS_MENU=MENU_TYPES.register("press", () -> IMenuTypeExtension.create(PressMenu::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<SkepMenu>> SKEP_MENU=MENU_TYPES.register("skep", () -> IMenuTypeExtension.create(SkepMenu::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<SequencerMenuHandHeld>> SEQUENCER_HANDHELD_MENU=MENU_TYPES.register("sequencer_handheld", () -> IMenuTypeExtension.create(SequencerMenuHandHeld::new));
+		public static final DeferredHolder<MenuType<?>, MenuType<SequencerMenuBlock>> SEQUENCER_BLOCK_MENU=MENU_TYPES.register("sequencer_block", () -> IMenuTypeExtension.create(SequencerMenuBlock::new));
 		
 	}
     public static void register(IEventBus modEventBus) {

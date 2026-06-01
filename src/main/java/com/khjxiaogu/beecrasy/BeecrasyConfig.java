@@ -54,6 +54,9 @@ public class BeecrasyConfig {
 		public final IntValue RADIUS;
 		public final IntValue LARVA_SURVIVE_SECS;
 		public final DoubleValue MUTATION_CHANCE;
+
+		public final IntValue SEQUENCER_HONEY;
+		public final IntValue SEQUENCER_ENERGY;
 		Server(ModConfigSpec.Builder builder) {
 			builder.push("beehive");
 			LIFESPAN=builder.comment("Lifespan for an average lifespan gene.")
@@ -68,6 +71,12 @@ public class BeecrasyConfig {
 				.defineInRange("larvaSurviveSeconds", 600, 0, Integer.MAX_VALUE);
 			MUTATION_CHANCE=builder.comment("Total chance for mutations.")
 				.defineInRange("mutationChance", 0.075d, 0d, 1d);
+			builder.pop();
+			builder.push("sequencer");
+			SEQUENCER_HONEY=builder.comment("Honey consumption in mB.")
+				.defineInRange("honeyCost", 25, 0, Integer.MAX_VALUE);
+			SEQUENCER_ENERGY=builder.comment("Energy consumption in FE.")
+				.defineInRange("energyCost", 5000, 0, Integer.MAX_VALUE);
 			builder.pop();
 		}
 	}

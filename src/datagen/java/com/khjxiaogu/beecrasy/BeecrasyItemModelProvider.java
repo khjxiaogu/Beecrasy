@@ -33,6 +33,7 @@ import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.item.ItemModel.Unbaked;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -59,6 +60,10 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 		this.texture(Items.COMB_FOUNDATION);
 		this.texture(Items.HONEY_DROP);
 		this.texture(Items.SEQUENCER);
+		;
+		this.itemModelOutput.register(Beecrasy.rl("handheld_sequencer_active"), new ClientItem(ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM
+			.create(Beecrasy.rl("item/"+"handheld_sequencer_active"), TextureMapping.layer0(new Material(
+				Beecrasy.rl("item/"+"handheld_sequencer_active"))), this.modelOutput)),ClientItem.Properties.DEFAULT));
 		this.texture(Items.APITE);
 		this.texture(Items.BUMBLEBEE_JASPER);
 		this.texture(Items.PHEROMONO);

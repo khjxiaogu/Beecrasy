@@ -23,13 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.client.screens.SequencerScreen;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.genome.Genes;
-import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.menu.SequencerMenu;
 
@@ -40,8 +37,10 @@ import net.minecraft.world.item.ItemStack;
 
 public class BasicGeneticsTab implements SequencerTab {
 	List<Line> lines=new ArrayList<>();
+	public static final Component title=Component.translatable("tab.sequencer.beecrasy.basic");
 	public BasicGeneticsTab() {
 		super();
+		addLines();
 	}
 	public void addLines() {
 
@@ -81,7 +80,7 @@ public class BasicGeneticsTab implements SequencerTab {
 
 	@Override
 	public void addButtonTooltip(SequencerMenu menu, Consumer<Component> tooltips) {
-		tooltips.accept(Component.translatable("tab.sequencer.beecrasy.basic"));
+		tooltips.accept(title);
 		
 	}
 

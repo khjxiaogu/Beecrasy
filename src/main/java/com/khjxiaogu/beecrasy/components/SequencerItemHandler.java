@@ -31,19 +31,17 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public class SequencerItemHandler extends ItemAccessItemHandler {
-	public final static Identifier SEQUENCER=Beecrasy.rl("handheld_sequencer");
+	public final static Identifier SEQUENCER=       Beecrasy.rl("handheld_sequencer");
 	public final static Identifier SEQUENCER_ACTIVE=Beecrasy.rl("handheld_sequencer_active");
 	public SequencerItemHandler(ItemAccess itemAccess) {
-		super(itemAccess, DataComponents.CONTAINER, 2);
+		super(itemAccess, Components.CONTAINER.get(), 2);
 	}
-	
 	@Override
 	protected ItemResource update(ItemResource accessResource, int index, ItemResource newResource, int newAmount) {
-		
-		ItemResource ir= super.update(accessResource, index, newResource, newAmount);
+    	ItemResource ir=super.update(accessResource, index, newResource, newAmount);
 		if(index==0) {
 			if(newResource.isEmpty())
-				ir=ir.without(DataComponents.ITEM_MODEL);
+				ir=ir.with(DataComponents.ITEM_MODEL, SEQUENCER);
 			else
 				ir=ir.with(DataComponents.ITEM_MODEL, SEQUENCER_ACTIVE);
 		}
@@ -58,8 +56,10 @@ public class SequencerItemHandler extends ItemAccessItemHandler {
 	}
 	public void set(int index, ItemResource resource, int amount) {
 		try(Transaction trans=Transaction.openRoot()) {
-			itemAccess.exchange(super.update(itemAccess.getResource(), index, resource, amount), itemAccess.getAmount(), trans);
-			trans.commit();
+			int amt=itemAccess.getAmount();
+			if(itemAccess.exchange(this.update(itemAccess.getResource(), index, resource, amount),amt , trans)==amt) {
+				trans.commit();
+			}
 		}
 	}
 }

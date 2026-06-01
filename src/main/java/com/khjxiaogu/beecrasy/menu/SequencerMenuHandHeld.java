@@ -19,17 +19,14 @@
 
 package com.khjxiaogu.beecrasy.menu;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
-import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.SequencerItemHandler;
 import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.IndexModifier;
 import net.neoforged.neoforge.transfer.ResourceHandler;
@@ -37,10 +34,9 @@ import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public class SequencerMenuHandHeld extends SequencerMenu{
-	
+	ItemAccess iaccess;
 	public SequencerMenuHandHeld( int containerId, Inventory inventory, RegistryFriendlyByteBuf buf) {
 		super(Menus.SEQUENCER_HANDHELD_MENU.get(), containerId, inventory, new ItemStacksResourceHandler(2) {
 
@@ -56,34 +52,12 @@ public class SequencerMenuHandHeld extends SequencerMenu{
 	}
 	public SequencerMenuHandHeld( int containerId, Inventory inventory, ItemAccess access) {
 		this(containerId, inventory, new SequencerItemHandler(access));
+		iaccess=access;
 	}
 	public SequencerMenuHandHeld(int containerId, Inventory inventory, SequencerItemHandler slots) {
 		super(Menus.SEQUENCER_HANDHELD_MENU.get(), containerId, inventory, slots,slots::set);
 	}
-    @Override
-    public void slotsChanged(Container container) {
-        
-    	int honey=handler.getAmountAsInt(1);
-    	int bee=handler.getAmountAsInt(0);
-    	if(honey>0&&bee>0) {
-    		ItemResource beeItem=handler.getResource(0);
-    		GenomeComponent genome=beeItem.get(Components.GENOME);
-    		if(genome!=null&&!genome.isInspected()) {
-        		ItemResource honeyItem=handler.getResource(1);
-        		try(Transaction trans=Transaction.openRoot()){
-	        		if(handler.extract(0, beeItem, bee, trans)==bee) {
-	        			if(handler.extract(1, honeyItem, 1, trans)==1) {
-	            			if(handler.insert(0, beeItem.with(Components.GENOME, genome.asInspected()), bee, trans)==bee) {
-	            				trans.commit();
-	            				return;
-	            			}
-	            		}
-	        		}
-        		}
-    		}
-    	}
-        
-    }
+    
 	@Override
 	protected void addSlots(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier) {
 		super.addSlots(handler,slotModifier);
@@ -93,5 +67,10 @@ public class SequencerMenuHandHeld extends SequencerMenu{
 	public boolean quickMoveIn(ItemStack slotStack) {
 		return super.quickMoveIn(slotStack)||this.moveItemStackTo(slotStack, 1, 2, false);
 	}
+	@Override
+	public boolean stillValid(Player pPlayer) {
+		return iaccess==null?true:iaccess.getAmount()>0;
+	}
+	
 	
 }

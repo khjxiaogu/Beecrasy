@@ -28,6 +28,7 @@ import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTabs;
 import com.khjxiaogu.beecrasy.menu.SequencerMenu;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -40,6 +41,9 @@ public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerS
 		super(menu, inventory, title, 176, 225);
 	}
 	int selected=0;
+	int maxIndex=0;
+	int minIndex=0;
+	int page=0;
 	private ArrayList<Component> tooltip = new ArrayList<>(2);
 
 	@Override
@@ -47,15 +51,25 @@ public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerS
 		super.init();
 		this.clearWidgets();
 	}
-
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial,Consumer<Component> adder) {
+		
+	}
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 		tooltip.clear();
 		Consumer<Component> adder=tooltip::add;
-
+		minIndex=page*5;
+		int tabCount=SequencerTabs.getTabs().size();
+		maxIndex=Math.min(5, tabCount-minIndex);
+		if(selected>=tabCount) {
+			selected=tabCount-1;
+		}
+		if(selected<0) {
+			selected=0;
+		}
 		SequencerTab selectedTab=SequencerTabs.getTabs().get(selected);
-		for(int i=0;i<5;i++) {
-			int idx=i;
+		for(int i=0;i<maxIndex;i++) {
+			int idx=i+minIndex;
 			SequencerTab tab=SequencerTabs.getTabs().get(idx);
 			boolean select=idx==selected;
 			tab.extractButton(graphics, menu, leftPos+11, topPos+13+i*18, 23, 15, select);
@@ -67,6 +81,7 @@ public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerS
 		int dy=topPos+13;
 		selectedTab.extractRenderState(graphics, menu, dx, dy, 92, 100, mouseX, mouseY, partial, adder);
 		super.extractRenderState(graphics, mouseX, mouseY, partial);
+		extractRenderState(graphics, mouseX, mouseY, partial,adder);
 		if (!tooltip.isEmpty()) {
 			graphics.setComponentTooltipForNextFrame(this.font, tooltip, mouseX, mouseY);
 		}
@@ -92,5 +107,19 @@ public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerS
 
 	public boolean isMouseIn(int mouseX, int mouseY, int x, int y, int w, int h) {
 		return mouseX >= leftPos + x && mouseY >= topPos + y && mouseX < leftPos + x + w && mouseY < topPos + y + h;
+	}
+
+	@Override
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+		int mouseX=(int) event.x(),mouseY=(int) event.y();
+		if(isMouseIn(mouseX,mouseY,11,13,23,103)) {
+			int pos=mouseY-topPos-13;
+			int idx=pos/18;
+			if(idx%18<=15) {
+				if(idx<maxIndex&&idx>=0)
+					selected=idx;
+			}
+		}
+		return super.mouseClicked(event, doubleClick);
 	}
 }

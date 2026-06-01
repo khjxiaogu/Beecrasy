@@ -19,16 +19,22 @@
 
 package com.khjxiaogu.beecrasy.item;
 
+import java.util.List;
+
 import org.jspecify.annotations.Nullable;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
+import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuHandHeld;
 
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -49,9 +55,9 @@ public class SequencerHandHeld extends Item{
 
     @Override
     public void onDestroyed(ItemEntity entity) {
-        ItemContainerContents contents = entity.getItem().get(DataComponents.CONTAINER);
+        ItemContainerContents contents = entity.getItem().get(Components.CONTAINER);
         if (contents != null) {
-            entity.getItem().set(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
+            entity.getItem().set(Components.CONTAINER, ItemContainerContents.EMPTY);
             ItemUtils.onContainerDestroyed(entity, contents.nonEmptyItemCopyStream());
         }
     }
@@ -65,7 +71,10 @@ public class SequencerHandHeld extends Item{
 
 				@Override
 				public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
-					return new SequencerMenuHandHeld(containerId,inventory,ItemAccess.forPlayerInteraction(player, hand));
+					return new SequencerMenuHandHeld(containerId,inventory,ItemAccess.forPlayerSlot(player, switch (hand) {
+	                case MAIN_HAND -> player.getInventory().getSelectedSlot();
+	                case OFF_HAND -> Inventory.SLOT_OFFHAND;
+	            }));
 				}
 
 				@Override
@@ -76,5 +85,25 @@ public class SequencerHandHeld extends Item{
 			});
 		}
 		return super.use(level, player, hand);
+	}
+
+	@Override
+	public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
+		
+		super.inventoryTick(itemStack, level, owner, slot);
+
+        ItemContainerContents contents = itemStack.get(Components.CONTAINER);
+        if(contents.getSlots()<2)
+        	return;
+		ItemStack honey=contents.getStackInSlot(1);
+    	ItemStack bee=contents.getStackInSlot(0);
+    	if(!honey.isEmpty()&&!bee.isEmpty()) {
+    		GenomeComponent genome=bee.get(Components.GENOME);
+    		if(genome!=null&&!genome.isInspected()) {
+    			honey.split(1);
+    			bee.set(Components.GENOME, genome.asInspected());
+    	    	itemStack.set(Components.CONTAINER, ItemContainerContents.fromItems(List.of(bee,honey)));
+    		}
+    	}
 	}
 }

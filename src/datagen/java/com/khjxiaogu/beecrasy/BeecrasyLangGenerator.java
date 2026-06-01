@@ -47,7 +47,7 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 	protected void addTranslations() {
 		for(Identifier id:GeneRegistry.getGeneTypes()) {
 			if(id.getNamespace().equals(Beecrasy.MODID)) {
-				this.add(GeneRegistry.get(id).getLanguageKey(), capitalizeWords(id.getPath())+": %s");
+				this.add(GeneRegistry.get(id).getLanguageKey(), capitalizeWords(id.getPath()));
 				this.add(GeneRegistry.get(id).getShortLanguageKey(), capitalizeWords(id.getPath()).substring(0,Math.min(id.getPath().length(), 4)));
 			}
 			

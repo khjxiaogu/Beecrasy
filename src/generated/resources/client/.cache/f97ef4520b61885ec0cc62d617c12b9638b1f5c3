@@ -1,4 +1,4 @@
-// 26.1.2	2026-06-01T02:10:03.4148668	Model Definitions - beecrasy
+// 26.1.2	2026-06-01T16:30:40.0753635	Model Definitions - beecrasy
 4c7cf0e4438c3d08128faa6e528770e3dde1c048 assets/beecrasy/blockstates/bee_nest_big.json
 2ec8c8a692b2ead7a010c6a08f4f7e90599bd066 assets/beecrasy/blockstates/bee_nest_medium.json
 809435de1f5dafa7eb21969f597c32b89a31100d assets/beecrasy/blockstates/bee_nest_nascent.json
@@ -21,6 +21,7 @@ fee78f5ff2576eed19bc1a43b362134a781c1271 assets/beecrasy/items/bee_nest_medium.j
 1620b022d57f99dc6fc8d1f39d2ace3f48628838 assets/beecrasy/items/drone.json
 05220e930b51e5c6496ac9396f0c75262b6ab8af assets/beecrasy/items/empty_comb_block.json
 196ab2314730d438f4f23d08f033dcab34c5a5a2 assets/beecrasy/items/handheld_sequencer.json
+6f9e4edfeef0b80456ca2061eb5c7590578cfa57 assets/beecrasy/items/handheld_sequencer_active.json
 e6efb90772d0f72b8f75dcd1c9ceea75be024c64 assets/beecrasy/items/honey_bucket.json
 39427683ad240cec30d81f7c531898b670c298c7 assets/beecrasy/items/honey_comb_block.json
 88b831928662fd644abc074d423f403f1edafa2d assets/beecrasy/items/honey_drop.json
@@ -47,6 +48,7 @@ b44c73fde11d8e2fe10d22f8c55c3cc41f766697 assets/beecrasy/models/item/bumblebee_j
 1eb3bd25374e25ce0471cd6393e984a43d31fb59 assets/beecrasy/models/item/comb_foundation.json
 c7a383d258306e5aa54d72e30a62d869925c3200 assets/beecrasy/models/item/drone.json
 e0079aaa498e64a952216e2aa13ef41f59517d7a assets/beecrasy/models/item/handheld_sequencer.json
+4b5b106ade8a818c345a0c674586fe8da8467b53 assets/beecrasy/models/item/handheld_sequencer_active.json
 fd701e638f3eab54d4ab9336ff930719033e19e2 assets/beecrasy/models/item/honey_bucket.json
 aaee3c0a458b336056f6ddfe662c240678a4d543 assets/beecrasy/models/item/honey_drop.json
 313ee95e06d7990b9e02f915ef83e1d1981918b0 assets/beecrasy/models/item/larva.json

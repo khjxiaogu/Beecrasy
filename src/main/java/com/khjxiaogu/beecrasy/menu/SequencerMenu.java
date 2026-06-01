@@ -35,7 +35,7 @@ public class SequencerMenu extends BeecrasyContainerMenu {
 	}
 
 	protected SequencerMenu(MenuType<?> menuType,int containerId, Inventory inventory,ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier) {
-		super(menuType, containerId, inventory, 10);
+		super(menuType, containerId, inventory, handler.size());
 		this.handler=handler;
 		addSlots(handler,slotModifier);
 		this.addPlayerInventory(8, 140, 198);

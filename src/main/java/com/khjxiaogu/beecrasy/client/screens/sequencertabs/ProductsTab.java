@@ -29,7 +29,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 
 public class ProductsTab implements SequencerTab{
-
+	public static final Component title=Component.translatable("tab.sequencer.beecrasy.products");
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor transform, SequencerMenu menu, int x, int y, int w, int h, int mouseX, int mouseY, float partial, Consumer<Component> tooltips) {
 		// TODO Auto-generated method stub
@@ -50,7 +50,7 @@ public class ProductsTab implements SequencerTab{
 
 	@Override
 	public void addButtonTooltip(SequencerMenu menu, Consumer<Component> tooltips) {
-		tooltips.accept(Component.translatable("tab.sequencer.beecrasy.products"));
+		tooltips.accept(title);
 		
 	}
 
