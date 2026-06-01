@@ -29,22 +29,16 @@ import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 
-public class BeeHiveArgumentation {
+public record BeeHiveArgumentation(Map<BeehiveParameterType<?>, Object> params) {
 	public static final Codec<BeeHiveArgumentation> CODEC=BeeHiveParameterRegistry.COMPOSITE_CODEC.xmap(BeeHiveArgumentation::new, BeeHiveArgumentation::params);
 	public static final StreamCodec<ByteBuf,BeeHiveArgumentation> STREAM_CODEC=BeeHiveParameterRegistry.COMPOSITE_STREAM_CODEC.map(BeeHiveArgumentation::new, BeeHiveArgumentation::params);
 	
-	private final Map<BeehiveParameterType<?>,Object> params;
-
-	public BeeHiveArgumentation(Map<BeehiveParameterType<?>, Object> params) {
-		super();
-		this.params = params;
-	}
 	public Map<BeehiveParameterType<?>, Object> params() {
 		return params;
 	}
 	public static class Builder{
 		private Map<BeehiveParameterType<?>,Object> params=new HashMap<>();
-		public Builder setParam(BeehiveParameterType<?> key,Object value) {
+		public <T> Builder setParam(BeehiveParameterType<T> key,T value) {
 			params.put(key, value);
 			return this;
 		}

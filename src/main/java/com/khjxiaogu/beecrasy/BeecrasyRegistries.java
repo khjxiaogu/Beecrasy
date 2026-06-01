@@ -291,8 +291,8 @@ public class BeecrasyRegistries {
     		for(DeferredHolder<Item, ? extends Item> i:Items.ITEMS.getEntries()) {
     			ev.accept(i.get());
     		}
-    		ev.accept(pheromono(t->t.setParam(BeeHiveParameters.SPEED, 9)));
-    		ev.accept(pheromono(t->t.setParam(BeeHiveParameters.MUTATE, 9)));
+    		ev.accept(pheromono(t->t.setParam(BeeHiveParameters.SPEED, 9f)));
+    		ev.accept(pheromono(t->t.setParam(BeeHiveParameters.MUTATE, 9f)));
     	}
     }
 }
