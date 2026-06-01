@@ -46,7 +46,10 @@ public final class BeecrasyMath {
 
 	public static int getRandomRate(float rate, RandomSource random) {
 		int count=Mth.floor(rate);
-		if(random.nextFloat()<Mth.frac(rate))
+		float frac=Mth.frac(rate);
+		if(frac<=1E-7)
+			return count;
+		if(random.nextFloat()<frac)
 			count++;
 		return count;
 	}

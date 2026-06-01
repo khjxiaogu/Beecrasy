@@ -23,6 +23,7 @@ import com.khjxiaogu.beecrasy.Beecrasy;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 
@@ -72,5 +73,8 @@ public class WorldCalendar extends SavedData {
 	}
 	public long getLastTicks() {
 		return lastTicks;
+	}
+	public static WorldCalendar getCalendar(ServerLevel level) {
+		return level.getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE);
 	}
 }

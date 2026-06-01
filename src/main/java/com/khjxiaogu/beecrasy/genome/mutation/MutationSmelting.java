@@ -81,7 +81,7 @@ public class MutationSmelting implements Mutation {
 		return false;
 	}
 	@Override
-	public float getChance() {
+	public float getChance(BeeHiveParameterSet params,DiploidGenome genome) {
 		return .05f;
 	}
 	@Override

@@ -23,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
+import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -31,6 +32,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 public class SkepBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvider{
 
@@ -46,6 +48,11 @@ public class SkepBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvi
 	@Override
 	public Component getDisplayName() {
 		return Blocks.SKEP.get().getName();
+	}
+
+	@Override
+	public boolean isValidForExtra(int index, ItemResource resource) {
+		return ItemValidateHelper.isArgument(resource.toStack());
 	}
 
 }

@@ -19,11 +19,16 @@
 
 package com.khjxiaogu.beecrasy.listeners;
 
+import java.util.Map.Entry;
+import java.util.function.Consumer;
+
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry.BeehiveParameterType;
+import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.genome.Genes;
 
@@ -38,6 +43,7 @@ import net.neoforged.neoforge.event.AddAttributeTooltipsEvent;
 
 @EventBusSubscriber(modid = Beecrasy.MODID, value=Dist.CLIENT)
 public class ClientListener {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SubscribeEvent
 	public static void addTooltip(AddAttributeTooltipsEvent event) {
 		ItemStack stack=event.getStack();
@@ -60,6 +66,14 @@ public class ClientListener {
 				event.addTooltipLines(Component.translatable("tooltip.beecrasy.no_special_product"));
 			}else {
 				event.addTooltipLines(Component.translatable("tooltip.beecrasy.possible_product", product.get(DataComponents.ITEM_NAME)));
+			}
+		}
+
+		@Nullable BeeHiveArgumentation arguments=stack.get(Components.ARGUMENTATION);
+		if(arguments!=null) {
+			Consumer<Component> csm=event::addTooltipLines;
+			for(Entry<BeehiveParameterType<?>, Object> ent:arguments.params().entrySet()) {
+				((BeehiveParameterType)ent.getKey()).desc().accept(ent.getValue(), csm);
 			}
 		}
 	}

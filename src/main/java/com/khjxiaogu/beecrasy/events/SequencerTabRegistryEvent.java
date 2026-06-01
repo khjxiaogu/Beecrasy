@@ -17,21 +17,22 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.genome;
+package com.khjxiaogu.beecrasy.events;
 
-import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
+import java.util.function.Consumer;
 
-import net.minecraft.util.RandomSource;
+import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTab;
 
-public interface Mutation {
-	/**
-	 * 执行突变
-	 * @param genome 子代的基因组
-	 * @param rnd 随机序列
-	 * @return 是否继续执行后续突变
-	 * 
-	 * */
-	boolean mutate(BeeHiveParameterSet params,DiploidGenome genome,RandomSource rnd);
-	float getChance(BeeHiveParameterSet params,DiploidGenome genome);
-	boolean isApplicable(BeeHiveParameterSet params,DiploidGenome genome);
+import net.neoforged.bus.api.Event;
+
+public class SequencerTabRegistryEvent extends Event {
+	private Consumer<SequencerTab> tabAdder;
+
+	public SequencerTabRegistryEvent(Consumer<SequencerTab> tabAdder) {
+		super();
+		this.tabAdder = tabAdder;
+	}
+	public void register(SequencerTab tab) {
+		tabAdder.accept(tab);
+	}
 }

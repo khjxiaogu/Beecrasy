@@ -20,11 +20,12 @@
 package com.khjxiaogu.beecrasy.client.screens;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
-import com.khjxiaogu.beecrasy.client.FluidRenderHelper;
-import com.khjxiaogu.beecrasy.menu.PressMenu;
-
+import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTab;
+import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTabs;
+import com.khjxiaogu.beecrasy.menu.SequencerMenu;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -32,51 +33,58 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
-public class PressScreen extends AbstractContainerScreen<PressMenu> {
-	static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Beecrasy.MODID, "textures/gui/honey_press.png");
+public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerScreen<T> {
+	public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Beecrasy.MODID, "textures/gui/sequencer.png");
 
-	public PressScreen(PressMenu menu, Inventory inventory, Component title) {
-		super(menu, inventory, title);
-        this.inventoryLabelY = imageHeight - 92;
+	public SequencerScreen(T menu, Inventory inventory, Component title) {
+		super(menu, inventory, title, 176, 225);
 	}
+	int selected=0;
 	private ArrayList<Component> tooltip = new ArrayList<>(2);
 
 	@Override
 	public void init() {
 		super.init();
 		this.clearWidgets();
-
-
 	}
 
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor transform, int mouseX, int mouseY, float partial) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 		tooltip.clear();
-		
-		super.extractRenderState(transform, mouseX, mouseY, partial);
+		Consumer<Component> adder=tooltip::add;
 
-		FluidRenderHelper.handleGuiTank(transform, menu, 0, leftPos + 91, topPos + 9, 17, 34,mouseX,mouseY,tooltip::add);
+		SequencerTab selectedTab=SequencerTabs.getTabs().get(selected);
+		for(int i=0;i<5;i++) {
+			int idx=i;
+			SequencerTab tab=SequencerTabs.getTabs().get(idx);
+			boolean select=idx==selected;
+			tab.extractButton(graphics, menu, leftPos+11, topPos+13+i*18, 23, 15, select);
+			if(this.isMouseIn(mouseX, mouseY, 11, 13+i*18, 23, 15)) {
+				tab.addButtonTooltip(menu, adder);
+			}
+		}
+		selectedTab.extractRenderState(graphics, menu, 40, 13, 92, 100, mouseX, mouseY, partial, adder);
+		super.extractRenderState(graphics, mouseX, mouseY, partial);
 		if (!tooltip.isEmpty()) {
-			transform.setComponentTooltipForNextFrame(this.font, tooltip, mouseX, mouseY);
+			graphics.setComponentTooltipForNextFrame(this.font, tooltip, mouseX, mouseY);
 		}
 
 	}
+
 	@Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
         //graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, -12566464, false);
         graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, -12566464, false);
     }
+
 	@Override
 	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 		super.extractBackground(graphics, mouseX, mouseY, a);
-
+		SequencerTab selectedTab=SequencerTabs.getTabs().get(selected);
+		
 		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight,256,256);
-		int process=menu.data.get(0);
-		int processMax=menu.data.get(1);
-		if (processMax > 0&&process>0) {
-			int w = 43-(int) (43 * (process / (float) processMax));
-			graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + 73, topPos + 46, 176, 0, w, 23,256,256);
-		}
+		selectedTab.extractBackground(graphics, menu, 40, 13, 92, 100, mouseX, mouseY, a);
+	
 		
 	}
 

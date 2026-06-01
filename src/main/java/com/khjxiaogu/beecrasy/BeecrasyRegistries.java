@@ -21,11 +21,13 @@ package com.khjxiaogu.beecrasy;
 
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableSet;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
 import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
 import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlock;
 import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlockEntity;
@@ -34,6 +36,7 @@ import com.khjxiaogu.beecrasy.blocks.PressBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.SequencerBlock;
 import com.khjxiaogu.beecrasy.blocks.SkepBlock;
 import com.khjxiaogu.beecrasy.blocks.SkepBlockEntity;
+import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.LarvaProductivity;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
@@ -42,12 +45,14 @@ import com.khjxiaogu.beecrasy.data.PressRecipe;
 import com.khjxiaogu.beecrasy.item.LarvaItem;
 import com.khjxiaogu.beecrasy.item.QueenBeeItem;
 import com.khjxiaogu.beecrasy.menu.PressMenu;
+import com.khjxiaogu.beecrasy.menu.SequencerMenuHandHeld;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -66,6 +71,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -115,7 +121,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> PRODUCT_COMB=ITEMS.registerSimpleItem("product_comb");
 	    public static final DeferredItem<Item> QUEEN_BEE=ITEMS.registerItem("queen_bee",QueenBeeItem::new,t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY.asInspected()).stacksTo(1));
 	    //工具
-	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerSimpleItem("handheld_sequencer");
+	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerSimpleItem("handheld_sequencer",t->t.component(DataComponents.CONTAINER, ItemContainerContents.EMPTY));
 	    public static final DeferredItem<Item> BUTTERFLY_NET=ITEMS.registerSimpleItem("butterfly_net",s->s.tool(ToolMaterial.WOOD,Tags.MINABLE_NET, 1.0f, -2.8f, 0));
 	}
 	public static class Tabs{
@@ -212,7 +218,9 @@ public class BeecrasyRegistries {
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStackTemplate>> COMB_PRODUCT=COMPONENTS.registerComponentType("comb_product", t->t.cacheEncoding().persistent(ItemStackTemplate.CODEC).networkSynchronized(ItemStackTemplate.STREAM_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<LarvaProductivity>> LARVA_PRODUCT=COMPONENTS.registerComponentType("larva_product", t->t.cacheEncoding().persistent(LarvaProductivity.CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> LARVA_EXPIRES=COMPONENTS.registerComponentType("larva_expire", t->t.cacheEncoding().persistent(Codec.LONG));
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeeHiveArgumentation>> ARGUMENTATION=COMPONENTS.registerComponentType("beehive_argumentation", t->t.cacheEncoding().persistent(BeeHiveArgumentation.CODEC).networkSynchronized(BeeHiveArgumentation.STREAM_CODEC));
 
+	    
 	}
 	public static class Attachments{
 		public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Beecrasy.MODID);
@@ -249,6 +257,8 @@ public class BeecrasyRegistries {
 			.create(Registries.MENU, Beecrasy.MODID);
 		public static final DeferredHolder<MenuType<?>, MenuType<PressMenu>> PRESS_MENU=MENU_TYPES.register("press", () -> IMenuTypeExtension.create(PressMenu::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<SkepMenu>> SKEP_MENU=MENU_TYPES.register("skep", () -> IMenuTypeExtension.create(SkepMenu::new));
+		public static final DeferredHolder<MenuType<?>, MenuType<SequencerMenuHandHeld>> SEQUENCER_HANDHELD_MENU=MENU_TYPES.register("sequencer_handheld", () -> IMenuTypeExtension.create(SequencerMenuHandHeld::new));
+		
 	}
     public static void register(IEventBus modEventBus) {
     	// Register the Deferred Register to the mod event bus so blocks get registered
@@ -268,12 +278,21 @@ public class BeecrasyRegistries {
         Tabs.CREATIVE_MODE_TABS.register(modEventBus);
         
     }
+    public static ItemStack pheromono(Consumer<BeeHiveArgumentation.Builder> components) {
+    	ItemStack is=new ItemStack(Items.PHEROMONO.asItem());
+    	BeeHiveArgumentation.Builder arb=new BeeHiveArgumentation.Builder();
+    	components.accept(arb);
+    	is.set(Components.ARGUMENTATION, arb.build());
+    	return is;
+    }
     @SubscribeEvent
     public static void onBuildTabs(BuildCreativeModeTabContentsEvent ev) {
     	if(ev.getTab()==Tabs.BEECRASY_TAB.get()) {
     		for(DeferredHolder<Item, ? extends Item> i:Items.ITEMS.getEntries()) {
     			ev.accept(i.get());
     		}
+    		ev.accept(pheromono(t->t.setParam(BeeHiveParameters.SPEED, 9)));
+    		ev.accept(pheromono(t->t.setParam(BeeHiveParameters.MUTATE, 9)));
     	}
     }
 }

@@ -96,15 +96,22 @@ public record BeeHiveParameterSet(ServerLevel level,BlockPos position,Set<Identi
 		public <T> T getParamValue(BeehiveParameterType<T> type) {
 			return (T) params.get(type);
 		}
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public BeeHiveParameterSet build() {
+			for(Entry<BeehiveParameterType<?>, Object> ent:params.entrySet()) {
+				ent.setValue(((BeehiveParameterType)ent.getKey()).mergeToDefault(ent.getValue()));
+			}
 			return new BeeHiveParameterSet(level,position,Set.copyOf(disabledMutation),Map.copyOf(params),activeBiotopes);
 		}
 	}
 	@SuppressWarnings("unchecked")
 	public <T> T getParamValue(BeehiveParameterType<T> type) {
-		return (T) params.get(type);
+		T val= (T) params.get(type);
+		if(val==null)
+			val=type.getDefault();
+		return val;
 	}
-	public boolean hasBiotope(Biotope biotope) {
-		return activeBiotopes.contains(biotope);
+	public boolean hasBiotope(Set<Biotope> current,Biotope biotope) {
+		return activeBiotopes.contains(biotope)||current.contains(biotope);
 	}
 }

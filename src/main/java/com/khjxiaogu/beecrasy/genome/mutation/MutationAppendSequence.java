@@ -54,7 +54,7 @@ public class MutationAppendSequence implements Mutation {
 	}
 
 	@Override
-	public float getChance() {
+	public float getChance(BeeHiveParameterSet params,DiploidGenome genome) {
 		return .05f;
 	}
 

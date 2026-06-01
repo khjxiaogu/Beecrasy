@@ -19,7 +19,7 @@
 
 package com.khjxiaogu.beecrasy.menu;
 
-import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
 
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.IndexModifier;
@@ -36,6 +36,6 @@ public class DroneSlot extends ResourceHandlerSlot {
 	@Override
 	public boolean mayPlace(ItemStack stack) {
 
-		return super.mayPlace(stack)&&(stack.is(Items.DRONE));
+		return super.mayPlace(stack)&&ItemValidateHelper.isDrone(stack);
 	}
 }

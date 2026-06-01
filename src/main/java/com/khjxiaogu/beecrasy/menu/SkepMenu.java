@@ -29,7 +29,6 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
-import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
 public class SkepMenu extends BeecrasyContainerMenu {
 	public ContainerData data;
@@ -55,8 +54,8 @@ public class SkepMenu extends BeecrasyContainerMenu {
 		this.addSlot(new CombSlot(slots,slots::set,6,107,27));
 		this.addSlot(new CombSlot(slots,slots::set,7,81,53));
 		this.addSlot(new CombSlot(slots,slots::set,8,102,48));
-		this.addSlot(new ResourceHandlerSlot(slots,slots::set,9,14,29));
-		this.addSlot(new ResourceHandlerSlot(slots,slots::set,10,14,47));
+		this.addSlot(new ArgumentationSlot(slots,slots::set,9,14,29));
+		this.addSlot(new ArgumentationSlot(slots,slots::set,10,14,47));
 		this.addPlayerInventory(8, 84, 142);
 	}
 	public void cycleWork() {

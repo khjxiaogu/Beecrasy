@@ -17,27 +17,28 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.menu;
+package com.khjxiaogu.beecrasy.utils;
 
-import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.IndexModifier;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
-public class QueenSlot extends ResourceHandlerSlot {
-
-	public QueenSlot(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier, int handlerSlot,
-			int xPosition, int yPosition) {
-		super(handler, slotModifier, handlerSlot, xPosition, yPosition);
+public class ItemValidateHelper {
+	private ItemValidateHelper() {}
+	public static boolean isDrone(ItemStack stack) {
+		return stack.is(Items.DRONE);
 	}
-
-	@Override
-	public boolean mayPlace(ItemStack stack) {
-
-		return super.mayPlace(stack)&&ItemValidateHelper.isQueen(stack);
+	public static boolean isComb(ItemStack stack) {
+		return stack.is(Items.LARVA)||stack.is(Items.DRONE);
 	}
-
+	public static boolean isQueen(ItemStack stack) {
+		return stack.is(Items.LARVA)||stack.is(Items.QUEEN_BEE);
+	}
+	public static boolean isArgument(ItemStack stack) {
+		return stack.has(Components.ARGUMENTATION);
+	}
+	public static boolean isHoney(ItemStack stack) {
+		return stack.is(Items.HONEY_DROP);
+	}
 }

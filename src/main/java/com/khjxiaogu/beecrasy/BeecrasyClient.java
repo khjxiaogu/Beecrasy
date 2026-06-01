@@ -26,7 +26,9 @@ import com.khjxiaogu.beecrasy.client.BeeTint;
 import com.khjxiaogu.beecrasy.client.ModelReference;
 import com.khjxiaogu.beecrasy.client.renderer.PressBlockEntityRenderer;
 import com.khjxiaogu.beecrasy.client.screens.PressScreen;
+import com.khjxiaogu.beecrasy.client.screens.SequenceHandHeldScreen;
 import com.khjxiaogu.beecrasy.client.screens.SkepScreen;
+import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTabs;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.FluidModel;
@@ -65,7 +67,9 @@ public class BeecrasyClient {
 	public static void registerMenuScreens(RegisterMenuScreensEvent event) {
 		event.register(Menus.SKEP_MENU.get(), SkepScreen::new);
 		event.register(Menus.PRESS_MENU.get(), PressScreen::new);
+		event.register(Menus.SEQUENCER_HANDHELD_MENU.get(), SequenceHandHeldScreen::new);
 		
+		SequencerTabs.init();
 	}
 	@SubscribeEvent
 	public static void registerItemTint(RegisterColorHandlersEvent.ItemTintSources ev) {

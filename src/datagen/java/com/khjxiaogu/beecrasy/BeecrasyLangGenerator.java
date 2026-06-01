@@ -21,6 +21,8 @@ package com.khjxiaogu.beecrasy;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry.BeehiveParameterType;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
 import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity.ErrCode;
 import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity.WorkBehaviour;
 import com.khjxiaogu.beecrasy.genome.GeneRegistry;
@@ -56,6 +58,10 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 		addAllele(Alleles.FERTILITY);
 		addAllele(Alleles.LIFESPAN);
 		addAllele(Alleles.YIELD);
+		addPercentage(BeeHiveParameters.MUTATE);
+		addPercentage(BeeHiveParameters.SPEED);
+		sequencerTab("basic");
+		sequencerTab("products");
 		for(DeferredHolder<Block, ? extends Block> blk:Blocks.BLOCKS.getEntries()) {
 			this.add(blk.get(), capitalizeWords(blk.getId().getPath()));
 		}
@@ -75,6 +81,15 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 			this.add(type.getShortLanguageKey(t), capitalizeWords(t.getId()).substring(0,Math.min(t.getId().length(), 4)));
 		}
 	}
+	
+	public void sequencerTab(String name) {
+		this.add("tab.sequencer.beecrasy."+name, capitalizeWords(name));
+	}
+	public <T> void addPercentage(BeehiveParameterType<T> type) {
+		this.add(type.id().toLanguageKey("argument.beehive"), capitalizeWords(type.id().getPath())+" %s%%");
+	
+	}
+	
     public static String capitalizeWords(String str) {
         if (str == null || str.isEmpty()) {
             return str;

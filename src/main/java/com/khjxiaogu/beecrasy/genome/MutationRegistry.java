@@ -21,6 +21,8 @@ package com.khjxiaogu.beecrasy.genome;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
 
 import net.minecraft.resources.Identifier;
@@ -39,18 +41,42 @@ public class MutationRegistry {
 			mutations.add(new MutationRecord(id,type));
 		return type;
 	}
-	public static void handleMutation(BeeHiveParameterSet params,DiploidGenome genome,RandomSource random) {
-		for(MutationRecord mr:mutations) {
-			if(mr.mutation.mutate(params,genome,random))
-				break;
-		}
-	}
-	public static void handleMutation(BeeHiveParameterSet params,Genome.Builder genome,RandomSource random) {
+	public static void handleMutation(BeeHiveParameterSet params,DiploidGenome genome,double chanceMultiplier,RandomSource random) {
+		if(chanceMultiplier<=0)
+			return;
+		List<MutationRecord> applicable=new ArrayList<>(mutations.size());
 		for(MutationRecord mr:mutations) {
 			if(params.disabledMutation().contains(mr.id))
 				continue;
-			if(mr.mutation.mutate(params,new DiploidGenome(genome,genome.copy()),random))
-				break;
+			if(mr.mutation.isApplicable(params, genome)) {
+				applicable.add(mr);
+			}
 		}
+		if(applicable.isEmpty())
+			return;
+		double totalChance=BeecrasyConfig.SERVER.MUTATION_CHANCE.getAsDouble();
+		double applicableChance=0;
+		double[] chances=new double[applicable.size()];
+		int i=0;
+		for(MutationRecord mr:applicable) {
+			double chance=mr.mutation.getChance(params, genome);
+			applicableChance+=chance;
+			chances[i++]=chance;
+		}
+		double activeChance=Math.min(Math.min(applicableChance, totalChance)*chanceMultiplier,1);
+		double rate=random.nextDouble();
+		for(i=0;i<chances.length;i++) {
+			double chance=(chances[i]/applicableChance)*activeChance;
+			if(rate<chance) {
+				applicable.get(i).mutation.mutate(params, genome, random);
+				break;
+			}else {
+				rate-=chance;
+			}
+		}
+		
+	}
+	public static void handleMutation(BeeHiveParameterSet params,Genome.Builder genome,double chanceMultiplier,RandomSource random) {
+		handleMutation(params,new DiploidGenome(genome,genome.copy()),chanceMultiplier,random);
 	}
 }

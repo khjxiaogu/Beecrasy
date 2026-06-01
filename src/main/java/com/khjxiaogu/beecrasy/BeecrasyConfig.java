@@ -22,6 +22,7 @@ package com.khjxiaogu.beecrasy;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.DoubleValue;
 import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 
 // An example config class. This is not required, but it's a good idea to have one to keep your config organized.
@@ -51,11 +52,22 @@ public class BeecrasyConfig {
 		public final IntValue LIFESPAN;
 		public final IntValue INTERVAL;
 		public final IntValue RADIUS;
+		public final IntValue LARVA_SURVIVE_SECS;
+		public final DoubleValue MUTATION_CHANCE;
 		Server(ModConfigSpec.Builder builder) {
 			builder.push("beehive");
-			LIFESPAN=builder.defineInRange("averageLifespan", 12000, 20, Integer.MAX_VALUE);
-			INTERVAL=builder.defineInRange("hiveInterval", 100, 20, Integer.MAX_VALUE);
-			RADIUS=builder.defineInRange("hiveWorkingRadius", 3, 1, Integer.MAX_VALUE);
+			LIFESPAN=builder.comment("Lifespan for an average lifespan gene.")
+				.defineInRange("averageLifespan", 12000, 20, Integer.MAX_VALUE);
+			INTERVAL=builder.comment("Work interval for a hive.")
+				.defineInRange("hiveInterval", 100, 20, Integer.MAX_VALUE);
+			RADIUS=builder.comment("Working radius for a hive.")
+				.defineInRange("hiveWorkingRadius", 3, 1, Integer.MAX_VALUE);
+			builder.pop();
+			builder.push("bees");
+			LARVA_SURVIVE_SECS=builder.comment("Larva dies when leaving hive for specific seconds(20 ticks), set 0 to disable.")
+				.defineInRange("larvaSurviveSeconds", 600, 0, Integer.MAX_VALUE);
+			MUTATION_CHANCE=builder.comment("Total chance for mutations.")
+				.defineInRange("mutationChance", 0.075d, 0d, 1d);
 			builder.pop();
 		}
 	}

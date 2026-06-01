@@ -131,7 +131,7 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
 				press.tank.set(0,FluidResource.EMPTY,0);
 				return InteractionResult.SUCCESS;
 			}
-			if (FluidUtil.interactWithFluidHandler(player, hand, pos, press.modtank))
+			if (FluidUtil.interactWithFluidHandler(player, hand, pos, press.getExternTank()))
 				return InteractionResult.SUCCESS;
 		}
 		return p;

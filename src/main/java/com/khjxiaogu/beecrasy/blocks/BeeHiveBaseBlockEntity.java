@@ -21,11 +21,9 @@ package com.khjxiaogu.beecrasy.blocks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
-import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveHandler;
@@ -33,10 +31,8 @@ import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
 import com.khjxiaogu.beecrasy.beehive.slot.ResourceStackHiveSlot;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
-import com.khjxiaogu.beecrasy.genome.BiotopeHelper;
 import com.khjxiaogu.beecrasy.genome.Genome;
-import com.khjxiaogu.beecrasy.genome.gene.Biotope;
-import com.khjxiaogu.beecrasy.utils.LazyTickWorker;
+import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.core.BlockPos;
@@ -49,9 +45,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.DelegatingResourceHandler;
+import net.neoforged.neoforge.transfer.RangedResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 	public static enum WorkBehaviour{
@@ -89,29 +88,19 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 		}
 	}
 	protected ItemStacksResourceHandler internInv;
+	protected DelegatingResourceHandler<ItemResource> externInv;
+	protected DelegatingResourceHandler<ItemResource> productInv;
 	protected List<ResourceStackHiveSlot> queenSlot;
 	protected List<ResourceStackHiveSlot> combSlot;
 	protected List<ResourceStackHiveSlot> droneSlot;
-	protected boolean hasBiotope=false;
-	protected Set<Biotope> biotopes;
 	protected BeeHiveHandler hiveInfo;
 	protected BeeHiveArgumentation arguments;
 	protected boolean shouldWork;
 	protected int beginingTicks=0;
-	LazyTickWorker biotopeUpdater=new LazyTickWorker(200,()->{
-		if(hasBiotope)
-			updateBiotopes();
-		
-		return hasBiotope;
-	});
 	public static final int COOLDOWN_TIME=100;
-	public void updateBiotopes() {
-		biotopes=BiotopeHelper.findBiotope(level, worldPosition, BeecrasyConfig.SERVER.RADIUS.getAsInt());
-		//System.out.println("find biotope "+biotopes);
-		hasBiotope=true;
-	}
+	
 	public WorkBehaviour work=WorkBehaviour.MAUNAL;
-	ErrCode err=ErrCode.OK;
+	public ErrCode err=ErrCode.OK;
 	public BeeHiveBaseBlockEntity(BlockEntityType<?> pType, BlockPos pWorldPosition, BlockState pBlockState,int queen,int drone,int comb,int extra) {
 		super(pType, pWorldPosition, pBlockState);
 		internInv = new ItemStacksResourceHandler(queen+drone+comb+extra) {
@@ -125,6 +114,52 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 				super.onContentsChanged(slot, stack);
 			}
 			
+		};
+		externInv=new DelegatingResourceHandler<>(internInv) {
+
+			@Override
+			public boolean isValid(int index, ItemResource resource) {
+				if(index<queen)
+					return ItemValidateHelper.isQueen(resource.toStack());
+				if(index<queen+drone)
+					return ItemValidateHelper.isDrone(resource.toStack());
+				if(index<queen+drone+comb)
+					return ItemValidateHelper.isComb(resource.toStack());
+				return isValidForExtra(index-(queen+drone+comb),resource);
+			}
+			
+		};
+		productInv=new RangedResourceHandler<>(internInv,queen+drone,queen+drone+comb) {
+
+			@Override
+			public ItemResource getResource(int index) {
+				ItemResource ir= super.getResource(index);
+				if(!ItemValidateHelper.isComb(ir.toStack()))
+					return ir;
+				return ItemResource.EMPTY;
+			}
+
+			@Override
+			public long getAmountAsLong(int index) {
+				if(getResource(index).isEmpty())
+					return 0;
+				return super.getAmountAsLong(index);
+			}
+
+			@Override
+			public boolean isValid(int index, ItemResource resource) {
+				return false;
+			}
+
+			@Override
+			public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+				return 0;
+			}
+
+			@Override
+			public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+				return 0;
+			}
 		};
 		queenSlot=new ArrayList<>(queen);
 		for(int i=0;i<queen;i++) {
@@ -140,7 +175,9 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 		}
 		hiveInfo= new BeeHiveHandler(queenSlot,droneSlot,combSlot);
 	}
-
+	public boolean isValidForExtra(int index, ItemResource resource) {
+		return false;
+	}
 	@Override
 	public void readCustomNBT(ValueInput nbt, boolean isClient) {
 		if(!isClient) {
@@ -319,7 +356,6 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 					if(canBeginWork()) {
 						
 						shouldWork=false;
-						updateBiotopes();
 						if(beginGrowth(serverLevel)) {
 							this.setChanged();
 						}
@@ -327,16 +363,12 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 				}
 			}else if(hiveInfo.isWorking()) {
 				err=ErrCode.OK;
-				if(!hasBiotope)
-					updateBiotopes();
-				else
-					biotopeUpdater.tick();
-				if(biotopes==null) {
-					err=ErrCode.NO_FLOWER;
-				}else {
-					BeeHiveParameterSet params=buildParams(serverLevel).addBiotopes(biotopes).build();
+				{
+					BeeHiveParameterSet params=buildParams(serverLevel).build();
 					hiveInfo.tick(params);
-					if(hiveInfo.isBlocked())
+					if(hiveInfo.isNoFlower()) 
+						err=ErrCode.NO_FLOWER;
+					else if(hiveInfo.isBlocked())
 						err=ErrCode.EMPTY_QUEEN;
 					else if(hiveInfo.isNoBiotope())
 						err=ErrCode.NO_BIOTOPE;
@@ -347,7 +379,6 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 				}
 			}else {
 				err=ErrCode.MANUAL_HALT;
-				hasBiotope=false;
 			}
 			
 			
@@ -362,5 +393,11 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 
 	public ItemStacksResourceHandler getInternInv() {
 		return internInv;
+	}
+	public DelegatingResourceHandler<ItemResource> getExternInv() {
+		return externInv;
+	}
+	public DelegatingResourceHandler<ItemResource> getProductInv() {
+		return productInv;
 	}
 }

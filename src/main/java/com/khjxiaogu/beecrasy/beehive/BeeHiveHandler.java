@@ -25,12 +25,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.components.LarvaProductivity;
 import com.khjxiaogu.beecrasy.components.WorldCalendar;
+import com.khjxiaogu.beecrasy.genome.BiotopeHelper;
 import com.khjxiaogu.beecrasy.genome.DiploidGenome;
 import com.khjxiaogu.beecrasy.genome.GeneSimilarityHelper;
 import com.khjxiaogu.beecrasy.genome.Genes;
@@ -38,6 +40,8 @@ import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
 import com.khjxiaogu.beecrasy.genome.MutationRegistry;
 import com.khjxiaogu.beecrasy.genome.RecombinationHelper;
+import com.khjxiaogu.beecrasy.genome.gene.Biotope;
+import com.khjxiaogu.beecrasy.item.LarvaItem;
 import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 import com.khjxiaogu.beecrasy.utils.SerializableRandomSource;
 import com.mojang.serialization.Codec;
@@ -73,12 +77,14 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	SerializableRandomSource rs;
 	Genome[] queenGenome;
 	List<Genome> droneGenomes;
+
 	int larvaCount;
 	int droneCount;
 	int process;
 	int processMax;
 	boolean blocked=false;
 	boolean noBiotope=false;
+	boolean noFlower=false;
 	transient int interval;
 	transient float lsAgainstInterval;
 	transient int cooldown;
@@ -89,6 +95,10 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		this.combSlot = combSlot;
 		this.interval=BeecrasyConfig.SERVER.INTERVAL.getAsInt();
 		this.lsAgainstInterval=BeecrasyConfig.SERVER.LIFESPAN.getAsInt()*.5f/BeecrasyConfig.SERVER.INTERVAL.getAsInt();
+	}
+	public Set<Biotope> updateBiotopes(BeeHiveParameterSet params) {
+		return BiotopeHelper.findBiotope(params.level(), params.position(), BeecrasyConfig.SERVER.RADIUS.getAsInt());
+
 	}
 	public void reset() {
 		larvaCount=0;
@@ -101,36 +111,48 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	public boolean isWorking() {
 		return processMax>0;
 	}
+	public void updateQueenLifespan(long secs) {
+		for(HiveSlot slot:queenSlot) {
+			ItemStack stack=slot.getItem();
+			if(stack.is(Items.LARVA)) {
+				stack.set(Components.LARVA_EXPIRES,secs);
+				slot.setItem(stack);
+			}
+		}
+	}
+	public void updateCombLifespan(long secs) {
+		for(HiveSlot slot:combSlot) {
+			ItemStack stack=slot.getItem();
+			if(stack.is(Items.LARVA)) {
+				stack.set(Components.LARVA_EXPIRES,secs);
+				slot.setItem(stack);
+			}
+		}
+	}
 	public void tick(BeeHiveParameterSet params) {
 		blocked=false;
 		if(process>0) {
-			process--;
-			if(process%interval==0) {
+			int lprocess=process;
+			process-=BeecrasyMath.getRandomRate(params.getParamValue(BeeHiveParameters.SPEED), rs);
+			if(lprocess/interval!=process/interval) {
 				boolean isPre=process>=(processMax/2);
-				
+				noFlower=false;
+				Set<Biotope> biotopes=updateBiotopes(params);
+				if(biotopes==null)
+					noFlower=true;
 				if(isPre) {
 					long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
-					for(HiveSlot slot:combSlot) {
-						ItemStack stack=slot.getItem();
-						if(stack.is(Items.LARVA)) {
-							stack.set(Components.LARVA_EXPIRES,secs);
-							slot.setItem(stack);
-						}
-					}
-					for(HiveSlot slot:queenSlot) {
-						ItemStack stack=slot.getItem();
-						if(stack.is(Items.LARVA)) {
-							stack.set(Components.LARVA_EXPIRES,secs);
-							slot.setItem(stack);
-						}
-					}
+					updateCombLifespan(secs);
+					updateQueenLifespan(secs);
 					if(!fillLarva(params))
 						fillDrone(params);
 				}else {
-					if(process%(processMax/8)==0)
+					int elecInterval=(processMax/2/4);
+					if(lprocess/elecInterval!=process/elecInterval)
 						elecQueen();
-					increaseProduction(params);
+					increaseProduction(params, biotopes);
 				}
+				
 			}
 		}else if(processMax>0){
 			if(cooldown<=0) {
@@ -147,37 +169,35 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			}
 		}
 	}
-	private void increaseProduction(BeeHiveParameterSet params) {
+	private void increaseProduction(BeeHiveParameterSet params,Set<Biotope> biotopes) {
 		noBiotope=false;
 
-		long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
-		for(HiveSlot slot:queenSlot) {
-			ItemStack stack=slot.getItem();
-			if(stack.is(Items.LARVA)) {
-				stack.set(Components.LARVA_EXPIRES,secs);
-				slot.setItem(stack);
-			}
-		}
+		long secs=WorldCalendar.getCalendar(params.level()).getSeconds();
+		
+
+		updateQueenLifespan(secs);
 		for(HiveSlot hi:combSlot) {
 			if(!hi.isEmpty()) {
 				ItemStack item=hi.getItem();
 				if(!item.is(Items.LARVA))
 					continue;
-				
-				Genome pheno=GenomeDataHelper.getPhenoType(item);
-				LarvaProductivity lp=item.get(Components.LARVA_PRODUCT);
-				if(lp==null)
-					lp=LarvaProductivity.DEFAULT;
 
-				float yield=pheno.getAllele(Genes.YIELD).getNumber()/lsAgainstInterval;
-				if(params.hasBiotope(pheno.getAllele(Genes.BIOTOPE))) {
-					lp=lp.increaseBiotoped(yield);
-				}else {
-					lp=lp.increaseWildcard(yield);
-					noBiotope=true;
-				}
 				item.set(Components.LARVA_EXPIRES,secs);
-				item.set(Components.LARVA_PRODUCT, lp);
+				if(biotopes!=null) {
+					Genome pheno=GenomeDataHelper.getPhenoType(item);
+					LarvaProductivity lp=item.get(Components.LARVA_PRODUCT);
+					if(lp==null)
+						lp=LarvaProductivity.DEFAULT;
+	
+					float yield=pheno.getAllele(Genes.YIELD).getNumber()/lsAgainstInterval;
+					if(params.hasBiotope(biotopes,pheno.getAllele(Genes.BIOTOPE))) {
+						lp=lp.increaseBiotoped(yield);
+					}else {
+						lp=lp.increaseWildcard(yield);
+						noBiotope=true;
+					}
+					item.set(Components.LARVA_PRODUCT, lp);
+				}
 				hi.setItem(item);
 			}
 		}
@@ -223,7 +243,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	}
 	private boolean finishProduct(BeeHiveParameterSet params) {
 		boolean hasQueen=false;
-		long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
+		long secs=WorldCalendar.getCalendar(params.level()).getSeconds();
 
 		for(HiveSlot hi:queenSlot) {
 			if(hi.isEmpty())
@@ -264,12 +284,8 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				ItemStack item=hi.getItem();
 				if(!item.is(Items.LARVA))
 					continue;
-				hi.setItem(ItemStack.EMPTY);
-				Genome pheno=GenomeDataHelper.getPhenoType(item);
-				LarvaProductivity lp=item.get(Components.LARVA_PRODUCT);
-				if(lp!=null) {
-					hi.setItem(lp.getProduction(pheno, rs));
-				}
+				ItemStack ret=LarvaItem.getProduct(item, params.level());
+				hi.setItem(ret);
 			}
 		}
 		return true;
@@ -315,7 +331,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	}
 	private DiploidGenome makeLarva(BeeHiveParameterSet params) {
 		DiploidGenome ret=RecombinationHelper.makeDiploid(queenGenome, getRandomDrone(rs), rs::nextBoolean);
-		MutationRegistry.handleMutation(params, ret, rs);
+		MutationRegistry.handleMutation(params, ret, params.getParamValue(BeeHiveParameters.MUTATE), rs);
 		
 		return ret;
 	}
@@ -360,7 +376,13 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	}
 
 	public DataRecord save() {
-		return new DataRecord(Optional.ofNullable(rs),Optional.ofNullable(queenGenome),Optional.ofNullable(droneGenomes),larvaCount,droneCount,process,processMax);
+		return new DataRecord(Optional.ofNullable(rs),
+			Optional.ofNullable(queenGenome),
+			Optional.ofNullable(droneGenomes),
+			larvaCount,
+			droneCount,
+			process,
+			processMax);
 	}
 	@Override
 	public int get(int index) {
@@ -388,5 +410,8 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	}
 	public int getProcessMax() {
 		return processMax;
+	}
+	public boolean isNoFlower() {
+		return noFlower;
 	}
 }

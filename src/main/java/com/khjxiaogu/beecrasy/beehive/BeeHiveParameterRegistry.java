@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.khjxiaogu.beecrasy.utils.Utils;
@@ -32,19 +34,23 @@ import com.mojang.serialization.DataResult;
 
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 
 public class BeeHiveParameterRegistry {
-	public static record BeehiveParameterType<T>(Identifier id, Codec<T> codec,BinaryOperator<T> merge,Supplier<T> defaultValueSupplier){
+	public static record BeehiveParameterType<T>(Identifier id, Codec<T> codec,BinaryOperator<T> merge,Supplier<T> defaultValueSupplier,BiConsumer<T,Consumer<Component>> desc){
 		public T getDefault() {
 			return defaultValueSupplier.get();
 		}
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public void mergeTo(Map<BeehiveParameterType<?>,Object> params,Object value) {
 			params.merge((BeehiveParameterType)this, value, (BinaryOperator)merge());
+		}
+		public T mergeToDefault(T value) {
+			return merge.apply(value, getDefault());
 		}
 	}
 	private static Map<Identifier,BeehiveParameterType<?>> idMap=new HashMap<>();
@@ -60,11 +66,14 @@ public class BeeHiveParameterRegistry {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static final StreamCodec<ByteBuf,Map<BeehiveParameterType<?>, Object>> COMPOSITE_STREAM_CODEC=Utils.streamDispatchedMap(BeeHiveParameterRegistry.STREAM_CODEC,Util.memoize(t->ByteBufCodecs.fromCodec((Codec)t.codec())));
 	
-	public static BeehiveParameterType<Float> registerNumeric(Identifier id) {
-		return register(id,Codec.FLOAT,(a,b)->a+b,()->0f);
+	public static BeehiveParameterType<Float> registerNumeric(Identifier id,float def,BiConsumer<Float,Consumer<Component>> desc) {
+		return register(id,Codec.FLOAT,(a,b)->a+b,()->def,desc);
 	}
-	public synchronized static <T> BeehiveParameterType<T> register(Identifier id, Codec<T> codec,BinaryOperator<T> merge,Supplier<T> defaultValueSupplier) {
-		BeehiveParameterType<T> gt=new BeehiveParameterType<>(id,codec,merge,defaultValueSupplier);
+	public static BeehiveParameterType<Float> registerMultiplier(Identifier id,float def,BiConsumer<Float,Consumer<Component>> desc) {
+		return register(id,Codec.FLOAT,(a,b)->a*b,()->def,desc);
+	}
+	public synchronized static <T> BeehiveParameterType<T> register(Identifier id, Codec<T> codec,BinaryOperator<T> merge,Supplier<T> defaultValueSupplier,BiConsumer<T,Consumer<Component>> desc) {
+		BeehiveParameterType<T> gt=new BeehiveParameterType<>(id,codec,merge,defaultValueSupplier,desc);
 		if(!idMap.containsKey(id)) {
 			synchronized(lock) {
 				typeIdMap.add(id);

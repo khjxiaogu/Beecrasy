@@ -19,15 +19,10 @@
 
 package com.khjxiaogu.beecrasy.item;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlockEntity;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -42,9 +37,6 @@ public class QueenBeeItem extends Item {
 
 	@Override
 	public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-		boolean updated = super.onEntityItemUpdate(stack, entity);
-		if(updated)
-			return true;
 		if(entity.getAge()>200) {
 			if(entity.onGround()) {
 				BlockPos pos=entity.getOnPos().above();
@@ -54,13 +46,15 @@ public class QueenBeeItem extends Item {
 						entity.level().setBlock(pos, state, Block.UPDATE_ALL_IMMEDIATE);
 						if(entity.level().getBlockEntity(pos) instanceof NaturalHiveBlockEntity be) {
 							be.setQueen(stack.split(1));
+							if(stack.isEmpty())
+								entity.discard();
 							return true;
 						}
 					}
 				}
 			}
 		}
-		return false;
+		return super.onEntityItemUpdate(stack, entity);
 	}
 
 

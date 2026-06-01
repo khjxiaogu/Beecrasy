@@ -21,14 +21,12 @@ package com.khjxiaogu.beecrasy.client.screens;
 
 import java.util.function.IntSupplier;
 
-import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity.WorkBehaviour;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 
 public class BeeHiveButton extends Button {

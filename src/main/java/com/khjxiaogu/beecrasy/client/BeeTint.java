@@ -36,7 +36,7 @@ import net.minecraft.world.item.ItemStack;
 
 public record BeeTint(int defaultColor) implements ItemTintSource {
     public static final MapCodec<BeeTint> MAP_CODEC = RecordCodecBuilder.mapCodec(
-        i -> i.group(ExtraCodecs.RGB_COLOR_CODEC.fieldOf("default").forGetter(BeeTint::defaultColor)).apply(i, BeeTint::new)
+        i -> i.group(ExtraCodecs.ARGB_COLOR_CODEC.fieldOf("default").forGetter(BeeTint::defaultColor)).apply(i, BeeTint::new)
     );
 
     public BeeTint() {

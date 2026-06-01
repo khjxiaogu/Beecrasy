@@ -19,6 +19,14 @@
 
 package com.khjxiaogu.beecrasy.beehive;
 
+import com.khjxiaogu.beecrasy.Beecrasy;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry.BeehiveParameterType;
+
+import net.minecraft.network.chat.Component;
+
 public class BeeHiveParameters {
+	public static final BeehiveParameterType<Float> SPEED=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("speed"),1f, (value,adder)->adder.accept(Component.translatable(Beecrasy.rl("speed").toLanguageKey("argument.beehive"),(value>0?"+":"")+(int)(value*100)+"%")));
+	public static final BeehiveParameterType<Float> MUTATE=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("mutate"),1f, (value,adder)->adder.accept(Component.translatable(Beecrasy.rl("mutate").toLanguageKey("argument.beehive"),(value>0?"+":"")+(int)(value*100)+"%")));
+	
 	private BeeHiveParameters() {}
 }

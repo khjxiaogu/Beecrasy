@@ -32,6 +32,7 @@ import com.khjxiaogu.beecrasy.utils.RecipeHandler;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -46,6 +47,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.DelegatingResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
@@ -69,23 +71,36 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 		}
 		
 	};
-	
-	public final FluidStacksResourceHandler tank = new FluidStacksResourceHandler(1,1000) {
-	
+	private ResourceHandler<ItemResource> externInv=new DelegatingResourceHandler<>(internInv) {
+
 		@Override
-		public boolean isValid(int index, FluidResource resource) {
-			return !resource.getFluid().getFluidType().isLighterThanAir();
+		public boolean isValid(int index, ItemResource resource) {
+			if(index==0)
+				return super.isValid(index, resource)&&getRecipe(getInput(level.getRandom(),resource.toStack()))!=null;
+			return false;
 		}
+
+		@Override
+		public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+			if(index==0)
+				return 0;
+			return super.extract(index, resource, amount, transaction);
+		}
+		
+	};
 	
+	public FluidStacksResourceHandler tank = new FluidStacksResourceHandler(1,1000) {
 		@Override
 		protected void onContentsChanged(int slot,FluidStack stackBefore) {
 			setChanged();
 			super.onContentsChanged(slot,stackBefore);
 		}
-	
 	};
-	public final DelegatingResourceHandler<FluidResource> modtank = new DelegatingResourceHandler<>(tank) {
-
+	public DelegatingResourceHandler<FluidResource> externTank = new DelegatingResourceHandler<>(tank) {
+		@Override
+		public boolean isValid(int index, FluidResource resource) {
+			return false;
+		}
 		@Override
 		public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
 			return 0;
@@ -141,7 +156,10 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 		super(Blocks.PRESS_BLOCKENTITY.get(), pWorldPosition, pBlockState);
 	}
 	public RandomizableRecipeInput getInput() {
-		return new RandomizableRecipeInput(new SingleRecipeInput(getInternInv().getResource(0).toStack(getInternInv().getAmountAsInt(0))),level.getRandom());
+		return getInput(level.getRandom(),getInternInv().getResource(0).toStack(getInternInv().getAmountAsInt(0)));
+	}
+	public static RandomizableRecipeInput getInput(RandomSource rs,ItemStack stack) {
+		return new RandomizableRecipeInput(new SingleRecipeInput(stack),rs);
 	}
 	public RecipeHolder<PressRecipe> getRecipe(RandomizableRecipeInput input){
 		if(this.level.recipeAccess() instanceof RecipeManager manager)
@@ -231,6 +249,12 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 	}
 	public ItemStacksResourceHandler getInternInv() {
 		return internInv;
+	}
+	public ResourceHandler<ItemResource> getExternInv() {
+		return externInv;
+	}
+	public DelegatingResourceHandler<FluidResource> getExternTank() {
+		return externTank;
 	}
 
 }

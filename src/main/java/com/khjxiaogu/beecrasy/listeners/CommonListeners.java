@@ -26,6 +26,7 @@ import org.jspecify.annotations.Nullable;
 import com.ibm.icu.util.Calendar;
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.Constants;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
@@ -41,6 +42,7 @@ import com.mojang.brigadier.Command;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.Commands;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -50,6 +52,8 @@ import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.levelgen.RandomSupport;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -65,6 +69,20 @@ public class CommonListeners {
 			comp=RandomSupport.generateUniqueSeed();
 			p.setData(Attachments.RANDOM_SEED, comp);
 		}
+	}
+	@SubscribeEvent
+	public static void onCapabilityInject(RegisterCapabilitiesEvent event) {
+		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.SKEP_BLOCKENTITY.get(), (be,ctx)->{
+			if(ctx==Direction.DOWN)
+				return be.getProductInv();
+			return be.getExternInv();
+		});
+		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.PRESS_BLOCKENTITY.get(), (be,ctx)->{
+			return be.getExternInv();
+		});
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, Blocks.PRESS_BLOCKENTITY.get(), (be,ctx)->{
+			return be.getExternTank();
+		});
 	}
 	@SubscribeEvent
 	public static void onGenomeBuild(NaturalBeeGenomeGenerateEvent event) {

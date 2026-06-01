@@ -53,6 +53,8 @@
   "allele.beecrasy.yield.meager.short": "Meag",
   "allele.beecrasy.yield.moderate": "Moderate",
   "allele.beecrasy.yield.moderate.short": "Mode",
+  "argument.beehive.beecrasy.mutate": "Mutate %s%%",
+  "argument.beehive.beecrasy.speed": "Speed %s%%",
   "block.beecrasy.bee_nest_big": "Bee Nest Big",
   "block.beecrasy.bee_nest_medium": "Bee Nest Medium",
   "block.beecrasy.bee_nest_nascent": "Bee Nest Nascent",
@@ -112,5 +114,7 @@
   "item.beecrasy.queen_bee": "Queen Bee",
   "item.beecrasy.royal_jelly": "Royal Jelly",
   "item.beecrasy.sequencer": "Sequencer",
-  "item.beecrasy.skep": "Skep"
+  "item.beecrasy.skep": "Skep",
+  "tab.sequencer.beecrasy.basic": "Basic",
+  "tab.sequencer.beecrasy.products": "Products"
 }
