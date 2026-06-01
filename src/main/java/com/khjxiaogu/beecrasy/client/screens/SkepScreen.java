@@ -22,6 +22,7 @@ package com.khjxiaogu.beecrasy.client.screens;
 import java.util.ArrayList;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
+import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity.ErrCode;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -57,9 +58,13 @@ public class SkepScreen extends AbstractContainerScreen<SkepMenu> {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor transform, int mouseX, int mouseY, float partial) {
 		tooltip.clear();
-		btn.setOver(this.isMouseIn(mouseX, mouseY, btn.getX(), btn.getY(), btn.getWidth(), btn.getHeight()));
+		btn.setOver(this.isMouseIn(mouseX, mouseY, 151, 2, btn.getWidth(), btn.getHeight()));
 		if(btn.isOver) {
 			tooltip.add(btn.getMessage());
+		}
+		if(this.isMouseIn(mouseX, mouseY, -20, 22, 26, 29)) {
+			int errCode=menu.data.get(0);
+			tooltip.add(ErrCode.values()[errCode].getComponents());
 		}
 		super.extractRenderState(transform, mouseX, mouseY, partial);
 		if (!tooltip.isEmpty()) {
@@ -77,8 +82,10 @@ public class SkepScreen extends AbstractContainerScreen<SkepMenu> {
 	@Override
 	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 		super.extractBackground(graphics, mouseX, mouseY, a);
-
 		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight,256,256);
+		int errCode=menu.data.get(0);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos-20, topPos+22, errCode*26, 164, 26, 29,256,256);
+	
 		int process=menu.data.get(2);
 		int processMax=menu.data.get(3);
 		if (processMax > 0&&process>0) {

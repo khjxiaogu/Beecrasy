@@ -40,6 +40,7 @@ import com.khjxiaogu.beecrasy.utils.LazyTickWorker;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
@@ -54,10 +55,18 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 	public static enum WorkBehaviour{
-		MAUNAL,
-		AUTO,
-		REDSTONE;
+		MAUNAL,//人工
+		AUTO,//自动
+		REDSTONE;//红石
+		private final String key="gui.beehive.control."+this.name().toLowerCase();
+		private final Component text=Component.translatable(key);
 		public static final Codec<WorkBehaviour> CODEC=Codec.INT.xmap(i->WorkBehaviour.values()[i], WorkBehaviour::ordinal);
+		public Component getComponents() {
+			return text;
+		}
+		public String getTranslationKey() {
+			return key;
+		}
 	}
 	public static enum ErrCode{
 		OK,//无错误
@@ -69,7 +78,15 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 		NO_FLOWER,//无花
 		NO_BIOTOPE,//部分蜜蜂生境不符（警告）
 		EMPTY_QUEEN;//王台为空
+		private final String key="gui.beehive.status."+this.name().toLowerCase();
+		private final Component text=Component.translatable(key);
 		public static final Codec<ErrCode> CODEC=Codec.INT.xmap(i->ErrCode.values()[i], ErrCode::ordinal);
+		public Component getComponents() {
+			return text;
+		}
+		public String getTranslationKey() {
+			return key;
+		}
 	}
 	protected ItemStacksResourceHandler internInv;
 	protected List<ResourceStackHiveSlot> queenSlot;
@@ -294,6 +311,7 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 			default:
 				break;
 			}
+			
 			if(beginingTicks>0) {
 				beginingTicks++;
 				if(beginingTicks>=COOLDOWN_TIME) {
@@ -328,6 +346,7 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 					beginingTicks=1;
 				}
 			}else {
+				err=ErrCode.MANUAL_HALT;
 				hasBiotope=false;
 			}
 			

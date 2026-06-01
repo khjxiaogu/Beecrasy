@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 
+import com.khjxiaogu.beecrasy.genome.Translation;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 
@@ -42,7 +43,7 @@ public class EnumAlleleType<T extends Allele> implements Iterable<T>{
 	private final Identifier id;
 
 	private Map<String,T> alleleType=new LinkedHashMap<>(10);
-	private Map<T,String> alleleName=new IdentityHashMap<>(10);
+	private Map<T,Translation> alleleName=new IdentityHashMap<>(10);
 	private List<String> typelist=new ArrayList<>(10);
 	private Reference2IntOpenHashMap<T> typeId=new Reference2IntOpenHashMap<>(10);
 	private volatile boolean sorted=false;
@@ -65,14 +66,20 @@ public class EnumAlleleType<T extends Allele> implements Iterable<T>{
 			}
 		}
 		alleleType.put(id, allele);
-		alleleName.put(allele, this.id.toLanguageKey("allele", id));
+		alleleName.put(allele, new Translation(this.id.toLanguageKey("allele", id)));
 		return allele;
 	}
 	public String getLanguageKey(T allele) {
-		return alleleName.getOrDefault(allele,"missing");
+		return alleleName.getOrDefault(allele,Translation.MISSING).key();
+	}
+	public String getShortLanguageKey(T allele) {
+		return alleleName.getOrDefault(allele,Translation.MISSING).shortKey();
 	}
 	public void getReadableText(T allele,Consumer<Component> text) {
-		text.accept(Component.translatable(alleleName.getOrDefault(allele,"missing")));
+		text.accept(alleleName.getOrDefault(allele,Translation.MISSING).component());
+	}
+	public void getShortReadableText(T allele,Consumer<Component> text) {
+		text.accept(alleleName.getOrDefault(allele,Translation.MISSING).shortComponent());
 	}
 	private void makeIndex() {
 		if(!sorted) {

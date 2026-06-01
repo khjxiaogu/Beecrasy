@@ -147,10 +147,10 @@ public class BeecrasyRegistries {
 	    public static final DeferredBlock<Block> SKEP=register("skep",SkepBlock::new,Blocks::skepProps,UnaryOperator.identity());
 	    public static final DeferredBlock<Block> EMPTY_COMB_BLOCK=register("empty_comb_block");
 	    public static final DeferredBlock<Block> HONEY_COMB_BLOCK=register("honey_comb_block");
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_NASCENT=register("bee_nest_nascent",p->new BeeNestBlock(p,0,3),Blocks::nestProps,UnaryOperator.identity());
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_SMALL=register("bee_nest_small",p->new BeeNestBlock(p,0,2),Blocks::nestProps,UnaryOperator.identity());
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_MEDIUM=register("bee_nest_medium",p->new BeeNestBlock(p,1,3),Blocks::nestProps,UnaryOperator.identity());
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_BIG=register("bee_nest_big",p->new BeeNestBlock(p,2,4),Blocks::nestProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_NASCENT=register("bee_nest_nascent",p->new BeeNestBlock(p,0,3,BeeNestBlock.NASCENT_SHAPE,BeeNestBlock.NASCENT_CORNER),Blocks::nestProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_SMALL=register("bee_nest_small",p->new BeeNestBlock(p,0,2,BeeNestBlock.SMALL_SHAPE,BeeNestBlock.SMALL_CORNER),Blocks::nestProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_MEDIUM=register("bee_nest_medium",p->new BeeNestBlock(p,1,3,BeeNestBlock.MEDIUM_SHAPE,BeeNestBlock.MEDIUM_CORNER),Blocks::nestProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_BIG=register("bee_nest_big",p->new BeeNestBlock(p,2,4,BeeNestBlock.LARGE_SHAPE,BeeNestBlock.LARGE_CORNER),Blocks::nestProps,UnaryOperator.identity());
 	    public static final DeferredBlock<NaturalHiveBlock> NATURAL_HIVE=register("natural_hive",NaturalHiveBlock::new,Blocks::nestProps,UnaryOperator.identity());
 	    
 	    

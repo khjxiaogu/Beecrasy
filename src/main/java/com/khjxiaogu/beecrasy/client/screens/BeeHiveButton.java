@@ -22,6 +22,7 @@ package com.khjxiaogu.beecrasy.client.screens;
 import java.util.function.IntSupplier;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
+import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity.WorkBehaviour;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -34,9 +35,6 @@ public class BeeHiveButton extends Button {
 	Identifier texture;
 	IntSupplier slot;
 	boolean isOver;
-	public static MutableComponent redstone = Component.translatable("gui." + Beecrasy.MODID + ".beehive.redstone");
-	public static MutableComponent manual = Component.translatable("gui." + Beecrasy.MODID + ".beehive.redstone");
-	public static MutableComponent aut = Component.translatable("gui." + Beecrasy.MODID + ".beehive.redstone");
 	public BeeHiveButton(Builder builder, Identifier texture, IntSupplier slot) {
 		super(builder);
 		this.texture = texture;
@@ -53,12 +51,7 @@ public class BeeHiveButton extends Button {
 
 	@Override
 	public Component getMessage() {
-		return switch(slot.getAsInt()) {
-		case 0->manual;
-		case 1->aut;
-		case 2->redstone;
-		default->manual;
-		};
+		return WorkBehaviour.values()[slot.getAsInt()].getComponents();
 	}
 
 	@Override

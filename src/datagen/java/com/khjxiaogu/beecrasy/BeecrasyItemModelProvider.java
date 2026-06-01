@@ -64,6 +64,7 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 		this.texture(Items.PHEROMONO);
 		this.texture(Items.BUTTERFLY_NET);
 		this.texture(Items.ROYAL_JELLY);
+		this.texture(Items.HONEY_BUCKET);
 		
 	}
     public void generateBeeTint(ItemLike item) {

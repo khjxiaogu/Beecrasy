@@ -20,6 +20,7 @@
 package com.khjxiaogu.beecrasy.blocks;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
@@ -31,6 +32,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
@@ -44,10 +46,22 @@ import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class NaturalHiveBlock extends Block implements BeecrasyEntityBlock<NaturalHiveBlockEntity>{
-
+	public static final VoxelShape SHAPE=Block.box(4, 0, 6, 12, 4, 14);
+	public static final VoxelShape SHAPE0=Block.box(5, 0, 2, 11, 4, 6);
+	public static final VoxelShape SHAPE1=Block.box(4, 4, 11, 12, 8, 13);
+	public static final VoxelShape SHAPE2=Block.box(4, 4, 7, 12, 10, 9);
+	public static final VoxelShape SHAPE3=Block.box(5, 4, 3, 11, 7, 5);
+	public static final VoxelShape SHAPE11=Block.box(4, 0, 4, 12, 4, 12);
+	public static final VoxelShape SHAPE12=Block.box(4, 4, 5, 12, 8, 7);
+	public static final VoxelShape SHAPE13=Block.box(4, 4, 9, 12, 8, 11);
+	private static final Map<Direction,VoxelShape> SHAPE_BY_FACING2=Shapes.rotateHorizontal(Shapes.or(SHAPE,SHAPE0,SHAPE1,SHAPE2,SHAPE3));
+	private static final Map<Direction,VoxelShape> SHAPE_BY_FACING1=Shapes.rotateHorizontal(Shapes.or(SHAPE11,SHAPE12,SHAPE13));
 	public NaturalHiveBlock(Properties properties) {
 		super(properties);
 		this.registerDefaultState(
@@ -138,5 +152,9 @@ public class NaturalHiveBlock extends Block implements BeecrasyEntityBlock<Natur
 	@Override
 	public DeferredHolder<BlockEntityType<?>, BlockEntityType<NaturalHiveBlockEntity>> getBlock() {
 		return BeecrasyRegistries.Blocks.NATURAL_HIVE_BLOCKENTITY;
+	}
+	@Override
+	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+		return state.getValue(BlockStateProperties.AGE_2)==0?SHAPE_BY_FACING1.get(state.getValue(BlockStateProperties.HORIZONTAL_FACING)):SHAPE_BY_FACING2.get(state.getValue(BlockStateProperties.HORIZONTAL_FACING));
 	}
 }

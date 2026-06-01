@@ -62,7 +62,7 @@ public class PressScreen extends AbstractContainerScreen<PressMenu> {
 	}
 	@Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
-        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, -12566464, false);
+        //graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, -12566464, false);
         graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, -12566464, false);
     }
 	@Override

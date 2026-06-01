@@ -20,6 +20,7 @@
 package com.khjxiaogu.beecrasy.blocks;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
@@ -57,6 +58,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -70,12 +72,67 @@ public class BeeNestBlock extends Block {
 			return name().toLowerCase();
 		}
 	}
+	//nascent
+	public static final VoxelShape SHAPE11=Block.box(5, 12, 4, 11, 16, 8);
+	public static final VoxelShape SHAPE12=Block.box(4, 12, 8, 12, 16, 12);
+	public static final VoxelShape SHAPE13=Block.box(5, 8, 5, 11, 12, 7);
+	public static final VoxelShape SHAPE14=Block.box(4, 8, 9, 12, 12, 11);
+	public static final VoxelShape NASCENT_SHAPE=Shapes.or(SHAPE11, SHAPE12, SHAPE13, SHAPE14);
+	public static final VoxelShape SHAPE15=Block.box(10, 12, 4, 16, 16, 8);
+	public static final VoxelShape SHAPE16=Block.box(11, 12, 8, 16, 16, 12);
+	public static final VoxelShape SHAPE17=Block.box(8, 8, 5, 16, 15, 7);
+	public static final VoxelShape SHAPE18=Block.box(10, 9, 9, 16, 14, 11);
+	
+	public static final VoxelShape NASCENT_CORNER=Shapes.or(SHAPE15, SHAPE16, SHAPE17, SHAPE18).optimize();
+	//small
+	public static final VoxelShape SHAPE21=Block.box(4, 12, 2, 12, 16, 10);
+	public static final VoxelShape SHAPE22=Block.box(5, 12, 10, 11, 16, 14);
+	public static final VoxelShape SHAPE23=Block.box(4, 8, 3, 12, 12, 5);
+	public static final VoxelShape SHAPE24=Block.box(4, 6, 7, 12, 12, 9);
+	public static final VoxelShape SHAPE25=Block.box(5, 9, 11, 11, 12, 13);
+	public static final VoxelShape SMALL_SHAPE=Shapes.or(SHAPE21, SHAPE22, SHAPE23, SHAPE24, SHAPE25);
 
+	public static final VoxelShape SHAPE26=Block.box(11, 12, 2, 16, 16, 6);
+	public static final VoxelShape SHAPE27=Block.box(10, 12, 6, 16, 16, 14);
+	
+	public static final VoxelShape SHAPE28=Block.box(10, 9, 3, 16, 14, 5);
+	public static final VoxelShape SHAPE29=Block.box(8, 6, 7, 16, 14, 9);
+	public static final VoxelShape SHAPE20=Block.box(8, 8, 11, 16, 15, 13);
+
+	public static final VoxelShape SMALL_CORNER=Shapes.or(SHAPE26, SHAPE27, SHAPE28, SHAPE29, SHAPE20).optimize();
+	//medium
+	public static final VoxelShape SHAPE31=Block.box(4, 12, 2, 12, 16, 15);
+	public static final VoxelShape SHAPE32=Block.box(3, 12, 6, 13, 16, 11);
+	public static final VoxelShape SHAPE33=Block.box(4, 6, 3, 12, 12, 5);
+	public static final VoxelShape SHAPE34=Block.box(3, 3, 7, 13, 12, 10);
+	public static final VoxelShape SHAPE35=Block.box(4, 8, 12, 12, 12, 14);
+	public static final VoxelShape MEDIUM_SHAPE=Shapes.or(SHAPE31, SHAPE32, SHAPE33, SHAPE34, SHAPE35).optimize();
+	
+	public static final VoxelShape SHAPE36=Block.box(10, 12, 2, 16, 16, 15);
+	public static final VoxelShape SHAPE37=Block.box(9, 12, 6, 16, 16, 11);
+	public static final VoxelShape SHAPE38=Block.box(8, 8, 3, 16, 14, 5);
+	public static final VoxelShape SHAPE39=Block.box(6, 3, 7, 16, 14, 10);
+	public static final VoxelShape SHAPE30=Block.box(8, 6, 12, 16, 14, 14);
+	public static final VoxelShape MEDIUM_CORNER=Shapes.or(SHAPE36, SHAPE37, SHAPE38, SHAPE39, SHAPE30).optimize();
+	//large
+	public static final VoxelShape SHAPE41=Block.box(3, 12, 1, 13, 16, 11);
+	public static final VoxelShape SHAPE42=Block.box(4, 12, 11, 12, 16, 15);
+	public static final VoxelShape SHAPE43=Block.box(3, 3, 2, 13, 12, 5);
+	public static final VoxelShape SHAPE44=Block.box(3, 3, 7, 13, 12, 10);
+	public static final VoxelShape SHAPE45=Block.box(4, 6, 12, 12, 12, 14);
+	public static final VoxelShape LARGE_SHAPE=Shapes.or(SHAPE41, SHAPE42, SHAPE43, SHAPE44, SHAPE45);
+	public static final VoxelShape SHAPE46=Block.box(10, 12, 1, 16, 16, 5);
+	public static final VoxelShape SHAPE47=Block.box(9, 12, 5, 16, 16, 15);
+	public static final VoxelShape SHAPE48=Block.box(8, 6, 2, 16, 14, 4);
+	public static final VoxelShape SHAPE49=Block.box(6, 3, 6, 16, 14, 9);
+	public static final VoxelShape SHAPE40=Block.box(6, 3, 11, 16, 14, 14);
+	public static final VoxelShape LARGE_CORNER=Shapes.or(SHAPE46, SHAPE47, SHAPE48, SHAPE49, SHAPE40);
+	
 	public static final EnumProperty<Facing> BEE_NEST_FACING = EnumProperty.create("faces", Facing.class);
 	public static final BooleanProperty HAS_HONEY = BooleanProperty.create("honey");
 	protected final int combCountMin, combCountMax;
-
-	public BeeNestBlock(Properties properties, int combCountMin, int combCountMaxExclusive) {
+	protected final Map<Direction, VoxelShape> corner,ceiling;
+	public BeeNestBlock(Properties properties, int combCountMin, int combCountMaxExclusive,VoxelShape ceiling,VoxelShape corner) {
 		super(properties);
 		this.registerDefaultState(
 			this.stateDefinition
@@ -86,8 +143,9 @@ public class BeeNestBlock extends Block {
 
 		this.combCountMin = combCountMin;
 		this.combCountMax = combCountMaxExclusive;
+		this.ceiling = Shapes.rotateHorizontal(ceiling);
+		this.corner = Shapes.rotateHorizontal(corner);
 	}
-	public static final VoxelShape shape=Block.box(3, 3, 3, 13, 16, 13);
 	@Override
 	protected BlockState updateShape(
 		BlockState state,
@@ -166,7 +224,8 @@ public class BeeNestBlock extends Block {
 
 	@Override
 	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-		return shape;
+		Direction facing=state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+		return state.getValue(BEE_NEST_FACING)==Facing.CEILING?ceiling.get(facing):corner.get(facing);
 	}
 
 	public static BlockState getFacedState(LevelReader level, BlockPos pos, BlockState state) {
