@@ -45,7 +45,6 @@ public class SequencerHandHeld extends Item{
 
 	public SequencerHandHeld(Properties properties) {
 		super(properties);
-		// TODO Auto-generated constructor stub
 	}
 
     @Override

@@ -97,11 +97,11 @@ public class Genes {
 	public static final Gene<List<ProductItem>> PRODUCTS=GeneRegistry.register(Beecrasy.rl("product"),
 		Codec.list(ProductItem.CODEC),
 		ProductItem.STREAM_CODEC.apply(ByteBufCodecs.list()),
-		(t,o)->{
+		(t)->{
 				if(t.isEmpty())
-					o.accept(Component.translatable("allele.beecrasy.product.empty"));
+					return Component.translatable("allele.beecrasy.product.empty");
 				else
-					o.accept(t.get(0).stack().get(DataComponents.ITEM_NAME));
+					return t.get(0).stack().get(DataComponents.ITEM_NAME);
 			}
 		, ()->List.of(), 500);
 	public static final Gene<NumericAllele> YIELD=GeneRegistry.register(Alleles.YIELD, ()->Alleles.MEAGER_YIELD, 600);

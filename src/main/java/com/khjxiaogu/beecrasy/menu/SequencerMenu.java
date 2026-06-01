@@ -29,13 +29,14 @@ import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
 public class SequencerMenu extends BeecrasyContainerMenu {
-	
+	public final ResourceHandler<ItemResource> handler;
 	protected SequencerMenu(MenuType<?> menuType,int containerId, Inventory inventory,ItemStacksResourceHandler handler) {
 		this(menuType, containerId, inventory, handler,handler::set);
 	}
 
 	protected SequencerMenu(MenuType<?> menuType,int containerId, Inventory inventory,ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier) {
 		super(menuType, containerId, inventory, 10);
+		this.handler=handler;
 		addSlots(handler,slotModifier);
 		this.addPlayerInventory(8, 140, 198);
 	}

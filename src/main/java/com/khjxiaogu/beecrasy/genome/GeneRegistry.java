@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.khjxiaogu.beecrasy.genome.gene.Allele;
@@ -43,7 +44,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
 public class GeneRegistry {
-	static record GeneType<T>(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> streamCodec,BiConsumer<T,Consumer<Component>> toReadableName,BiConsumer<T,Consumer<Component>> toShortName,Supplier<T> defaultValueSupplier,long priority)  implements Gene<T>{
+	static record GeneType<T>(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> streamCodec,Function<T,Component> toReadableName,Function<T,Component> toShortName,Supplier<T> defaultValueSupplier,long priority)  implements Gene<T>{
 		@Override
 		public T getDefault() {
 			return defaultValueSupplier.get();
@@ -58,30 +59,22 @@ public class GeneRegistry {
 			return id.toLanguageKey("gene","short");
 		}
 		@Override
-		public void getReadableText(T allele, Consumer<Component> text) {
-			List<Component> tl=new ArrayList<>();
-			toReadableName.accept(allele, tl::add);
-			if(tl.size()==0)
-				return;
-			if(tl.size()==1) {
-				text.accept(Component.translatable(getLanguageKey(), tl.get(0)));
-			}else {
-				text.accept(Component.translatable(getLanguageKey(), ""));
-				tl.forEach(text::accept);
-			}
+		public Component getReadableText(T allele) {
+			return toReadableName.apply(allele);
 		}
 		@Override
-		public void getShortReadableText(T allele, Consumer<Component> text) {
-			List<Component> tl=new ArrayList<>();
-			toShortName.accept(allele, tl::add);
-			if(tl.size()==0)
-				return;
-			if(tl.size()==1) {
-				text.accept(Component.translatable(getShortLanguageKey(), tl.get(0)));
-			}else {
-				text.accept(Component.translatable(getShortLanguageKey(), ""));
-				tl.forEach(text::accept);
-			}
+		public Component getShortReadableText(T allele) {
+			return toShortName.apply(allele);
+			
+			
+		}
+		@Override
+		public Component getReadableText() {
+			return Component.translatable(getLanguageKey());
+		}
+		@Override
+		public Component getShortReadableText() {
+			return Component.translatable(getShortLanguageKey());
 		}
 	}
 	private static Map<Identifier,GeneType<?>> geneticsMap=new HashMap<>();
@@ -93,10 +86,10 @@ public class GeneRegistry {
 	private static Object lock=new Object();
 	public static final Codec<Gene<?>> CODEC=Identifier.CODEC.comapFlatMap(GeneRegistry::getGeneType, Gene::id);
 	public static final StreamCodec<ByteBuf,Gene<?>> STREAM_CODEC=ByteBufCodecs.idMapper(GeneRegistry::getByInt, GeneRegistry::getIntId);
-	public synchronized static <T> Gene<T> register(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> stream,BiConsumer<T,Consumer<Component>> toReadableName,Supplier<T> defaultValueSupplier,int priority) {
+	public synchronized static <T> Gene<T> register(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> stream,Function<T,Component> toReadableName,Supplier<T> defaultValueSupplier,int priority) {
 		return register(id,codec,stream,toReadableName,toReadableName,defaultValueSupplier,priority);
 	}
-	public synchronized static <T> Gene<T> register(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> stream,BiConsumer<T,Consumer<Component>> toReadableName,BiConsumer<T,Consumer<Component>> toShortName,Supplier<T> defaultValueSupplier,int priority) {
+	public synchronized static <T> Gene<T> register(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> stream,Function<T,Component> toReadableName,Function<T,Component> toShortName,Supplier<T> defaultValueSupplier,int priority) {
 		GeneType<T> gt=new GeneType<>(id,codec,stream,toReadableName,toShortName,defaultValueSupplier,(((long)priority)<<32)|geneticsMap.size());
 		if(!geneticsMap.containsKey(id)) {
 			synchronized(lock) {

@@ -28,7 +28,7 @@ import net.minecraft.network.chat.Component;
 
 public interface SequencerTab {
 	
-	public void extractRenderState(GuiGraphicsExtractor transform,SequencerMenu menu,int x,int y,int w,int h,int mouseX, int mouseY, float partial,Consumer<Component> tooltips);
+	public void extractRenderState(GuiGraphicsExtractor graphics,SequencerMenu menu,int x,int y,int w,int h,int mouseX, int mouseY, float partial,Consumer<Component> tooltips);
 
 
 	public void extractBackground(GuiGraphicsExtractor graphics,SequencerMenu menu,int x,int y,int w,int h, int mouseX, int mouseY, float partial);

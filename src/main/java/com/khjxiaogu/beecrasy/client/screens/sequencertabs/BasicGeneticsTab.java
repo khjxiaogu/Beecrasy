@@ -19,20 +19,53 @@
 
 package com.khjxiaogu.beecrasy.client.screens.sequencertabs;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
+import org.jspecify.annotations.Nullable;
+
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.client.screens.SequencerScreen;
+import com.khjxiaogu.beecrasy.components.GenomeComponent;
+import com.khjxiaogu.beecrasy.genome.Genes;
+import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
+import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.menu.SequencerMenu;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
 public class BasicGeneticsTab implements SequencerTab {
+	List<Line> lines=new ArrayList<>();
+	public BasicGeneticsTab() {
+		super();
+	}
+	public void addLines() {
 
+		lines.add(new SingleLine(Genes.TEMPERATURE));
+		lines.add(new SingleLine(Genes.HUMIDITY));
+		lines.add(new SingleLine(Genes.BIOTOPE));
+		lines.add(new SingleLine(Genes.FERTILITY));
+		lines.add(new SingleLine(Genes.LIFESPAN));
+		lines.add(new SingleLine(Genes.YIELD));
+	}
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor transform, SequencerMenu menu, int x, int y, int w, int h, int mouseX, int mouseY, float partial, Consumer<Component> tooltips) {
-		
+	public void extractRenderState(GuiGraphicsExtractor graphics, SequencerMenu menu, int x, int y, int w, int h, int mouseX, int mouseY, float partial, Consumer<Component> tooltips) {
+		ItemStack is=menu.getSlot(0).getItem();
+		GenomeComponent comp=is.get(Components.GENOME);
+		if(comp!=null&&comp.isInspected()) {
+			int dy=y;
+			Genome ah1=comp.getGenome(0);
+			Genome ah2=null;
+			if(comp.size()>1)
+				ah2=comp.getGenome(1);
+			for(Line l:lines) {
+				dy+=l.extractRenderState(graphics, ah1, ah2, x, dy, mouseX-x, mouseY-dy, tooltips)+2;
+			}
+		}
 		
 	}
 

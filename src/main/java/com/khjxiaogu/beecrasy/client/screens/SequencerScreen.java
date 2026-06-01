@@ -63,7 +63,9 @@ public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerS
 				tab.addButtonTooltip(menu, adder);
 			}
 		}
-		selectedTab.extractRenderState(graphics, menu, 40, 13, 92, 100, mouseX, mouseY, partial, adder);
+		int dx=leftPos+40;
+		int dy=topPos+13;
+		selectedTab.extractRenderState(graphics, menu, dx, dy, 92, 100, mouseX, mouseY, partial, adder);
 		super.extractRenderState(graphics, mouseX, mouseY, partial);
 		if (!tooltip.isEmpty()) {
 			graphics.setComponentTooltipForNextFrame(this.font, tooltip, mouseX, mouseY);
@@ -83,7 +85,7 @@ public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerS
 		SequencerTab selectedTab=SequencerTabs.getTabs().get(selected);
 		
 		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight,256,256);
-		selectedTab.extractBackground(graphics, menu, 40, 13, 92, 100, mouseX, mouseY, a);
+		selectedTab.extractBackground(graphics, menu, leftPos+40, topPos+13, 92, 100, mouseX, mouseY, a);
 	
 		
 	}

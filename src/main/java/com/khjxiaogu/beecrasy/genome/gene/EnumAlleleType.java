@@ -75,11 +75,11 @@ public class EnumAlleleType<T extends Allele> implements Iterable<T>{
 	public String getShortLanguageKey(T allele) {
 		return alleleName.getOrDefault(allele,Translation.MISSING).shortKey();
 	}
-	public void getReadableText(T allele,Consumer<Component> text) {
-		text.accept(alleleName.getOrDefault(allele,Translation.MISSING).component());
+	public Component getReadableText(T allele) {
+		return (alleleName.getOrDefault(allele,Translation.MISSING).component());
 	}
-	public void getShortReadableText(T allele,Consumer<Component> text) {
-		text.accept(alleleName.getOrDefault(allele,Translation.MISSING).shortComponent());
+	public Component getShortReadableText(T allele) {
+		return (alleleName.getOrDefault(allele,Translation.MISSING).shortComponent());
 	}
 	private void makeIndex() {
 		if(!sorted) {

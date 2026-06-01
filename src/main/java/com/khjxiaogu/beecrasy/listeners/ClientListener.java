@@ -51,9 +51,10 @@ public class ClientListener {
 		
 		if(genome!=null) {
 			if(genome.isInspected()) {
-				Genes.TEMPERATURE.getReadableText(genome.getGenome(0), event::addTooltipLines);
-				Genes.HUMIDITY.getReadableText(genome.getGenome(0), event::addTooltipLines);
-				Genes.BIOTOPE.getReadableText(genome.getGenome(0), event::addTooltipLines);
+				event.addTooltipLines(Component.empty().append(Genes.TEMPERATURE.getReadableText()).append(" ").append(Genes.TEMPERATURE.getReadableText(genome.getGenome(0))));
+				event.addTooltipLines(Component.empty().append(Genes.HUMIDITY.getReadableText()).append(" ").append(Genes.HUMIDITY.getReadableText(genome.getGenome(0))));
+				event.addTooltipLines(Component.empty().append(Genes.BIOTOPE.getReadableText()).append(" ").append(Genes.BIOTOPE.getReadableText(genome.getGenome(0))));
+
 			}else {
 
 				event.addTooltipLines(Component.translatable("tooltip.beecrasy.to_be_inspected"));

@@ -19,8 +19,6 @@
 
 package com.khjxiaogu.beecrasy.genome;
 
-import java.util.function.Consumer;
-
 import com.mojang.serialization.Codec;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -33,15 +31,17 @@ public interface Gene<T>{
 	public Identifier id();
 	public Codec<T> codec();
 	public StreamCodec<RegistryFriendlyByteBuf,T> streamCodec();
-	public void getReadableText(T allele,Consumer<Component> text);
+	public Component getReadableText();
+	public Component getReadableText(T allele);
 
-	public default void getReadableText(AllelesHolder genome,Consumer<Component> text) {
-		getReadableText(genome.getAllele(this),text);
+	public default Component getReadableText(AllelesHolder genome) {
+		return getReadableText(genome.getAllele(this));
 	}
-	public void getShortReadableText(T allele,Consumer<Component> text);
+	public Component getShortReadableText();
 
-	public default void getShortReadableText(AllelesHolder genome,Consumer<Component> text) {
-		getShortReadableText(genome.getAllele(this),text);
+	public Component getShortReadableText(T genome);
+	public default Component getShortReadableText(AllelesHolder genome) {
+		return getShortReadableText(genome.getAllele(this));
 	}
 	public String getLanguageKey();
 	public String getShortLanguageKey();;

@@ -161,7 +161,7 @@ public abstract class BeecrasyContainerMenu extends AbstractContainerMenu implem
 	}
 
 	public void addDummyTank(int capacity) {
-		FluidStacksResourceHandler tank = new FluidStacksResourceHandler(1,1250);
+		FluidStacksResourceHandler tank = new FluidStacksResourceHandler(1,capacity);
 		
 		addFluidTank(tank,tank::set,0);
 	}

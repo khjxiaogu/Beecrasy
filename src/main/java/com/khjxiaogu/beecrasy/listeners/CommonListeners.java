@@ -122,7 +122,7 @@ public class CommonListeners {
 				for(Genome cgenome:genome) {
 					textAdder.accept(Component.translatable("genome.beecrasy.genome"+i).withStyle(ChatFormatting.GOLD));
 					for(Identifier gene:GeneRegistry.getDisplayOrder()) {
-						GeneRegistry.get(gene).getReadableText(cgenome, textAdder);
+						textAdder.accept(Component.empty().append(GeneRegistry.get(gene).getReadableText()).append(": ").append(GeneRegistry.get(gene).getReadableText(cgenome)));
 					}
 					i++;
 				}

@@ -44,6 +44,7 @@ import com.khjxiaogu.beecrasy.data.GenomePresets;
 import com.khjxiaogu.beecrasy.data.PressRecipe;
 import com.khjxiaogu.beecrasy.item.LarvaItem;
 import com.khjxiaogu.beecrasy.item.QueenBeeItem;
+import com.khjxiaogu.beecrasy.item.SequencerHandHeld;
 import com.khjxiaogu.beecrasy.menu.PressMenu;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuHandHeld;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
@@ -121,8 +122,8 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> PRODUCT_COMB=ITEMS.registerSimpleItem("product_comb");
 	    public static final DeferredItem<Item> QUEEN_BEE=ITEMS.registerItem("queen_bee",QueenBeeItem::new,t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY.asInspected()).stacksTo(1));
 	    //工具
-	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerSimpleItem("handheld_sequencer",t->t.component(DataComponents.CONTAINER, ItemContainerContents.EMPTY));
-	    public static final DeferredItem<Item> BUTTERFLY_NET=ITEMS.registerSimpleItem("butterfly_net",s->s.tool(ToolMaterial.WOOD,Tags.MINABLE_NET, 1.0f, -2.8f, 0));
+	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerItem("handheld_sequencer",SequencerHandHeld::new,t->t.component(DataComponents.CONTAINER, ItemContainerContents.EMPTY).stacksTo(1));
+	    public static final DeferredItem<Item> BUTTERFLY_NET=ITEMS.registerSimpleItem("butterfly_net",s->s.tool(ToolMaterial.WOOD,Tags.MINABLE_NET, 1.0f, -2.8f, 0).stacksTo(1));
 	}
 	public static class Tabs{
 	    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Beecrasy.MODID);

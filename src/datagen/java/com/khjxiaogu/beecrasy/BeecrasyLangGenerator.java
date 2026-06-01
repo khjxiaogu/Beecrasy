@@ -48,7 +48,7 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 		for(Identifier id:GeneRegistry.getGeneTypes()) {
 			if(id.getNamespace().equals(Beecrasy.MODID)) {
 				this.add(GeneRegistry.get(id).getLanguageKey(), capitalizeWords(id.getPath())+": %s");
-				this.add(GeneRegistry.get(id).getShortLanguageKey(), capitalizeWords(id.getPath()).substring(0,Math.min(id.getPath().length(), 4))+": %s");
+				this.add(GeneRegistry.get(id).getShortLanguageKey(), capitalizeWords(id.getPath()).substring(0,Math.min(id.getPath().length(), 4)));
 			}
 			
 		}
@@ -86,7 +86,7 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 		this.add("tab.sequencer.beecrasy."+name, capitalizeWords(name));
 	}
 	public <T> void addPercentage(BeehiveParameterType<T> type) {
-		this.add(type.id().toLanguageKey("argument.beehive"), capitalizeWords(type.id().getPath())+" %s%%");
+		this.add(type.id().toLanguageKey("argument.beehive"), capitalizeWords(type.id().getPath())+" %s%");
 	
 	}
 	
