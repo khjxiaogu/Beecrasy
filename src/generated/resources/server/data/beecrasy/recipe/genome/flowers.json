@@ -1,0 +1,332 @@
+{
+  "type": "beecrasy:genome_preset",
+  "geneticGroup": "beecrasy:products",
+  "genomes": [
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:poppy"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:blue_orchid"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:allium"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:azure_bluet"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:red_tulip"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:orange_tulip"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:white_tulip"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:pink_tulip"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:oxeye_daisy"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:cornflower"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:lily_of_the_valley"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:wither_rose"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:torchflower"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:pitcher_plant"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:spore_blossom"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:brown_mushroom"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:red_mushroom"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:crimson_fungus"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:warped_fungus"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:crimson_roots"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:warped_roots"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:nether_sprouts"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:weeping_vines"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:twisting_vines"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:sugar_cane"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    }
+  ],
+  "name": "beecrasy:flowers"
+}

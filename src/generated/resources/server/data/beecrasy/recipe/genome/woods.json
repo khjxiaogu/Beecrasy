@@ -1,0 +1,33 @@
+{
+  "type": "beecrasy:genome_preset",
+  "geneticGroup": "beecrasy:products",
+  "genomes": [
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:oak_log"
+            }
+          }
+        ]
+      },
+      "weight": 2
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:birch_log"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    }
+  ],
+  "name": "beecrasy:woods"
+}

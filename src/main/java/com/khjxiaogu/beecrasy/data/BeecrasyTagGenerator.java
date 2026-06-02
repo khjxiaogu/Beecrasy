@@ -75,10 +75,11 @@ public abstract class BeecrasyTagGenerator<T> extends TagsProvider<T> {
 	protected ResourceKey<T> rk(T b) {
 		return registry().getResourceKey(b).get();
 	}
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected Registry<T> registry() {
 		return (Registry<T>) BuiltInRegistries.REGISTRY.getValueOrThrow((ResourceKey)registryKey);
 	}
+	@SuppressWarnings("rawtypes")
 	protected ResourceKey rk(DeferredHolder it) {
 		return it.getKey();
 	}

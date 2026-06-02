@@ -27,7 +27,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 import com.google.common.collect.ImmutableSet;
+import com.khjxiaogu.beecrasy.data.BuilderContext;
+import com.khjxiaogu.beecrasy.data.GenomePresets;
 import com.khjxiaogu.beecrasy.data.PressRecipe;
+import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.mojang.datafixers.util.Pair;
 
 
@@ -81,7 +84,6 @@ public class BeecrasyRecipeProvider extends RecipeProvider {
 	}
 	private final HashMap<String, Integer> PATH_COUNT = new HashMap<>();
 
-	static final Fluid water = fluid(mrl("nail_soup")), milk = fluid(mrl("scalded_milk")), stock = fluid(mrl("stock"));
 	public static List<Pair<Identifier,Recipe<?>>> recipes = new ArrayList<>();
 
 	public BeecrasyRecipeProvider(HolderLookup.Provider registries, RecipeOutput output) {
@@ -98,41 +100,92 @@ public class BeecrasyRecipeProvider extends RecipeProvider {
 	protected void buildRecipes() {
 		RecipeOutput outx=this.output;
 		BiConsumer<String,Recipe<?>> out = (r1,r2) -> {
-			outx.accept(ResourceKey.create(Registries.RECIPE, Beecrasy.rl(r1)),r2,null);
+			outx.accept(ResourceKey.create(Registries.RECIPE, rl(r1)),r2,null);
 		};
 		out.accept("press/honey_drop", new PressRecipe.Builder(BeecrasyRegistries.Items.HONEY_DROP,1).addFluid(BeecrasyRegistries.Fluids.HONEY_STILL.get(),100).setTime(100).create());
 		out.accept("press/comb", new PressRecipe.Builder(BeecrasyRegistries.Items.PRODUCT_COMB,1).addOutput(BeecrasyRegistries.Items.BEESWAX.get(),1)
 				.addOutput(BeecrasyRegistries.Items.HONEY_DROP.get(),1,.8f)
 				.setTime(200).create());
-		
+		try(BuilderContext<GenomePresets.Builder> builder=presetBuilder()){
+			builder.create("genome/base", new GenomePresets.Builder("base"))
+			.group("yield")
+			.item(3, t->t.yld(Alleles.MEAGER_YIELD))
+			.item(1, t->t.yld(Alleles.MODERATE_YIELD));
+			builder.create("genome/woods", new GenomePresets.Builder("woods"))
+			.group("products")
+			.item(2, t->t.product(Items.OAK_LOG))
+			.item(1, t->t.product(Items.BIRCH_LOG));
+			builder.create("genome/flowers", new GenomePresets.Builder("flowers"))
+			.group("products")
+			.item(1, t->t.product(Items.POPPY))
+			.item(1, t->t.product(Items.BLUE_ORCHID))
+		    .item(1, t->t.product(Items.ALLIUM))
+		    .item(1, t->t.product(Items.AZURE_BLUET))
+		    .item(1, t->t.product(Items.RED_TULIP))
+		    .item(1, t->t.product(Items.ORANGE_TULIP))
+		    .item(1, t->t.product(Items.WHITE_TULIP))
+		    .item(1, t->t.product(Items.PINK_TULIP))
+		    .item(1, t->t.product(Items.OXEYE_DAISY))
+		    .item(1, t->t.product(Items.CORNFLOWER))
+		    .item(1, t->t.product(Items.LILY_OF_THE_VALLEY))
+		    .item(1, t->t.product(Items.WITHER_ROSE))
+		    .item(1, t->t.product(Items.TORCHFLOWER))
+		    .item(1, t->t.product(Items.PITCHER_PLANT))
+		    .item(1, t->t.product(Items.SPORE_BLOSSOM))
+		    .item(1, t->t.product(Items.BROWN_MUSHROOM))
+		    .item(1, t->t.product(Items.RED_MUSHROOM))
+		    .item(1, t->t.product(Items.CRIMSON_FUNGUS))
+		    .item(1, t->t.product(Items.WARPED_FUNGUS))
+		    .item(1, t->t.product(Items.CRIMSON_ROOTS))
+		    .item(1, t->t.product(Items.WARPED_ROOTS))
+		    .item(1, t->t.product(Items.NETHER_SPROUTS))
+		    .item(1, t->t.product(Items.WEEPING_VINES))
+		    .item(1, t->t.product(Items.TWISTING_VINES))
+		    .item(1, t->t.product(Items.SUGAR_CANE));
+			builder.create("genome/mines", new GenomePresets.Builder("stones"))
+			.group("products")
+			.item(60, t->t.product(Items.COBBLESTONE))
+			.item(12, t->t.product(Items.GRANITE))
+			.item(12, t->t.product(Items.DIORITE))
+			.item(12, t->t.product(Items.ANDESITE))
+			.item(12, t->t.product(Items.CALCITE))
+			.item(8, t->t.product(Items.COAL_ORE))
+			.item(4, t->t.product(Items.IRON_ORE))
+			.item(4, t->t.product(Items.COPPER_ORE))
+			.item(1, t->t.product(Items.GOLD_ORE))
+			.item(1, t->t.product(Items.LAPIS_ORE))
+			;
+		}
+	}
+	protected BuilderContext<GenomePresets.Builder> presetBuilder(){
+		return new BuilderContext<>(this::rl,t->t.build(),this.output);
 	}
 
-
-	private Fluid cpfluid(String name) {
-		return BuiltInRegistries.FLUID.getValue(Identifier.fromNamespaceAndPath(Beecrasy.MODID, name));
+	protected Fluid modfluid(String name) {
+		return fluid(Identifier.fromNamespaceAndPath(Beecrasy.MODID, name));
 	}
 
-	private Item cpitem(String name) {
-		return BuiltInRegistries.ITEM.getValue(Identifier.fromNamespaceAndPath(Beecrasy.MODID, name));
+	protected Item moditem(String name) {
+		return item(Identifier.fromNamespaceAndPath(Beecrasy.MODID, name));
 	}
 
-	private Item mitem(String name) {
-		return BuiltInRegistries.ITEM.getValue(Identifier.withDefaultNamespace(name));
+	protected Item mcitem(String name) {
+		return item(Identifier.withDefaultNamespace(name));
 	}
 
-	private Item item(Identifier rl) {
+	protected Item item(Identifier rl) {
 		return BuiltInRegistries.ITEM.getValue(rl);
 	}
 
-	private static Fluid fluid(Identifier rl) {
+	protected static Fluid fluid(Identifier rl) {
 		return BuiltInRegistries.FLUID.getValue(rl);
 	}
 
-	private static Identifier mrl(String s) {
-		return Identifier.fromNamespaceAndPath(Beecrasy.MODID, s);
+	protected static Identifier modrl(String s) {
+		return Beecrasy.rl(s);
 	}
 
-	private Identifier ftag(String s) {
+	protected Identifier ctag(String s) {
 		return Identifier.fromNamespaceAndPath("c", s);
 	}
 
@@ -143,16 +196,16 @@ public class BeecrasyRecipeProvider extends RecipeProvider {
 		return TagKey.create(Registries.ITEM, rl);
 	}
 
-	private Identifier rl(String s) {
+	protected Identifier rl(String s) {
 		if (!s.contains("/"))
 			s = "crafting/" + s;
 		if (PATH_COUNT.containsKey(s)) {
 			int count = PATH_COUNT.get(s) + 1;
 			PATH_COUNT.put(s, count);
-			return Identifier.fromNamespaceAndPath(Beecrasy.MODID, s + count);
+			return Beecrasy.rl(s + count);
 		}
 		PATH_COUNT.put(s, 1);
-		return Identifier.fromNamespaceAndPath(Beecrasy.MODID, s);
+		return Beecrasy.rl(s);
 	}
 
 

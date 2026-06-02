@@ -73,7 +73,7 @@ public class SequencerBlock extends Block implements BeecrasyEntityBlock<Sequenc
 	}
     @Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-    	if(level instanceof ServerLevel serverLevel) {
+    	if(level instanceof ServerLevel) {
 			if(level.getBlockEntity(pos) instanceof SequencerBlockEntity sequencer) {
 				if (!level.isClientSide())
 					((ServerPlayer) player).openMenu(sequencer);

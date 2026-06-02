@@ -1,0 +1,19 @@
+{
+  "type": "beecrasy:genome_preset",
+  "geneticGroup": "beecrasy:yield",
+  "genomes": [
+    {
+      "data": {
+        "beecrasy:yield": "meager"
+      },
+      "weight": 3
+    },
+    {
+      "data": {
+        "beecrasy:yield": "moderate"
+      },
+      "weight": 1
+    }
+  ],
+  "name": "beecrasy:base"
+}

@@ -1,0 +1,137 @@
+{
+  "type": "beecrasy:genome_preset",
+  "geneticGroup": "beecrasy:products",
+  "genomes": [
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:cobblestone"
+            }
+          }
+        ]
+      },
+      "weight": 60
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:granite"
+            }
+          }
+        ]
+      },
+      "weight": 12
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:diorite"
+            }
+          }
+        ]
+      },
+      "weight": 12
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:andesite"
+            }
+          }
+        ]
+      },
+      "weight": 12
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:calcite"
+            }
+          }
+        ]
+      },
+      "weight": 12
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:coal_ore"
+            }
+          }
+        ]
+      },
+      "weight": 8
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:iron_ore"
+            }
+          }
+        ]
+      },
+      "weight": 4
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:copper_ore"
+            }
+          }
+        ]
+      },
+      "weight": 4
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:gold_ore"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "data": {
+        "beecrasy:product": [
+          {
+            "biotope": "wild",
+            "stack": {
+              "id": "minecraft:lapis_ore"
+            }
+          }
+        ]
+      },
+      "weight": 1
+    }
+  ],
+  "name": "beecrasy:stones"
+}
