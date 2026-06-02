@@ -21,6 +21,7 @@ package com.khjxiaogu.beecrasy.client.screens;
 
 import java.util.function.Consumer;
 
+import com.khjxiaogu.beecrasy.blocks.SequencerBlockEntity;
 import com.khjxiaogu.beecrasy.client.FluidRenderHelper;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuBlock;
 
@@ -39,12 +40,16 @@ public class SequenceBlockScreen extends SequencerScreen<SequencerMenuBlock> {
 	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 		super.extractBackground(graphics, mouseX, mouseY, a);
 		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos+142, topPos+85, 176, 90, 32, 42,256,256);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos+11, topPos+113, (menu.getEnergy()>=menu.getWorkEnergy()?199:176), 45, 12, 8,256,256);
 		
 	}
 
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial,Consumer<Component> adder) {
 		FluidRenderHelper.handleGuiTank(graphics, menu, 0, leftPos+152, topPos+89, 16, 34, mouseX, mouseY, adder);
+		if(super.isMouseIn(mouseX, mouseY, 11, 113, 12, 8)) {
+			adder.accept(Component.literal(menu.getEnergy()+"/"+(menu.getWorkEnergy()*SequencerBlockEntity.ENERGY_BUFF)+" FE"));
+		}
 	}
 
 	

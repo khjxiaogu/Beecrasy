@@ -33,7 +33,7 @@ public interface SequencerTab {
 
 	public void extractBackground(GuiGraphicsExtractor graphics,SequencerMenu menu,int x,int y,int w,int h, int mouseX, int mouseY, float partial);
 	
-	public void extractButton(GuiGraphicsExtractor graphics,SequencerMenu menu,int x,int y,int w,int h,boolean isActive);
+	public void extractButton(GuiGraphicsExtractor graphics,SequencerMenu menu,int x,int y,int w,int h,boolean isOver,boolean isActive);
 	public void addButtonTooltip(SequencerMenu menu,Consumer<Component> tooltips);
 
 }

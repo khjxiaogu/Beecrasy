@@ -72,10 +72,13 @@ public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerS
 			int idx=i+minIndex;
 			SequencerTab tab=SequencerTabs.getTabs().get(idx);
 			boolean select=idx==selected;
-			tab.extractButton(graphics, menu, leftPos+11, topPos+13+i*18, 23, 15, select);
+			boolean over=false;
 			if(this.isMouseIn(mouseX, mouseY, 11, 13+i*18, 23, 15)) {
+				over=true;
 				tab.addButtonTooltip(menu, adder);
 			}
+
+			tab.extractButton(graphics, menu, leftPos+11, topPos+13+i*18, 23, 15, over, select);
 		}
 		int dx=leftPos+40;
 		int dy=topPos+13;

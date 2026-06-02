@@ -51,7 +51,8 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public class SequencerBlockEntity extends BeecrasyBlockEntity implements MenuProvider,ContainerData {
 	public final int energyCost=BeecrasyConfig.SERVER.SEQUENCER_ENERGY.getAsInt();
-	public SimpleEnergyHandler energy=new SimpleEnergyHandler(energyCost*3) {
+	public static final int ENERGY_BUFF=4;
+	public SimpleEnergyHandler energy=new SimpleEnergyHandler(energyCost*ENERGY_BUFF) {
 		@Override
 		protected void onEnergyChanged(int previousAmount) {
 			setChanged();
@@ -82,8 +83,8 @@ public class SequencerBlockEntity extends BeecrasyBlockEntity implements MenuPro
 			return super.isValid(index, resource)&&resource.is(Tags.HONEY);
 		}
 	};
-	public SequencerBlockEntity(BlockEntityType<?> pType, BlockPos pWorldPosition, BlockState pBlockState) {
-		super(pType, pWorldPosition, pBlockState);
+	public SequencerBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
+		super(Blocks.SEQUENCER_BLOCKENTITY.get(), pWorldPosition, pBlockState);
 	}
 
 	@Override

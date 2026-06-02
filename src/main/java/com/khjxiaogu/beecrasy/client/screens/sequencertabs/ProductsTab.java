@@ -32,20 +32,19 @@ public class ProductsTab implements SequencerTab{
 	public static final Component title=Component.translatable("tab.sequencer.beecrasy.products");
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor transform, SequencerMenu menu, int x, int y, int w, int h, int mouseX, int mouseY, float partial, Consumer<Component> tooltips) {
-		// TODO Auto-generated method stub
+
 		
 	}
 
 	@Override
 	public void extractBackground(GuiGraphicsExtractor graphics, SequencerMenu menu, int x, int y, int w, int h, int mouseX, int mouseY, float partial) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void extractButton(GuiGraphicsExtractor graphics, SequencerMenu menu, int x, int y, int w, int h, boolean isActive) {
-		graphics.blit(RenderPipelines.GUI_TEXTURED, SequencerScreen.TEXTURE, x, y, 176+(isActive?23:0), 15, w, h,256,256);
-		
+	public void extractButton(GuiGraphicsExtractor graphics, SequencerMenu menu, int x, int y, int w, int h, boolean isOver, boolean isActive) {
+		graphics.blit(RenderPipelines.GUI_TEXTURED, SequencerScreen.TEXTURE, x   , y, 176+(isOver  ?23:0)   , 15, 18, h,256,256);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, SequencerScreen.TEXTURE, x+18, y, 176+(isActive?23:0)+18, 15,  5, h,256,256);
 	}
 
 	@Override

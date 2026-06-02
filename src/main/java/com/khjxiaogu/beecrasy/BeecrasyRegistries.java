@@ -35,6 +35,7 @@ import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.PressBlock;
 import com.khjxiaogu.beecrasy.blocks.PressBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.SequencerBlock;
+import com.khjxiaogu.beecrasy.blocks.SequencerBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.SkepBlock;
 import com.khjxiaogu.beecrasy.blocks.SkepBlockEntity;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
@@ -169,7 +170,8 @@ public class BeecrasyRegistries {
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PressBlockEntity>> PRESS_BLOCKENTITY=BLOCK_ENTITIES.register("honey_press", makeBlockEntityType(PressBlockEntity::new, HONEY_PRESS));
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NaturalHiveBlockEntity>> NATURAL_HIVE_BLOCKENTITY=BLOCK_ENTITIES.register("natural_hive",makeBlockEntityType(NaturalHiveBlockEntity::new, NATURAL_HIVE));
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SkepBlockEntity>> SKEP_BLOCKENTITY=BLOCK_ENTITIES.register("skep", makeBlockEntityType(SkepBlockEntity::new, SKEP));
-		   
+	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SequencerBlockEntity>> SEQUENCER_BLOCKENTITY=BLOCK_ENTITIES.register("sequencer", makeBlockEntityType(SequencerBlockEntity::new, SEQUENCER));
+		    
 	    
 	    public static DeferredBlock<Block> register(String name){
 	    	return register(name,Block::new,Blocks::genalDeco,UnaryOperator.identity());

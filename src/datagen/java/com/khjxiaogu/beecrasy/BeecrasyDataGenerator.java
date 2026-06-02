@@ -41,6 +41,8 @@ public class BeecrasyDataGenerator {
 		
 		CompletableFuture<HolderLookup.Provider> completablefuture = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
 		gen.addProvider(true,new BeecrasyBlockTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
+		gen.addProvider(true,new BeecrasyFluidTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
+		gen.addProvider(true,new BeecrasyItemTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
 		gen.addProvider(true, new BeecrasyRecipeProvider.Runner(gen.getPackOutput(), completablefuture));
 		
 	}

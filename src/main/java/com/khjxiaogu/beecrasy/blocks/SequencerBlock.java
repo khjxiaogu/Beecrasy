@@ -23,19 +23,32 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
-public class SequencerBlock extends Block {
+public class SequencerBlock extends Block implements BeecrasyEntityBlock<SequencerBlockEntity>{
 	private static final VoxelShape BASE      = Block.box( 0,  0,  0, 16,  4, 16);
 	private static final VoxelShape MACHINE   = Block.box( 5,  4,  1, 15, 16, 11);
 	private static final VoxelShape SCREEN    = Block.box( 4,  4, 10, 16, 14, 16);
@@ -46,7 +59,29 @@ public class SequencerBlock extends Block {
 	public SequencerBlock(Properties properties) {
 		super(properties);
 	}
-
+	@Override
+	protected InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos,
+			Player player, InteractionHand hand, BlockHitResult hitResult) {
+		InteractionResult p = super.useItemOn(itemStack,state, level, pos, player, hand, hitResult);
+		if (p.consumesAction())
+			return p;
+		if(level.getBlockEntity(pos) instanceof SequencerBlockEntity sequencer) {
+			if (FluidUtil.interactWithFluidHandler(player, hand, pos, sequencer.tank))
+				return InteractionResult.SUCCESS;
+		}
+		return p;
+	}
+    @Override
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+    	if(level instanceof ServerLevel serverLevel) {
+			if(level.getBlockEntity(pos) instanceof SequencerBlockEntity sequencer) {
+				if (!level.isClientSide())
+					((ServerPlayer) player).openMenu(sequencer);
+				return InteractionResult.SUCCESS;
+			}
+    	}
+		return super.useWithoutItem(state, level, pos, player, hitResult);
+	}
 	@Override
 	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
 		return SHAPE_BY_FACING.get(state.getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite());
@@ -62,6 +97,10 @@ public class SequencerBlock extends Block {
 
 		return this.defaultBlockState().setValue(BlockStateProperties.LIT, false)
 			.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
+	}
+	@Override
+	public DeferredHolder<BlockEntityType<?>, BlockEntityType<SequencerBlockEntity>> getBlock() {
+		return Blocks.SEQUENCER_BLOCKENTITY;
 	}
 
 }

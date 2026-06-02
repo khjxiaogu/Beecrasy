@@ -74,8 +74,10 @@ public class BasicGeneticsTab implements SequencerTab {
 	}
 
 	@Override
-	public void extractButton(GuiGraphicsExtractor graphics, SequencerMenu menu, int x, int y, int w, int h, boolean isActive) {
-		graphics.blit(RenderPipelines.GUI_TEXTURED, SequencerScreen.TEXTURE, x, y, 176+(isActive?23:0), 0, w, h,256,256);
+	public void extractButton(GuiGraphicsExtractor graphics, SequencerMenu menu, int x, int y, int w, int h, boolean isOver, boolean isActive) {
+		graphics.blit(RenderPipelines.GUI_TEXTURED, SequencerScreen.TEXTURE, x   , y, 176+(isOver  ?23:0)   , 0, 18, h,256,256);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, SequencerScreen.TEXTURE, x+18, y, 176+(isActive?23:0)+18, 0,  5, h,256,256);
+		
 	}
 
 	@Override

@@ -19,6 +19,7 @@
 
 package com.khjxiaogu.beecrasy.menu;
 
+import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
 import com.khjxiaogu.beecrasy.blocks.SequencerBlockEntity;
@@ -63,6 +64,9 @@ public class SequencerMenuBlock extends SequencerMenu {
 	}
 	public int getEnergy() {
 		return data.get(0);
+	}
+	public int getWorkEnergy() {
+		return BeecrasyConfig.SERVER.SEQUENCER_ENERGY.getAsInt();
 	}
 
 }

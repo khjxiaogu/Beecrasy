@@ -25,6 +25,9 @@ import java.util.function.UnaryOperator;
 
 import com.google.common.collect.ImmutableSet;
 import static com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks.*;
+
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Fluids;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Tags;
 import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
 import com.khjxiaogu.beecrasy.data.BeecrasyTagGenerator;
@@ -43,25 +46,20 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 @SuppressWarnings("unused")
-public class BeecrasyBlockTagGenerator extends BeecrasyTagGenerator<Block> {
+public class BeecrasyFluidTagGenerator extends BeecrasyTagGenerator<Fluid> {
 
-	public BeecrasyBlockTagGenerator(DataGenerator dataGenerator, String modId,CompletableFuture<HolderLookup.Provider> provider) {
-		super(dataGenerator, Registries.BLOCK,modId,provider);
+	public BeecrasyFluidTagGenerator(DataGenerator dataGenerator, String modId,CompletableFuture<HolderLookup.Provider> provider) {
+		super(dataGenerator, Registries.FLUID,modId,provider);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void addTags(Provider pProvider) {
-		TagAppender<ResourceKey<Block>, Block> pickaxe = tag(BlockTags.MINEABLE_WITH_PICKAXE);
-		pickaxe.add(rk(SEQUENCER)).add(rk(HONEY_PRESS));
-
-		TagAppender<ResourceKey<Block>, Block> net = tag(Tags.MINABLE_NET);
-		net.add(rk(BEE_NEST_SMALL)).add(rk(BEE_NEST_NASCENT)).add(rk(BEE_NEST_MEDIUM)).add(rk(BEE_NEST_BIG)).add(rk(NATURAL_HIVE));
-		TagAppender<ResourceKey<Block>, Block> flowers = tag(Tags.FLOWERS);
-		flowers.addTag(BlockTags.FLOWERS);
+		tag(Tags.HONEY).add(rk(Fluids.HONEY_FLOWING)).add(rk(Fluids.HONEY_STILL));
 	}
 }
