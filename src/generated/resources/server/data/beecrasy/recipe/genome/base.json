@@ -1,6 +1,6 @@
 {
   "type": "beecrasy:genome_preset",
-  "geneticGroup": "beecrasy:yield",
+  "genetic_group": "beecrasy:yield",
   "genomes": [
     {
       "data": {

@@ -1,6 +1,6 @@
 {
   "type": "beecrasy:genome_preset",
-  "geneticGroup": "beecrasy:products",
+  "genetic_group": "beecrasy:products",
   "genomes": [
     {
       "data": {

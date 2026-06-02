@@ -56,7 +56,7 @@ import net.minecraft.world.level.Level;
 public record GenomePresets(Identifier name,Optional<Identifier> geneticGroup,List<Weighted<PartialGenome>> genome) implements Recipe<RecipeInput> {
 	public static final MapCodec<GenomePresets> CODEC=RecordCodecBuilder.mapCodec(t->t
 		.group(Identifier.CODEC.fieldOf("name").forGetter(GenomePresets::name),
-			Identifier.CODEC.optionalFieldOf("geneticGroup").forGetter(GenomePresets::geneticGroup),
+			Identifier.CODEC.optionalFieldOf("genetic_group").forGetter(GenomePresets::geneticGroup),
 			Codec.list(Weighted.codec(PartialGenome.CODEC)).fieldOf("genomes").forGetter(GenomePresets::genome))
 		.apply(t,GenomePresets::new));
 	public static final StreamCodec<RegistryFriendlyByteBuf,GenomePresets> STREAM_CODEC=StreamCodec.composite(
