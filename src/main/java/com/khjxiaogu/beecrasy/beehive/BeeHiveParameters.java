@@ -19,14 +19,45 @@
 
 package com.khjxiaogu.beecrasy.beehive;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry.BeehiveParameterType;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
 
 public class BeeHiveParameters {
-	public static final BeehiveParameterType<Float> SPEED=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("speed"),1f, (value,adder)->adder.accept(Component.translatable(Beecrasy.rl("speed").toLanguageKey("argument.beehive"),(value>0?"+":"")+(int)(value*100)+"%")));
-	public static final BeehiveParameterType<Float> MUTATE=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("mutate"),1f, (value,adder)->adder.accept(Component.translatable(Beecrasy.rl("mutate").toLanguageKey("argument.beehive"),(value>0?"+":"")+(int)(value*100)+"%")));
+	public static class Formatters{
+		NumberFormat number=new DecimalFormat("+0.0;-0.0");
+		NumberFormat percent=new DecimalFormat("+0%;-0%");
+		public String formatPercentage(float value) {
+			return percent.format(value);
+		}
+		public String formatNumber(float value) {
+			return number.format(value);
+		}
+	}
+	public static final BeehiveParameterType<Float> SPEED=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("speed"),1f, (value,adder)->adder.accept(formatPercentageLanguage(Beecrasy.rl("speed"),value)));
+	public static final BeehiveParameterType<Float> MUTATE=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("mutate"),1f, (value,adder)->adder.accept(formatPercentageLanguage(Beecrasy.rl("mutate"),value)));
+	public static final BeehiveParameterType<Float> LIFESPAN=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("lifespan"),1f, (value,adder)->adder.accept(formatPercentageLanguage(Beecrasy.rl("lifespan"),value)));
+	public static final BeehiveParameterType<Float> YIELD=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("yield"),1f, (value,adder)->adder.accept(formatPercentageLanguage(Beecrasy.rl("yield"),value)));
+	public static final BeehiveParameterType<Float> TEMPERATURE=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("temperature"),0f, (value,adder)->adder.accept(formatNumberLanguage(Beecrasy.rl("temperature"),value)));
+	public static final BeehiveParameterType<Float> HUMIDITY=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("humidity"),0f, (value,adder)->adder.accept(formatNumberLanguage(Beecrasy.rl("humidity"),value)));
 	
 	private BeeHiveParameters() {}
+	
+	public static final ThreadLocal<Formatters> formatter=ThreadLocal.withInitial(Formatters::new);
+
+	public static MutableComponent formatPercentageLanguage(Identifier id,float value) {
+		return Component.translatable(getLanguageKey(id),formatter.get().formatPercentage(value));
+	}
+	public static MutableComponent formatNumberLanguage(Identifier id,float value) {
+		return Component.translatable(getLanguageKey(id),formatter.get().formatNumber(value));
+	}
+	public static String getLanguageKey(Identifier id) {
+		return id.toLanguageKey("argument.beehive");
+	}
 }

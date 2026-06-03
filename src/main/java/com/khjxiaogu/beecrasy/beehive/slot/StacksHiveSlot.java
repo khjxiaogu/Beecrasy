@@ -21,6 +21,7 @@ package com.khjxiaogu.beecrasy.beehive.slot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.khjxiaogu.beecrasy.beehive.HiveSlot;
 import com.mojang.serialization.Codec;
@@ -48,7 +49,7 @@ public class StacksHiveSlot implements HiveSlot,ValueIOSerializable {
 
 	@Override
 	public ItemStack getItem() {
-		return stack;
+		return stack.copy();
 	}
 
 	@Override
@@ -64,6 +65,12 @@ public class StacksHiveSlot implements HiveSlot,ValueIOSerializable {
 		List<StacksHiveSlot> slots=new ArrayList<>();
 		for(int i=0;i<count;i++)
 			slots.add(new StacksHiveSlot());
+		return slots;
+	}
+	public static List<StacksHiveSlot> createSlots(List<? extends HiveSlot> list){
+		List<StacksHiveSlot> slots=new ArrayList<>(list.size());
+		for(int i=0;i<list.size();i++)
+			slots.add(new StacksHiveSlot(list.get(i).getItem()));
 		return slots;
 	}
 	@SuppressWarnings("deprecation")
@@ -90,5 +97,19 @@ public class StacksHiveSlot implements HiveSlot,ValueIOSerializable {
 			slots.get(idx).deserialize(i);
 			idx++;
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		return ItemStack.hashItemAndComponents(stack);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		StacksHiveSlot other = (StacksHiveSlot) obj;
+		return Objects.equals(stack, other.stack);
 	}
 }

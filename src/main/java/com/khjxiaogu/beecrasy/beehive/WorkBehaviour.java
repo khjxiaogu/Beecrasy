@@ -17,13 +17,23 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy;
+package com.khjxiaogu.beecrasy.beehive;
 
-import net.minecraft.resources.Identifier;
+import com.mojang.serialization.Codec;
 
-public class Constants {
+import net.minecraft.network.chat.Component;
 
-	public static final Identifier BASE_ID=Beecrasy.rl("base");
-	public static final Identifier FOREST_ID=Beecrasy.rl("woods");
-	public static final Identifier FLOWER_ID=Beecrasy.rl("flowers");
+public enum WorkBehaviour{
+	MAUNAL,//人工
+	AUTO,//自动
+	REDSTONE;//红石
+	private final String key="gui.beehive.control."+this.name().toLowerCase();
+	private final Component text=Component.translatable(key);
+	public static final Codec<WorkBehaviour> CODEC=Codec.INT.xmap(i->WorkBehaviour.values()[i], WorkBehaviour::ordinal);
+	public Component getComponents() {
+		return text;
+	}
+	public String getTranslationKey() {
+		return key;
+	}
 }

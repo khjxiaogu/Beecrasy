@@ -94,7 +94,7 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
     	List<ItemStack> list=super.getDrops(state, params);
 		if (params.getParameter(LootContextParams.BLOCK_ENTITY) instanceof SkepBlockEntity blockEntity) {
-			ItemStacksResourceHandler inv=blockEntity.getInternInv();
+			ItemStacksResourceHandler inv=blockEntity.component.getInternInv();
 			for (int i = 0; i < inv.size(); i++) {
 				ItemResource is = inv.getResource(i);
 				if (!is.isEmpty()) {

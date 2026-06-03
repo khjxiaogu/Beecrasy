@@ -31,7 +31,7 @@ import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
 public class PressMenu extends BeecrasyContainerMenu {
-	public final ContainerData data;
+	private final ContainerData data;
 	
 	public PressMenu(int containerId,Inventory inventory, RegistryFriendlyByteBuf bytebuf) {
 		this(containerId,inventory,new SimpleContainerData(2),new ItemStacksResourceHandler(10));
@@ -54,7 +54,12 @@ public class PressMenu extends BeecrasyContainerMenu {
 				this.addSlot(new OutputSlot(slots,slots::set,y*3+x+1,119+x*18,9+y*18));
 		this.addPlayerInventory(8, 84, 142);
 	}
-
+	public int getProcess() {
+		return data.get(0);
+	}
+	public int getProcessMax() {
+		return data.get(1);
+	}
 	@Override
 	public void receiveOperation(short opCode, int opData) {
 		

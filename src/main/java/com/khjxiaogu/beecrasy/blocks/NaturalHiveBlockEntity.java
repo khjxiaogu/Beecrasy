@@ -55,7 +55,7 @@ public class NaturalHiveBlockEntity extends BeecrasyBlockEntity{
 		if(isGrowthStarted)return;
 		GenomeComponent comp=queen.get(Components.GENOME);
 		if(comp!=null) {
-			NaturalBeeGenomeGenerateEvent event = new NaturalBeeGenomeGenerateEvent(level, this.worldPosition, getBlockState(), Genome.builder());
+			NaturalBeeGenomeGenerateEvent event = new NaturalBeeGenomeGenerateEvent(param, Genome.builder());
 			NeoForge.EVENT_BUS.post(event);
 			hiveInfo.beginWork(param, GenomeDataHelper.getAsDiploid(comp), List.of(event.genome.build()));
 			isGrowthStarted=true;

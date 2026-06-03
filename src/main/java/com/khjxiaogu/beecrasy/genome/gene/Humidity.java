@@ -19,10 +19,7 @@
 
 package com.khjxiaogu.beecrasy.genome.gene;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
 
 public abstract class Humidity extends BaseAllele {
 	public static class RangedHumidity extends Humidity{
@@ -34,9 +31,8 @@ public abstract class Humidity extends BaseAllele {
 			this.lower = lower;
 		}
 		@Override
-		public boolean isValidFor(Level l, BlockPos pos) {
-			Holder<Biome> biome=l.getBiomeManager().getNoiseBiomeAtPosition(pos);
-			float humid=biome.value().getModifiedClimateSettings().downfall();
+		public boolean isValidFor(BeeHiveParameterSet params) {
+			float humid=params.biome().value().getModifiedClimateSettings().downfall();
 			return humid>=lower&&humid<=upper;
 		}
 	}
@@ -45,7 +41,7 @@ public abstract class Humidity extends BaseAllele {
 			super(id);
 		}
 		@Override
-		public boolean isValidFor(Level l, BlockPos pos) {
+		public boolean isValidFor(BeeHiveParameterSet params) {
 			return true;
 		}
 		@Override
@@ -56,7 +52,7 @@ public abstract class Humidity extends BaseAllele {
 	public Humidity(String id) {
 		super(id);
 	}
-	public abstract boolean isValidFor(Level l, BlockPos pos);
+	public abstract boolean isValidFor(BeeHiveParameterSet params);
 	public boolean isNatural() {
 		return true;
 	}

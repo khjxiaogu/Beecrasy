@@ -28,7 +28,7 @@ import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry.BeehiveParameterType;
-import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
+import com.khjxiaogu.beecrasy.components.BeehiveArgumenter;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.genome.Genes;
 
@@ -70,10 +70,10 @@ public class ClientListener {
 			}
 		}
 
-		@Nullable BeeHiveArgumentation arguments=stack.get(Components.ARGUMENTATION);
+		@Nullable BeehiveArgumenter arguments=stack.get(Components.ARGUMENTATION);
 		if(arguments!=null) {
 			Consumer<Component> csm=event::addTooltipLines;
-			for(Entry<BeehiveParameterType<?>, Object> ent:arguments.params().entrySet()) {
+			for(Entry<BeehiveParameterType<?>, Object> ent:arguments.modifiers().params().entrySet()) {
 				((BeehiveParameterType)ent.getKey()).desc().accept(ent.getValue(), csm);
 			}
 		}

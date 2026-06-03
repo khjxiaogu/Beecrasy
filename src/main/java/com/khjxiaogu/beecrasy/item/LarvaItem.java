@@ -46,7 +46,7 @@ public class LarvaItem extends Item {
 	}
 	public static ItemStack getProduct(ItemStack itemStack, ServerLevel level) {
 		int count=itemStack.count();
-		
+	
 		Genome pheno=GenomeDataHelper.getPhenoType(itemStack);
 
 		LarvaProductivity lp=itemStack.get(Components.LARVA_PRODUCT);

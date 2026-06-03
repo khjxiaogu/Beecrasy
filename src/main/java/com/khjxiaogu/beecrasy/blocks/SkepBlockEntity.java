@@ -22,22 +22,43 @@ package com.khjxiaogu.beecrasy.blocks;
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
+import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation.Builder;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
 import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public class SkepBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvider{
+	public static class SkepComponent extends BeeHiveBaseComponent{
 
+		public SkepComponent(int queen, int drone, int comb, int extra) {
+			super(queen, drone, comb, extra);
+		}
+
+		@Override
+		public boolean isValidForExtra(int index, ItemResource resource) {
+			return ItemValidateHelper.isArgument(resource.toStack());
+		}
+		@Override
+		public Builder buildArgumentation(ServerLevel level,BlockPos worldPosition,TransactionContext root) {
+			
+			return super.buildArgumentation(level,worldPosition,root)
+				.addParams(super.extractArgumentation(level, 9, root))
+				.addParams(super.extractArgumentation(level, 10, root));
+		}
+	}
 	public SkepBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-		super(Blocks.SKEP_BLOCKENTITY.get(), pWorldPosition, pBlockState, 1, 4, 4, 2);
+		super(Blocks.SKEP_BLOCKENTITY.get(), pWorldPosition, pBlockState, new SkepComponent(1, 4, 4, 2));
 	}
 
 	@Override
@@ -50,9 +71,9 @@ public class SkepBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvi
 		return Blocks.SKEP.get().getName();
 	}
 
-	@Override
-	public boolean isValidForExtra(int index, ItemResource resource) {
-		return ItemValidateHelper.isArgument(resource.toStack());
-	}
+
+
+
+
 
 }

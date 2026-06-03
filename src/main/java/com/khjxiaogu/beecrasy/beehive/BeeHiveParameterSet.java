@@ -27,17 +27,23 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry.BeehiveParameterType;
 import com.khjxiaogu.beecrasy.genome.gene.Biotope;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
-public record BeeHiveParameterSet(ServerLevel level,BlockPos position,Set<Identifier> disabledMutation,Map<BeehiveParameterType<?>,Object> params,Set<Biotope> activeBiotopes) {
+public record BeeHiveParameterSet(ServerLevel level,BlockPos position,Holder<Biome> biome,Holder<DimensionType> type,@Nullable BlockState state,Set<Identifier> disabledMutation,Map<BeehiveParameterType<?>,Object> params,Set<Biotope> activeBiotopes) {
 	public static class BeehiveWorkingParams implements ValueIOSerializable{
 		private Map<BeehiveParameterType<?>,Object> params=new HashMap<>();
 		
@@ -66,10 +72,16 @@ public record BeeHiveParameterSet(ServerLevel level,BlockPos position,Set<Identi
 		Set<Identifier> disabledMutation=new HashSet<>();
 		Map<BeehiveParameterType<?>,Object> params=new HashMap<>();
 		Set<Biotope> activeBiotopes=new HashSet<>();
+		Holder<Biome> biome;
+		Holder<DimensionType> type;
+		BlockState state;
 		public Builder(ServerLevel level, BlockPos position) {
 			super();
 			this.level = level;
 			this.position = position;
+			biome=level.getBiomeManager().getNoiseBiomeAtPosition(position);
+			type=level.dimensionTypeRegistration();
+			state=level.getBlockState(position);
 		}
 		public Builder disableMutation(Identifier id) {
 			disabledMutation.add(id);
@@ -92,6 +104,19 @@ public record BeeHiveParameterSet(ServerLevel level,BlockPos position,Set<Identi
 			activeBiotopes.add(biotope);
 			return this;
 		}
+		public Builder overrideBiome(Holder<Biome> biome) {
+			this.biome=biome;
+			return this;
+		}
+		public Builder overrideDimensionType(Holder<DimensionType> type) {
+			this.type=type;
+			return this;
+		}
+		public Builder overrideBlockState(BlockState state) {
+			this.state=state;
+			return this;
+		}
+		
 		@SuppressWarnings("unchecked")
 		public <T> T getParamValue(BeehiveParameterType<T> type) {
 			return (T) params.get(type);
@@ -101,7 +126,7 @@ public record BeeHiveParameterSet(ServerLevel level,BlockPos position,Set<Identi
 			for(Entry<BeehiveParameterType<?>, Object> ent:params.entrySet()) {
 				ent.setValue(((BeehiveParameterType)ent.getKey()).mergeToDefault(ent.getValue()));
 			}
-			return new BeeHiveParameterSet(level,position,Set.copyOf(disabledMutation),Map.copyOf(params),activeBiotopes);
+			return new BeeHiveParameterSet(level,position,biome,type,state,Set.copyOf(disabledMutation),Map.copyOf(params),activeBiotopes);
 		}
 	}
 	@SuppressWarnings("unchecked")

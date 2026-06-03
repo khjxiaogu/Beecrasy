@@ -21,7 +21,7 @@ package com.khjxiaogu.beecrasy.client.screens;
 
 import java.util.function.IntSupplier;
 
-import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity.WorkBehaviour;
+import com.khjxiaogu.beecrasy.beehive.WorkBehaviour;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;

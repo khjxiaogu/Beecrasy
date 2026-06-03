@@ -19,11 +19,9 @@
 
 package com.khjxiaogu.beecrasy.genome.gene;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
+
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.dimension.DimensionType;
 
 public abstract class Temperature extends BaseAllele {
@@ -36,10 +34,9 @@ public abstract class Temperature extends BaseAllele {
 			this.lower = lower;
 		}
 		@Override
-		public boolean isValidFor(Level l, BlockPos pos,Humidity humidity) {
-			Holder<Biome> biome=l.getBiomeManager().getNoiseBiomeAtPosition(pos);
-			float temp=biome.value().getBaseTemperature();
-			return temp>=lower&&temp<=upper&&humidity.isValidFor(l, pos);
+		public boolean isValidFor(BeeHiveParameterSet params,Humidity humidity) {
+			float temp=params.biome().value().getBaseTemperature();
+			return temp>=lower&&temp<=upper&&humidity.isValidFor(params);
 		}
 	}
 	public static class DimensionalTemperature extends Temperature{
@@ -50,8 +47,8 @@ public abstract class Temperature extends BaseAllele {
 		}
 
 		@Override
-		public boolean isValidFor(Level l, BlockPos pos,Humidity humidity) {
-			return l.dimensionTypeRegistration().is(type);
+		public boolean isValidFor(BeeHiveParameterSet params,Humidity humidity) {
+			return params.type().is(type);
 			
 		}
 		@Override
@@ -65,8 +62,8 @@ public abstract class Temperature extends BaseAllele {
 		}
 
 		@Override
-		public boolean isValidFor(Level l, BlockPos pos,Humidity humidity) {
-			return humidity.isValidFor(l, pos);
+		public boolean isValidFor(BeeHiveParameterSet params,Humidity humidity) {
+			return humidity.isValidFor(params);
 			
 		}
 		@Override
@@ -77,7 +74,7 @@ public abstract class Temperature extends BaseAllele {
 	public Temperature(String id) {
 		super(id);
 	}
-	public abstract boolean isValidFor(Level l,BlockPos pos,Humidity humidity);
+	public abstract boolean isValidFor(BeeHiveParameterSet params,Humidity humidity);
 	public boolean isNatural() {
 		return true;
 	}

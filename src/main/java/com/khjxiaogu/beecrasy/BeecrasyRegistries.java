@@ -28,6 +28,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableSet;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
 import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
 import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlock;
@@ -39,6 +40,7 @@ import com.khjxiaogu.beecrasy.blocks.SequencerBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.SkepBlock;
 import com.khjxiaogu.beecrasy.blocks.SkepBlockEntity;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
+import com.khjxiaogu.beecrasy.components.BeehiveArgumenter;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.LarvaProductivity;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
@@ -224,8 +226,9 @@ public class BeecrasyRegistries {
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStackTemplate>> COMB_PRODUCT=COMPONENTS.registerComponentType("comb_product", t->t.cacheEncoding().persistent(ItemStackTemplate.CODEC).networkSynchronized(ItemStackTemplate.STREAM_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<LarvaProductivity>> LARVA_PRODUCT=COMPONENTS.registerComponentType("larva_product", t->t.cacheEncoding().persistent(LarvaProductivity.CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> LARVA_EXPIRES=COMPONENTS.registerComponentType("larva_expire", t->t.cacheEncoding().persistent(Codec.LONG));
-	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeeHiveArgumentation>> ARGUMENTATION=COMPONENTS.registerComponentType("beehive_argumentation", t->t.cacheEncoding().persistent(BeeHiveArgumentation.CODEC).networkSynchronized(BeeHiveArgumentation.STREAM_CODEC));
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeehiveArgumenter>> ARGUMENTATION=COMPONENTS.registerComponentType("beehive_argumentation", t->t.cacheEncoding().persistent(BeehiveArgumenter.CODEC).networkSynchronized(BeehiveArgumenter.STREAM_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContainerContents>> CONTAINER=COMPONENTS.registerComponentType("container", t->t.cacheEncoding().persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC));
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeeHiveBaseComponent.BeeHiveBaseData>> BEE_HIVE=COMPONENTS.registerComponentType("bee_hive", t->t.cacheEncoding().persistent(BeeHiveBaseComponent.BeeHiveBaseData.CODEC));
 
 	    
 	}
@@ -292,7 +295,7 @@ public class BeecrasyRegistries {
     	ItemStack is=new ItemStack(Items.PHEROMONO.asItem());
     	BeeHiveArgumentation.Builder arb=new BeeHiveArgumentation.Builder();
     	components.accept(arb);
-    	is.set(Components.ARGUMENTATION, arb.build());
+    	is.set(Components.ARGUMENTATION, new BeehiveArgumenter(arb.build(),true));
     	return is;
     }
     @SubscribeEvent

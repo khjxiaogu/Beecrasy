@@ -71,8 +71,8 @@ public class PressScreen extends AbstractContainerScreen<PressMenu> {
 		super.extractBackground(graphics, mouseX, mouseY, a);
 
 		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight,256,256);
-		int process=menu.data.get(0);
-		int processMax=menu.data.get(1);
+		int process=menu.getProcess();
+		int processMax=menu.getProcessMax();
 		if (processMax > 0&&process>0) {
 			int w = 43-(int) (43 * (process / (float) processMax));
 			graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + 73, topPos + 46, 176, 0, w, 23,256,256);

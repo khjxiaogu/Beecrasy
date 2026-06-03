@@ -32,12 +32,11 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.components.LarvaProductivity;
 import com.khjxiaogu.beecrasy.components.WorldCalendar;
-import com.khjxiaogu.beecrasy.genome.BiotopeHelper;
 import com.khjxiaogu.beecrasy.genome.DiploidGenome;
-import com.khjxiaogu.beecrasy.genome.GeneSimilarityHelper;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
+import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
 import com.khjxiaogu.beecrasy.genome.MutationRegistry;
 import com.khjxiaogu.beecrasy.genome.RecombinationHelper;
 import com.khjxiaogu.beecrasy.genome.gene.Biotope;
@@ -82,9 +81,10 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	int droneCount;
 	int process;
 	int processMax;
-	boolean blocked=false;
-	boolean noBiotope=false;
-	boolean noFlower=false;
+	transient boolean blocked=false;
+	transient boolean noBiotope=false;
+	transient boolean noFlower=false;
+	transient boolean badEnvironment=false;
 	transient int interval;
 	transient float lsAgainstInterval;
 	transient int cooldown;
@@ -97,7 +97,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		this.lsAgainstInterval=BeecrasyConfig.SERVER.LIFESPAN.getAsInt()*.5f/BeecrasyConfig.SERVER.INTERVAL.getAsInt();
 	}
 	public Set<Biotope> updateBiotopes(BeeHiveParameterSet params) {
-		return BiotopeHelper.findBiotope(params.level(), params.position(), BeecrasyConfig.SERVER.RADIUS.getAsInt());
+		return GenomeWorkHelper.findBiotope(params.level(), params.position(), BeecrasyConfig.SERVER.RADIUS.getAsInt());
 
 	}
 	public void reset() {
@@ -131,29 +131,33 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	}
 	public void tick(BeeHiveParameterSet params) {
 		blocked=false;
+		badEnvironment=false;
 		if(process>0) {
-			int lprocess=process;
-			process-=BeecrasyMath.getRandomRate(params.getParamValue(BeeHiveParameters.SPEED), rs);
-			if(lprocess/interval!=process/interval) {
-				boolean isPre=process>=(processMax/2);
-				noFlower=false;
-				Set<Biotope> biotopes=updateBiotopes(params);
-				if(biotopes==null)
-					noFlower=true;
-				if(isPre) {
-					long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
-					updateCombLifespan(secs);
-					updateQueenLifespan(secs);
-					if(!fillLarva(params))
-						fillDrone(params);
-				}else {
-					int elecInterval=(processMax/2/4);
-					if(lprocess/elecInterval!=process/elecInterval)
-						elecQueen();
-					increaseProduction(params, biotopes);
+			if(GenomeWorkHelper.isValidEnvironment(params, queenGenome[0])) {
+				int lprocess=process;
+				process-=BeecrasyMath.getRandomRate(params.getParamValue(BeeHiveParameters.SPEED), rs);
+				if(lprocess/interval!=process/interval) {
+					boolean isPre=process>=(processMax/2);
+					noFlower=false;
+					Set<Biotope> biotopes=updateBiotopes(params);
+					if(biotopes==null)
+						noFlower=true;
+					if(isPre) {
+						long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
+						updateCombLifespan(secs);
+						updateQueenLifespan(secs);
+						if(!fillLarva(params))
+							fillDrone(params);
+					}else {
+						int elecInterval=(processMax/2/4);
+						if(lprocess/elecInterval!=process/elecInterval)
+							elecQueen();
+						increaseProduction(params, biotopes);
+					}
+					
 				}
-				
-			}
+			}else
+				badEnvironment=true;
 		}else if(processMax>0){
 			if(cooldown<=0) {
 				cooldown=0;
@@ -176,6 +180,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		
 
 		updateQueenLifespan(secs);
+		float yieldMod=params.getParamValue(BeeHiveParameters.YIELD);
 		for(HiveSlot hi:combSlot) {
 			if(!hi.isEmpty()) {
 				ItemStack item=hi.getItem();
@@ -189,7 +194,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 					if(lp==null)
 						lp=LarvaProductivity.DEFAULT;
 	
-					float yield=pheno.getAllele(Genes.YIELD).getNumber()/lsAgainstInterval;
+					float yield=pheno.getAllele(Genes.YIELD).getNumber()/lsAgainstInterval*yieldMod;
 					if(params.hasBiotope(biotopes,pheno.getAllele(Genes.BIOTOPE))) {
 						lp=lp.increaseBiotoped(yield);
 					}else {
@@ -225,7 +230,8 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		this.droneGenomes=droneGenomes;
 		larvaCount=BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber(), rs);
 		droneCount=BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber(), rs);
-		processMax=process=GenomeDataHelper.getLifespanTicks(queenGenome[0]);
+		processMax=process=(int) (GenomeDataHelper.getLifespanTicks(queenGenome[0])*params.getParamValue(BeeHiveParameters.LIFESPAN));
+		
 	}
 	private boolean fillLarva(BeeHiveParameterSet params) {
 		if(larvaCount<=0)
@@ -302,7 +308,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		for(int i=0;i<combSlot.size();i++) {
 			HiveSlot hi=combSlot.get(i);
 			if(!hi.isEmpty()) {
-				queens.add(new HiveSlotPriority(hi,GeneSimilarityHelper.checkSimilarityPoint(queenGenome, GenomeDataHelper.getAsDiploid(hi.getItem()))));
+				queens.add(new HiveSlotPriority(hi,GenomeWorkHelper.checkSimilarityPoint(queenGenome, GenomeDataHelper.getAsDiploid(hi.getItem()))));
 			}
 		}
 		for(HiveSlot hi:queenSlot) {
@@ -413,5 +419,8 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	}
 	public boolean isNoFlower() {
 		return noFlower;
+	}
+	public boolean isBadEnvironment() {
+		return badEnvironment;
 	}
 }

@@ -31,6 +31,7 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.Constants;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.WorldCalendar;
+import com.khjxiaogu.beecrasy.events.BeeEnvironmentValidateEvent;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
 import com.khjxiaogu.beecrasy.genome.GeneRegistry;
 import com.khjxiaogu.beecrasy.genome.Genes;
@@ -74,8 +75,8 @@ public class CommonListeners {
 	public static void onCapabilityInject(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.SKEP_BLOCKENTITY.get(), (be,ctx)->{
 			if(ctx==Direction.DOWN)
-				return be.getProductInv();
-			return be.getExternInv();
+				return be.component.getProductInv();
+			return be.component.getExternInv();
 		});
 		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.PRESS_BLOCKENTITY.get(), (be,_)->{
 			return be.getExternInv();
@@ -86,13 +87,13 @@ public class CommonListeners {
 	}
 	@SubscribeEvent
 	public static void onGenomeBuild(NaturalBeeGenomeGenerateEvent event) {
-		if(event.level.dimensionTypeRegistration().is(BuiltinDimensionTypes.NETHER)) {
+		if(event.params.type().is(BuiltinDimensionTypes.NETHER)) {
 			event.genome.add(Genes.TEMPERATURE, Alleles.NETHER_TEMPERATURE);
-		}else if(event.level.dimensionTypeRegistration().is(BuiltinDimensionTypes.NETHER)) {
+		}else if(event.params.type().is(BuiltinDimensionTypes.NETHER)) {
 			event.genome.add(Genes.TEMPERATURE, Alleles.ENDER_TEMPERATURE);
 		}else{
 			for(Humidity humid:Alleles.HUMIDITY) {
-				if(humid.isNatural()&&humid.isValidFor(event.level, event.pos)) {
+				if(humid.isNatural()&&humid.isValidFor(event.params)) {
 					event.genome.add(Genes.HUMIDITY, humid);
 					break;
 				}
@@ -100,13 +101,14 @@ public class CommonListeners {
 			
 			Humidity humid=event.genome.get(Genes.HUMIDITY);
 			for(Temperature temp:Alleles.TEMPERATURE) {
-				if(temp.isNatural()&&temp.isValidFor(event.level, event.pos,humid)) {
+				if(temp.isNatural()&&temp.isValidFor(event.params,humid)) {
 					event.genome.add(Genes.TEMPERATURE, temp);
 					break;
 				}
 			}
 		}
 		event.applyPools(Constants.BASE_ID);
+		event.applyPools(Constants.FOREST_ID);
 	}
 	@SubscribeEvent
 	public static void addCommands(RegisterCommandsEvent event) {
@@ -148,6 +150,13 @@ public class CommonListeners {
 	public static void tick(ServerTickEvent.Pre event) {
 		long clock=event.getServer().overworld().getOverworldClockTime();
 		event.getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).tick(clock);
+	}
+	@SubscribeEvent
+	public static void checkTempAndHumid(BeeEnvironmentValidateEvent event) {
+		Temperature temp=event.getAllele(Genes.TEMPERATURE);
+		Humidity humid=event.getAllele(Genes.HUMIDITY);
+		if(!temp.isValidFor(event.getParams(), humid))
+			event.setCanceled(true);
 	}
 	
 	

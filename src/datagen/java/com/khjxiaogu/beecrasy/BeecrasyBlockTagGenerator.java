@@ -28,6 +28,7 @@ import static com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks.*;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Tags;
 import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
 import com.khjxiaogu.beecrasy.data.BeecrasyTagGenerator;
+import com.khjxiaogu.beecrasy.genome.Genes;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
@@ -61,7 +62,7 @@ public class BeecrasyBlockTagGenerator extends BeecrasyTagGenerator<Block> {
 
 		TagAppender<ResourceKey<Block>, Block> net = tag(Tags.MINABLE_NET);
 		net.add(rk(BEE_NEST_SMALL)).add(rk(BEE_NEST_NASCENT)).add(rk(BEE_NEST_MEDIUM)).add(rk(BEE_NEST_BIG)).add(rk(NATURAL_HIVE));
-		TagAppender<ResourceKey<Block>, Block> flowers = tag(Tags.FLOWERS);
-		flowers.addTag(BlockTags.FLOWERS);
+		tag(Tags.FLOWERS).addTag(BlockTags.FLOWERS);
+		tag(Genes.Alleles.WILD.getTag()).addTag(BlockTags.FLOWERS);
 	}
 }

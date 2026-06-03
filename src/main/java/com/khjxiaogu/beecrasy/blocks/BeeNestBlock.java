@@ -29,8 +29,8 @@ import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
-import com.khjxiaogu.beecrasy.genome.ProductHelper;
-import com.khjxiaogu.beecrasy.genome.ProductHelper.ProductWithCount;
+import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
+import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper.ProductWithCount;
 import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 
 import net.minecraft.core.BlockPos;
@@ -176,7 +176,7 @@ public class BeeNestBlock extends Block {
 	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
 		BlockPos pos = BlockPos.containing(params.getParameter(LootContextParams.ORIGIN));
 		ServerLevel level = params.getLevel();
-		NaturalBeeGenomeGenerateEvent event = new NaturalBeeGenomeGenerateEvent(level, pos, state, Genome.builder());
+		NaturalBeeGenomeGenerateEvent event = new NaturalBeeGenomeGenerateEvent(level, pos, Genome.builder());
 		NeoForge.EVENT_BUS.post(event);
 		List<ItemStack> loot = super.getDrops(state, params);
 		Genome genome = event.genome.build();
@@ -191,7 +191,7 @@ public class BeeNestBlock extends Block {
 		loot.add(queen);
 		List<ProductItem> product = genome.getAllele(Genes.PRODUCTS);
 		if (!product.isEmpty()) {
-			for (ProductWithCount i : ProductHelper.pickProduct(genome.getAllele(Genes.BIOTOPE), product, level.getRandom(), Mth.lerpInt(level.getRandom().nextFloat(), combCountMin, combCountMax))) {
+			for (ProductWithCount i : GenomeWorkHelper.pickProduct(genome.getAllele(Genes.BIOTOPE), product, level.getRandom(), Mth.lerpInt(level.getRandom().nextFloat(), combCountMin, combCountMax))) {
 				loot.add(i.createProductComb());
 			}
 		}

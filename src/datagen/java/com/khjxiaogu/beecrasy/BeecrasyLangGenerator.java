@@ -23,8 +23,8 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry.BeehiveParameterType;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
-import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity.ErrCode;
-import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity.WorkBehaviour;
+import com.khjxiaogu.beecrasy.beehive.ErrCode;
+import com.khjxiaogu.beecrasy.beehive.WorkBehaviour;
 import com.khjxiaogu.beecrasy.genome.GeneRegistry;
 import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.khjxiaogu.beecrasy.genome.gene.Allele;
@@ -58,8 +58,12 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 		addAllele(Alleles.FERTILITY);
 		addAllele(Alleles.LIFESPAN);
 		addAllele(Alleles.YIELD);
-		addPercentage(BeeHiveParameters.MUTATE);
-		addPercentage(BeeHiveParameters.SPEED);
+		addArgumenter(BeeHiveParameters.MUTATE);
+		addArgumenter(BeeHiveParameters.SPEED);
+		addArgumenter(BeeHiveParameters.LIFESPAN);
+		addArgumenter(BeeHiveParameters.YIELD);
+		addArgumenter(BeeHiveParameters.TEMPERATURE);
+		addArgumenter(BeeHiveParameters.HUMIDITY);
 		sequencerTab("basic");
 		sequencerTab("products");
 		for(DeferredHolder<Block, ? extends Block> blk:Blocks.BLOCKS.getEntries()) {
@@ -85,8 +89,9 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 	public void sequencerTab(String name) {
 		this.add("tab.sequencer.beecrasy."+name, capitalizeWords(name));
 	}
-	public <T> void addPercentage(BeehiveParameterType<T> type) {
-		this.add(type.id().toLanguageKey("argument.beehive"), capitalizeWords(type.id().getPath())+" %s%");
+	public <T> void addArgumenter(BeehiveParameterType<T> type) {
+		
+		this.add(BeeHiveParameters.getLanguageKey(type.id()), capitalizeWords(type.id().getPath())+" %s");
 	
 	}
 	

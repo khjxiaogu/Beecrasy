@@ -25,16 +25,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DataResult.Error;
+import com.mojang.serialization.Decoder;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Encoder;
+
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistryAccess.ImmutableRegistryAccess;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.RegistryOps.HolderLookupAdapter;
+import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -43,6 +59,10 @@ import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
 public final class Utils {
 	public static ItemStackTemplate getRecipeOutput(List<ItemStack> stacks,CraftingRecipe recipe) {
@@ -154,5 +174,65 @@ public final class Utils {
 			}
 		};
 	}
+	public static <T extends ValueIOSerializable> Codec<T> createCodec(Supplier<T> factory){
+		return Codec.of(new Encoder<>() {
+			@Override
+			public <S> DataResult<S> encode(T input, DynamicOps<S> ops, S prefix) {
+				ProblemReporter.Collector reporter = new ProblemReporter.Collector();
+				TagValueOutput tvo = TagValueOutput.createWithoutContext(reporter);
+				input.serialize(tvo);
+				if(!reporter.isEmpty())
+					return DataResult.error(reporter::getReport, tvo.buildResult()).flatMap(e->ExtraCodecs.NBT.encode(e, ops, prefix));
+				else
+					return ExtraCodecs.NBT.encode(tvo.buildResult(), ops, prefix);
+				
+			}
+			
+		},new Decoder<>() {
 
+			@Override
+			public <S> DataResult<Pair<T, S>> decode(DynamicOps<S> ops, S input) {
+				DataResult<Pair<CompoundTag, S>> dr=ExtraCodecs.NBT.decode(ops, input).flatMap(o->{
+				if(o.getFirst() instanceof CompoundTag ct)
+					return DataResult.success(Pair.of(ct, o.getSecond()));
+				else
+					return DataResult.error(()->"Not a tag compound.");
+				});
+				if(dr.isError()) {
+					Error<?> err=dr.error().get();
+					return DataResult.error(err.messageSupplier(), err.lifecycle());
+				}
+				ProblemReporter.Collector reporter = new ProblemReporter.Collector();
+				ValueInput tvo=TagValueInput.create(reporter, provider(ops),dr.getOrThrow().getFirst());
+				T value=factory.get();
+				value.deserialize(tvo);
+				if(!reporter.isEmpty())
+					return DataResult.error(reporter::getReport, Pair.of(value, input));
+				return DataResult.success(Pair.of(value, input));
+			}
+			
+		}, "valueIO");
+		
+	}
+	public static HolderLookup.Provider provider(DynamicOps<?> ops) {
+		if(ops instanceof RegistryOps<?> ros) {
+			if(ros.lookupProvider instanceof HolderLookupAdapter lookup) {
+				return lookup.lookupProvider;
+			}else {
+				return new ImmutableRegistryAccess(Map.of()){
+					@Override
+					public <V> RegistryOps<V> createSerializationContext(DynamicOps<V> parent) {
+						return ros.withParent(parent);
+					}
+				};
+			}
+		}else {
+			return new ImmutableRegistryAccess(Map.of()){
+				@Override
+				public <V> RegistryOps<V> createSerializationContext(DynamicOps<V> parent) {
+					return RegistryOps.create(parent, EMPTY);
+				}
+			};
+		}
+	}
 }

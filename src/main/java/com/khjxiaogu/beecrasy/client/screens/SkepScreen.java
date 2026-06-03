@@ -22,7 +22,7 @@ package com.khjxiaogu.beecrasy.client.screens;
 import java.util.ArrayList;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
-import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity.ErrCode;
+import com.khjxiaogu.beecrasy.beehive.ErrCode;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -50,7 +50,7 @@ public class SkepScreen extends AbstractContainerScreen<SkepMenu> {
 		this.clearWidgets();
 		this.addRenderableWidget(btn = new BeeHiveButton(Button.builder(Component.empty(), _ -> {
 			menu.cycleWork();
-		}).pos(leftPos + 151, topPos + 2).size(18, 16),TEXTURE,()->menu.data.get(1)));
+		}).pos(leftPos + 151, topPos + 2).size(18, 16),TEXTURE,()->menu.getWorkBehaviour().ordinal()));
 
 
 	}
@@ -63,8 +63,8 @@ public class SkepScreen extends AbstractContainerScreen<SkepMenu> {
 			tooltip.add(btn.getMessage());
 		}
 		if(this.isMouseIn(mouseX, mouseY, -20, 22, 26, 29)) {
-			int errCode=menu.data.get(0);
-			tooltip.add(ErrCode.values()[errCode].getComponents());
+			ErrCode errCode=menu.getErrCode();
+			tooltip.add(errCode.getComponents());
 		}
 		super.extractRenderState(transform, mouseX, mouseY, partial);
 		if (!tooltip.isEmpty()) {
@@ -83,11 +83,11 @@ public class SkepScreen extends AbstractContainerScreen<SkepMenu> {
 	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 		super.extractBackground(graphics, mouseX, mouseY, a);
 		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight,256,256);
-		int errCode=menu.data.get(0);
-		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos-20, topPos+22, errCode*26, 164, 26, 29,256,256);
+		ErrCode errCode=menu.getErrCode();
+		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos-20, topPos+22, errCode.ordinal()*26, 164, 26, 29,256,256);
 	
-		int process=menu.data.get(2);
-		int processMax=menu.data.get(3);
+		int process=menu.getProcess();
+		int processMax=menu.getProcessMax();
 		if (processMax > 0&&process>0) {
 			int h = 30-(int) (30 * (process / (float) processMax));
 			graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + 133, topPos + 25 + h, 177, 0 + h, 4, 30 - h,256,256);

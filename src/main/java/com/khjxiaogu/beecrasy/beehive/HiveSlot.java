@@ -19,10 +19,17 @@
 
 package com.khjxiaogu.beecrasy.beehive;
 
+import java.util.List;
+
 import net.minecraft.world.item.ItemStack;
 
 public interface HiveSlot {
 	public ItemStack getItem();
 	public void setItem(ItemStack stack);
 	public boolean isEmpty();
+	public static void copy(List<? extends HiveSlot> from,List<? extends HiveSlot> to) {
+		for(int i=0;i<Math.min(to.size(), from.size());i++) {
+			to.get(i).setItem(from.get(i).getItem());
+		}
+	}
 }

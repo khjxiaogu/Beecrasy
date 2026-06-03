@@ -107,15 +107,15 @@ public class BeecrasyRecipeProvider extends RecipeProvider {
 				.addOutput(BeecrasyRegistries.Items.HONEY_DROP.get(),1,.8f)
 				.setTime(200).create());
 		try(BuilderContext<GenomePresets.Builder> builder=presetBuilder()){
-			builder.create("genome/base", new GenomePresets.Builder("base"))
+			builder.create("genome/base", new GenomePresets.Builder(Constants.BASE_ID))
 			.group("yield")
 			.item(3, t->t.yld(Alleles.MEAGER_YIELD))
 			.item(1, t->t.yld(Alleles.MODERATE_YIELD));
-			builder.create("genome/woods", new GenomePresets.Builder("woods"))
+			builder.create("genome/woods", new GenomePresets.Builder(Constants.FOREST_ID))
 			.group("products")
 			.item(2, t->t.product(Items.OAK_LOG))
 			.item(1, t->t.product(Items.BIRCH_LOG));
-			builder.create("genome/flowers", new GenomePresets.Builder("flowers"))
+			builder.create("genome/flowers", new GenomePresets.Builder(Constants.FLOWER_ID))
 			.group("products")
 			.item(1, t->t.product(Items.POPPY))
 			.item(1, t->t.product(Items.BLUE_ORCHID))

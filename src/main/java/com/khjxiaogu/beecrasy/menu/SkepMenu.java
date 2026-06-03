@@ -20,9 +20,9 @@
 package com.khjxiaogu.beecrasy.menu;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
+import com.khjxiaogu.beecrasy.beehive.ErrCode;
+import com.khjxiaogu.beecrasy.beehive.WorkBehaviour;
 import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity;
-import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity.WorkBehaviour;
-
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerData;
@@ -31,15 +31,15 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 public class SkepMenu extends BeecrasyContainerMenu {
-	public ContainerData data;
+	private ContainerData data;
 	public SkepMenu(int containerId,Inventory inventory, RegistryFriendlyByteBuf bytebuf) {
 		this(containerId,inventory,new ItemStacksResourceHandler(11));
 		this.addDataSlots(data=new SimpleContainerData(4));
 	}
 
 	public SkepMenu(int containerId,Inventory inventory, BeeHiveBaseBlockEntity blockEntity) {
-		this(containerId,inventory,blockEntity.getInternInv());
-		this.addDataSlots(data=blockEntity.containerData());
+		this(containerId,inventory,blockEntity.component.getInternInv());
+		this.addDataSlots(data=blockEntity.component.containerData());
 		super.blockEntity=blockEntity;
 	}
 
@@ -64,11 +64,23 @@ public class SkepMenu extends BeecrasyContainerMenu {
 	@Override
 	public void receiveOperation(short opCode, int opData) {
 		if(opCode==0&&opData>=0&&opData<WorkBehaviour.values().length) {
-			((BeeHiveBaseBlockEntity)blockEntity).work=WorkBehaviour.values()[opData];
+			((BeeHiveBaseBlockEntity)blockEntity).component.work=WorkBehaviour.values()[opData];
 			blockEntity.setChanged();
 		}
 	}
+	public ErrCode getErrCode() {
+		return ErrCode.values()[data.get(0)];
+	}
 
+	public WorkBehaviour getWorkBehaviour() {
+		return WorkBehaviour.values()[data.get(1)];
+	}
+	public int getProcess() {
+		return data.get(2);
+	}
+	public int getProcessMax() {
+		return data.get(3);
+	}
 	@Override
 	public boolean quickMoveIn(ItemStack slotStack) {
 		return this.moveItemStackTo(slotStack, 0, 11, false);

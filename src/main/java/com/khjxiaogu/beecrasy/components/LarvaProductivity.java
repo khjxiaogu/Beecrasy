@@ -22,8 +22,8 @@ package com.khjxiaogu.beecrasy.components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genome;
-import com.khjxiaogu.beecrasy.genome.ProductHelper;
-import com.khjxiaogu.beecrasy.genome.ProductHelper.ProductWithCount;
+import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
+import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper.ProductWithCount;
 import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -50,7 +50,7 @@ public record LarvaProductivity(float biotopeProductive,float wildcardProductive
 		if(biotopeProductive()<wildcardProductive()) {
 			return Items.PRODUCT_COMB.toStack(BeecrasyMath.getRandomRate(wildcardProductive(), rs));
 		}else {
-			ProductWithCount product=ProductHelper.pickSingleProduct(genome.getAllele(Genes.BIOTOPE), genome.getAllele(Genes.PRODUCTS), rs, BeecrasyMath.getRandomRate(biotopeProductive(), rs));
+			ProductWithCount product=GenomeWorkHelper.pickSingleProduct(genome.getAllele(Genes.BIOTOPE), genome.getAllele(Genes.PRODUCTS), rs, BeecrasyMath.getRandomRate(biotopeProductive(), rs));
 			return product.createProductComb();
 		}
 	}

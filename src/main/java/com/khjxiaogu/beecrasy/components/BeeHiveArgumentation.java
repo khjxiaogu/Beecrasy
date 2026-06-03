@@ -21,6 +21,7 @@ package com.khjxiaogu.beecrasy.components;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry.BeehiveParameterType;
@@ -44,6 +45,23 @@ public record BeeHiveArgumentation(Map<BeehiveParameterType<?>, Object> params) 
 		}
 		public Builder setParams(Map<BeehiveParameterType<?>,Object> params) {
 			this.params.putAll(params);
+			return this;
+		}
+
+		public Builder addParams(BeeHiveArgumentation params) {
+			return this.addParams(params.params());
+		}
+
+		public Builder setParams(BeeHiveArgumentation params) {
+			return this.setParams(params.params());
+		}
+		public Builder addParams(Map<BeehiveParameterType<?>,Object> params) {
+			for(Entry<BeehiveParameterType<?>, Object> ent:params.entrySet())
+				ent.getKey().mergeTo(this.params,ent.getValue());
+			return this;
+		}
+		public <T> Builder addParam(BeehiveParameterType<T> key,T value) {
+			key.mergeTo(this.params,value);
 			return this;
 		}
 		public BeeHiveArgumentation build() {
