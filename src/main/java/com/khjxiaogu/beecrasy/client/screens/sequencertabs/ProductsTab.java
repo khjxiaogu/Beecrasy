@@ -19,20 +19,61 @@
 
 package com.khjxiaogu.beecrasy.client.screens.sequencertabs;
 
+import java.util.List;
 import java.util.function.Consumer;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.client.screens.SequencerScreen;
+import com.khjxiaogu.beecrasy.components.GenomeComponent;
+import com.khjxiaogu.beecrasy.genome.Genes;
+import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 import com.khjxiaogu.beecrasy.menu.SequencerMenu;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
 public class ProductsTab implements SequencerTab{
 	public static final Component title=Component.translatable("tab.sequencer.beecrasy.products");
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor transform, SequencerMenu menu, int x, int y, int w, int h, int mouseX, int mouseY, float partial, Consumer<Component> tooltips) {
-
+		ItemStack is=menu.getSlot(0).getItem();
+		GenomeComponent comp=is.get(Components.GENOME);
+		if(comp!=null&&comp.isInspected()) {
+			int dy=y;
+			List<ProductItem> ah1=comp.getGenome(0).getAllele(Genes.PRODUCTS);
+			List<ProductItem> ah2=null;
+			if(comp.size()>1)
+				ah2=comp.getGenome(1).getAllele(Genes.PRODUCTS);
+			int idx=0;
+			transform.text(Minecraft.getInstance().font, Genes.PRODUCTS.getShortReadableText(), x, y, 0xff81cfff);
+			transform.fill(x+40, y,x+92, y+50, 0x99f18186);
+			for(ProductItem l:ah1) {
+				ItemStack stack=l.stack().create();
+				int cx=x+40+(idx%3)*16;
+				int cy=y+16*(idx/3);
+				if(mouseX>cx&&mouseY>cy&&mouseX<cx+16&&mouseY<cy+16)
+					Screen.getTooltipFromItem(Minecraft.getInstance(), stack).forEach(tooltips);
+				transform.item(stack,cx,cy);
+				idx++;
+			}
+			idx=0;
+			if(ah2!=null) {
+				transform.fill(x+40, y+50,x+92, y+100, 0x99b45ba4);
+				for(ProductItem l:ah2) {
+					ItemStack stack=l.stack().create();
+					int cx=x+40+(idx%3)*16;
+					int cy=y+50+16*(idx/3);
+					if(mouseX>cx&&mouseY>cy&&mouseX<cx+16&&mouseY<cy+16)
+						Screen.getTooltipFromItem(Minecraft.getInstance(), stack).forEach(tooltips);
+					transform.item(stack,cx,cy);
+					idx++;
+				}
+			}
+		}
 		
 	}
 

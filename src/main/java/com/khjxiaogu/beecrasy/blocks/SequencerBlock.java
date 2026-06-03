@@ -77,10 +77,9 @@ public class SequencerBlock extends Block implements BeecrasyEntityBlock<Sequenc
 			if(level.getBlockEntity(pos) instanceof SequencerBlockEntity sequencer) {
 				if (!level.isClientSide())
 					((ServerPlayer) player).openMenu(sequencer);
-				return InteractionResult.SUCCESS;
 			}
     	}
-		return super.useWithoutItem(state, level, pos, player, hitResult);
+    	return InteractionResult.SUCCESS;
 	}
 	@Override
 	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {

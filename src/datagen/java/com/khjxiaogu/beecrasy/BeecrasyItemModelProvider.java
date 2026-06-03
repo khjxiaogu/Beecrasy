@@ -60,13 +60,23 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 		this.texture(Items.COMB_FOUNDATION);
 		this.texture(Items.HONEY_DROP);
 		this.texture(Items.SEQUENCER);
+	    this.texture(Items.INCENSE_ARIDITY);
+	    this.texture(Items.INCENSE_HUMIDITY);
+	    
+	    this.texture(Items.INCENSE_COLD);
+	    this.texture(Items.INCENSE_HEAT);
+	    
+	    this.texture(Items.INCENSE_YIELD);
+	    this.texture(Items.INCENSE_LONG_LIFESPAN);
+	    this.texture(Items.INCENSE_SHORT_LIFESPAN);
+	    
 		;
 		this.itemModelOutput.register(Beecrasy.rl("handheld_sequencer_active"), new ClientItem(ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM
 			.create(Beecrasy.rl("item/"+"handheld_sequencer_active"), TextureMapping.layer0(new Material(
 				Beecrasy.rl("item/"+"handheld_sequencer_active"))), this.modelOutput)),ClientItem.Properties.DEFAULT));
 		this.texture(Items.APITE);
 		this.texture(Items.BUMBLEBEE_JASPER);
-		this.texture(Items.PHEROMONO);
+		this.generateBeeTint(Items.PHEROMONO);
 		this.texture(Items.BUTTERFLY_NET);
 		this.texture(Items.ROYAL_JELLY);
 		this.texture(Items.HONEY_BUCKET);

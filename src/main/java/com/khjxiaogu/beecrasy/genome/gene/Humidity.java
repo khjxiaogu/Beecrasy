@@ -20,6 +20,7 @@
 package com.khjxiaogu.beecrasy.genome.gene;
 
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
 
 public abstract class Humidity extends BaseAllele {
 	public static class RangedHumidity extends Humidity{
@@ -33,6 +34,9 @@ public abstract class Humidity extends BaseAllele {
 		@Override
 		public boolean isValidFor(BeeHiveParameterSet params) {
 			float humid=params.biome().value().getModifiedClimateSettings().downfall();
+
+			float offset=params.getParamValue(BeeHiveParameters.HUMIDITY);
+			humid-=offset;
 			return humid>=lower&&humid<=upper;
 		}
 	}

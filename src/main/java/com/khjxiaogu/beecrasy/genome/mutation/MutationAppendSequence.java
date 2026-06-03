@@ -45,9 +45,9 @@ public class MutationAppendSequence implements Mutation {
 		parSeq.addAll(matSeqOriginal);
 		matSeq.addAll(parSeqOriginal);
 		while(parSeq.size()>9)
-			parSeq.remove(parSeq.size()-1);
+			parSeq.remove(0);
 		while(matSeq.size()>9)
-			matSeq.remove(matSeq.size()-1);
+			matSeq.remove(0);
 		genome.maternal().add(Genes.PRODUCTS, matSeq);
 		genome.paternal().add(Genes.PRODUCTS, parSeq);
 		return true;

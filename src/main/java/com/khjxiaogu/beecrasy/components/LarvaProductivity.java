@@ -49,9 +49,8 @@ public record LarvaProductivity(float biotopeProductive,float wildcardProductive
 	public ItemStack getProduction(Genome genome,RandomSource rs) {
 		if(biotopeProductive()<wildcardProductive()) {
 			return Items.PRODUCT_COMB.toStack(BeecrasyMath.getRandomRate(wildcardProductive(), rs));
-		}else {
-			ProductWithCount product=GenomeWorkHelper.pickSingleProduct(genome.getAllele(Genes.BIOTOPE), genome.getAllele(Genes.PRODUCTS), rs, BeecrasyMath.getRandomRate(biotopeProductive(), rs));
-			return product.createProductComb();
 		}
+		ProductWithCount product=GenomeWorkHelper.pickSingleProduct(genome.getAllele(Genes.BIOTOPE), genome.getAllele(Genes.PRODUCTS), rs, BeecrasyMath.getRandomRate(biotopeProductive(), rs));
+		return product.createProductComb();
 	}
 }

@@ -23,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
+import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation.Builder;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
 import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
@@ -51,10 +52,15 @@ public class SkepBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvi
 		}
 		@Override
 		public Builder buildArgumentation(ServerLevel level,BlockPos worldPosition,TransactionContext root) {
-			
-			return super.buildArgumentation(level,worldPosition,root)
-				.addParams(super.extractArgumentation(level, 9, root))
-				.addParams(super.extractArgumentation(level, 10, root));
+
+			Builder builder= super.buildArgumentation(level,worldPosition,root);
+			BeeHiveArgumentation arg1=super.extractArgumentation(level, 9, root);
+			if(arg1!=null)
+				builder.addParams(arg1);
+			BeeHiveArgumentation arg2=super.extractArgumentation(level, 10, root);
+			if(arg2!=null)
+				builder.addParams(arg2);
+			return builder;
 		}
 	}
 	public SkepBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {

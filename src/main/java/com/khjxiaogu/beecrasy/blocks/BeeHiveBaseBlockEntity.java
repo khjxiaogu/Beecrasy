@@ -50,6 +50,10 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 	public void tick() {
 		if(level instanceof ServerLevel serverLevel) {
 			component.tick(serverLevel, worldPosition, level.hasNeighborSignal(worldPosition));
+			if(component.isChanged()) {
+				this.setChanged();
+				component.setChanged(false);
+			}
 			boolean oldstate=this.getBlockState().getValue(BlockStateProperties.LIT);
 			boolean newstate=component.hiveInfo.isWorking();
 			if(oldstate!=newstate) {

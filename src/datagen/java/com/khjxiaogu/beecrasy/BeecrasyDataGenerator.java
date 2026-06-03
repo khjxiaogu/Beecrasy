@@ -54,6 +54,7 @@ public class BeecrasyDataGenerator {
 		CompletableFuture<HolderLookup.Provider> completablefuture = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
 		gen.addProvider(true,new BeecrasyModelProvider(gen.getPackOutput(), Beecrasy.MODID,event.getResourceManager(PackType.CLIENT_RESOURCES)));
 		gen.addProvider(true, new BeecrasyLangGenerator(gen.getPackOutput(), Beecrasy.MODID,"en_us"));
+		gen.addProvider(true, new BeecrasyParticleProvider(gen.getPackOutput()));
 		
 	}
 }

@@ -25,6 +25,7 @@ import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genome;
@@ -35,6 +36,7 @@ import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -57,6 +59,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -257,5 +260,28 @@ public class BeeNestBlock extends Block {
 		builder.add(BlockStateProperties.HORIZONTAL_FACING);
 		builder.add(BEE_NEST_FACING);
 		builder.add(HAS_HONEY);
+	}
+	@Override
+	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+		super.animateTick(state, level, pos, random);
+		
+		if (random.nextFloat()<0.25) {
+			Direction dir=Direction.Plane.HORIZONTAL.getRandomDirection(random);
+		
+			double dx=0,dy=0,dz=0;
+			if(dir.getAxis()!=Axis.X) {
+				dx=random.nextGaussian();
+			}
+			if(dir.getAxis()!=Axis.Y) {
+				dy=random.nextGaussian();
+			}
+			if(dir.getAxis()!=Axis.Z) {
+				dz=random.nextGaussian();
+			}
+			Vec3 mpos=pos.getCenter().add(dir.getUnitVec3().scale(0.5f)).add(dx, dy, dz);
+				level.addParticle(BeecrasyParticles.BEE.get(), mpos.x(), mpos.y(),mpos.z(), 0.0D,
+						0.0D, 0.0D);
+		}
+		
 	}
 }

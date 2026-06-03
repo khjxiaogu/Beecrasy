@@ -36,21 +36,21 @@ public final class GenomeDataHelper {
 	public static void setHaploidGenome(MutableDataComponentHolder stack,Genome genome) {
 		List<ProductItem> products=genome.getAllele(Genes.PRODUCTS);
 		if(!products.isEmpty()) {
-			stack.set(Components.TINT_STACK, products.get(0).stack().create());
+			stack.set(Components.TINT_STACK, products.get(0).stack());
 		}
 		stack.set(Components.GENOME, new GenomeComponent(false,genome));
 	}
 	public static void setDiploidGenome(MutableDataComponentHolder stack,DiploidGenome genome) {
 		List<ProductItem> products=genome.maternal().getAllele(Genes.PRODUCTS);
 		if(!products.isEmpty()) {
-			stack.set(Components.TINT_STACK, products.get(0).stack().create());
+			stack.set(Components.TINT_STACK, products.get(0).stack());
 		}
 		stack.set(Components.GENOME, genome.toComponent());
 	}
 	public static void setDiploidGenome(MutableDataComponentHolder stack,Genome genome1,Genome genome2) {
 		List<ProductItem> products=genome1.getAllele(Genes.PRODUCTS);
 		if(!products.isEmpty()) {
-			stack.set(Components.TINT_STACK, products.get(0).stack().create());
+			stack.set(Components.TINT_STACK, products.get(0).stack());
 		}
 		stack.set(Components.GENOME, new GenomeComponent(false,genome1,genome2));
 	}

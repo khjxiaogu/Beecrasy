@@ -37,7 +37,7 @@ public class QueenSlot extends ResourceHandlerSlot {
 	@Override
 	public boolean mayPlace(ItemStack stack) {
 
-		return super.mayPlace(stack)&&ItemValidateHelper.isQueen(stack);
+		return ItemValidateHelper.isQueen(stack);
 	}
 
 }

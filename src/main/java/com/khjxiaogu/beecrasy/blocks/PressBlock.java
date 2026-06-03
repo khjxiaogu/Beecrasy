@@ -142,15 +142,13 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
     	if(level instanceof ServerLevel serverLevel) {
 	    	if(half==DoubleBlockHalf.UPPER) {
 	    		onTrigger(state,serverLevel,pos.below());
-	    		return InteractionResult.SUCCESS;
 	    	}
 			if(level.getBlockEntity(pos) instanceof PressBlockEntity press) {
 				if (!level.isClientSide())
 					((ServerPlayer) player).openMenu(press);
-				return InteractionResult.SUCCESS;
 			}
     	}
-		return super.useWithoutItem(state, level, pos, player, hitResult);
+    	return InteractionResult.SUCCESS;
 	}
 
 	@Override

@@ -266,7 +266,10 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 				try(Transaction trans=Transaction.open(root)){
 					int extracted=internInv.extract(slot, ir, 1, trans);
 					if(extracted==1) {
-						if(ir.has(DataComponents.DAMAGE)&&ir.has(DataComponents.MAX_DAMAGE)&&!ir.has(DataComponents.UNBREAKABLE)) {
+						if(ir.has(DataComponents.DAMAGE)&&ir.has(DataComponents.MAX_DAMAGE)) {
+							if(ir.has(DataComponents.UNBREAKABLE)) {
+								return argu.modifiers();
+							}
 							ItemStack stack=ir.toStack();
 							stack.hurtAndBreak(1, serverLevel, null,_->{});
 							if(!stack.isEmpty()) {
@@ -275,6 +278,9 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 									return argu.modifiers();
 								}
 							}
+						}else {
+							trans.commit();
+							return argu.modifiers();
 						}
 					}
 				}
@@ -439,6 +445,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			err=ErrCode.OK;
 			BeeHiveParameterSet params=buildParams(serverLevel, worldPosition).build();
 			hiveInfo.tick(params);
+			this.setChanged();
 			if(hiveInfo.isBadEnvironment())
 				err=ErrCode.INVALID_ENVIRONMENT;
 			else if(hiveInfo.isNoFlower()) 
@@ -451,7 +458,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			if(canBeginWork()) {
 				beginingTicks=1;
 			}
-		}else {
+		}else if(err==ErrCode.OK) {
 			err=ErrCode.MANUAL_HALT;
 		}
 	}

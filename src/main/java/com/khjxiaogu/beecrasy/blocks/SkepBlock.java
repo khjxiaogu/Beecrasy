@@ -22,9 +22,12 @@ package com.khjxiaogu.beecrasy.blocks;
 import java.util.List;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.utils.Utils;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -42,6 +45,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -84,10 +88,10 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 			if(level.getBlockEntity(pos) instanceof SkepBlockEntity blockEntity) {
 				if (!level.isClientSide())
 					((ServerPlayer) player).openMenu(blockEntity);
-				return InteractionResult.SUCCESS;
+				
 			}
     	}
-		return super.useWithoutItem(state, level, pos, player, hitResult);
+    	return InteractionResult.SUCCESS;
 	}
 
     @Override
@@ -103,5 +107,31 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 			}
 		}
 		return list;
+	}
+	@Override
+	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+		super.animateTick(state, level, pos, random);
+		if(state.getValue(BlockStateProperties.LIT)) {
+			int count = 2;
+			
+			
+			while (--count != 0) {
+				Direction dir=Direction.Plane.HORIZONTAL.getRandomDirection(random);
+			
+				double dx=0,dy=0,dz=0;
+				if(dir.getAxis()!=Axis.X) {
+					dx=random.nextGaussian();
+				}
+				if(dir.getAxis()!=Axis.Y) {
+					dy=random.nextGaussian();
+				}
+				if(dir.getAxis()!=Axis.Z) {
+					dz=random.nextGaussian();
+				}
+				Vec3 mpos=pos.getCenter().add(dir.getUnitVec3().scale(0.5f)).add(dx, dy, dz);
+					level.addParticle(BeecrasyParticles.BEE.get(), mpos.x(), mpos.y(),mpos.z(), 0.0D,
+							0.0D, 0.0D);
+			}
+		}
 	}
 }

@@ -84,7 +84,7 @@ public class SkepScreen extends AbstractContainerScreen<SkepMenu> {
 		super.extractBackground(graphics, mouseX, mouseY, a);
 		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight,256,256);
 		ErrCode errCode=menu.getErrCode();
-		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos-20, topPos+22, errCode.ordinal()*26, 164, 26, 29,256,256);
+		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos-20, topPos+22,( errCode.ordinal()%9)*26, 164+(errCode.ordinal()/9)*29, 26, 29,256,256);
 	
 		int process=menu.getProcess();
 		int processMax=menu.getProcessMax();

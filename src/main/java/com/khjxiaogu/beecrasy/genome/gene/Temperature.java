@@ -20,6 +20,7 @@
 package com.khjxiaogu.beecrasy.genome.gene;
 
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
 
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.dimension.DimensionType;
@@ -36,6 +37,8 @@ public abstract class Temperature extends BaseAllele {
 		@Override
 		public boolean isValidFor(BeeHiveParameterSet params,Humidity humidity) {
 			float temp=params.biome().value().getBaseTemperature();
+			float offset=params.getParamValue(BeeHiveParameters.TEMPERATURE);
+			temp-=offset;
 			return temp>=lower&&temp<=upper&&humidity.isValidFor(params);
 		}
 	}

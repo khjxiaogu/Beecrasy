@@ -39,6 +39,7 @@ import com.khjxiaogu.beecrasy.blocks.SequencerBlock;
 import com.khjxiaogu.beecrasy.blocks.SequencerBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.SkepBlock;
 import com.khjxiaogu.beecrasy.blocks.SkepBlockEntity;
+import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeehiveArgumenter;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
@@ -121,6 +122,16 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> PHEROMONO=ITEMS.registerSimpleItem("pheromone");
 	    public static final DeferredItem<Item> ROYAL_JELLY=ITEMS.registerSimpleItem("royal_jelly");
 	    public static final DeferredItem<Item> HONEY_BUCKET=ITEMS.registerItem("honey_bucket",p->new BucketItem(Fluids.HONEY_STILL.get(),p),p->p.craftRemainder(net.minecraft.world.item.Items.BUCKET).stacksTo(1));
+	    //熏香
+	    public static final DeferredItem<Item> INCENSE_ARIDITY=ITEMS.registerSimpleItem("incense_aridity_tolerance",p->pheromono(p,s->s.addParam(BeeHiveParameters.HUMIDITY, -.3f)));
+	    public static final DeferredItem<Item> INCENSE_HUMIDITY=ITEMS.registerSimpleItem("incense_humidity_tolerance",p->pheromono(p,s->s.addParam(BeeHiveParameters.HUMIDITY, .3f)));
+	    
+	    public static final DeferredItem<Item> INCENSE_COLD=ITEMS.registerSimpleItem("incense_cold_tolerance",p->pheromono(p,s->s.addParam(BeeHiveParameters.TEMPERATURE, .5f)));
+	    public static final DeferredItem<Item> INCENSE_HEAT=ITEMS.registerSimpleItem("incense_heat_tolerance",p->pheromono(p,s->s.addParam(BeeHiveParameters.TEMPERATURE, -.5f)));
+	    
+	    public static final DeferredItem<Item> INCENSE_YIELD=ITEMS.registerSimpleItem("incense_higher_yield",p->pheromono(p,s->s.addParam(BeeHiveParameters.YIELD, .5f)));
+	    public static final DeferredItem<Item> INCENSE_LONG_LIFESPAN=ITEMS.registerSimpleItem("incense_longer_lifespan",p->pheromono(p,s->s.addParam(BeeHiveParameters.LIFESPAN, 1f)));
+	    public static final DeferredItem<Item> INCENSE_SHORT_LIFESPAN=ITEMS.registerSimpleItem("incense_shorter_lifespan",p->pheromono(p,s->s.addParam(BeeHiveParameters.LIFESPAN, -.5f)));
 	    
 	    //蜜蜂相关
 	    public static final DeferredItem<Item> DRONE=ITEMS.registerSimpleItem("drone",t->t.component(Components.GENOME, GenomeComponent.HAPLOID_EMPTY).stacksTo(1));
@@ -130,6 +141,13 @@ public class BeecrasyRegistries {
 	    //工具
 	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerItem("handheld_sequencer",SequencerHandHeld::new,t->t.component(Components.CONTAINER, ItemContainerContents.EMPTY).stacksTo(1));
 	    public static final DeferredItem<Item> BUTTERFLY_NET=ITEMS.registerSimpleItem("butterfly_net",s->s.tool(ToolMaterial.WOOD,Tags.MINABLE_NET, 1.0f, -2.8f, 0).stacksTo(1));
+	    public static Item.Properties pheromono(Item.Properties p,Consumer<BeeHiveArgumentation.Builder> components) {
+
+	    	BeeHiveArgumentation.Builder arb=new BeeHiveArgumentation.Builder();
+	    	components.accept(arb);
+	    	p.component(Components.ARGUMENTATION, new BeehiveArgumenter(arb.build(),true));
+	    	return p;
+	    }
 	}
 	public static class Tabs{
 	    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Beecrasy.MODID);
@@ -174,7 +192,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SkepBlockEntity>> SKEP_BLOCKENTITY=BLOCK_ENTITIES.register("skep", makeBlockEntityType(SkepBlockEntity::new, SKEP));
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SequencerBlockEntity>> SEQUENCER_BLOCKENTITY=BLOCK_ENTITIES.register("sequencer", makeBlockEntityType(SequencerBlockEntity::new, SEQUENCER));
 		    
-	    
+
 	    public static DeferredBlock<Block> register(String name){
 	    	return register(name,Block::new,Blocks::genalDeco,UnaryOperator.identity());
 	    }
@@ -221,7 +239,7 @@ public class BeecrasyRegistries {
 	public static class Components{
 	    public static final DeferredRegister.DataComponents COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Beecrasy.MODID);
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<GenomeComponent>> GENOME=COMPONENTS.registerComponentType("genome", t->t.cacheEncoding().persistent(GenomeComponent.CODEC).networkSynchronized(GenomeComponent.NETWORK_CODEC));
-	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStack>> TINT_STACK=COMPONENTS.registerComponentType("tint_stack", t->t.cacheEncoding().persistent(ItemStack.CODEC).networkSynchronized(ItemStack.STREAM_CODEC));
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStackTemplate>> TINT_STACK=COMPONENTS.registerComponentType("tint_stack", t->t.cacheEncoding().persistent(ItemStackTemplate.CODEC).networkSynchronized(ItemStackTemplate.STREAM_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<TintColorComponent>> TINT_COLOR=COMPONENTS.registerComponentType("tint_color", t->t.cacheEncoding().persistent(TintColorComponent.CODEC).networkSynchronized(TintColorComponent.NETWORK_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStackTemplate>> COMB_PRODUCT=COMPONENTS.registerComponentType("comb_product", t->t.cacheEncoding().persistent(ItemStackTemplate.CODEC).networkSynchronized(ItemStackTemplate.STREAM_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<LarvaProductivity>> LARVA_PRODUCT=COMPONENTS.registerComponentType("larva_product", t->t.cacheEncoding().persistent(LarvaProductivity.CODEC));
@@ -289,6 +307,8 @@ public class BeecrasyRegistries {
     	Fluids.FLUIDS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         Tabs.CREATIVE_MODE_TABS.register(modEventBus);
+        
+		BeecrasyParticles.REGISTER.register(modEventBus);
         
     }
     public static ItemStack pheromono(Consumer<BeeHiveArgumentation.Builder> components) {

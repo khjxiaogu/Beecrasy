@@ -1,6 +1,12 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "beecrasy:item/pheromone"
+    "model": "beecrasy:item/pheromone",
+    "tints": [
+      {
+        "type": "beecrasy:bee_product",
+        "default": -1
+      }
+    ]
   }
 }

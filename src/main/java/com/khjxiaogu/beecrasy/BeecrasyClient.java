@@ -23,13 +23,16 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Fluids;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
 import com.khjxiaogu.beecrasy.client.BeeTint;
+import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.client.ModelReference;
+import com.khjxiaogu.beecrasy.client.particles.BeeParticle;
 import com.khjxiaogu.beecrasy.client.renderer.PressBlockEntityRenderer;
 import com.khjxiaogu.beecrasy.client.screens.PressScreen;
 import com.khjxiaogu.beecrasy.client.screens.SequenceBlockScreen;
 import com.khjxiaogu.beecrasy.client.screens.SequenceHandHeldScreen;
 import com.khjxiaogu.beecrasy.client.screens.SkepScreen;
 import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTabs;
+
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.FluidModel;
@@ -46,6 +49,7 @@ import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.model.standalone.SimpleUnbakedStandaloneModel;
@@ -102,6 +106,10 @@ public class BeecrasyClient {
                 new Material(Beecrasy.rl("block/honey_flow")),
                 null,
                 null),Fluids.HONEY_STILL,Fluids.HONEY_FLOWING);
+	}
+	@SubscribeEvent
+	public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
+		event.registerSpriteSet(BeecrasyParticles.BEE.get(), BeeParticle.Factory::new);
 	}
     
 }

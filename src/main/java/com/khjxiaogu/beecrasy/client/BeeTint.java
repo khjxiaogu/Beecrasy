@@ -19,6 +19,8 @@
 
 package com.khjxiaogu.beecrasy.client;
 
+import org.jspecify.annotations.Nullable;
+
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
 import com.mojang.serialization.MapCodec;
@@ -33,6 +35,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 
 public record BeeTint(int defaultColor) implements ItemTintSource {
     public static final MapCodec<BeeTint> MAP_CODEC = RecordCodecBuilder.mapCodec(
@@ -54,9 +57,12 @@ public record BeeTint(int defaultColor) implements ItemTintSource {
     	if(!calculating.get()) {
     		try {
     			calculating.set(true);
-		        ItemStack product=itemStack.get(Components.TINT_STACK);
-		        if(product==null)
+		        @Nullable ItemStackTemplate prod=itemStack.get(Components.TINT_STACK);
+		        ItemStack product;
+		        if(prod==null)
 		        	product=itemStack;
+		        else
+		        	product=prod.create();
 		        ItemStackRenderState irs=new ItemStackRenderState();
 		        Minecraft.getInstance().getItemModelResolver().appendItemLayers(irs, product, ItemDisplayContext.GUI, level, owner, 0);
 		        TextureAtlasSprite sprite=irs.pickParticleMaterial(level.getRandom()).sprite();

@@ -39,6 +39,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -110,8 +111,12 @@ public class GenomeWorkHelper {
 	public static record ProductWithCount(ProductItem product,int count) {
 		public ItemStack createProductComb() {
 			ItemStack is=Items.PRODUCT_COMB.toStack(count());
-			if(product()!=null)
-			is.set(Components.COMB_PRODUCT,product().stack());
+			if(product()!=null) {
+				
+				ItemStackTemplate stack=product().stack();
+				is.set(Components.COMB_PRODUCT,stack);
+				is.set(Components.TINT_STACK,stack);
+			}
 			return is;
 		}
 	}
@@ -146,7 +151,7 @@ public class GenomeWorkHelper {
 	}
 	public static List<ProductItem> filterProduct(Biotope biotope,Collection<ProductItem> product) {
 		List<ProductItem> products=new ArrayList<>(product.size());
-		for(ProductItem pi:products) {
+		for(ProductItem pi:product) {
 			if(pi.biotope()==biotope)
 				products.add(pi);
 		}

@@ -1,6 +1,8 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "beecrasy:item/pheromone"
+    "layer0": "beecrasy:item/pheromone_overlay",
+    "layer1": "beecrasy:item/pheromone",
+    "particle": "beecrasy:item/pheromone"
   }
 }
