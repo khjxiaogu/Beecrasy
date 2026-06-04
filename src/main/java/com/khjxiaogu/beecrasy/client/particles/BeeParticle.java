@@ -33,6 +33,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
 public class BeeParticle extends BeecrasyParticle {
+	private static final FrameManager<BeeMovement> CIRCLE=new FrameManager<>(BeeMovement.RANDOM.createFrame(),BeeMovement.CIRCLE.createFrame(),BeeMovement.RANDOM.createFrame(),BeeMovement.CIRCLE.createFrame(),BeeMovement.RANDOM.createFrame());
+
+	private static final FrameManager<BeeMovement> FIG8=new FrameManager<>(BeeMovement.RANDOM.createFrame(),BeeMovement.FIGURE8.createFrame(),BeeMovement.RANDOM.createFrame());
+	private static final FrameManager<BeeMovement> RAND=new FrameManager<>(BeeMovement.RANDOM.createFrame());
+	private Axis movementAxis;
 	FrameManager<BeeMovement> frame;
 	public BeeParticle(ClientLevel world, double x, double y, double z, double motionX, double motionY,
 			double motionZ,SpriteSet sprite) {
@@ -43,7 +48,14 @@ public class BeeParticle extends BeecrasyParticle {
 		this.lifetime = this.random.nextIntBetweenInclusive(100, 200);
 		//this.alpha = 0.75f;
 		this.friction=1F;
-		frame=new FrameManager<BeeMovement>(BeeMovement.RANDOM.createFrame());
+		float rate=random.nextFloat();
+		if(rate<0.1)
+			frame=FIG8;
+		else if(rate<0.3)
+			frame=CIRCLE;
+		else
+			frame=RAND;
+		movementAxis=random.nextBoolean()?Axis.X:Axis.Z;
 		if(motionX==0&&motionY==0&&motionZ==0)
 			randomizeSpeed();
 	}
@@ -73,7 +85,7 @@ public class BeeParticle extends BeecrasyParticle {
 	@Override
 	public void tick() {
 		FrameData<BeeMovement> fd=frame.getData(age);
-		fd.data().tick(fd.length(), this, Axis.X);
+		fd.data().tick(fd.length(), this, movementAxis);
 		if(this.onGround)
 			this.yd=0.05;
 		else if(this.stoppedByCollision) {

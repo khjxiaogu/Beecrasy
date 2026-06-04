@@ -117,20 +117,28 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 			
 			while (--count != 0) {
 				Direction dir=Direction.Plane.HORIZONTAL.getRandomDirection(random);
-			
-				double dx=0,dy=0,dz=0;
-				if(dir.getAxis()!=Axis.X) {
-					dx=random.nextGaussian()*0.5;
+				for(int i=0;i<4;i++) {
+					BlockPos moved=pos.relative(dir);
+					if(level.getBlockState(moved).isFaceSturdy(level, moved, dir.getOpposite())) {
+						dir=dir.getClockWise();
+					}
 				}
-				if(dir.getAxis()!=Axis.Y) {
-					dy=random.nextGaussian()*0.5;
+				BlockPos moved=pos.relative(dir);
+				if(!level.getBlockState(moved).isFaceSturdy(level, moved, dir.getOpposite())) {
+					double dx=0,dy=0,dz=0;
+					if(dir.getAxis()!=Axis.X) {
+						dx=random.nextGaussian()*0.5;
+					}
+					if(dir.getAxis()!=Axis.Y) {
+						dy=random.nextGaussian()*0.5;
+					}
+					if(dir.getAxis()!=Axis.Z) {
+						dz=random.nextGaussian()*0.5;
+					}
+					Vec3 mpos=pos.getCenter().add(dir.getUnitVec3().scale(0.5f)).add(dx, dy, dz);
+						level.addParticle(BeecrasyParticles.BEE.get(), mpos.x(), mpos.y(),mpos.z(), 0.0D,
+								0.0D, 0.0D);
 				}
-				if(dir.getAxis()!=Axis.Z) {
-					dz=random.nextGaussian()*0.5;
-				}
-				Vec3 mpos=pos.getCenter().add(dir.getUnitVec3().scale(0.5f)).add(dx, dy, dz);
-					level.addParticle(BeecrasyParticles.BEE.get(), mpos.x(), mpos.y(),mpos.z(), 0.0D,
-							0.0D, 0.0D);
 			}
 		}
 	}

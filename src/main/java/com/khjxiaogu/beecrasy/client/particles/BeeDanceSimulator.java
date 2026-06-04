@@ -37,11 +37,11 @@ public class BeeDanceSimulator {
 		double vx = -R * omega * Math.sin(omega * t);
 		double vy = R * omega * Math.cos(omega * t);
 		if (axis == Axis.X) {
-			bp.setXd(vx);
+			bp.setXd(vx/20f);
 		} else {
-			bp.setZd(vx);
+			bp.setZd(vx/20f);
 		}
-		bp.setYd(vy);
+		bp.setYd(vy/20f);
 	}
 
 	public static void figure8DanceVelocity(double t, BeeParticle bp, Axis axis) {
@@ -51,11 +51,11 @@ public class BeeDanceSimulator {
 		double vx = A * omega * Math.cos(omega * t);
 		double vy = 2 * B * omega * Math.cos(2 * omega * t);
 		if (axis == Axis.X) {
-			bp.setXd(vx);
+			bp.setXd(vx/20f);
 		} else {
-			bp.setZd(vx);
+			bp.setZd(vx/20f);
 		}
-		bp.setYd(vy);
+		bp.setYd(vy/20f);
 	}
 
 	private static boolean isQuarterMultiple(double value) {
