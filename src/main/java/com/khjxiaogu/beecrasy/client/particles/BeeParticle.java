@@ -19,18 +19,21 @@
 
 package com.khjxiaogu.beecrasy.client.particles;
 
+import com.khjxiaogu.beecrasy.client.particles.FrameManager.FrameData;
+
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
 public class BeeParticle extends BeecrasyParticle {
-
+	FrameManager<BeeMovement> frame;
 	public BeeParticle(ClientLevel world, double x, double y, double z, double motionX, double motionY,
 			double motionZ,SpriteSet sprite) {
 		super(world, x, y, z, motionX, motionY, motionZ,sprite);
@@ -40,16 +43,9 @@ public class BeeParticle extends BeecrasyParticle {
 		this.lifetime = this.random.nextIntBetweenInclusive(100, 200);
 		//this.alpha = 0.75f;
 		this.friction=1F;
+		frame=new FrameManager<BeeMovement>(BeeMovement.RANDOM.createFrame());
 		if(motionX==0&&motionY==0&&motionZ==0)
 			randomizeSpeed();
-	}
-	public void randomizeMove() {
-		this.xd+=super.random.nextGaussian()*0.02;
-		this.yd+=super.random.nextGaussian()*0.02;
-		this.zd+=super.random.nextGaussian()*0.02;
-		this.xd=Mth.clamp(this.xd,-0.5, 0.05);
-		this.yd=Mth.clamp(this.yd,-0.5, 0.05);
-		this.zd=Mth.clamp(this.zd,-0.5, 0.05);
 	}
 	public void randomizeSpeed() {
 		this.xd+=super.random.nextFloat()*0.05-0.1;
@@ -76,9 +72,8 @@ public class BeeParticle extends BeecrasyParticle {
 
 	@Override
 	public void tick() {
-		if(age%5==0)
-			randomizeMove();
-
+		FrameData<BeeMovement> fd=frame.getData(age);
+		fd.data().tick(fd.length(), this, Axis.X);
 		if(this.onGround)
 			this.yd=0.05;
 		else if(this.stoppedByCollision) {

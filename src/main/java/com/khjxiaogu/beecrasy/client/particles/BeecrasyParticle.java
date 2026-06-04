@@ -26,6 +26,7 @@ import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 
 public class BeecrasyParticle extends SingleQuadParticle {
 	private SpriteSet spriteSet;
@@ -48,7 +49,27 @@ public class BeecrasyParticle extends SingleQuadParticle {
 
 		super.extract(particleTypeRenderState, camera, partialTickTime);
 	}
-
+	public double getXd() {
+		return xd;
+	}
+    public double getYd() {
+		return yd;
+	}
+    public double getZd() {
+		return zd;
+	}
+	public void setXd(double xd) {
+		this.xd=xd;
+	}
+    public void setYd(double yd) {
+    	this.yd=yd;
+	}
+    public void setZd(double zd) {
+		this.zd=zd;
+	}
+    public RandomSource random() {
+    	return random;
+    }
 	@Override
 	public void tick() {
 		super.tick();
