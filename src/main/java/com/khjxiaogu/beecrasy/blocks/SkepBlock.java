@@ -120,13 +120,13 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 			
 				double dx=0,dy=0,dz=0;
 				if(dir.getAxis()!=Axis.X) {
-					dx=random.nextGaussian();
+					dx=random.nextGaussian()*0.5;
 				}
 				if(dir.getAxis()!=Axis.Y) {
-					dy=random.nextGaussian();
+					dy=random.nextGaussian()*0.5;
 				}
 				if(dir.getAxis()!=Axis.Z) {
-					dz=random.nextGaussian();
+					dz=random.nextGaussian()*0.5;
 				}
 				Vec3 mpos=pos.getCenter().add(dir.getUnitVec3().scale(0.5f)).add(dx, dy, dz);
 					level.addParticle(BeecrasyParticles.BEE.get(), mpos.x(), mpos.y(),mpos.z(), 0.0D,
