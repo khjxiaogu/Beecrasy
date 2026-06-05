@@ -20,9 +20,9 @@
 package com.khjxiaogu.beecrasy.client;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
+import com.khjxiaogu.beecrasy.client.particles.BeeParticleType;
 
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -31,6 +31,6 @@ public class BeecrasyParticles {
 	public static final DeferredRegister<ParticleType<?>> REGISTER = DeferredRegister
 			.create(Registries.PARTICLE_TYPE, Beecrasy.MODID);
 
-	public static final DeferredHolder<ParticleType<?>,SimpleParticleType> BEE = REGISTER.register("bee",
-			() -> new SimpleParticleType(false));
+	public static final DeferredHolder<ParticleType<?>,BeeParticleType> BEE = REGISTER.register("bee",
+			() -> new BeeParticleType(false));
 }

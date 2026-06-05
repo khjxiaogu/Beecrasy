@@ -267,7 +267,12 @@ public class BeeNestBlock extends Block {
 		
 		if (random.nextFloat()<0.25) {
 			Direction dir=Direction.Plane.HORIZONTAL.getRandomDirection(random);
-		
+			for(int i=0;i<4;i++) {
+				BlockPos moved=pos.relative(dir);
+				if(level.getBlockState(moved).isFaceSturdy(level, moved, dir.getOpposite())) {
+					dir=dir.getClockWise();
+				}
+			}
 			double dx=0,dy=0,dz=0;
 			if(dir.getAxis()!=Axis.X) {
 				dx=random.nextGaussian();
@@ -278,9 +283,10 @@ public class BeeNestBlock extends Block {
 			if(dir.getAxis()!=Axis.Z) {
 				dz=random.nextGaussian();
 			}
+			Vec3 speedvec=dir.getUnitVec3().scale(0.02);
 			Vec3 mpos=pos.getCenter().add(dir.getUnitVec3().scale(0.5f)).add(dx, dy, dz);
-				level.addParticle(BeecrasyParticles.BEE.get(), mpos.x(), mpos.y(),mpos.z(), 0.0D,
-						0.0D, 0.0D);
+				level.addParticle(BeecrasyParticles.BEE.get().random(), mpos.x(), mpos.y(),mpos.z(), speedvec.x(),
+						0.0D, speedvec.z());
 		}
 		
 	}

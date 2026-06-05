@@ -25,7 +25,6 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
 public class BeecrasyParticle extends SingleQuadParticle {

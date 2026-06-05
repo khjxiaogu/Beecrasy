@@ -43,7 +43,6 @@ public class ProductsTab implements SequencerTab{
 		ItemStack is=menu.getSlot(0).getItem();
 		GenomeComponent comp=is.get(Components.GENOME);
 		if(comp!=null&&comp.isInspected()) {
-			int dy=y;
 			List<ProductItem> ah1=comp.getGenome(0).getAllele(Genes.PRODUCTS);
 			List<ProductItem> ah2=null;
 			if(comp.size()>1)

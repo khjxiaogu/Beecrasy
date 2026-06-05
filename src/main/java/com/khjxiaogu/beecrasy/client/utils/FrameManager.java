@@ -17,16 +17,21 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.client.particles;
+package com.khjxiaogu.beecrasy.client.utils;
+
+import java.util.List;
 
 public class FrameManager<T> {
-	public static record FrameData<T>(int length, T data) {
+	public static record FrameData<T>(int length, AnimateFunction<T> animator) {
 	}
 
 	private final FrameData<T>[] frames;
 	private final int[] prefixSums; // 前缀和数组，长度为 frames.length + 1
 	private final int totalLength; // 所有帧的总长度
-
+	@SuppressWarnings("unchecked")
+	public FrameManager(List<FrameData<T>> frames) {
+		this(frames.toArray(FrameData[]::new));
+	}
 	@SafeVarargs
 	public FrameManager(FrameData<T>... frames) {
 		this.frames = frames;
@@ -40,31 +45,18 @@ public class FrameManager<T> {
 		this.totalLength = sum;
 	}
 
-	/**
-	 * 根据偏移量获取对应的数据。 偏移量 x 满足：若存在 i 使得 prefixSums[i] <= x < prefixSums[i+1]， 则返回
-	 * frames[i].data()，否则返回 null（表示偏移量越界）。 注意：区间为左闭右开，x = 0 属于第一个帧。
-	 *
-	 * @param key 非负整数偏移量
-	 * @return 对应的数据，若 key 超出总长度范围则返回 null
-	 */
-	public FrameData<T> getData(int key) {
+	public void tick(int age,T obj) {
 		int idx = 0;
-		if (key < 0) {
+		if (age < 0) {
 			idx = 0;
-		} else if (key >= totalLength) {
+		} else if (age >= totalLength) {
 			idx=frames.length-1;
 		}else {
-			idx = binarySearchPrefix(key);
+			idx = binarySearchPrefix(age);
 		}
-		// 二分查找最大的 i 使得 prefixSums[i] <= key
-		
-		return new FrameData<>((key - prefixSums[idx])%frames[idx].length, frames[idx].data());
+		frames[idx].animator.tick(((age - prefixSums[idx])%frames[idx].length)/20f, obj);
 	}
 
-	/**
-	 * 在 prefixSums 数组中查找最大的索引 i，使得 prefixSums[i] <= key。 由于 prefixSums 严格递增（length
-	 * > 0 时严格递增，但允许 length == 0， 这种情况下多个相同前缀存在，但二分查找仍然能找到最左或最右。 本实现返回最右的满足条件的位置。
-	 */
 	private int binarySearchPrefix(int key) {
 		int lo = 0, hi = prefixSums.length - 1;
 		while (lo <= hi) {
@@ -78,9 +70,6 @@ public class FrameManager<T> {
 		return hi;
 	}
 
-	/**
-	 * 可选：返回总长度。
-	 */
 	public int getTotalLength() {
 		return totalLength;
 	}

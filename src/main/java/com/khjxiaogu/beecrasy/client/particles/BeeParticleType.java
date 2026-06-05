@@ -19,26 +19,37 @@
 
 package com.khjxiaogu.beecrasy.client.particles;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.mojang.serialization.MapCodec;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 
 public class BeeParticleType extends ParticleType<BeeParticleOption> {
-
-	protected BeeParticleType(boolean overrideLimiter) {
+	private final MapCodec<BeeParticleOption> codec = BeeParticleOption.codec(this);
+    private final StreamCodec<ByteBuf, BeeParticleOption> streamCodec = BeeParticleOption.streamCodec(this);
+	private final BeeParticleOption RANDOM=new BeeParticleOption(this,Optional.empty());
+    public BeeParticleType(boolean overrideLimiter) {
 		super(overrideLimiter);
 	}
-
+	public BeeParticleOption random() {
+		return RANDOM;
+	}
+	public BeeParticleOption create(List<BeeMovement> list) {
+		return new BeeParticleOption(this,Optional.of(list));
+	}
 	@Override
 	public MapCodec<BeeParticleOption> codec() {
-		return null;
+		return codec;
 	}
 
 	@Override
 	public StreamCodec<? super RegistryFriendlyByteBuf, BeeParticleOption> streamCodec() {
-		return null;
+		return streamCodec;
 	}
 
 }

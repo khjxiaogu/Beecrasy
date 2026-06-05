@@ -17,10 +17,8 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.client.particles;
+package com.khjxiaogu.beecrasy.client.utils;
 
-import net.minecraft.core.Direction.Axis;
-
-public interface MovementHandler {
-	void tick(double t,BeeParticle bp,Axis axis);
+public interface AnimateFunction<T> {
+	void tick(double t,T bp);
 }

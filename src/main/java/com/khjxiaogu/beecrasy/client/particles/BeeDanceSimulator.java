@@ -19,11 +19,21 @@
 
 package com.khjxiaogu.beecrasy.client.particles;
 
+import java.util.Map;
+
+import com.khjxiaogu.beecrasy.client.utils.FrameManager.FrameData;
+
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.util.Mth;
 
 public class BeeDanceSimulator {
-
+	public static final Map<BeeMovement,FrameData<BeeParticle>> MOVEMENTS=Map.of(
+		BeeMovement.RANDOM,new FrameData<>(20,BeeDanceSimulator::randomizeMove),
+		BeeMovement.FIGURE_8_X,new FrameData<>(40,(age,bee)->BeeDanceSimulator.figure8DanceVelocity(age, bee, Axis.X)),
+		BeeMovement.FIGURE_8_Z,new FrameData<>(40,(age,bee)->BeeDanceSimulator.figure8DanceVelocity(age, bee, Axis.Z)),
+		BeeMovement.CIRCLE_X,new FrameData<>(20,(age,bee)->BeeDanceSimulator.circleDanceVelocity(age, bee, Axis.X)),
+		BeeMovement.CIRCLE_Z,new FrameData<>(20,(age,bee)->BeeDanceSimulator.circleDanceVelocity(age, bee, Axis.Z))
+		);
 	private static final double CIRCLE_RADIUS = 2.0;
 	private static final double CIRCLE_ANGULAR_VEL = Math.PI; // rad/s
 
@@ -64,7 +74,7 @@ public class BeeDanceSimulator {
 		return Math.abs(scaled - rounded) <= 1e-7;
 	}
 
-	public static void randomizeMove(double t, BeeParticle bp, Axis axis) {
+	public static void randomizeMove(double t, BeeParticle bp) {
 		if (isQuarterMultiple(t)) {
 			bp.setXd(Mth.clamp(bp.getXd() + bp.random().nextGaussian() * 0.02, -0.5, 0.05));
 			bp.setYd(Mth.clamp(bp.getYd() + bp.random().nextGaussian() * 0.02, -0.5, 0.05));

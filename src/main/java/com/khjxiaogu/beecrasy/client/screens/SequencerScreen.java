@@ -26,6 +26,7 @@ import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTab;
 import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTabs;
 import com.khjxiaogu.beecrasy.menu.SequencerMenu;
+
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;

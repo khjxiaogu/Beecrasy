@@ -19,23 +19,30 @@
 
 package com.khjxiaogu.beecrasy.client.particles;
 
-import com.khjxiaogu.beecrasy.client.particles.FrameManager.FrameData;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 
-import net.minecraft.core.Direction.Axis;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 
 public enum BeeMovement{
-	RANDOM(20,BeeDanceSimulator::randomizeMove),FIGURE8(40,BeeDanceSimulator::figure8DanceVelocity),CIRCLE(20,BeeDanceSimulator::circleDanceVelocity);
-	final int length;
-	final MovementHandler movement;
-	private BeeMovement(int length, MovementHandler movement) {
-		this.length = length;
-		this.movement = movement;
-	}
-	public void tick(int len,BeeParticle part,Axis axis) {
-		movement.tick(len/20d, part,axis);
-	}
-	public FrameData<BeeMovement> createFrame(){
-		return new FrameData<>(length,this);
+	RANDOM,
+	FIGURE_8_X,
+	FIGURE_8_Z,
+	CIRCLE_X,
+	CIRCLE_Z;
+	public static final Codec<BeeMovement> CODEC=Codec.STRING.comapFlatMap(
+		t->{
+			try {
+				return DataResult.success(BeeMovement.valueOf(t.toUpperCase()));
+			}catch(IllegalArgumentException err) {
+				return DataResult.error(()->"No movement '"+t+"'");
+			}
+		}, t->t.name().toLowerCase()
+		);
+	public static final StreamCodec<ByteBuf,BeeMovement> STREAM_CODEC=ByteBufCodecs.VAR_INT.map(o->BeeMovement.values()[o],BeeMovement::ordinal);
+	private BeeMovement() {
 	}
 }
