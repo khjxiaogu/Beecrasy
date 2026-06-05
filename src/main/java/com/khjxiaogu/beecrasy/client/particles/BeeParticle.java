@@ -61,13 +61,17 @@ public class BeeParticle extends BeecrasyParticle {
 			this.lifetime = frame.getTotalLength();
 		}else{
 			float rate=random.nextFloat();
-			if(rate<0.1)
+			if(rate<0.1) {
 				frame=random.nextBoolean()?FIG8_X:FIG8_Z;
-			else if(rate<0.3)
+				this.lifetime = frame.getTotalLength()+this.random.nextIntBetweenInclusive(20, 100);
+			}else if(rate<0.3) {
 				frame=random.nextBoolean()?CIRCLE_X:CIRCLE_Z;
-			else
+				this.lifetime = frame.getTotalLength()+this.random.nextIntBetweenInclusive(20, 100);
+			}else {
 				frame=RAND;
-			this.lifetime = frame.getTotalLength()+this.random.nextIntBetweenInclusive(20, 60);
+				this.lifetime = this.random.nextIntBetweenInclusive(100, 200);
+			}
+			
 		}
 		
 	}
