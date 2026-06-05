@@ -76,9 +76,9 @@ public class BeeDanceSimulator {
 
 	public static void randomizeMove(double t, BeeParticle bp) {
 		if (isQuarterMultiple(t)) {
-			bp.setXd(Mth.clamp(bp.getXd() + bp.random().nextGaussian() * 0.02, -0.5, 0.05));
-			bp.setYd(Mth.clamp(bp.getYd() + bp.random().nextGaussian() * 0.02, -0.5, 0.05));
-			bp.setZd(Mth.clamp(bp.getZd() + bp.random().nextGaussian() * 0.02, -0.5, 0.05));
+			bp.setXd(Mth.clamp(bp.getXd() + bp.random().nextGaussian() * 0.02, -0.1, 0.1));
+			bp.setYd(Mth.clamp(bp.getYd() + bp.random().nextGaussian() * 0.02, -0.1, 0.1));
+			bp.setZd(Mth.clamp(bp.getZd() + bp.random().nextGaussian() * 0.02, -0.1, 0.1));
 		}
 	}
 }
