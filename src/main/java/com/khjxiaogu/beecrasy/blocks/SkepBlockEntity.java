@@ -22,13 +22,16 @@ package com.khjxiaogu.beecrasy.blocks;
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent.BeeHiveBaseData;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation.Builder;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
 import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.MenuProvider;
@@ -75,6 +78,14 @@ public class SkepBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvi
 	@Override
 	public Component getDisplayName() {
 		return Blocks.SKEP.get().getName();
+	}
+
+	@Override
+	protected void applyImplicitComponents(DataComponentGetter components) {
+		@Nullable BeeHiveBaseData hive=components.get(Components.BEE_HIVE);
+		if(hive!=null)
+		this.component.load(hive);
+		super.applyImplicitComponents(components);
 	}
 
 

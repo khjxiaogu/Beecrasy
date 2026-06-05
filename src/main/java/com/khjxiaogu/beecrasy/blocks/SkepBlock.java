@@ -21,7 +21,10 @@ package com.khjxiaogu.beecrasy.blocks;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.utils.Utils;
 
@@ -32,6 +35,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -99,15 +103,18 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
     	List<ItemStack> list=super.getDrops(state, params);
 		if (params.getParameter(LootContextParams.BLOCK_ENTITY) instanceof SkepBlockEntity blockEntity) {
 			ItemStacksResourceHandler inv=blockEntity.component.getInternInv();
-			for (int i = 0; i < inv.size(); i++) {
+			for (int i = 9; i < inv.size(); i++) {
 				ItemResource is = inv.getResource(i);
 				if (!is.isEmpty()) {
 					list.add(is.toStack(inv.getAmountAsInt(i)));
 				}
 			}
+			ItemStack skepStack=new ItemStack(Blocks.SKEP.asItem(),1);
+			skepStack.set(Components.BEE_HIVE, blockEntity.component.save());
 		}
 		return list;
 	}
+    
 	@Override
 	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
 		super.animateTick(state, level, pos, random);
