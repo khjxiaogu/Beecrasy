@@ -91,7 +91,7 @@ public class NaturalHiveBlockEntity extends BeecrasyBlockEntity{
 		if(level instanceof ServerLevel serverLevel) {
 			BeeHiveParameterSet params=new BeeHiveParameterSet.Builder(serverLevel,worldPosition).build();
 			beginGrowth(serverLevel,params);
-			hiveInfo.tick(params);
+			hiveInfo.tick(params,1);
 			int oldstate=this.getBlockState().getValue(BlockStateProperties.AGE_2);
 			int newstate=hiveInfo.isWorking()?(hiveInfo.getProcess()<hiveInfo.getProcessMax()/2?1:0):2;
 			if(oldstate!=newstate) {

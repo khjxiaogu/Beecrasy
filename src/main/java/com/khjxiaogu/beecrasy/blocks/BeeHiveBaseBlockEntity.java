@@ -50,7 +50,7 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 	@Override
 	public void tick() {
 		if(level instanceof ServerLevel serverLevel) {
-			component.tick(serverLevel, worldPosition, level.hasNeighborSignal(worldPosition));
+			component.tick(serverLevel, worldPosition,1, level.hasNeighborSignal(worldPosition));
 			if(component.isChanged()) {
 				this.setChanged();
 				component.setChanged(false);

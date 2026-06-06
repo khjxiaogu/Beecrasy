@@ -62,21 +62,23 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 	public static class BeeHiveBaseData{
 		
 		public static final Codec<BeeHiveBaseData> CODEC=RecordCodecBuilder.create(t->t
-			.group(StacksHiveSlot.LIST_CODEC.fieldOf("queen").forGetter(o->o.queenSlot),
-				StacksHiveSlot.LIST_CODEC.fieldOf("comb").forGetter(o->o.combSlot),
-				StacksHiveSlot.LIST_CODEC.fieldOf("drone").forGetter(o->o.droneSlot),
-				BeeHiveHandler.DataRecord.CODEC.fieldOf("hive").forGetter(o->o.hiveInfo),
-				BeeHiveArgumentation.CODEC.optionalFieldOf("arguments").forGetter(o->o.arguments),
-				WorkBehaviour.CODEC.fieldOf("work").forGetter(o->o.work)
+			.group(StacksHiveSlot.LIST_CODEC.fieldOf("queen").forGetter(BeeHiveBaseData::queenSlot),
+				StacksHiveSlot.LIST_CODEC.fieldOf("comb").forGetter(BeeHiveBaseData::combSlot),
+				StacksHiveSlot.LIST_CODEC.fieldOf("drone").forGetter(BeeHiveBaseData::droneSlot),
+				BeeHiveHandler.DataRecord.CODEC.fieldOf("hive").forGetter(BeeHiveBaseData::hiveInfo),
+				BeeHiveArgumentation.CODEC.optionalFieldOf("arguments").forGetter(BeeHiveBaseData::arguments),
+				Codec.INT.optionalFieldOf("begining",0).forGetter(BeeHiveBaseData::beginingTicks),
+				WorkBehaviour.CODEC.fieldOf("work").forGetter(BeeHiveBaseData::work)
 				)
 			.apply(t, BeeHiveBaseData::new));
 		public static final StreamCodec<RegistryFriendlyByteBuf,BeeHiveBaseData> STREAM_CODEC=StreamCodec
-				.composite(StacksHiveSlot.LIST_STREAM_CODEC,o->o.queenSlot,
-					StacksHiveSlot.LIST_STREAM_CODEC,o->o.combSlot,
-					StacksHiveSlot.LIST_STREAM_CODEC,o->o.droneSlot,
-					BeeHiveHandler.DataRecord.STREAM_CODEC,o->o.hiveInfo,
-					ByteBufCodecs.optional(BeeHiveArgumentation.STREAM_CODEC),o->o.arguments,
-					WorkBehaviour.STREAM_CODEC,o->o.work,
+				.composite(StacksHiveSlot.LIST_STREAM_CODEC,BeeHiveBaseData::queenSlot,
+					StacksHiveSlot.LIST_STREAM_CODEC,BeeHiveBaseData::combSlot,
+					StacksHiveSlot.LIST_STREAM_CODEC,BeeHiveBaseData::droneSlot,
+					BeeHiveHandler.DataRecord.STREAM_CODEC,BeeHiveBaseData::hiveInfo,
+					ByteBufCodecs.optional(BeeHiveArgumentation.STREAM_CODEC),BeeHiveBaseData::arguments,
+					ByteBufCodecs.VAR_INT,BeeHiveBaseData::beginingTicks,
+					WorkBehaviour.STREAM_CODEC,BeeHiveBaseData::work,
 					BeeHiveBaseData::new
 					);
 		protected final List<StacksHiveSlot> queenSlot;
@@ -84,10 +86,11 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		protected final List<StacksHiveSlot> droneSlot;
 		protected final BeeHiveHandler.DataRecord hiveInfo;
 		protected final Optional<BeeHiveArgumentation> arguments;
+		protected final int beginingTicks;
 		protected final WorkBehaviour work;
 		public BeeHiveBaseData(List<? extends HiveSlot> queenSlot, List<? extends HiveSlot> combSlot,
 			List<? extends HiveSlot> droneSlot,
-			BeeHiveHandler.DataRecord hiveInfo, Optional<BeeHiveArgumentation> arguments, WorkBehaviour work) {
+			BeeHiveHandler.DataRecord hiveInfo, Optional<BeeHiveArgumentation> arguments,int beginingTicks, WorkBehaviour work) {
 			super();
 			
 			this.queenSlot = StacksHiveSlot.createSlots(queenSlot);
@@ -95,6 +98,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			this.droneSlot = StacksHiveSlot.createSlots(droneSlot);
 			this.hiveInfo = hiveInfo;
 			this.arguments = arguments;
+			this.beginingTicks = beginingTicks;
 			this.work=work;
 		}
 		public BeeHiveBaseData(int queenSlot,int combSlot,
@@ -107,10 +111,11 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 				this.droneSlot = StacksHiveSlot.createSlots(droneSlot);
 				this.hiveInfo = hiveInfo;
 				this.arguments = arguments;
+				this.beginingTicks = 0;
 				this.work=work;
 			}
 		public BeeHiveBaseData(BeeHiveBaseComponent comp) {
-			this(comp.queenSlot,comp.combSlot,comp.droneSlot,comp.hiveInfo.save(),Optional.ofNullable(comp.arguments),comp.work);
+			this(comp.queenSlot,comp.combSlot,comp.droneSlot,comp.hiveInfo.save(),Optional.ofNullable(comp.arguments),comp.beginingTicks,comp.work);
 		}
 		@Override
 		public int hashCode() {
@@ -124,6 +129,27 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			BeeHiveBaseData other = (BeeHiveBaseData) obj;
 			return Objects.equals(arguments, other.arguments) && Objects.equals(combSlot, other.combSlot) && Objects.equals(droneSlot, other.droneSlot) && Objects.equals(hiveInfo, other.hiveInfo)
 				&& Objects.equals(queenSlot, other.queenSlot) && work == other.work;
+		}
+		public List<StacksHiveSlot> queenSlot() {
+			return queenSlot;
+		}
+		public List<StacksHiveSlot> combSlot() {
+			return combSlot;
+		}
+		public List<StacksHiveSlot> droneSlot() {
+			return droneSlot;
+		}
+		public BeeHiveHandler.DataRecord hiveInfo() {
+			return hiveInfo;
+		}
+		public Optional<BeeHiveArgumentation> arguments() {
+			return arguments;
+		}
+		public int beginingTicks() {
+			return beginingTicks;
+		}
+		public WorkBehaviour work() {
+			return work;
 		}
 		
 	}
@@ -224,7 +250,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		}
 		hiveInfo= new BeeHiveHandler(queenSlot,droneSlot,combSlot);
 	}
-	public boolean isValidForExtra(int index, ItemResource resource) {
+	protected boolean isValidForExtra(int index, ItemResource resource) {
 		return false;
 	}
 	@Override
@@ -282,10 +308,10 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			builder.setParams(arguments.params());
 		return builder;
 	}
-	public BeeHiveArgumentation.Builder buildArgumentation(ServerLevel serverLevel, BlockPos worldPosition,TransactionContext root) {
+	protected BeeHiveArgumentation.Builder buildArgumentation(ServerLevel serverLevel, BlockPos worldPosition,TransactionContext root) {
 		return new BeeHiveArgumentation.Builder();
 	}
-	public BeeHiveArgumentation extractArgumentation(ServerLevel serverLevel,int slot,TransactionContext root) {
+	protected BeeHiveArgumentation extractArgumentation(ServerLevel serverLevel,int slot,TransactionContext root) {
 		ItemResource ir=internInv.getResource(slot);
 		@Nullable BeehiveArgumenter argu=ir.get(Components.ARGUMENTATION);
 		if(argu!=null) {
@@ -318,7 +344,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		}
 		return null;
 	}
-	public boolean canBeginWork() {
+	protected boolean canBeginWork() {
 
 		if(work==WorkBehaviour.MAUNAL&&!shouldWork) {
 			err=ErrCode.MANUAL_HALT;
@@ -370,7 +396,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		err=ErrCode.OK;
 		return true;
 	}
-	public boolean beginGrowth(ServerLevel serverLevel, BlockPos worldPosition) {
+	protected boolean beginGrowth(ServerLevel serverLevel, BlockPos worldPosition) {
 		Genome[] queen=null;
 		BeeHiveParameterSet params=null;
 		List<Genome> drones=new ArrayList<>(10);
@@ -450,7 +476,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			
 		};
 	}
-	public void tick(ServerLevel serverLevel,BlockPos worldPosition,boolean hasRedstone) {
+	public void tick(ServerLevel serverLevel,BlockPos worldPosition,int speed,boolean hasRedstone) {
 		switch(work) {
 		case AUTO:shouldWork=true;break;
 		case REDSTONE:shouldWork=hasRedstone;break;
@@ -458,7 +484,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			break;
 		}
 		if(beginingTicks>0) {
-			beginingTicks++;
+			beginingTicks+=speed;
 			if(beginingTicks>=COOLDOWN_TIME) {
 				beginingTicks=0;
 				if(canBeginWork()) {
@@ -471,7 +497,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		}else if(hiveInfo.isWorking()) {
 			err=ErrCode.OK;
 			BeeHiveParameterSet params=buildParams(serverLevel, worldPosition).build();
-			hiveInfo.tick(params);
+			hiveInfo.tick(params,speed);
 			this.setChanged();
 			if(hiveInfo.isBadEnvironment())
 				err=ErrCode.INVALID_ENVIRONMENT;

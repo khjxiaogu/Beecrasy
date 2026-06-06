@@ -144,13 +144,15 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			}
 		}
 	}
-	public void tick(BeeHiveParameterSet params) {
+	public void tick(BeeHiveParameterSet params,int speed) {
 		blocked=false;
 		badEnvironment=false;
 		if(process>0) {
 			if(GenomeWorkHelper.isValidEnvironment(params, queenGenome[0])) {
 				int lprocess=process;
-				process-=BeecrasyMath.getRandomRate(params.getParamValue(BeeHiveParameters.SPEED), rs);
+				process-=BeecrasyMath.getRandomRate(params.getParamValue(BeeHiveParameters.SPEED)*speed, rs);
+				if(process<0)
+					process=0;
 				if(lprocess/interval!=process/interval) {
 					noFlower=false;
 					Set<Biotope> biotopes=updateBiotopes(params);
