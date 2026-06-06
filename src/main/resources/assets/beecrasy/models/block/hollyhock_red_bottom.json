@@ -1,0 +1,6 @@
+{
+	"parent": "minecraft:block/cross",
+	"textures": {
+		"cross": "beecrasy:block/hollyhock_red_bottom"
+	}
+}

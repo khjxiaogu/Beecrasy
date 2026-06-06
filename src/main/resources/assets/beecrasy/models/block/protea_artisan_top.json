@@ -1,0 +1,6 @@
+{
+	"parent": "minecraft:block/cross",
+	"textures": {
+		"cross": "beecrasy:block/protea_artisan_top"
+	}
+}

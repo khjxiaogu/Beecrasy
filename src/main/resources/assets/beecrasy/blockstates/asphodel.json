@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"half=lower": {
+			"model": "beecrasy:block/asphodel_bottom"
+		},
+		"half=upper": {
+			"model": "beecrasy:block/asphodel_top"
+		}
+	}
+}

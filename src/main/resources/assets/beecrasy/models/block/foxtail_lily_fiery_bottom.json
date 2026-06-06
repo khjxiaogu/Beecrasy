@@ -1,0 +1,6 @@
+{
+	"parent": "minecraft:block/cross",
+	"textures": {
+		"cross": "beecrasy:block/foxtail_lily_fiery_bottom"
+	}
+}

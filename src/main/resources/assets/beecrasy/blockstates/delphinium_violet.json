@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"half=lower": {
+			"model": "beecrasy:block/delphinium_violet_bottom"
+		},
+		"half=upper": {
+			"model": "beecrasy:block/delphinium_violet_top"
+		}
+	}
+}

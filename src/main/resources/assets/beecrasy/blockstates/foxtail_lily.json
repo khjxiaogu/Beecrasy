@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"half=lower": {
+			"model": "beecrasy:block/foxtail_lily_bottom"
+		},
+		"half=upper": {
+			"model": "beecrasy:block/foxtail_lily_top"
+		}
+	}
+}
