@@ -81,7 +81,7 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		RandomSource rnd=Utils.getSyncedRandom(context.getPlayer());
-		return this.defaultBlockState().setValue(BlockStateProperties.AGE_2, rnd.nextInt(3))
+		return this.defaultBlockState().setValue(BlockStateProperties.AGE_2, rnd.nextInt(3)).setValue(BlockStateProperties.LIT, false)
 			.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
 	}
 	@Override

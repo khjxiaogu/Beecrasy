@@ -22,8 +22,9 @@ package com.khjxiaogu.beecrasy.client.particles;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -33,9 +34,9 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-public record BeeParticleOption(ParticleType<BeeParticleOption> type,Optional<List<BeeMovement>> movements) implements ParticleOptions{
-	public static Function<Optional<List<BeeMovement>>,BeeParticleOption> curry(ParticleType<BeeParticleOption> type){
-		return m->new BeeParticleOption(type,m);
+public record BeeParticleOption(ParticleType<BeeParticleOption> type,Optional<List<BeeMovement>> movements,Optional<Boolean> flipped) implements ParticleOptions{
+	public static BiFunction<Optional<List<BeeMovement>>,Optional<Boolean>,BeeParticleOption> curry(ParticleType<BeeParticleOption> type){
+		return (m,b)->new BeeParticleOption(type,m,b);
 	}
 	@Override
 	public ParticleType<?> getType() {
@@ -43,12 +44,19 @@ public record BeeParticleOption(ParticleType<BeeParticleOption> type,Optional<Li
 	}
     public static MapCodec<BeeParticleOption> codec(ParticleType<BeeParticleOption> particleType) {
         return RecordCodecBuilder.mapCodec(t->t.group(
-        	BeeMovement.CODEC.listOf().optionalFieldOf("movements").forGetter(BeeParticleOption::movements)
+        	BeeMovement.CODEC.listOf().optionalFieldOf("movements").forGetter(BeeParticleOption::movements),
+        	Codec.BOOL.optionalFieldOf("flipped").forGetter(BeeParticleOption::flipped)
         	).apply(t, curry(particleType)));
     }
     public static StreamCodec<ByteBuf,BeeParticleOption> streamCodec(ParticleType<BeeParticleOption> particleType) {
         return StreamCodec.composite(
         	ByteBufCodecs.optional(BeeMovement.STREAM_CODEC.apply(ByteBufCodecs.list())),BeeParticleOption::movements,
+        	ByteBufCodecs.BYTE.map(t->switch(t) {
+        	case 0->Optional.empty();
+        	case 1->Optional.of(false);
+        	case 2->Optional.of(true);
+        	default->Optional.empty();
+        	}, t-> (byte) (t.isEmpty()?0:(t.get()?2:1))),BeeParticleOption::flipped,
         	curry(particleType));
     }
 }

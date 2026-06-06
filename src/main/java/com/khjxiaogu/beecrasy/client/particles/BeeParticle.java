@@ -41,6 +41,7 @@ public class BeeParticle extends BeecrasyParticle {
 	private static final FrameManager<BeeParticle> FIG8_Z=new FrameManager<>(BeeDanceSimulator.MOVEMENTS.get(BeeMovement.RANDOM),BeeDanceSimulator.MOVEMENTS.get(BeeMovement.FIGURE_8_Z),BeeDanceSimulator.MOVEMENTS.get(BeeMovement.RANDOM));
 	private static final FrameManager<BeeParticle> RAND=new FrameManager<>(BeeDanceSimulator.MOVEMENTS.get(BeeMovement.RANDOM));
 	FrameManager<BeeParticle> frame;
+	boolean flipped;
 	public BeeParticle(ClientLevel world, double x, double y, double z, double motionX, double motionY,
 			double motionZ,SpriteSet sprite,BeeParticleOption option) {
 		super(world, x, y, z, motionX, motionY, motionZ,sprite);
@@ -49,6 +50,7 @@ public class BeeParticle extends BeecrasyParticle {
 		this.quadSize = 0.125F;
 		//this.alpha = 0.75f;
 		this.friction=1F;
+		this.flipped=option.flipped().orElseGet(this.random::nextBoolean);
 		if(option.movements().isPresent()) {
 			List<BeeMovement> moves=option.movements().get();
 			@SuppressWarnings("unchecked")
@@ -75,6 +77,13 @@ public class BeeParticle extends BeecrasyParticle {
 		}
 		
 	}
+    protected float getU0() {
+        return flipped?super.getU1():super.getU0();
+    }
+
+    protected float getU1() {
+        return flipped?super.getU0():super.getU1();
+    }
 	public void randomizeSpeed() {
 		this.xd+=super.random.nextFloat()*0.05-0.1;
 		this.yd+=super.random.nextFloat()*0.05-0.1;

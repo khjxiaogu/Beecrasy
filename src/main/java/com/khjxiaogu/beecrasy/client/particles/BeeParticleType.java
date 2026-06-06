@@ -32,7 +32,7 @@ import net.minecraft.network.codec.StreamCodec;
 public class BeeParticleType extends ParticleType<BeeParticleOption> {
 	private final MapCodec<BeeParticleOption> codec = BeeParticleOption.codec(this);
     private final StreamCodec<ByteBuf, BeeParticleOption> streamCodec = BeeParticleOption.streamCodec(this);
-	private final BeeParticleOption RANDOM=new BeeParticleOption(this,Optional.empty());
+	private final BeeParticleOption RANDOM=new BeeParticleOption(this,Optional.empty(),Optional.empty());
     public BeeParticleType(boolean overrideLimiter) {
 		super(overrideLimiter);
 	}
@@ -40,7 +40,10 @@ public class BeeParticleType extends ParticleType<BeeParticleOption> {
 		return RANDOM;
 	}
 	public BeeParticleOption create(List<BeeMovement> list) {
-		return new BeeParticleOption(this,Optional.of(list));
+		return new BeeParticleOption(this,Optional.of(list),Optional.empty());
+	}
+	public BeeParticleOption create(List<BeeMovement> list,boolean flip) {
+		return new BeeParticleOption(this,Optional.of(list),Optional.of(flip));
 	}
 	@Override
 	public MapCodec<BeeParticleOption> codec() {

@@ -86,7 +86,9 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.TallFlowerBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier;
@@ -96,6 +98,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.RandomSupport;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -184,15 +187,23 @@ public class BeecrasyRegistries {
 	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_MEDIUM=register("bee_nest_medium",p->new BeeNestBlock(p,1,3,BeeNestBlock.MEDIUM_SHAPE,BeeNestBlock.MEDIUM_CORNER),Blocks::nestProps,UnaryOperator.identity());
 	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_BIG=register("bee_nest_big",p->new BeeNestBlock(p,2,4,BeeNestBlock.LARGE_SHAPE,BeeNestBlock.LARGE_CORNER),Blocks::nestProps,UnaryOperator.identity());
 	    public static final DeferredBlock<NaturalHiveBlock> NATURAL_HIVE=register("natural_hive",NaturalHiveBlock::new,Blocks::nestProps,UnaryOperator.identity());
-	    
-	    
+	    public static final DeferredBlock<DoublePlantBlock> FLOWER_ASPHODEL=register("asphodel",DoublePlantBlock::new,Blocks::flower,UnaryOperator.identity());
+	    public static final DeferredBlock<DoublePlantBlock> FLOWER_DELPHINIUM_BLUE = register("delphinium_blue", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
+	    public static final DeferredBlock<DoublePlantBlock> FLOWER_DELPHINIUM_PINK = register("delphinium_pink", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
+	    public static final DeferredBlock<DoublePlantBlock> FLOWER_DELPHINIUM_VIOLET = register("delphinium_violet", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
+	    public static final DeferredBlock<DoublePlantBlock> FLOWER_FOXTAIL_LILY = register("foxtail_lily", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
+	    public static final DeferredBlock<DoublePlantBlock> FLOWER_FOXTAIL_LILY_FIERY = register("foxtail_lily_fiery", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
+	    public static final DeferredBlock<DoublePlantBlock> FLOWER_HOLLYHOCK_PINK = register("hollyhock_pink", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
+	    public static final DeferredBlock<DoublePlantBlock> FLOWER_HOLLYHOCK_RED = register("hollyhock_red", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
+	    public static final DeferredBlock<DoublePlantBlock> FLOWER_HOLLYHOCK_WHITE = register("hollyhock_white", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
+	    public static final DeferredBlock<DoublePlantBlock> FLOWER_PROTEA = register("protea", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
+	    public static final DeferredBlock<DoublePlantBlock> FLOWER_PROTEA_ARTISAN = register("protea_artisan", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
 	    
 	    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Beecrasy.MODID);
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PressBlockEntity>> PRESS_BLOCKENTITY=BLOCK_ENTITIES.register("honey_press", makeBlockEntityType(PressBlockEntity::new, HONEY_PRESS));
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NaturalHiveBlockEntity>> NATURAL_HIVE_BLOCKENTITY=BLOCK_ENTITIES.register("natural_hive",makeBlockEntityType(NaturalHiveBlockEntity::new, NATURAL_HIVE));
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SkepBlockEntity>> SKEP_BLOCKENTITY=BLOCK_ENTITIES.register("skep", makeBlockEntityType(SkepBlockEntity::new, SKEP));
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SequencerBlockEntity>> SEQUENCER_BLOCKENTITY=BLOCK_ENTITIES.register("sequencer", makeBlockEntityType(SequencerBlockEntity::new, SEQUENCER));
-		    
 
 	    public static DeferredBlock<Block> register(String name){
 	    	return register(name,Block::new,Blocks::genalDeco,UnaryOperator.identity());
@@ -204,6 +215,15 @@ public class BeecrasyRegistries {
 	    	DeferredBlock<B> db=BLOCKS.registerBlock(name, func,properties);
 	    	Items.ITEMS.registerItem(name,p->itemfunc.apply(db.get(), p),itemProperties);
 	    	return db;
+	    }
+	    static Properties flower(Properties properties) {
+	    	return properties.mapColor(MapColor.PLANT)
+            .noCollision()
+            .instabreak()
+            .sound(SoundType.GRASS)
+            .offsetType(BlockBehaviour.OffsetType.XZ)
+            .ignitedByLava()
+            .pushReaction(PushReaction.DESTROY);
 	    }
 		static Properties genalDeco(Properties properties) {
 			return properties.mapColor(MapColor.COLOR_YELLOW).sound(SoundType.WOOD)

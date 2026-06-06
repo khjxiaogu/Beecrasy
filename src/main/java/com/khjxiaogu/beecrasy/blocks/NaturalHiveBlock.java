@@ -26,9 +26,11 @@ import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries;
 import com.khjxiaogu.beecrasy.beehive.slot.StacksHiveSlot;
+import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -46,6 +48,7 @@ import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -156,5 +159,34 @@ public class NaturalHiveBlock extends Block implements BeecrasyEntityBlock<Natur
 	@Override
 	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 		return state.getValue(BlockStateProperties.AGE_2)==0?SHAPE_BY_FACING1.get(state.getValue(BlockStateProperties.HORIZONTAL_FACING)):SHAPE_BY_FACING2.get(state.getValue(BlockStateProperties.HORIZONTAL_FACING));
+	}
+	@Override
+	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+		super.animateTick(state, level, pos, random);
+		
+		if (random.nextFloat()<0.25) {
+			Direction dir=Direction.Plane.HORIZONTAL.getRandomDirection(random);
+			for(int i=0;i<4;i++) {
+				BlockPos moved=pos.relative(dir);
+				if(level.getBlockState(moved).isFaceSturdy(level, moved, dir.getOpposite())) {
+					dir=dir.getClockWise();
+				}
+			}
+			double dx=0,dy=0,dz=0;
+			if(dir.getAxis()!=Axis.X) {
+				dx=random.nextGaussian();
+			}
+			if(dir.getAxis()!=Axis.Y) {
+				dy=random.nextGaussian();
+			}
+			if(dir.getAxis()!=Axis.Z) {
+				dz=random.nextGaussian();
+			}
+			Vec3 speedvec=dir.getUnitVec3().scale(0.02);
+			Vec3 mpos=pos.getCenter().add(dir.getUnitVec3().scale(0.5f)).add(dx, dy, dz);
+				level.addParticle(BeecrasyParticles.BEE.get().random(), mpos.x(), mpos.y(),mpos.z(), speedvec.x(),
+						0.0D, speedvec.z());
+		}
+		
 	}
 }

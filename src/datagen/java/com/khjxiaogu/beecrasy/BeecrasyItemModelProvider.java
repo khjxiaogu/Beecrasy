@@ -20,7 +20,9 @@
 package com.khjxiaogu.beecrasy;
 
 import java.util.function.BiConsumer;
+import java.util.function.UnaryOperator;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.client.BeeTint;
 
@@ -40,6 +42,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.DoublePlantBlock;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
 
 
@@ -70,7 +74,17 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 	    this.texture(Items.INCENSE_LONG_LIFESPAN);
 	    this.texture(Items.INCENSE_SHORT_LIFESPAN);
 	    
-		;
+	    textureFlower(Blocks.FLOWER_ASPHODEL);
+	    textureFlower(Blocks.FLOWER_DELPHINIUM_BLUE);
+	    textureFlower(Blocks.FLOWER_DELPHINIUM_PINK);
+	    textureFlower(Blocks.FLOWER_DELPHINIUM_VIOLET);
+	    textureFlower(Blocks.FLOWER_FOXTAIL_LILY);
+	    textureFlower(Blocks.FLOWER_FOXTAIL_LILY_FIERY);
+	    textureFlower(Blocks.FLOWER_HOLLYHOCK_PINK);
+	    textureFlower(Blocks.FLOWER_HOLLYHOCK_RED);
+	    textureFlower(Blocks.FLOWER_HOLLYHOCK_WHITE);
+	    textureFlower(Blocks.FLOWER_PROTEA);
+	    textureFlower(Blocks.FLOWER_PROTEA_ARTISAN);
 		this.itemModelOutput.register(Beecrasy.rl("handheld_sequencer_active"), new ClientItem(ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM
 			.create(Beecrasy.rl("item/"+"handheld_sequencer_active"), TextureMapping.layer0(new Material(
 				Beecrasy.rl("item/"+"handheld_sequencer_active"))), this.modelOutput)),ClientItem.Properties.DEFAULT));
@@ -108,6 +122,11 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 	}
 	public void texture(DeferredItem<?> item) {
 		texture(item.getId().getPath());
+	}
+	public void textureFlower(DeferredBlock<?> item) {
+		this.itemModelOutput.accept(item.asItem(),
+				ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM.create(ModelLocationUtils.getModelLocation(item.asItem()), TextureMapping.layer0(new Material(Identifier.fromNamespaceAndPath(Beecrasy.MODID, "block/"+item.getId().getPath()+"_top"))), this.modelOutput)
+					));
 	}
 	public void texture(String name) {
 		texture(name, name);
