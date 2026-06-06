@@ -41,7 +41,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
@@ -101,7 +103,7 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
     @Override
 	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
     	List<ItemStack> list=super.getDrops(state, params);
-		if (params.getParameter(LootContextParams.BLOCK_ENTITY) instanceof SkepBlockEntity blockEntity) {
+		if (params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof SkepBlockEntity blockEntity) {
 			ItemStacksResourceHandler inv=blockEntity.component.getInternInv();
 			for (int i = 9; i < inv.size(); i++) {
 				ItemResource is = inv.getResource(i);
@@ -109,8 +111,10 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 					list.add(is.toStack(inv.getAmountAsInt(i)));
 				}
 			}
-			ItemStack skepStack=new ItemStack(Blocks.SKEP.asItem(),1);
-			skepStack.set(Components.BEE_HIVE, blockEntity.component.save());
+			
+			list.add(blockEntity.getItem());
+		}else {
+			list.add(new ItemStack(Blocks.SKEP.asItem()));
 		}
 		return list;
 	}
@@ -149,5 +153,10 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 				}
 			}
 		}
+	}
+	@Override
+	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData,
+			Player player) {
+		return (level.getBlockEntity(pos) instanceof SkepBlockEntity blockEntity) ? blockEntity.getItem() : super.getCloneItemStack(level, pos, state, includeData,player);
 	}
 }

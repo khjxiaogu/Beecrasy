@@ -26,6 +26,9 @@ import java.util.Objects;
 import com.khjxiaogu.beecrasy.beehive.HiveSlot;
 import com.mojang.serialization.Codec;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueInput.ValueInputList;
@@ -34,8 +37,10 @@ import net.minecraft.world.level.storage.ValueOutput.ValueOutputList;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
 public class StacksHiveSlot implements HiveSlot,ValueIOSerializable {
-	public static final Codec<StacksHiveSlot> CODEC=ItemStack.CODEC.xmap(StacksHiveSlot::new, StacksHiveSlot::getItem);
+	public static final Codec<StacksHiveSlot> CODEC=ItemStack.OPTIONAL_CODEC.xmap(StacksHiveSlot::new, StacksHiveSlot::getItem);
 	public static final Codec<List<StacksHiveSlot>> LIST_CODEC=CODEC.listOf();
+	public static final StreamCodec<RegistryFriendlyByteBuf,StacksHiveSlot> STREAM_CODEC=ItemStack.OPTIONAL_STREAM_CODEC.map(StacksHiveSlot::new, StacksHiveSlot::getItem);
+	public static final StreamCodec<RegistryFriendlyByteBuf,List<StacksHiveSlot>> LIST_STREAM_CODEC=STREAM_CODEC.apply(ByteBufCodecs.list());
 	ItemStack stack;
 	
 	public StacksHiveSlot() {

@@ -43,9 +43,13 @@ import com.khjxiaogu.beecrasy.genome.gene.Biotope;
 import com.khjxiaogu.beecrasy.item.LarvaItem;
 import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 import com.khjxiaogu.beecrasy.utils.SerializableRandomSource;
+import com.khjxiaogu.beecrasy.utils.Utils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.ContainerData;
@@ -58,6 +62,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	private static record HiveSlotPriority(HiveSlot slot,long priority){}
 	public static record DataRecord(Optional<SerializableRandomSource> random,Optional<Genome[]> queenGenome,
 		Optional<List<Genome>> droneGenomes,int larvaCount,int droneCount,int process,int processMax) {
+		public static final DataRecord EMPTY=new DataRecord(Optional.empty(),Optional.empty(),Optional.empty(),0,0,0,0);
 		public static final Codec<DataRecord> CODEC=RecordCodecBuilder.create(t->t
 			.group(Codec.LONG.xmap(SerializableRandomSource::new, SerializableRandomSource::getSeed).optionalFieldOf("seed").forGetter(o->o.random()),
 				Genome.LIST_CODEC.xmap(o->o.toArray(Genome[]::new),Arrays::asList).optionalFieldOf("queen").forGetter(DataRecord::queenGenome),
@@ -68,6 +73,16 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				Codec.INT.fieldOf("processMax").forGetter(DataRecord::processMax)
 				)
 			.apply(t, DataRecord::new));
+		public static final StreamCodec<RegistryFriendlyByteBuf,DataRecord> STREAM_CODEC=StreamCodec.composite(
+				ByteBufCodecs.optional(ByteBufCodecs.LONG.map(SerializableRandomSource::new, SerializableRandomSource::getSeed)),o->o.random(),
+				ByteBufCodecs.optional(Utils.asArray(Genome.STREAM_CODEC.apply(ByteBufCodecs.list()),Genome[]::new)),DataRecord::queenGenome,
+				ByteBufCodecs.optional(Genome.STREAM_CODEC.apply(ByteBufCodecs.list())),DataRecord::droneGenomes,
+				ByteBufCodecs.INT,DataRecord::larvaCount,
+				ByteBufCodecs.INT,DataRecord::droneCount,
+				ByteBufCodecs.INT,DataRecord::process,
+				ByteBufCodecs.INT,DataRecord::processMax,
+				DataRecord::new
+				);
 	}
 	List<? extends HiveSlot> combSlot;
 	List<? extends HiveSlot> droneSlot;
@@ -137,12 +152,11 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				int lprocess=process;
 				process-=BeecrasyMath.getRandomRate(params.getParamValue(BeeHiveParameters.SPEED), rs);
 				if(lprocess/interval!=process/interval) {
-					boolean isPre=process>=(processMax/2);
 					noFlower=false;
 					Set<Biotope> biotopes=updateBiotopes(params);
 					if(biotopes==null)
 						noFlower=true;
-					if(isPre) {
+					if(larvaCount>0||droneCount>0) {
 						long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
 						updateCombLifespan(secs);
 						updateQueenLifespan(secs);

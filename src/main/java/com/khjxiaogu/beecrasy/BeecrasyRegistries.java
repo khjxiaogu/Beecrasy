@@ -175,7 +175,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Beecrasy.MODID);
 	    public static final DeferredBlock<PressBlock> HONEY_PRESS=register("honey_press",PressBlock::new,Blocks::machineProps,UnaryOperator.identity());
 	    public static final DeferredBlock<SequencerBlock> SEQUENCER=register("sequencer",SequencerBlock::new,Blocks::machineProps,UnaryOperator.identity());
-	    public static final DeferredBlock<Block> SKEP=register("skep",SkepBlock::new,Blocks::skepProps,UnaryOperator.identity());
+	    public static final DeferredBlock<Block> SKEP=register("skep",SkepBlock::new,Blocks::skepProps,t->t.component(Components.BEE_HIVE, SkepBlockEntity.EMPTY));
 	    public static final DeferredBlock<Block> EMPTY_COMB_BLOCK=register("empty_comb_block");
 	    public static final DeferredBlock<Block> HONEY_COMB_BLOCK=register("honey_comb_block");
 	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_NASCENT=register("bee_nest_nascent",p->new BeeNestBlock(p,0,3,BeeNestBlock.NASCENT_SHAPE,BeeNestBlock.NASCENT_CORNER),Blocks::nestProps,UnaryOperator.identity());
@@ -242,11 +242,11 @@ public class BeecrasyRegistries {
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStackTemplate>> TINT_STACK=COMPONENTS.registerComponentType("tint_stack", t->t.cacheEncoding().persistent(ItemStackTemplate.CODEC).networkSynchronized(ItemStackTemplate.STREAM_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<TintColorComponent>> TINT_COLOR=COMPONENTS.registerComponentType("tint_color", t->t.cacheEncoding().persistent(TintColorComponent.CODEC).networkSynchronized(TintColorComponent.NETWORK_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemStackTemplate>> COMB_PRODUCT=COMPONENTS.registerComponentType("comb_product", t->t.cacheEncoding().persistent(ItemStackTemplate.CODEC).networkSynchronized(ItemStackTemplate.STREAM_CODEC));
-	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<LarvaProductivity>> LARVA_PRODUCT=COMPONENTS.registerComponentType("larva_product", t->t.cacheEncoding().persistent(LarvaProductivity.CODEC));
-	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> LARVA_EXPIRES=COMPONENTS.registerComponentType("larva_expire", t->t.cacheEncoding().persistent(Codec.LONG));
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<LarvaProductivity>> LARVA_PRODUCT=COMPONENTS.registerComponentType("larva_product", t->t.cacheEncoding().persistent(LarvaProductivity.CODEC).networkSynchronized(LarvaProductivity.STREAM_CODEC));
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> LARVA_EXPIRES=COMPONENTS.registerComponentType("larva_expire", t->t.cacheEncoding().persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.LONG));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeehiveArgumenter>> ARGUMENTATION=COMPONENTS.registerComponentType("beehive_argumentation", t->t.cacheEncoding().persistent(BeehiveArgumenter.CODEC).networkSynchronized(BeehiveArgumenter.STREAM_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContainerContents>> CONTAINER=COMPONENTS.registerComponentType("container", t->t.cacheEncoding().persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC));
-	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeeHiveBaseComponent.BeeHiveBaseData>> BEE_HIVE=COMPONENTS.registerComponentType("bee_hive", t->t.cacheEncoding().persistent(BeeHiveBaseComponent.BeeHiveBaseData.CODEC));
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeeHiveBaseComponent.BeeHiveBaseData>> BEE_HIVE=COMPONENTS.registerComponentType("bee_hive", t->t.cacheEncoding().persistent(BeeHiveBaseComponent.BeeHiveBaseData.CODEC).networkSynchronized(BeeHiveBaseComponent.BeeHiveBaseData.STREAM_CODEC));
 
 	    
 	}

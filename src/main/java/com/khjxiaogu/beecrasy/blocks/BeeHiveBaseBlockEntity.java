@@ -20,6 +20,7 @@
 package com.khjxiaogu.beecrasy.blocks;
 
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
+import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -61,6 +62,17 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 				this.level.setBlockAndUpdate(worldPosition, nextstate);
 			}
 		}
+	}
+
+	@Override
+	public void removeComponentsFromTag(ValueOutput output) {
+
+		output.discard("inv");
+		output.discard("hive");
+		output.discard("nextWork");
+		output.discard("arguments");
+		output.discard("work");
+		super.removeComponentsFromTag(output);
 	}
 
 }

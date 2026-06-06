@@ -22,6 +22,7 @@ package com.khjxiaogu.beecrasy.beehive;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.jspecify.annotations.Nullable;
 
@@ -40,6 +41,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
@@ -54,25 +58,36 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public class BeeHiveBaseComponent implements ValueIOSerializable{
+	
 	public static class BeeHiveBaseData{
+		
 		public static final Codec<BeeHiveBaseData> CODEC=RecordCodecBuilder.create(t->t
 			.group(StacksHiveSlot.LIST_CODEC.fieldOf("queen").forGetter(o->o.queenSlot),
 				StacksHiveSlot.LIST_CODEC.fieldOf("comb").forGetter(o->o.combSlot),
 				StacksHiveSlot.LIST_CODEC.fieldOf("drone").forGetter(o->o.droneSlot),
 				BeeHiveHandler.DataRecord.CODEC.fieldOf("hive").forGetter(o->o.hiveInfo),
-				BeeHiveArgumentation.CODEC.fieldOf("arguments").forGetter(o->o.arguments),
+				BeeHiveArgumentation.CODEC.optionalFieldOf("arguments").forGetter(o->o.arguments),
 				WorkBehaviour.CODEC.fieldOf("work").forGetter(o->o.work)
 				)
 			.apply(t, BeeHiveBaseData::new));
+		public static final StreamCodec<RegistryFriendlyByteBuf,BeeHiveBaseData> STREAM_CODEC=StreamCodec
+				.composite(StacksHiveSlot.LIST_STREAM_CODEC,o->o.queenSlot,
+					StacksHiveSlot.LIST_STREAM_CODEC,o->o.combSlot,
+					StacksHiveSlot.LIST_STREAM_CODEC,o->o.droneSlot,
+					BeeHiveHandler.DataRecord.STREAM_CODEC,o->o.hiveInfo,
+					ByteBufCodecs.optional(BeeHiveArgumentation.STREAM_CODEC),o->o.arguments,
+					WorkBehaviour.STREAM_CODEC,o->o.work,
+					BeeHiveBaseData::new
+					);
 		protected final List<StacksHiveSlot> queenSlot;
 		protected final List<StacksHiveSlot> combSlot;
 		protected final List<StacksHiveSlot> droneSlot;
 		protected final BeeHiveHandler.DataRecord hiveInfo;
-		protected final BeeHiveArgumentation arguments;
+		protected final Optional<BeeHiveArgumentation> arguments;
 		protected final WorkBehaviour work;
 		public BeeHiveBaseData(List<? extends HiveSlot> queenSlot, List<? extends HiveSlot> combSlot,
 			List<? extends HiveSlot> droneSlot,
-			BeeHiveHandler.DataRecord hiveInfo, BeeHiveArgumentation arguments, WorkBehaviour work) {
+			BeeHiveHandler.DataRecord hiveInfo, Optional<BeeHiveArgumentation> arguments, WorkBehaviour work) {
 			super();
 			
 			this.queenSlot = StacksHiveSlot.createSlots(queenSlot);
@@ -82,8 +97,20 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			this.arguments = arguments;
 			this.work=work;
 		}
+		public BeeHiveBaseData(int queenSlot,int combSlot,
+				int droneSlot,
+				BeeHiveHandler.DataRecord hiveInfo, Optional<BeeHiveArgumentation> arguments, WorkBehaviour work) {
+				super();
+				
+				this.queenSlot = StacksHiveSlot.createSlots(queenSlot);
+				this.combSlot = StacksHiveSlot.createSlots(combSlot);
+				this.droneSlot = StacksHiveSlot.createSlots(droneSlot);
+				this.hiveInfo = hiveInfo;
+				this.arguments = arguments;
+				this.work=work;
+			}
 		public BeeHiveBaseData(BeeHiveBaseComponent comp) {
-			this(comp.queenSlot,comp.combSlot,comp.droneSlot,comp.hiveInfo.save(),comp.arguments,comp.work);
+			this(comp.queenSlot,comp.combSlot,comp.droneSlot,comp.hiveInfo.save(),Optional.ofNullable(comp.arguments),comp.work);
 		}
 		@Override
 		public int hashCode() {
@@ -243,7 +270,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		HiveSlot.copy(data.droneSlot, droneSlot);
 		HiveSlot.copy(data.combSlot, combSlot);
 		hiveInfo.read(data.hiveInfo);
-		arguments=data.arguments;
+		arguments=data.arguments.orElse(null);
 		work=data.work;
 	}
 	public BeeHiveBaseData save() {

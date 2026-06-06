@@ -28,6 +28,9 @@ import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 
@@ -36,6 +39,10 @@ public record LarvaProductivity(float biotopeProductive,float wildcardProductive
 			Codec.FLOAT.fieldOf("biotope").forGetter(LarvaProductivity::biotopeProductive),
 			Codec.FLOAT.fieldOf("wildcard").forGetter(LarvaProductivity::wildcardProductive)
 			).apply(t, LarvaProductivity::new));
+	public static final StreamCodec<ByteBuf, LarvaProductivity> STREAM_CODEC=StreamCodec.composite(
+			ByteBufCodecs.FLOAT,LarvaProductivity::biotopeProductive,
+			ByteBufCodecs.FLOAT,LarvaProductivity::wildcardProductive,
+			LarvaProductivity::new);
 	public static final LarvaProductivity DEFAULT=new LarvaProductivity();
 	private LarvaProductivity() {
 		this(0,0);

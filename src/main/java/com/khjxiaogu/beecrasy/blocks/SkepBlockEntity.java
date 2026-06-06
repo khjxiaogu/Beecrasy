@@ -19,12 +19,16 @@
 
 package com.khjxiaogu.beecrasy.blocks;
 
+import java.util.Optional;
+
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
+import com.khjxiaogu.beecrasy.beehive.WorkBehaviour;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent.BeeHiveBaseData;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveHandler.DataRecord;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation.Builder;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
@@ -38,11 +42,13 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public class SkepBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvider{
+	public static final BeeHiveBaseData EMPTY=new BeeHiveBaseData(1, 4, 4, DataRecord.EMPTY, Optional.empty(), WorkBehaviour.MAUNAL);
 	public static class SkepComponent extends BeeHiveBaseComponent{
 
 		public SkepComponent(int queen, int drone, int comb, int extra) {
@@ -88,7 +94,17 @@ public class SkepBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvi
 		super.applyImplicitComponents(components);
 	}
 
+	@Override
+	protected void collectImplicitComponents(net.minecraft.core.component.DataComponentMap.Builder components) {
+		components.set(Components.BEE_HIVE, component.save());
+	}
 
+	public ItemStack getItem() {
+
+		ItemStack skepStack=new ItemStack(Blocks.SKEP.asItem(),1);
+		skepStack.applyComponents(collectComponents());
+		return skepStack;
+	}
 
 
 

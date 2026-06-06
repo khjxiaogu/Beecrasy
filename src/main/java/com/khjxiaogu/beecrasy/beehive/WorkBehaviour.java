@@ -21,7 +21,10 @@ package com.khjxiaogu.beecrasy.beehive;
 
 import com.mojang.serialization.Codec;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 public enum WorkBehaviour{
 	MAUNAL,//人工
@@ -30,6 +33,7 @@ public enum WorkBehaviour{
 	private final String key="gui.beehive.control."+this.name().toLowerCase();
 	private final Component text=Component.translatable(key);
 	public static final Codec<WorkBehaviour> CODEC=Codec.INT.xmap(i->WorkBehaviour.values()[i], WorkBehaviour::ordinal);
+	public static final StreamCodec<ByteBuf,WorkBehaviour> STREAM_CODEC=ByteBufCodecs.INT.map(i->WorkBehaviour.values()[i], WorkBehaviour::ordinal);
 	public Component getComponents() {
 		return text;
 	}

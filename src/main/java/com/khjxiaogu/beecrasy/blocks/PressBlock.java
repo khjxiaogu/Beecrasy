@@ -168,7 +168,7 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
     @Override
 	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
     	List<ItemStack> list=super.getDrops(state, params);
-		if (state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER&&params.getParameter(LootContextParams.BLOCK_ENTITY) instanceof PressBlockEntity press) {
+		if (state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER&&params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof PressBlockEntity press) {
 			ItemStacksResourceHandler inv=press.getInternInv();
 			for (int i = 0; i < inv.size(); i++) {
 				ItemResource is = inv.getResource(i);

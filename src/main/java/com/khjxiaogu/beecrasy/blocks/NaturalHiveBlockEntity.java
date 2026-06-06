@@ -82,7 +82,8 @@ public class NaturalHiveBlockEntity extends BeecrasyBlockEntity{
 		StacksHiveSlot.serialize(droneSlot, nbt.childrenList("drone"));
 		nbt.putChild("hiveInfo", hiveInfo);
 		nbt.putBoolean("growthStarted", isGrowthStarted);
-		nbt.store("queenItem", ItemStack.CODEC, queen);
+		if(!queen.isEmpty())
+			nbt.store("queenItem", ItemStack.CODEC, queen);
 	}
 
 	@Override

@@ -20,16 +20,19 @@
 package com.khjxiaogu.beecrasy.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
+import com.khjxiaogu.beecrasy.genome.Genome;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -174,6 +177,10 @@ public final class Utils {
 			}
 		};
 	}
+	public static <T,B extends ByteBuf> StreamCodec<B,T[]> asArray(StreamCodec<? super B,List<T>> codec,IntFunction<T[]> asArray) {
+		return codec.<T[]>map(o->o.toArray(asArray),Arrays::asList).cast();
+	}
+	
 	public static <T extends ValueIOSerializable> Codec<T> createCodec(Supplier<T> factory){
 		return Codec.of(new Encoder<>() {
 			@Override
@@ -218,21 +225,19 @@ public final class Utils {
 		if(ops instanceof RegistryOps<?> ros) {
 			if(ros.lookupProvider instanceof HolderLookupAdapter lookup) {
 				return lookup.lookupProvider;
-			}else {
-				return new ImmutableRegistryAccess(Map.of()){
-					@Override
-					public <V> RegistryOps<V> createSerializationContext(DynamicOps<V> parent) {
-						return ros.withParent(parent);
-					}
-				};
 			}
-		}else {
 			return new ImmutableRegistryAccess(Map.of()){
 				@Override
 				public <V> RegistryOps<V> createSerializationContext(DynamicOps<V> parent) {
-					return RegistryOps.create(parent, EMPTY);
+					return ros.withParent(parent);
 				}
 			};
 		}
+		return new ImmutableRegistryAccess(Map.of()){
+			@Override
+			public <V> RegistryOps<V> createSerializationContext(DynamicOps<V> parent) {
+				return RegistryOps.create(parent, EMPTY);
+			}
+		};
 	}
 }
