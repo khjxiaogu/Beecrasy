@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"S",
+		"W"
+	],
+	"key": {
+		"S": "minecraft:string",
+		"W": "beecrasy:beeswax"
+	},
+	"result": {
+		"count": 1,
+		"id": "minecraft:candle"
+	}
+}

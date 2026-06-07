@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"beecrasy:beeswax",
+		[
+			"beecrasy:delphinium_blue",
+			"beecrasy:delphinium_pink",
+			"beecrasy:delphinium_violet"
+		]
+	],
+	"result": {
+		"count": 1,
+		"id": "beecrasy:incense_heat_tolerance"
+	}
+}

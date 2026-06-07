@@ -1,0 +1,15 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"minecraft:glass_bottle",
+		"beecrasy:honey_drop",
+		"beecrasy:honey_drop",
+		"beecrasy:honey_drop",
+		"beecrasy:honey_drop"
+	],
+	"result": {
+		"count": 1,
+		"id": "minecraft:honey_bottle"
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"GSA",
+		" L "
+	],
+	"key": {
+		"G": "minecraft:tinted_glass",
+		"S": "beecrasy:handheld_sequencer",
+		"A": "beecrasy:apite",
+		"L": "minecraft:lodestone"
+	},
+	"result": {
+		"count": 1,
+		"id": "beecrasy:sequencer"
+	}
+}

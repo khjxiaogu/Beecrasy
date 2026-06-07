@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"beecrasy:beeswax",
+		"beecrasy:asphodel"
+	],
+	"result": {
+		"count": 1,
+		"id": "beecrasy:incense_shorter_lifespan"
+	}
+}

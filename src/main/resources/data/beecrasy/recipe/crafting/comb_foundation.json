@@ -1,0 +1,14 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"WWW"
+	],
+	"key": {
+		"W": "beecrasy:beeswax"
+	},
+	"result": {
+		"count": 1,
+		"id": "beecrasy:comb_foundation"
+	}
+}

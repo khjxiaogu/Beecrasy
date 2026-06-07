@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"PIP",
+		"PRP",
+		" C "
+	],
+	"key": {
+		"P": "#minecraft:planks",
+		"I": "minecraft:iron_ingot",
+		"R": "#minecraft:wooden_pressure_plates",
+		"C": "minecraft:cauldron"
+	},
+	"result": {
+		"count": 1,
+		"id": "beecrasy:honey_press"
+	}
+}

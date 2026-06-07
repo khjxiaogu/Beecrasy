@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		" $$",
+		" S$",
+		"S  "
+	],
+	"key": {
+		"S": "minecraft:stick",
+		"$": "minecraft:string"
+	},
+	"result": {
+		"count": 1,
+		"id": "beecrasy:butterfly_net"
+	}
+}

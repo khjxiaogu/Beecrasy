@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"IIS",
+		"GDR",
+		"II "
+	],
+	"key": {
+		"I": "minecraft:iron_ingot",
+		"S": "minecraft:spyglass",
+		"G": "minecraft:tinted_glass",
+		"D": "minecraft:diamond",
+		"R": "minecraft:redstone_block"
+	},
+	"result": {
+		"count": 1,
+		"id": "beecrasy:handheld_sequencer"
+	}
+}

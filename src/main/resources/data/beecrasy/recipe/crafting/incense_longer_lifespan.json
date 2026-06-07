@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"beecrasy:beeswax",
+		[
+			"beecrasy:hollyhock_pink",
+			"beecrasy:hollyhock_red",
+			"beecrasy:hollyhock_white",
+		]
+	],
+	"result": {
+		"count": 1,
+		"id": "beecrasy:incense_longer_lifespan"
+	}
+}
