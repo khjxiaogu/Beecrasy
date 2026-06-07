@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"W%W",
+		"%W%",
+		"W%W"
+	],
+	"key": {
+		"W": "beecrasy:beeswax",
+		"%": "beecrasy:honey_drop"
+	},
+	"result": {
+		"count": 3,
+		"id": "beecrasy:empty_comb_block"
+	}
+}
