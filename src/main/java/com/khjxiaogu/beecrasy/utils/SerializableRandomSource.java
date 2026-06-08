@@ -53,7 +53,6 @@ public class SerializableRandomSource implements BitRandomSource {
     public static SerializableRandomSource create(long seed) {
     	return new SerializableRandomSource((seed ^ 25214903917L) & 281474976710655L);
     }
-    @Override
     /**
      * 从此随机源派生一个新的独立随机源。
      *
@@ -63,7 +62,6 @@ public class SerializableRandomSource implements BitRandomSource {
     public RandomSource fork() {
         return new SingleThreadedRandomSource(this.nextLong());
     }
-    @Override
     /**
      * 派生一个位置相关随机工厂。
      *
@@ -104,7 +102,6 @@ public class SerializableRandomSource implements BitRandomSource {
         this.seed = newSeed;
         return (int)(newSeed >> 48 - bits);
     }
-	@Override
 	/**
 	 * 生成一个近似标准高斯分布的随机双精度值。
 	 * <p>
