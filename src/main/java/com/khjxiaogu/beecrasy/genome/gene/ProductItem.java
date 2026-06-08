@@ -31,9 +31,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
 
 /**
- * 产品物品记录，描述蜂巢产出的物品，关联生物群落、可选配方来源和物品模板。
+ * 产品物品记录，描述蜂巢产出的物品，关联生境、可选配方来源和物品模板。
  *
- * @param biotope 关联的生物群落
+ * @param biotope 关联的生境
  * @param recipe  可选的合成/熔炼配方来源标识符
  * @param stack   物品模板
  */

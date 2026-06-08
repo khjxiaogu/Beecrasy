@@ -79,15 +79,15 @@ public class Genes {
 		
 
 		
-		/** 生物群落等位基因类型。 */
+		/** 生境等位基因类型。 */
 		public static final EnumAlleleType<Biotope> BIOTOPE=new EnumAlleleType<>(Beecrasy.rl("biotope"));
-		/** 野生群落。 */
+		/** 野生生境。 */
 		public static final Biotope WILD=BIOTOPE.registerAllele(new Biotope("wild"));
-		/** 合成群落。 */
+		/** 合成生境。 */
 		public static final Biotope CRAFT=BIOTOPE.registerAllele(new Biotope("craft"));
-		/** 熔炼群落。 */
+		/** 熔炼生境。 */
 		public static final Biotope SMELT=BIOTOPE.registerAllele(new Biotope("smelt"));
-		/** 生物群落。 */
+		/** 共生生境。 */
 		public static final Biotope CREATURE=BIOTOPE.registerAllele(new Biotope("creature"));
 		
 		/** 产量等位基因类型。 */
@@ -142,7 +142,7 @@ public class Genes {
 	public static final Gene<Humidity> HUMIDITY=GeneRegistry.register(Alleles.HUMIDITY, ()->Alleles.MODERATE_HUMIDITY, 200);
 	/** 繁殖力基因。 */
 	public static final Gene<NumericAllele> FERTILITY=GeneRegistry.register(Alleles.FERTILITY, ()->Alleles.MODERATE_FERTILITY, 300);
-	/** 生物群落基因。 */
+	/** 生境基因。 */
 	public static final Gene<Biotope> BIOTOPE=GeneRegistry.register(Alleles.BIOTOPE, ()->Alleles.WILD, 400);
 	/** 产品序列基因。 */
 	public static final Gene<List<ProductItem>> PRODUCTS=GeneRegistry.register(Beecrasy.rl("product"),

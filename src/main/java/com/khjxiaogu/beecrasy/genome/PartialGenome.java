@@ -80,7 +80,7 @@ public record PartialGenome(Map<Gene<?>, ?> alleles) implements AllelesHolder{
 		}
 	};
 	/**
-	 * 部分基因组的流式构建器，提供温度、湿度、群落、产品、产量、寿命等语义化方法。
+	 * 部分基因组的流式构建器，提供温度、湿度、生境、产品、产量、寿命等语义化方法。
 	 */
 	public static class Builder{
 		/** 等位基因映射表。 */
@@ -139,9 +139,9 @@ public record PartialGenome(Map<Gene<?>, ?> alleles) implements AllelesHolder{
 			return add(Genes.FERTILITY, value);
 		}
 		/**
-		 * 设置生物群落等位基因。
+		 * 设置生境等位基因。
 		 *
-		 * @param value 群落等位基因
+		 * @param value 生境等位基因
 		 * @return 当前构建器（用于链式调用）
 		 */
 		public Builder biotope(Biotope value) {
@@ -166,7 +166,7 @@ public record PartialGenome(Map<Gene<?>, ?> alleles) implements AllelesHolder{
 			return product(new ItemStackTemplate(value.asItem()));
 		}
 		/**
-		 * 添加一项产品（使用物品模板，群落默认为当前设置的群落或野生）。
+		 * 添加一项产品（使用物品模板，生境默认为当前设置的生境或野生）。
 		 *
 		 * @param value 物品模板
 		 * @return 当前构建器（用于链式调用）
@@ -175,9 +175,9 @@ public record PartialGenome(Map<Gene<?>, ?> alleles) implements AllelesHolder{
 			return product((Biotope)alleles.getOrDefault(Genes.BIOTOPE, Alleles.WILD),value);
 		}
 		/**
-		 * 添加一项产品（指定群落和物品模板）。
+		 * 添加一项产品（指定生境和物品模板）。
 		 *
-		 * @param bio   生物群落
+		 * @param bio   生境
 		 * @param value 物品模板
 		 * @return 当前构建器（用于链式调用）
 		 */

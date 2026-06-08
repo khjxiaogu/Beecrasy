@@ -47,7 +47,7 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**
- * 基因组工作辅助工具类，包含相似度计算、群落检测、产品选择、环境验证等核心游戏逻辑。
+ * 基因组工作辅助工具类，包含相似度计算、生境检测、产品选择、环境验证等核心游戏逻辑。
  */
 public class GenomeWorkHelper {
 	/**
@@ -65,7 +65,7 @@ public class GenomeWorkHelper {
 	 * 计算两个基因组的相似度评分。
 	 * <p>
 	 * 评分规则：产品完全匹配得100000分，共同元素每个得10000分；
-	 * 群落匹配得1000分；温度/湿度匹配各得100分；其余基因匹配各得1分。
+	 * 生境匹配得1000分；温度/湿度匹配各得100分；其余基因匹配各得1分。
 	 *
 	 * @param template 模板基因组
 	 * @param subject  待比较基因组
@@ -101,12 +101,12 @@ public class GenomeWorkHelper {
 		return point;
 	}
 	/**
-	 * 在指定位置周围指定半径内扫描生物群落。
+	 * 在指定位置周围指定半径内扫描生境。
 	 *
 	 * @param l      世界实例
 	 * @param pos    中心位置
 	 * @param radius 扫描半径
-	 * @return 检测到的群落集合；如果没有任何鲜花或群落方块则返回 {@code null}
+	 * @return 检测到的生境集合；如果没有任何鲜花或生境方块则返回 {@code null}
 	 */
 	public static Set<Biotope> findBiotope(Level l,BlockPos pos,int radius){
 		Set<Biotope> bts=new HashSet<>();
@@ -161,9 +161,9 @@ public class GenomeWorkHelper {
 		}
 	}
 	/**
-	 * 按生物群落过滤并随机分配产品数量。
+	 * 按生境过滤并随机分配产品数量。
 	 *
-	 * @param biotope 当前生物群落
+	 * @param biotope 当前生境
 	 * @param product 所有产品列表
 	 * @param rand    随机数生成器
 	 * @param count   要分配的总产品数量
@@ -189,9 +189,9 @@ public class GenomeWorkHelper {
 		return out;
 	}
 	/**
-	 * 按生物群落过滤并随机选取单个产品（所有数量分配给一个产品）。
+	 * 按生境过滤并随机选取单个产品（所有数量分配给一个产品）。
 	 *
-	 * @param biotope 当前生物群落
+	 * @param biotope 当前生境
 	 * @param product 所有产品列表
 	 * @param rand    随机数生成器
 	 * @param count   数量
@@ -208,11 +208,11 @@ public class GenomeWorkHelper {
 		
 	}
 	/**
-	 * 按生物群落过滤产品列表，仅返回匹配当前群落的产品。
+	 * 按生境过滤产品列表，仅返回匹配当前生境的产品。
 	 *
-	 * @param biotope 当前生物群落
+	 * @param biotope 当前生境
 	 * @param product 所有产品列表
-	 * @return 过滤后的产品列表（仅包含匹配群落的产品）
+	 * @return 过滤后的产品列表（仅包含匹配生境的产品）
 	 */
 	public static List<ProductItem> filterProduct(Biotope biotope,Collection<ProductItem> product) {
 		List<ProductItem> products=new ArrayList<>(product.size());

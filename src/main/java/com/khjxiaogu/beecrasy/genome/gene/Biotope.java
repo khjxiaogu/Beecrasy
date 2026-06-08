@@ -26,7 +26,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 
 /**
- * 生物群落等位基因，关联一个方块标签用于检测世界中对应生境的方块。
+ * 生境等位基因，关联一个方块标签用于检测世界中对应生境的方块。
  */
 public class Biotope extends BaseAllele {
 	/** 该生境关联的方块标签。 */
@@ -34,7 +34,7 @@ public class Biotope extends BaseAllele {
 	/**
 	 * 创建生境并自动生成对应的方块标签（{@code flowers/biotope_<id>}）。
 	 *
-	 * @param id 群落标识符
+	 * @param id 生境标识符
 	 */
 	public Biotope(String id) {
 		super(id);
