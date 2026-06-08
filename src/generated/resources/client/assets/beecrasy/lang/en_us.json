@@ -56,6 +56,7 @@
   "argument.beehive.beecrasy.humidity": "Humidity %s",
   "argument.beehive.beecrasy.lifespan": "Lifespan %s",
   "argument.beehive.beecrasy.mutate": "Mutate %s",
+  "argument.beehive.beecrasy.result": "Result",
   "argument.beehive.beecrasy.speed": "Speed %s",
   "argument.beehive.beecrasy.temperature": "Temperature %s",
   "argument.beehive.beecrasy.yield": "Yield %s",

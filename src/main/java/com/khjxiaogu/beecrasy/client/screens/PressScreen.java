@@ -32,13 +32,36 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
+/**
+ * 蜂蜜压榨机 GUI 界面。
+ * <p>
+ * 扩展 {@link AbstractContainerScreen}<{@link PressMenu}>，显示：
+ * <ul>
+ *   <li>流体储罐（通过 {@link FluidRenderHelper#handleGuiTank} 绘制）；</li>
+ *   <li>进度条——表示当前榨取进度；</li>
+ *   <li>物品栏标签。</li>
+ * </ul>
+ */
 public class PressScreen extends AbstractContainerScreen<PressMenu> {
+	/** GUI 背景纹理位置 */
 	static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Beecrasy.MODID, "textures/gui/honey_press.png");
 
+	/**
+	 * 构造压榨机 GUI 界面。
+	 *
+	 * @param menu      压榨机菜单容器
+	 * @param inventory 玩家物品栏
+	 * @param title     界面标题
+	 */
 	public PressScreen(PressMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
         this.inventoryLabelY = imageHeight - 92;
 	}
+
+	/**
+	 * 临时提示文本列表，用于收集鼠标悬停时储罐的提示信息。
+	 * 在 {@link #extractRenderState} 中清空并填充后一次性提交。
+	 */
 	private ArrayList<Component> tooltip = new ArrayList<>(2);
 
 	@Override
@@ -49,6 +72,18 @@ public class PressScreen extends AbstractContainerScreen<PressMenu> {
 
 	}
 
+	/**
+	 * 提取渲染状态——绘制流体储罐及悬停提示。
+	 * <p>
+	 * 调用 {@link FluidRenderHelper#handleGuiTank} 绘制储罐内的流体，
+	 * 若鼠标悬停在储罐区域，则收集提示文本并通过
+	 * {@link GuiGraphicsExtractor#setComponentTooltipForNextFrame} 提交。
+	 *
+	 * @param transform GUI 图形提取器
+	 * @param mouseX    鼠标 X 坐标
+	 * @param mouseY    鼠标 Y 坐标
+	 * @param partial   部分 tick 时间
+	 */
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor transform, int mouseX, int mouseY, float partial) {
 		tooltip.clear();
@@ -66,6 +101,16 @@ public class PressScreen extends AbstractContainerScreen<PressMenu> {
         //graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, -12566464, false);
         graphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, -12566464, false);
     }
+	/**
+	 * 提取背景——绘制纹理和进度条覆盖层。
+	 * <p>
+	 * 在主背景纹理之上，根据当前进度覆盖进度条区域（从右向左递减覆盖）。
+	 *
+	 * @param graphics GUI 图形提取器
+	 * @param mouseX   鼠标 X 坐标
+	 * @param mouseY   鼠标 Y 坐标
+	 * @param a        部分 tick 时间
+	 */
 	@Override
 	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 		super.extractBackground(graphics, mouseX, mouseY, a);
@@ -80,6 +125,17 @@ public class PressScreen extends AbstractContainerScreen<PressMenu> {
 		
 	}
 
+	/**
+	 * 判断鼠标是否在指定区域内。
+	 *
+	 * @param mouseX 鼠标 X 坐标
+	 * @param mouseY 鼠标 Y 坐标
+	 * @param x      区域左上角相对 X 坐标
+	 * @param y      区域左上角相对 Y 坐标
+	 * @param w      区域宽度
+	 * @param h      区域高度
+	 * @return 若鼠标在区域内返回 {@code true}
+	 */
 	public boolean isMouseIn(int mouseX, int mouseY, int x, int y, int w, int h) {
 		return mouseX >= leftPos + x && mouseY >= topPos + y && mouseX < leftPos + x + w && mouseY < topPos + y + h;
 	}

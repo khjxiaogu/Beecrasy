@@ -36,7 +36,12 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
+/**
+ * 产物标签页。
+ * <p>
+*/
 public class ProductsTab implements SequencerTab{
+	/** 标签页标题 */
 	public static final Component title=Component.translatable("tab.sequencer.beecrasy.products");
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor transform, SequencerMenu menu, int x, int y, int w, int h, int mouseX, int mouseY, float partial, Consumer<Component> tooltips) {

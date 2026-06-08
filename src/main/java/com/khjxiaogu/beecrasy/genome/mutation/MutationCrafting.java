@@ -22,10 +22,13 @@ package com.khjxiaogu.beecrasy.genome.mutation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
 import com.khjxiaogu.beecrasy.genome.DiploidGenome;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genome;
@@ -35,7 +38,9 @@ import com.khjxiaogu.beecrasy.utils.CraftingRecipeSequence.SequencedRecipe;
 import com.khjxiaogu.beecrasy.utils.CraftingSequenceMatcher;
 import com.khjxiaogu.beecrasy.utils.Utils;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -45,7 +50,9 @@ import net.minecraft.world.item.crafting.RecipeHolder;
  * 合成突变，当蜜蜂具有合成生境时，尝试将产品序列中的物品通过工作台合成配方合并为新物品。
  */
 public class MutationCrafting implements Mutation{
-
+	public static record RecipeOutput(ItemStackTemplate template,Identifier id) {
+		
+	}
 	public MutationCrafting() {
 	}
 
@@ -54,22 +61,22 @@ public class MutationCrafting implements Mutation{
 		boolean succeed=false;
 		boolean flag1=genome.maternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
 		boolean flag2=genome.paternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
-		
+		Set<Item> si=new HashSet<>(params.getParamValue(BeeHiveParameters.MUTATION_DIRECTOR));
 		if(flag1&&flag2) {
 			int r=rnd.nextInt(8);
 			if (r < 3) {
-				succeed|=handleCraft(genome.maternal(),rnd);
+				succeed|=handleCraft(si,genome.maternal(),rnd);
             } else if (r < 6) {
-            	succeed|=handleCraft(genome.paternal(),rnd);
+            	succeed|=handleCraft(si,genome.paternal(),rnd);
             } else {
-				succeed|=handleCraft(genome.maternal(),rnd);
-				succeed|=handleCraft(genome.paternal(),rnd);
+				succeed|=handleCraft(si,genome.maternal(),rnd);
+				succeed|=handleCraft(si,genome.paternal(),rnd);
             }
 			return succeed;
 		}else if(flag1) {
-			return handleCraft(genome.maternal(),rnd);
+			return handleCraft(si,genome.maternal(),rnd);
 		}else if(flag2) {
-			return handleCraft(genome.paternal(),rnd);
+			return handleCraft(si,genome.paternal(),rnd);
 		}
 		return false;
 	}
@@ -80,22 +87,19 @@ public class MutationCrafting implements Mutation{
 	 * @param random 随机数生成器
 	 * @return 如果成功合成了新物品则返回 {@code true}
 	 */
-	public static boolean handleCraft(Genome.Builder genome, RandomSource random) {
+	public static boolean handleCraft(Set<Item> si,Genome.Builder genome, RandomSource random) {
 		List<ProductItem> products=genome.get(Genes.PRODUCTS);
 		List<ItemStack> pending=new ArrayList<>(products.size());
 		for(ProductItem product:products) {
 			pending.add(product.stack().create());
 		}
-		List<RecipeHolder<CraftingRecipe>> seq=getRecipeSequence(pending);
+		List<RecipeOutput> seq=getRecipeSequence(si,pending);
 		if(!seq.isEmpty()) {
-			
-			RecipeHolder<CraftingRecipe> selected=seq.get(random.nextInt(seq.size()));
+			RecipeOutput selected=seq.get(random.nextInt(seq.size()));
 			if(selected!=null) {
-				ItemStackTemplate ist=Utils.getRecipeOutput(pending, selected.value());
-				if(ist!=null) {
-					genome.add(Genes.PRODUCTS, List.of(new ProductItem(Genes.Alleles.CRAFT,Optional.of(selected.id().identifier()),ist)));
-					return true;
-				}
+				genome.add(Genes.PRODUCTS, List.of(new ProductItem(Genes.Alleles.CRAFT,Optional.of(selected.id()),selected.template())));
+				return true;
+				
 			}
 		}
 		return false;
@@ -106,21 +110,41 @@ public class MutationCrafting implements Mutation{
 	 * @param products 物品列表
 	 * @return 匹配的配方列表
 	 */
-	public static List<RecipeHolder<CraftingRecipe>> getRecipeSequence(List<ItemStack> products){
+	public static List<RecipeOutput> getRecipeSequence(Set<Item> si,List<ItemStack> products){
 		Collection<SequencedRecipe> sequence=CraftingSequenceMatcher.match(products);
 		if(sequence.isEmpty())
 			return Collections.emptyList();
-		List<RecipeHolder<CraftingRecipe>> orderedMatch=new ArrayList<>();
+		List<RecipeOutput> orderedMatch=new ArrayList<>(sequence.size());
+		List<RecipeOutput> orderedPriorityMatch=new ArrayList<>(sequence.size());
+		List<RecipeOutput> unorderedMatch=new ArrayList<>(sequence.size());
+		List<RecipeOutput> unorderedPriorityMatch=new ArrayList<>(sequence.size());
 		outer:for(SequencedRecipe rh:sequence) {
+			ItemStackTemplate ist=Utils.getRecipeOutput(products, rh.getRecipe().value());
+			if(ist==null)
+				continue;
+			RecipeOutput out=new RecipeOutput(ist,rh.getRecipe().id().identifier());
+			Item item=ist.item().value();
+			unorderedMatch.add(out);
+			if(si.contains(item)) {
+				unorderedPriorityMatch.add(out);
+			}
 			for(int i=0;i<products.size();i++) {
-				if(!rh.match(i, products.get(i)))
+				if(!rh.match(i, products.get(i))) 
 					continue outer;
 			}
-			orderedMatch.add(rh.getRecipe());
+			orderedMatch.add(out);
+			if(si.contains(item)) {
+				orderedPriorityMatch.add(out);
+			}
 		}
+		if(!orderedPriorityMatch.isEmpty())
+			return orderedPriorityMatch;
+
+		if(!unorderedPriorityMatch.isEmpty())
+			return unorderedPriorityMatch;
 		if(!orderedMatch.isEmpty())
 			return orderedMatch;
-		return sequence.stream().map(SequencedRecipe::getRecipe).toList();
+		return unorderedMatch;
 	}
 
 	@Override
@@ -132,6 +156,6 @@ public class MutationCrafting implements Mutation{
 	public boolean isApplicable(BeeHiveParameterSet params, DiploidGenome genome) {
 		boolean flag1=genome.maternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
 		boolean flag2=genome.paternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
-		return flag1||flag2;
+		return (flag1||flag2)&&params.hasBiotope(Genes.Alleles.CRAFT);
 	}
 }

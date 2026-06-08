@@ -20,7 +20,6 @@
 package com.khjxiaogu.beecrasy.blocks;
 
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
-import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -64,6 +63,7 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void removeComponentsFromTag(ValueOutput output) {
 

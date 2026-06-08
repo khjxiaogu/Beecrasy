@@ -40,10 +40,36 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
 
+/**
+ * 纹理染色颜色缓存类。
+ * <p>
+ * 监听 {@link TextureAtlasStitchedEvent} 事件，在纹理图集拼接完成时对每个纹理分析
+ * 并提取主色调，缓存到 {@link Reference2IntOpenHashMap} 中。提供 {@link #getTintColor}
+ * 方法供染色逻辑快速查询。同时提供 {@link #dumpTintColor} 调试方法将缓存数据持久化为
+ * PNG 图片。
+ * <p>
+ * 注册为 NeoForge 客户端事件总线订阅者（{@link EventBusSubscriber}），自动接收
+ * 纹理图集拼接事件。
+ */
 @EventBusSubscriber(modid = Beecrasy.MODID, value = Dist.CLIENT)
 public class TintColorCache {
+	/**
+	 * 纹理到 ARGB 整数的快速引用映射。
+	 * 初始容量为 1024，使用引用相等性（而非 {@code equals}）比较键，
+	 * 适用于纹理精灵引用在生命周期内不会发生变化的场景。
+	 */
 	private static Reference2IntOpenHashMap<TextureAtlasSprite> colorMap=new Reference2IntOpenHashMap<>(1024);
 	
+	/**
+	 * 纹理图集拼接事件处理器。
+	 * <p>
+	 * 当纹理图集拼接完成后触发。遍历图集中所有纹理（跳过缺失纹理），对每个 RGBA 格式的
+	 * 纹理使用 {@link TintColorExtractor#processImage} 和
+	 * {@link TintColorExtractor#extractTintColor} 分析并提取主色调，
+	 * 将结果存入 {@link #colorMap} 缓存。
+	 *
+	 * @param ev 纹理图集拼接事件
+	 */
 	@SuppressWarnings("resource")
 	@SubscribeEvent
 	public static void onTextureStitched(TextureAtlasStitchedEvent ev) {
@@ -66,9 +92,25 @@ public class TintColorCache {
 		}
 
 	}
+	/**
+	 * 查询缓存中的染色颜色。
+	 * <p>
+	 * 在 {@link #colorMap} 中查找指定纹理精灵的缓存颜色值。
+	 * 若未找到则返回默认的白色（{@code 0xffffffff}）。
+	 *
+	 * @param id 纹理精灵
+	 * @return 缓存的 ARGB 颜色值，未缓存时返回白色
+	 */
 	public static int getTintColor(TextureAtlasSprite id) {
 		return colorMap.getOrDefault(id, 0xffffffff);
 	}
+	/**
+	 * 调试工具——将所有缓存的纹理及其提取的颜色渲染为一整张图片并保存为 PNG。
+	 * <p>
+	 * 生成一张网格状图片：每行最多 40 项，每项左侧为原始纹理（16x16）、右侧为提取的
+	 * 染色颜色色块（16x16）。输出文件位于 {@code logs/tintColorDump.png}。
+	 * 仅用于调试目的，在生产环境中应避免调用。
+	 */
 	@SuppressWarnings("resource")
 	public static void dumpTintColor() {
 

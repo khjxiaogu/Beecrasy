@@ -21,13 +21,21 @@ package com.khjxiaogu.beecrasy.beehive;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.List;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry.BeehiveParameterType;
+import com.khjxiaogu.beecrasy.utils.Utils;
+import com.mojang.serialization.Codec;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 /**
  * 蜂巢工作参数类型常量定义。
@@ -73,6 +81,13 @@ public class BeeHiveParameters {
 	public static final BeehiveParameterType<Float> TEMPERATURE=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("temperature"),0f, (value,adder)->adder.accept(formatNumberLanguage(Beecrasy.rl("temperature"),value)));
 	/** 湿度参数：环境湿度的量化值。默认值为 0.0，加法合并。 */
 	public static final BeehiveParameterType<Float> HUMIDITY=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("humidity"),0f, (value,adder)->adder.accept(formatNumberLanguage(Beecrasy.rl("humidity"),value)));
+	
+	public static final BeehiveParameterType<List<Item>> MUTATION_DIRECTOR=BeeHiveParameterRegistry.register(Beecrasy.rl("result"), Codec.list(BuiltInRegistries.ITEM.byNameCodec()), ByteBufCodecs.registry(Registries.ITEM).apply(ByteBufCodecs.list()), Utils::concatList, List::of, (value,adder)->{
+		adder.accept(Component.translatable(getLanguageKey(Beecrasy.rl("result"))));
+		for(Item it:value) {
+			adder.accept(ItemResource.of(it).getHoverName());
+		}
+	});
 	
 	private BeeHiveParameters() {}
 	

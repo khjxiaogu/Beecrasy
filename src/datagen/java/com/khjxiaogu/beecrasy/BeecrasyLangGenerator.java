@@ -64,6 +64,7 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 		addArgumenter(BeeHiveParameters.YIELD);
 		addArgumenter(BeeHiveParameters.TEMPERATURE);
 		addArgumenter(BeeHiveParameters.HUMIDITY);
+		addMultilineArgumenter(BeeHiveParameters.MUTATION_DIRECTOR);
 		sequencerTab("basic");
 		sequencerTab("products");
 		for(DeferredHolder<Block, ? extends Block> blk:Blocks.BLOCKS.getEntries()) {
@@ -92,6 +93,11 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 	public <T> void addArgumenter(BeehiveParameterType<T> type) {
 		
 		this.add(BeeHiveParameters.getLanguageKey(type.id()), capitalizeWords(type.id().getPath())+" %s");
+	
+	}
+	public <T> void addMultilineArgumenter(BeehiveParameterType<T> type) {
+		
+		this.add(BeeHiveParameters.getLanguageKey(type.id()), capitalizeWords(type.id().getPath()));
 	
 	}
 	

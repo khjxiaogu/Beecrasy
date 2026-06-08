@@ -143,6 +143,11 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	transient float lsAgainstInterval;
 	/** 冷却计时器，用于重试阻塞操作。 */
 	transient int cooldown;
+	
+	transient int biotopeCooldown;
+	
+	transient Set<Biotope> biotopes;
+	
 	/**
 	 * 创建一个蜂巢处理器，绑定到指定的槽位列表。
 	 * 从游戏配置中读取工作间隔和寿命相关参数。
@@ -176,6 +181,8 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		larvaCount=0;
 		droneCount=0;
 		process=processMax=0;
+		biotopeCooldown=0;
+		cooldown=0;
 		rs=null;
 		droneGenomes=null;
 		setQueen(null);
@@ -226,19 +233,30 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	public void tick(BeeHiveParameterSet params,int speed) {
 		blocked=false;
 		badEnvironment=false;
+		noFlower=false;
+		long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
 		if(process>0) {
-			if(GenomeWorkHelper.isValidEnvironment(params, queenGenome[0])) {
+			if(biotopeCooldown<=0) {
+				biotopeCooldown=0;
+				biotopes=updateBiotopes(params);
+				biotopeCooldown=60;
+			}else {
+				biotopeCooldown--;
+			}
+			if(biotopes==null) {
+				noFlower=true;
+			}
+			if(!GenomeWorkHelper.isValidEnvironment(params, queenGenome[0])) {
+				badEnvironment=true;
+			}
+			if(!badEnvironment&&!noFlower) {
+				params.addBiotopes(biotopes);
 				int lprocess=process;
 				process-=BeecrasyMath.getRandomRate(params.getParamValue(BeeHiveParameters.SPEED)*speed, rs);
 				if(process<0)
 					process=0;
 				if(lprocess/interval!=process/interval) {
-					noFlower=false;
-					Set<Biotope> biotopes=updateBiotopes(params);
-					if(biotopes==null)
-						noFlower=true;
 					if(larvaCount>0||droneCount>0) {
-						long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
 						updateCombLifespan(secs);
 						updateQueenLifespan(secs);
 						if(!fillLarva(params))
@@ -247,24 +265,32 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 						int elecInterval=(processMax/2/4);
 						if(lprocess/elecInterval!=process/elecInterval)
 							elecQueen();
-						increaseProduction(params, biotopes);
+						increaseProduction(params);
 					}
 					
 				}
-			}else
-				badEnvironment=true;
-		}else if(processMax>0){
-			if(cooldown<=0) {
-				cooldown=0;
-				if(finishProduct(params)) {
-					processMax=process=0;
-					reset();
+			}
+		}else {
+			if(processMax>0){
+				if(cooldown<=0) {
+					cooldown=0;
+					if(finishProduct(params)) {
+						processMax=process=0;
+						reset();
+					}else {
+						blocked=true;
+						cooldown=20;
+					}
 				}else {
-					blocked=true;
-					cooldown=20;
+					cooldown--;
 				}
-			}else {
-				cooldown--;
+			}
+			for(HiveSlot slot:combSlot) {
+				ItemStack itemStack=slot.getItem();
+				if(LarvaItem.isExpired(itemStack,secs)) {
+					ItemStack ret=LarvaItem.getProduct(itemStack, params.level());
+					slot.setItem(ret);
+				}
 			}
 		}
 	}
@@ -274,7 +300,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @param params   当前环境参数
 	 * @param biotopes 当前环境中的生境集合（可能为 null）
 	 */
-	private void increaseProduction(BeeHiveParameterSet params,Set<Biotope> biotopes) {
+	private void increaseProduction(BeeHiveParameterSet params) {
 		noBiotope=false;
 
 		long secs=WorldCalendar.getCalendar(params.level()).getSeconds();
@@ -289,21 +315,21 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 					continue;
 
 				item.set(Components.LARVA_EXPIRES,secs);
-				if(biotopes!=null) {
-					Genome pheno=GenomeDataHelper.getPhenoType(item);
-					LarvaProductivity lp=item.get(Components.LARVA_PRODUCT);
-					if(lp==null)
-						lp=LarvaProductivity.DEFAULT;
-	
-					float yield=pheno.getAllele(Genes.YIELD).getNumber()/lsAgainstInterval*yieldMod;
-					if(params.hasBiotope(biotopes,pheno.getAllele(Genes.BIOTOPE))) {
-						lp=lp.increaseBiotoped(yield);
-					}else {
-						lp=lp.increaseWildcard(yield);
-						noBiotope=true;
-					}
-					item.set(Components.LARVA_PRODUCT, lp);
+				
+				Genome pheno=GenomeDataHelper.getPhenoType(item);
+				LarvaProductivity lp=item.get(Components.LARVA_PRODUCT);
+				if(lp==null)
+					lp=LarvaProductivity.DEFAULT;
+
+				float yield=pheno.getAllele(Genes.YIELD).getNumber()/lsAgainstInterval*yieldMod;
+				if(params.hasBiotope(pheno.getAllele(Genes.BIOTOPE))) {
+					lp=lp.increaseBiotoped(yield);
+				}else {
+					lp=lp.increaseWildcard(yield);
+					noBiotope=true;
 				}
+				item.set(Components.LARVA_PRODUCT, lp);
+				
 				hi.setItem(item);
 			}
 		}

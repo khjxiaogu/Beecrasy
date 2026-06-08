@@ -34,6 +34,7 @@ import com.mojang.serialization.DataResult;
 
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -57,7 +58,7 @@ public class BeeHiveParameterRegistry {
 	 * @param defaultValueSupplier 默认值提供器
 	 * @param desc             用于将参数值格式化为文本组件的消费者（接收参数值和文本消费者）
 	 */
-	public static record BeehiveParameterType<T>(Identifier id, Codec<T> codec,BinaryOperator<T> merge,Supplier<T> defaultValueSupplier,BiConsumer<T,Consumer<Component>> desc){
+	public static record BeehiveParameterType<T>(Identifier id, Codec<T> codec,StreamCodec<RegistryFriendlyByteBuf,T> streamCodec,BinaryOperator<T> merge,Supplier<T> defaultValueSupplier,BiConsumer<T,Consumer<Component>> desc){
 		/**
 		 * 获取该参数类型的默认值。
 		 * @return 默认值
@@ -114,7 +115,7 @@ public class BeeHiveParameterRegistry {
 	 * @return 注册完成的参数类型
 	 */
 	public static BeehiveParameterType<Float> registerNumeric(Identifier id,float def,BiConsumer<Float,Consumer<Component>> desc) {
-		return register(id,Codec.FLOAT,(a,b)->a+b,()->def,desc);
+		return register(id,Codec.FLOAT,ByteBufCodecs.FLOAT,(a,b)->a+b,()->def,desc);
 	}
 	/**
 	 * 注册一个倍数型（Float）参数类型，使用乘法作为合并策略。
@@ -124,7 +125,7 @@ public class BeeHiveParameterRegistry {
 	 * @return 注册完成的参数类型
 	 */
 	public static BeehiveParameterType<Float> registerMultiplier(Identifier id,float def,BiConsumer<Float,Consumer<Component>> desc) {
-		return register(id,Codec.FLOAT,(a,b)->a*b,()->def,desc);
+		return register(id,Codec.FLOAT,ByteBufCodecs.FLOAT,(a,b)->a*b,()->def,desc);
 	}
 	/**
 	 * 注册一个自定义参数类型。
@@ -137,8 +138,8 @@ public class BeeHiveParameterRegistry {
 	 * @param desc   描述生成器
 	 * @return 注册完成的参数类型
 	 */
-	public synchronized static <T> BeehiveParameterType<T> register(Identifier id, Codec<T> codec,BinaryOperator<T> merge,Supplier<T> defaultValueSupplier,BiConsumer<T,Consumer<Component>> desc) {
-		BeehiveParameterType<T> gt=new BeehiveParameterType<>(id,codec,merge,defaultValueSupplier,desc);
+	public synchronized static <T> BeehiveParameterType<T> register(Identifier id, Codec<T> codec,StreamCodec<? super RegistryFriendlyByteBuf,T> streamCodec,BinaryOperator<T> merge,Supplier<T> defaultValueSupplier,BiConsumer<T,Consumer<Component>> desc) {
+		BeehiveParameterType<T> gt=new BeehiveParameterType<>(id,codec,streamCodec.cast(),merge,defaultValueSupplier,desc);
 		if(!idMap.containsKey(id)) {
 			synchronized(lock) {
 				typeIdMap.add(id);

@@ -35,16 +35,35 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
+/**
+ * 测序仪通用 GUI 界面基类。
+ * <p>
+ * 实现标签页系统：左侧 5 个垂直排列的标签按钮（支持滚动分页，每页最多 5 个），
+ * 右侧为当前选中标签页的内容区域。管理鼠标点击切换标签页和悬停提示。
+ * <p>
+ * 子类 {@link SequenceBlockScreen} 和 {@link SequenceHandHeldScreen} 通过
+ * 覆盖 {@link #extractRenderState(GuiGraphicsExtractor, int, int, float, Consumer)}
+ * 添加特有元素。
+ *
+ * @param <T> 测序仪菜单类型
+ */
 public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerScreen<T> {
+	/** GUI 背景纹理位置 */
 	public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Beecrasy.MODID, "textures/gui/sequencer.png");
 
 	public SequencerScreen(T menu, Inventory inventory, Component title) {
 		super(menu, inventory, title, 176, 225);
 	}
+	/** 当前选中的标签页索引 */
 	int selected=0;
+	/** 当前页面中最大的标签索引 */
 	int maxIndex=0;
+	/** 当前页面的起始标签索引 */
 	int minIndex=0;
+	/** 当前分页页码 */
 	int page=0;
+
+	/** 临时提示文本列表 */
 	private ArrayList<Component> tooltip = new ArrayList<>(2);
 
 	@Override
@@ -52,6 +71,15 @@ public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerS
 		super.init();
 		this.clearWidgets();
 	}
+	/**
+	 * 供子类覆盖的额外渲染状态方法，用于在标签内容之上添加特有元素。
+	 *
+	 * @param graphics GUI 图形提取器
+	 * @param mouseX   鼠标 X 坐标
+	 * @param mouseY   鼠标 Y 坐标
+	 * @param partial  部分 tick 时间
+	 * @param adder    提示文本消费者
+	 */
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial,Consumer<Component> adder) {
 		
 	}

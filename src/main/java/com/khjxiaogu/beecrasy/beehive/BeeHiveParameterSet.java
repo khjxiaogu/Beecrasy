@@ -225,13 +225,16 @@ public record BeeHiveParameterSet(ServerLevel level,BlockPos position,Holder<Bio
 			val=type.getDefault();
 		return val;
 	}
+	public void addBiotopes(Collection<Biotope> bios) {
+		activeBiotopes.addAll(bios);
+	}
 	/**
 	 * 检查当前参数集中是否包含指定的生境（通过参数集中的活跃生境或传入的当前生境集合判断）。
 	 * @param current 当前蜜蜂自身的生境集合
 	 * @param biotope 要检查的生境
 	 * @return 如果参数集的活跃生境或当前生境集合包含该生境则返回 true
 	 */
-	public boolean hasBiotope(Set<Biotope> current,Biotope biotope) {
-		return activeBiotopes.contains(biotope)||current.contains(biotope);
+	public boolean hasBiotope(Biotope biotope) {
+		return activeBiotopes.contains(biotope);
 	}
 }

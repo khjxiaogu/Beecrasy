@@ -26,7 +26,6 @@ import com.khjxiaogu.beecrasy.network.PacketHandler;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;

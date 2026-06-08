@@ -22,9 +22,11 @@ package com.khjxiaogu.beecrasy.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
@@ -32,7 +34,6 @@ import java.util.function.Supplier;
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
-import com.khjxiaogu.beecrasy.genome.Genome;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -207,6 +208,13 @@ public final class Utils {
 	 */
 	public static MutableComponent string(String content) {
 		return MutableComponent.create(PlainTextContents.create(content));
+	}
+
+	public static <T> List<T> concatList(List<T> list1,List<T> list2){
+		Set<T> set=new LinkedHashSet<>(list1.size()+list2.size());
+		set.addAll(list1);
+		set.addAll(list2);
+		return List.copyOf(set);
 	}
 	/**
 	 * 创建根据键动态分发值编解码器的Map流编解码器。

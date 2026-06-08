@@ -33,10 +33,8 @@ import com.khjxiaogu.beecrasy.beehive.slot.StacksHiveSlot;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeehiveArgumenter;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
-import com.khjxiaogu.beecrasy.components.WorldCalendar;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
-import com.khjxiaogu.beecrasy.item.LarvaItem;
 import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -47,8 +45,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
@@ -661,17 +657,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		default:
 			break;
 		}
-		if(!hiveInfo.isWorking()) {
-			long secs=serverLevel.getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
-			
-			for(ResourceStackHiveSlot slot:combSlot) {
-				ItemStack itemStack=slot.getItem();
-				if(LarvaItem.isExpired(itemStack,secs)) {
-					ItemStack ret=LarvaItem.getProduct(itemStack, serverLevel);
-					slot.setItem(ret);
-				}
-			}
-		}
+		
 		if(beginingTicks>0) {
 			beginingTicks+=speed;
 			if(beginingTicks>=COOLDOWN_TIME) {

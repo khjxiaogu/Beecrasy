@@ -35,13 +35,26 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
+/**
+ * 核心基因标签页。
+ * <p>
+ * 显示被测序物品的基因组基本信息
+ * 每项以 {@link SingleLine} 形式展示表现型和母系/父系等位基因数据。
+ */
 public class BasicGeneticsTab implements SequencerTab {
+	/** 基因显示行列表 */
 	List<Line> lines=new ArrayList<>();
+	/** 标签页标题 */
 	public static final Component title=Component.translatable("tab.sequencer.beecrasy.basic");
 	public BasicGeneticsTab() {
 		super();
 		addLines();
 	}
+	/**
+	 * 注册所有基础基因行。
+	 * <p>
+	 * 添加温度、湿度、生态位、繁殖力、寿命、产量六项基因的显示行。
+	 */
 	public void addLines() {
 
 		lines.add(new SingleLine(Genes.TEMPERATURE));
