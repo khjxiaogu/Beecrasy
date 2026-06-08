@@ -46,10 +46,31 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.common.NeoForge;
 
+/**
+ * 基因组工作辅助工具类，包含相似度计算、群落检测、产品选择、环境验证等核心游戏逻辑。
+ */
 public class GenomeWorkHelper {
+	/**
+	 * 计算两个二倍体基因组的整体相似度评分（64位，前32位为母方评分，后32位为父方评分）。
+	 *
+	 * @param <T>     等位基因持有者类型
+	 * @param template 模板基因组数组
+	 * @param subject  待比较基因组数组
+	 * @return 64位综合相似度评分
+	 */
 	public static <T extends AllelesHolder> long checkSimilarityPoint(T[] template,T[] subject) {
 		return (GenomeWorkHelper.checkSimilarityPoint(template[0],subject[0])<<32)+GenomeWorkHelper.checkSimilarityPoint(template[1],subject[1]);
 	}
+	/**
+	 * 计算两个基因组的相似度评分。
+	 * <p>
+	 * 评分规则：产品完全匹配得100000分，共同元素每个得10000分；
+	 * 群落匹配得1000分；温度/湿度匹配各得100分；其余基因匹配各得1分。
+	 *
+	 * @param template 模板基因组
+	 * @param subject  待比较基因组
+	 * @return 相似度评分
+	 */
 	public static long checkSimilarityPoint(AllelesHolder template,AllelesHolder subject) {
 		int point=0;
 		List<ProductItem> tproduct=template.getAllele(Genes.PRODUCTS);
@@ -79,6 +100,14 @@ public class GenomeWorkHelper {
 		}
 		return point;
 	}
+	/**
+	 * 在指定位置周围指定半径内扫描生物群落。
+	 *
+	 * @param l      世界实例
+	 * @param pos    中心位置
+	 * @param radius 扫描半径
+	 * @return 检测到的群落集合；如果没有任何鲜花或群落方块则返回 {@code null}
+	 */
 	public static Set<Biotope> findBiotope(Level l,BlockPos pos,int radius){
 		Set<Biotope> bts=new HashSet<>();
 		boolean hasFlower=false;
@@ -108,7 +137,18 @@ public class GenomeWorkHelper {
 		}
 		return (bts.isEmpty()&&!hasFlower)?null:bts;
 	}
+	/**
+	 * 产品及数量记录。
+	 *
+	 * @param product 产品物品记录
+	 * @param count   数量
+	 */
 	public static record ProductWithCount(ProductItem product,int count) {
+		/**
+		 * 创建产品蜜脾物品栈。
+		 *
+		 * @return 产品蜜脾物品栈
+		 */
 		public ItemStack createProductComb() {
 			ItemStack is=Items.PRODUCT_COMB.toStack(count());
 			if(product()!=null) {
@@ -120,6 +160,15 @@ public class GenomeWorkHelper {
 			return is;
 		}
 	}
+	/**
+	 * 按生物群落过滤并随机分配产品数量。
+	 *
+	 * @param biotope 当前生物群落
+	 * @param product 所有产品列表
+	 * @param rand    随机数生成器
+	 * @param count   要分配的总产品数量
+	 * @return 分配后的产品列表
+	 */
 	public static List<ProductWithCount> pickProduct(Biotope biotope,Collection<ProductItem> product,RandomSource rand,int count) {
 		List<ProductItem> products=filterProduct(biotope,product);
 		if(products.size()==0)
@@ -139,6 +188,15 @@ public class GenomeWorkHelper {
 		}
 		return out;
 	}
+	/**
+	 * 按生物群落过滤并随机选取单个产品（所有数量分配给一个产品）。
+	 *
+	 * @param biotope 当前生物群落
+	 * @param product 所有产品列表
+	 * @param rand    随机数生成器
+	 * @param count   数量
+	 * @return 随机选取的产品及数量
+	 */
 	public static ProductWithCount pickSingleProduct(Biotope biotope,Collection<ProductItem> product,RandomSource rand,int count) {
 		List<ProductItem> products=filterProduct(biotope,product);
 		if(products.size()==0)
@@ -149,6 +207,13 @@ public class GenomeWorkHelper {
 		return new ProductWithCount(products.get(rand.nextInt(products.size())),count);
 		
 	}
+	/**
+	 * 按生物群落过滤产品列表，仅返回匹配当前群落的产品。
+	 *
+	 * @param biotope 当前生物群落
+	 * @param product 所有产品列表
+	 * @return 过滤后的产品列表（仅包含匹配群落的产品）
+	 */
 	public static List<ProductItem> filterProduct(Biotope biotope,Collection<ProductItem> product) {
 		List<ProductItem> products=new ArrayList<>(product.size());
 		for(ProductItem pi:product) {
@@ -157,6 +222,13 @@ public class GenomeWorkHelper {
 		}
 		return products;
 	}
+	/**
+	 * 发送环境验证事件，判断蜂箱参数的当前环境是否有效。
+	 *
+	 * @param params    蜂箱参数集合
+	 * @param phenoType 表现型基因组
+	 * @return 如果环境有效则返回 {@code true}
+	 */
 	public static boolean isValidEnvironment(BeeHiveParameterSet params,AllelesHolder phenoType) {
 		BeeEnvironmentValidateEvent ev=new BeeEnvironmentValidateEvent(params,phenoType);
 		return !NeoForge.EVENT_BUS.post(ev).isCanceled();

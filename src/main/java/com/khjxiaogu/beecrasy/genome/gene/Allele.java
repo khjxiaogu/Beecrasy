@@ -19,6 +19,14 @@
 
 package com.khjxiaogu.beecrasy.genome.gene;
 
+/**
+ * 等位基因接口，定义获取等位基因标识符的方法。
+ */
 public interface Allele {
+	/**
+	 * 获取等位基因的唯一字符串标识符。
+	 *
+	 * @return 标识符字符串
+	 */
 	String getId();
 }

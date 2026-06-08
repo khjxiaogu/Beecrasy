@@ -30,6 +30,9 @@ import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 
 import net.minecraft.util.RandomSource;
 
+/**
+ * 序列削减突变，当双亲生境相同且产品序列长度大于1时，随机移除末尾产品项。
+ */
 public class MutationDecreaseSequence implements Mutation {
 
 	public MutationDecreaseSequence() {
@@ -77,7 +80,7 @@ public class MutationDecreaseSequence implements Mutation {
 
 	@Override
 	public boolean isApplicable(BeeHiveParameterSet params, DiploidGenome genome) {
-		if (genome.maternal().get(Genes.BIOTOPE) == genome.paternal().get(Genes.BIOTOPE))
+		if (genome.maternal().get(Genes.BIOTOPE) != genome.paternal().get(Genes.BIOTOPE))
 			return false;
 		List<ProductItem> matSeqOriginal = genome.maternal().get(Genes.PRODUCTS);
 		List<ProductItem> parSeqOriginal = genome.paternal().get(Genes.PRODUCTS);

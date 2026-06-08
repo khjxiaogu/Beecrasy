@@ -19,7 +19,11 @@
 
 package com.khjxiaogu.beecrasy.genome.gene;
 
+/**
+ * 等位基因基础实现类，存储并返回等位基因的标识符字符串。
+ */
 public class BaseAllele implements Allele {
+	/** 等位基因的唯一字符串标识符。 */
 	private final String id;
 	
 	@Override
@@ -27,6 +31,11 @@ public class BaseAllele implements Allele {
 		return id;
 	}
 
+	/**
+	 * 创建具有指定标识符的等位基因。
+	 *
+	 * @param id 标识符字符串
+	 */
 	public BaseAllele(String id) {
 		super();
 		this.id = id;

@@ -21,7 +21,18 @@ package com.khjxiaogu.beecrasy.genome;
 
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 
+/**
+ * 二倍体基因组记录，包含母方（maternal）和父方（paternal）两个单倍基因组构建器。
+ *
+ * @param maternal 母方基因组构建器
+ * @param paternal 父方基因组构建器
+ */
 public record DiploidGenome(Genome.Builder maternal,Genome.Builder paternal) {
+	/**
+	 * 将二倍体基因组转换为 {@link GenomeComponent} 组件。
+	 *
+	 * @return 基因组组件
+	 */
 	public GenomeComponent toComponent() {
 		return new GenomeComponent(false,maternal.build(),paternal.build());
 	}

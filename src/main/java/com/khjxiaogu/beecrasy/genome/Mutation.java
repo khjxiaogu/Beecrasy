@@ -23,15 +23,33 @@ import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
 
 import net.minecraft.util.RandomSource;
 
+/**
+ * 突变接口，定义蜜蜂基因组的突变行为。
+ */
 public interface Mutation {
 	/**
-	 * 执行突变
-	 * @param genome 子代的基因组
-	 * @param rnd 随机序列
-	 * @return 是否继续执行后续突变
-	 * 
-	 * */
+	 * 执行突变。
+	 *
+	 * @param params 蜂箱参数集合
+	 * @param genome 子代的二倍体基因组
+	 * @param rnd    随机序列
+	 * @return 是否跳过后续突变
+	 */
 	boolean mutate(BeeHiveParameterSet params,DiploidGenome genome,RandomSource rnd);
+	/**
+	 * 获取突变发生的概率基础值。
+	 *
+	 * @param params 蜂箱参数集合
+	 * @param genome 子代的二倍体基因组
+	 * @return 突变概率（0~1）
+	 */
 	float getChance(BeeHiveParameterSet params,DiploidGenome genome);
+	/**
+	 * 判断当前突变是否适用于给定的蜂箱参数和基因组。
+	 *
+	 * @param params 蜂箱参数集合
+	 * @param genome 子代的二倍体基因组
+	 * @return 如果适用则返回 {@code true}
+	 */
 	boolean isApplicable(BeeHiveParameterSet params,DiploidGenome genome);
 }

@@ -37,6 +37,9 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 
+/**
+ * 熔炼突变，当蜜蜂具有熔炼生境时，尝试将产品序列末尾物品通过熔炉配方冶炼为新物品。
+ */
 public class MutationSmelting implements Mutation {
 
 	@Override
@@ -65,6 +68,14 @@ public class MutationSmelting implements Mutation {
 		}
 		return false;
 	}
+	/**
+	 * 查询熔炉配方并执行熔炼。
+	 *
+	 * @param param  蜂箱参数集合
+	 * @param genome 基因组建构器
+	 * @param random 随机数生成器
+	 * @return 如果成功冶炼了新物品则返回 {@code true}
+	 */
 	public static boolean handleCraft(BeeHiveParameterSet param,Genome.Builder genome, RandomSource random) {
 		List<ProductItem> products=genome.get(Genes.PRODUCTS);
 		SingleRecipeInput sri=new SingleRecipeInput(products.get(products.size()-1).stack().create());

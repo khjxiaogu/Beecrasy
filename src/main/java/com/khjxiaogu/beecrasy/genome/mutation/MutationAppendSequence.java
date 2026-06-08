@@ -30,6 +30,9 @@ import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 
 import net.minecraft.util.RandomSource;
 
+/**
+ * 序列追加突变，将双亲的产品序列交叉合并后追加到子代基因组中（最多保留9项）。
+ */
 public class MutationAppendSequence implements Mutation {
 
 	public MutationAppendSequence() {

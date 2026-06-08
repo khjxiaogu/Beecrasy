@@ -19,8 +19,18 @@
 
 package com.khjxiaogu.beecrasy.genome;
 
+/**
+ * 等位基因持有者接口，提供按基因类型获取等位基因值的方法。
+ */
 public interface AllelesHolder {
 
+	/**
+	 * 获取指定基因类型的等位基因值。
+	 *
+	 * @param <T>  等位基因值的类型
+	 * @param type 基因类型
+	 * @return 等位基因值，可能为 {@code null}
+	 */
 	<T> T getAllele(Gene<T> type);
 
 }

@@ -41,6 +41,9 @@ import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
+/**
+ * 合成突变，当蜜蜂具有合成生境时，尝试将产品序列中的物品通过工作台合成配方合并为新物品。
+ */
 public class MutationCrafting implements Mutation{
 
 	public MutationCrafting() {
@@ -70,6 +73,13 @@ public class MutationCrafting implements Mutation{
 		}
 		return false;
 	}
+	/**
+	 * 在服务器配方系统中查找匹配的合成配方并执行。
+	 *
+	 * @param genome 基因组建构器
+	 * @param random 随机数生成器
+	 * @return 如果成功合成了新物品则返回 {@code true}
+	 */
 	public static boolean handleCraft(Genome.Builder genome, RandomSource random) {
 		List<ProductItem> products=genome.get(Genes.PRODUCTS);
 		List<ItemStack> pending=new ArrayList<>(products.size());
@@ -90,6 +100,12 @@ public class MutationCrafting implements Mutation{
 		}
 		return false;
 	}
+	/**
+	 * 使用 {@link CraftingSequenceMatcher} 查找配方，优先精确顺序匹配，否则返回所有可能的配方。
+	 *
+	 * @param products 物品列表
+	 * @return 匹配的配方列表
+	 */
 	public static List<RecipeHolder<CraftingRecipe>> getRecipeSequence(List<ItemStack> products){
 		Collection<SequencedRecipe> sequence=CraftingSequenceMatcher.match(products);
 		if(sequence.isEmpty())
