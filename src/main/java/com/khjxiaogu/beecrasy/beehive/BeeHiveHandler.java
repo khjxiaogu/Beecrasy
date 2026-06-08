@@ -58,10 +58,33 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
+/**
+ * 蜂巢生命周期处理器。
+ * 核心类，管理蜂巢工作周期的完整流程，包括：
+ * <ul>
+ *   <li>蜂后产卵（生成幼虫和雄蜂）</li>
+ *   <li>幼虫生长和蜂后羽化</li>
+ *   <li>雄蜂填充</li>
+ *   <li>杂交突变处理</li>
+ *   <li>产物生成（蜂蜜等）</li>
+ *   <li>环境检查和生境更新</li>
+ * </ul>
+ * 实现了 {@link ValueIOSerializable} 用于数据持久化，以及 {@link ContainerData} 用于容器同步。
+ */
 public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
+	/**
+	 * 用于优先级队列的槽位优先级记录。
+	 * 在蜂后选举中根据基因组相似度排序。
+	 */
 	private static record HiveSlotPriority(HiveSlot slot,long priority){}
+	/**
+	 * 数据快照记录，用于网络同步和持久化。
+	 * 包含了蜂巢工作状态的所有必要数据：随机数种子、蜂后基因组、雄蜂基因组列表、
+	 * 幼虫计数、雄蜂计数、当前进度和最大进度。
+	 */
 	public static record DataRecord(Optional<SerializableRandomSource> random,Optional<Genome[]> queenGenome,
 		Optional<List<Genome>> droneGenomes,int larvaCount,int droneCount,int process,int processMax) {
+		/** 空数据记录（所有字段均为默认值/空 Optional）。 */
 		public static final DataRecord EMPTY=new DataRecord(Optional.empty(),Optional.empty(),Optional.empty(),0,0,0,0);
 		public static final Codec<DataRecord> CODEC=RecordCodecBuilder.create(t->t
 			.group(Codec.LONG.xmap(SerializableRandomSource::new, SerializableRandomSource::getSeed).optionalFieldOf("seed").forGetter(o->o.random()),
@@ -84,25 +107,49 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				DataRecord::new
 				);
 	}
+	/** 巢脾槽位列表（存放幼虫和产物）。 */
 	List<? extends HiveSlot> combSlot;
+	/** 雄蜂槽位列表。 */
 	List<? extends HiveSlot> droneSlot;
+	/** 蜂后槽位列表（存放蜂后/王台）。 */
 	List<? extends HiveSlot> queenSlot;
 	
+	/** 可序列化的随机数源，用于保证工作周期中所有随机操作的一致性。 */
 	SerializableRandomSource rs;
+	/** 蜂后的二倍体基因组（[0]=母本, [1]=父本）。 */
 	Genome[] queenGenome;
+	/** 雄蜂的单倍体基因组列表。 */
 	List<Genome> droneGenomes;
 
+	/** 待生成的幼虫数量。 */
 	int larvaCount;
+	/** 待生成的雄蜂数量。 */
 	int droneCount;
+	/** 当前工作进度。 */
 	int process;
+	/** 最大工作进度（即蜂后总寿命对应的 tick 数）。 */
 	int processMax;
+	/** 是否因槽位满而阻塞（瞬态，不同步）。 */
 	transient boolean blocked=false;
+	/** 是否缺少匹配的生境（瞬态，不同步）。 */
 	transient boolean noBiotope=false;
+	/** 附近是否没有花（瞬态，不同步）。 */
 	transient boolean noFlower=false;
+	/** 当前环境是否不适宜（瞬态，不同步）。 */
 	transient boolean badEnvironment=false;
+	/** 产物生成的间隔 tick 数（来自配置）。 */
 	transient int interval;
+	/** 寿命对间隔的比值系数（用于计算产量）。 */
 	transient float lsAgainstInterval;
+	/** 冷却计时器，用于重试阻塞操作。 */
 	transient int cooldown;
+	/**
+	 * 创建一个蜂巢处理器，绑定到指定的槽位列表。
+	 * 从游戏配置中读取工作间隔和寿命相关参数。
+	 * @param queenSlot 蜂后槽位列表
+	 * @param droneSlot 雄蜂槽位列表
+	 * @param combSlot  巢脾/产物槽位列表
+	 */
 	public BeeHiveHandler(List<? extends HiveSlot> queenSlot, List<? extends HiveSlot> droneSlot, List<? extends HiveSlot> combSlot) {
 		super();
 		this.queenSlot = queenSlot;
@@ -111,10 +158,20 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		this.interval=BeecrasyConfig.SERVER.INTERVAL.getAsInt();
 		this.lsAgainstInterval=BeecrasyConfig.SERVER.LIFESPAN.getAsInt()*.5f/BeecrasyConfig.SERVER.INTERVAL.getAsInt();
 	}
+	/**
+	 * 更新当前环境中的生境信息。
+	 * 在指定位置周围搜索匹配的花和生境，用于后续的产物生成和环境判定。
+	 * @param params 当前环境参数
+	 * @return 找到的生境集合，如果没有花则返回 null
+	 */
 	public Set<Biotope> updateBiotopes(BeeHiveParameterSet params) {
 		return GenomeWorkHelper.findBiotope(params.level(), params.position(), BeecrasyConfig.SERVER.RADIUS.getAsInt());
 
 	}
+	/**
+	 * 重置蜂巢的所有工作状态。
+	 * 清空幼虫/雄蜂计数、工作进度和随机源，移除蜂后基因组。
+	 */
 	public void reset() {
 		larvaCount=0;
 		droneCount=0;
@@ -123,9 +180,17 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		droneGenomes=null;
 		setQueen(null);
 	}
+	/**
+	 * 检查蜂巢当前是否正在工作中。
+	 * @return 如果最大进度大于 0 则返回 true
+	 */
 	public boolean isWorking() {
 		return processMax>0;
 	}
+	/**
+	 * 更新所有蜂后槽位中幼虫的过期时间。
+	 * @param secs 世界当前时间（秒）
+	 */
 	public void updateQueenLifespan(long secs) {
 		for(HiveSlot slot:queenSlot) {
 			ItemStack stack=slot.getItem();
@@ -135,6 +200,10 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			}
 		}
 	}
+	/**
+	 * 更新所有巢脾槽位中幼虫的过期时间。
+	 * @param secs 世界当前时间（秒）
+	 */
 	public void updateCombLifespan(long secs) {
 		for(HiveSlot slot:combSlot) {
 			ItemStack stack=slot.getItem();
@@ -144,6 +213,16 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			}
 		}
 	}
+	/**
+	 * 主 tick 方法，驱动蜂巢的工作周期。
+	 * 根据当前进度执行以下逻辑：
+	 * <ul>
+	 *   <li>如果 {@code process > 0}：持续进行当前工作，按速度减少进度，在整间隔点触发产卵/产物生成</li>
+	 *   <li>如果 {@code process <= 0} 且 {@code processMax > 0}：工作结束，尝试产出最终产物</li>
+	 * </ul>
+	 * @param params 当前环境参数集
+	 * @param speed  工作速度倍率
+	 */
 	public void tick(BeeHiveParameterSet params,int speed) {
 		blocked=false;
 		badEnvironment=false;
@@ -189,6 +268,12 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			}
 		}
 	}
+	/**
+	 * 增加巢脾槽位中幼虫的产物积累量。
+	 * 根据产量参数、生境匹配情况和幼虫的基因表型计算每次增加的产量。
+	 * @param params   当前环境参数
+	 * @param biotopes 当前环境中的生境集合（可能为 null）
+	 */
 	private void increaseProduction(BeeHiveParameterSet params,Set<Biotope> biotopes) {
 		noBiotope=false;
 
@@ -223,12 +308,25 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			}
 		}
 	}
+	/**
+	 * 检查是否有生境不匹配的情况。
+	 * @return 如果存在生境不匹配则返回 true
+	 */
 	public boolean isNoBiotope() {
 		return noBiotope;
 	}
+	/**
+	 * 检查蜂巢是否因槽位满而阻塞。
+	 * @return 如果阻塞则返回 true
+	 */
 	public boolean isBlocked() {
 		return blocked;
 	}
+	/**
+	 * 设置蜂后基因组。
+	 * 如果传入的数组为空或只有一个基因组，会进行填充以保证始终为二倍体。
+	 * @param queenGenome 蜂后基因组数组（应为 [母本, 父本]）
+	 */
 	public void setQueen(Genome[] queenGenome) {
 		if(queenGenome!=null) {
 			if(queenGenome.length==0) {
@@ -239,6 +337,13 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		}
 		this.queenGenome=queenGenome;
 	}
+	/**
+	 * 开始一个新的工作周期。
+	 * 初始化随机源、设置蜂后和雄蜂基因组、计算幼虫/雄蜂数量和总工作进度。
+	 * @param params       当前环境参数
+	 * @param queenGenome  蜂后基因组（二倍体）
+	 * @param droneGenomes 雄蜂基因组列表
+	 */
 	@SuppressWarnings("deprecation")
 	public void beginWork(BeeHiveParameterSet params,Genome[] queenGenome,List<Genome> droneGenomes) {
 		rs=SerializableRandomSource.create(Mth.getSeed(params.position())^params.level().getRandom().nextLong());
@@ -249,6 +354,12 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		processMax=process=(int) (GenomeDataHelper.getLifespanTicks(queenGenome[0])*params.getParamValue(BeeHiveParameters.LIFESPAN));
 		
 	}
+	/**
+	 * 尝试将一只新的幼虫填充到巢脾槽位中。
+	 * 如果存在空槽位，则创建一个幼虫物品栈并赋予经过突变处理的二倍体基因组。
+	 * @param params 当前环境参数
+	 * @return 如果成功填充则返回 true
+	 */
 	private boolean fillLarva(BeeHiveParameterSet params) {
 		if(larvaCount<=0)
 			return false;
@@ -263,6 +374,12 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		}
 		return false;
 	}
+	/**
+	 * 完成产物生成，处理工作周期结束时的逻辑。
+	 * 包括：幼虫羽化为蜂后、巢脾中的幼虫转换为产物、生成蜂王浆等。
+	 * @param params 当前环境参数
+	 * @return 如果产物处理完成则返回 true
+	 */
 	private boolean finishProduct(BeeHiveParameterSet params) {
 		boolean hasQueen=false;
 		long secs=WorldCalendar.getCalendar(params.level()).getSeconds();
@@ -312,6 +429,10 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		}
 		return true;
 	}
+	/**
+	 * 执行蜂后选举——将巢脾中与已故蜂后基因组相似度最高的幼虫提升为新的蜂后。
+	 * 使用优先级队列按相似度降序排列。
+	 */
 	public void elecQueen() {
 		boolean hasEmptyQueen=false;
 		for(HiveSlot hi:queenSlot) {
@@ -337,6 +458,12 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			}
 		}
 	}
+	/**
+	 * 尝试将一只新的雄蜂填充到雄蜂槽位中。
+	 * 如果存在空槽位，则创建一个雄蜂物品栈并赋予由蜂后基因组重组的单倍体基因组。
+	 * @param params 当前环境参数
+	 * @return 如果成功填充则返回 true
+	 */
 	private boolean fillDrone(BeeHiveParameterSet params) {
 		if(droneCount<=0)
 			return false;
@@ -351,19 +478,39 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		}
 		return false;
 	}
+	/**
+	 * 生成一个经过突变处理的二倍体幼虫基因组。
+	 * 通过蜂后基因组与随机雄蜂基因组的重组，再应用可能的突变。
+	 * @param params 当前环境参数（用于突变判定）
+	 * @return 二倍体幼虫基因组
+	 */
 	private DiploidGenome makeLarva(BeeHiveParameterSet params) {
 		DiploidGenome ret=RecombinationHelper.makeDiploid(queenGenome, getRandomDrone(rs), rs::nextBoolean);
 		MutationRegistry.handleMutation(params, ret, params.getParamValue(BeeHiveParameters.MUTATE), rs);
 		
 		return ret;
 	}
+	/**
+	 * 根据蜂后基因组生成一个单倍体雄蜂基因组（无突变）。
+	 * @param params 当前环境参数
+	 * @return 雄蜂基因组构建器
+	 */
 	private Genome.Builder makeDrone(BeeHiveParameterSet params) {
 		Genome.Builder ret=RecombinationHelper.makeHaploid(queenGenome, rs::nextBoolean);
 		return ret;
 	}
+	/**
+	 * 从雄蜂基因组列表中随机获取一个。
+	 * @param rs 随机数源
+	 * @return 随机挑选的雄蜂基因组
+	 */
 	private Genome getRandomDrone(RandomSource rs) {
 		return droneGenomes.get(rs.nextInt(droneGenomes.size()));
 	}
+	/**
+	 * 从 ValueInput 中反序列化恢复蜂巢工作状态。
+	 * @param nbt 输入源
+	 */
 	@Override
 	public void deserialize(ValueInput nbt) {
 		rs=nbt.getLong("seed").map(SerializableRandomSource::new).orElse(null);
@@ -374,6 +521,10 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		process=nbt.getIntOr("process", 0);
 		processMax=nbt.getIntOr("processMax", 0);
 	}
+	/**
+	 * 将蜂巢工作状态序列化到 ValueOutput 中。
+	 * @param nbt 输出目标
+	 */
 	@Override
 	public void serialize(ValueOutput nbt) {
 		if(rs!=null)
@@ -387,6 +538,10 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		nbt.putInt("process", process);
 		nbt.putInt("processMax", processMax);
 	}
+	/**
+	 * 从数据记录中恢复蜂巢工作状态（用于网络同步）。
+	 * @param data 数据记录
+	 */
 	public void read(DataRecord data) {
 		rs=data.random().orElse(null);
 		setQueen(data.queenGenome().orElse(null));
@@ -397,6 +552,10 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		processMax=data.processMax();
 	}
 
+	/**
+	 * 将当前工作状态保存为数据记录（用于网络同步）。
+	 * @return 包含当前状态快照的数据记录
+	 */
 	public DataRecord save() {
 		return new DataRecord(Optional.ofNullable(rs),
 			Optional.ofNullable(queenGenome),
@@ -406,6 +565,11 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			process,
 			processMax);
 	}
+	/**
+	 * 获取指定索引的容器数据。
+	 * @param index 数据索引（0=当前进度，1=最大进度）
+	 * @return 数据值
+	 */
 	@Override
 	public int get(int index) {
 		Objects.checkIndex(index, 2);
@@ -415,6 +579,11 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		}
 		return -1;
 	}
+	/**
+	 * 设置指定索引的容器数据。
+	 * @param index 数据索引（0=当前进度，1=最大进度）
+	 * @param value 数据值
+	 */
 	@Override
 	public void set(int index, int value) {
 		Objects.checkIndex(index, 2);
@@ -423,19 +592,39 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		case 1:processMax=value;return;
 		}
 	}
+	/**
+	 * 获取容器数据条目总数。
+	 * @return 2（仅包含当前进度和最大进度）
+	 */
 	@Override
 	public int getCount() {
 		return 2;
 	}
+	/**
+	 * 获取当前工作进度。
+	 * @return 当前进度值
+	 */
 	public int getProcess() {
 		return process;
 	}
+	/**
+	 * 获取最大工作进度。
+	 * @return 最大进度值
+	 */
 	public int getProcessMax() {
 		return processMax;
 	}
+	/**
+	 * 检查附近是否没有花。
+	 * @return 如果附近无花则返回 true
+	 */
 	public boolean isNoFlower() {
 		return noFlower;
 	}
+	/**
+	 * 检查环境是否不适宜。
+	 * @return 如果环境不适宜则返回 true
+	 */
 	public boolean isBadEnvironment() {
 		return badEnvironment;
 	}

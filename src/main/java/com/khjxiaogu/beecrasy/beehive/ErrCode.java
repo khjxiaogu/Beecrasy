@@ -23,24 +23,50 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.network.chat.Component;
 
+/**
+ * 蜂巢工作状态错误码枚举。
+ * 用于在 GUI 上显示蜂巢的当前工作状态，以及在工作流程中进行条件判断。
+ * 每个枚举常量对应一种特定的状态或错误条件。
+ */
 public enum ErrCode{
-	OK,//无错误
-	MANUAL_HALT,//手动模式下，需要手动放入蜂后
-	MISSING_QUEEN,//无蜂后
-	EXTRA_QUEEN,//蜂后过多
-	MISSING_DRONE,//无雄蜂
-	MALFORMED_SLOT,//蜂巢格子有非雄蜂/蜂后
-	NO_FLOWER,//无花
-	NO_BIOTOPE,//部分蜜蜂生境不符（警告）
-	EMPTY_QUEEN,//王台为空
-	INVALID_ENVIRONMENT//环境不适宜
+	/** 无错误，一切正常。 */
+	OK,
+	/** 手动模式下，需要玩家手动放入蜂后方可开始工作。 */
+	MANUAL_HALT,
+	/** 蜂巢内没有蜂后，无法开始工作周期。 */
+	MISSING_QUEEN,
+	/** 蜂巢内存在多个蜂后，不符合要求。 */
+	EXTRA_QUEEN,
+	/** 缺少雄蜂或雄蜂数量不足。 */
+	MISSING_DRONE,
+	/** 蜂巢槽位中含有非雄蜂/非蜂后的物品，格式不正确。 */
+	MALFORMED_SLOT,
+	/** 附近没有花，蜜蜂无法采蜜/授粉。 */
+	NO_FLOWER,
+	/** 部分蜜蜂的生境（生物群系等）与当前环境不匹配（警告级别）。 */
+	NO_BIOTOPE,
+	/** 王台（空的蜂后槽位）为空，无法产出新的蜂后。 */
+	EMPTY_QUEEN,
+	/** 当前环境完全不适宜蜜蜂生存或工作。 */
+	INVALID_ENVIRONMENT
 	;
+	/** 翻译键，格式为 "gui.beehive.status.<枚举名小写>"。 */
 	private final String key="gui.beehive.status."+this.name().toLowerCase();
+	/** 缓存的翻译文本组件。 */
 	private final Component text=Component.translatable(key);
+	/** 使用整数序数进行序列化的编解码器。 */
 	public static final Codec<ErrCode> CODEC=Codec.INT.xmap(i->ErrCode.values()[i], ErrCode::ordinal);
+	/**
+	 * 获取该错误码对应的可翻译文本组件。
+	 * @return 用于 GUI 显示的文本组件
+	 */
 	public Component getComponents() {
 		return text;
 	}
+	/**
+	 * 获取该错误码的翻译键。
+	 * @return 格式为 "gui.beehive.status.<name>" 的翻译键字符串
+	 */
 	public String getTranslationKey() {
 		return key;
 	}
