@@ -21,6 +21,17 @@ package com.khjxiaogu.beecrasy.utils;
 
 import net.minecraft.resources.Identifier;
 
+/**
+ * 配方处理器函数式接口。
+ * <p>
+ * 定义配方执行完成时的回调，接收配方ID并返回处理状态。
+ */
 public interface RecipeProcessor {
+	/**
+	 * 执行指定ID的配方。
+	 *
+	 * @param id 配方的资源标识符
+	 * @return 执行后的处理状态
+	 */
 	RecipeHandleStatus run(Identifier id);
 }

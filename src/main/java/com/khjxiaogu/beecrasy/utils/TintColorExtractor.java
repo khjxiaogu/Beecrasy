@@ -32,26 +32,63 @@ import net.minecraft.util.ARGB;
 
 
 
+/**
+ * 从图片像素中提取主色调的工具类，基于中位切分颜色量化算法和感知评分模型。
+ * <p>
+ * 提供像素采样、颜色量化统计、中位切分以及综合饱和度/明度/权重的评分机制，
+ * 用于提取图片中最具代表性的颜色。
+ */
 public class TintColorExtractor {
-	// 饱和度容忍区间，高于SAT_HIGH的视为最佳饱和度，低于SAT_LOW的视为最差饱和度。
+	/**
+	 * 饱和度容忍区间下限，低于此值视为最差饱和度。
+	 */
 	private static final double SAT_LOW = 0.08;
+	/**
+	 * 饱和度容忍区间上限，高于此值视为最佳饱和度。
+	 */
 	private static final double SAT_HIGH = 0.25;
-	// 最佳视觉效果明度区间，不在这个区间内会视为最差明度
+	/**
+	 * 最佳视觉效果明度下限。
+	 */
 	private static final double LIGHTNESS_MIN = 0.12;
+	/**
+	 * 最佳视觉效果明度上限，不在该区间内视为最差明度。
+	 */
 	private static final double LIGHTNESS_MAX = 0.92;
-	// 最大图片大小，大于这个尺寸会进行采样
+	/**
+	 * 最大图片尺寸，大于此尺寸的图片会进行降采样。
+	 */
 	private static final int MAX_IMAGE_SIZE = 32;
 
+	/**
+	 * RGB颜色记录，包含红绿蓝三个分量。
+	 */
 	public static record Color(int r, int g, int b) {
+		/**
+		 * 将RGB颜色转换为ARGB32格式（Alpha固定为0xFF）。
+		 *
+		 * @return ARGB32格式整数
+		 */
 		public int toARGB32() {
 			return ARGB.color(0xFF, r, g, b);
 		}
 	}
 
+	/**
+	 * 带权重的颜色类，记录颜色及其所占权重。
+	 */
 	public static class WeightedColor {
+		/** 颜色值。 */
 		Color color;
+		/** 权重（如像素出现次数）。 */
 		int weight;
 
+		/**
+		 * 构造一个带权重的颜色。
+		 *
+		 * @param color       颜色
+		 * @param totalWeight 权重值
+		 */
 		WeightedColor(Color color, int totalWeight) {
 			super();
 			this.color = color;
@@ -65,17 +102,28 @@ public class TintColorExtractor {
 	 * 包含一组带权重的颜色及其总权重。
 	 */
 	public static class Bucket {
+		/** 桶中的颜色列表。 */
 		List<WeightedColor> colors;
+		/** 桶中所有颜色的总权重。 */
 		int totalWeight;
 
+		/**
+		 * 构造一个颜色桶。
+		 *
+		 * @param colors      颜色列表
+		 * @param totalWeight 总权重
+		 */
 		Bucket(List<WeightedColor> colors, int totalWeight) {
 			this.colors = colors;
 			this.totalWeight = totalWeight;
 		}
 	}
 
+	/** 按红色分量升序比较的比较器。 */
 	private static final Comparator<WeightedColor> COMPARING_R = Comparator.comparingInt(c -> c.color.r);
+	/** 按绿色分量升序比较的比较器。 */
 	private static final Comparator<WeightedColor> COMPARING_G = Comparator.comparingInt(c -> c.color.g);
+	/** 按蓝色分量升序比较的比较器。 */
 	private static final Comparator<WeightedColor> COMPARING_B = Comparator.comparingInt(c -> c.color.b);
 
 	/**

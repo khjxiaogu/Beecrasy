@@ -22,6 +22,12 @@ package com.khjxiaogu.beecrasy.utils;
 import java.time.Month;
 import java.time.MonthDay;
 
+/**
+ * 日期辅助常量类。
+ * <p>
+ * 提供与蜜蜂相关的重要日期常量。
+ */
 public class DateHelper {
+	/** 世界蜜蜂日（5月20日）。 */
 	public static final MonthDay WORLD_BEE_DAY = MonthDay.of(Month.MAY, 20);
 }

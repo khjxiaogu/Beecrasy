@@ -67,7 +67,20 @@ import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
+/**
+ * 通用工具类，包含配方输出获取、同步随机数、任务拆分、文本组件构建、序列化编解码器等辅助方法。
+ */
 public final class Utils {
+	/**
+	 * 从配方和物品列表获取预期产出物品模板。
+	 * <p>
+	 * 针对原版的有序/无序配方直接返回预设的 {ItemStackTemplate}，
+	 * 对其他类型配方则创建临时 {@link CraftingInput} 进行合成。
+	 *
+	 * @param stacks 输入物品列表
+	 * @param recipe 合成配方
+	 * @return 产出物品模板，无法获取时返回 {@code null}
+	 */
 	public static ItemStackTemplate getRecipeOutput(List<ItemStack> stacks,CraftingRecipe recipe) {
 		return switch(recipe) {
 		case ShapedRecipe sr->sr.result;
@@ -82,6 +95,14 @@ public final class Utils {
 		}
 		};
 	}
+	/**
+	 * 获取与玩家数据同步的随机数生成器。
+	 * <p>
+	 * 从玩家的附件数据中读取当前种子，创建随机源后更新种子并写回附件。
+	 *
+	 * @param p 玩家
+	 * @return 与玩家同步的随机数生成器
+	 */
 	public static RandomSource getSyncedRandom(Player p) {
 		@Nullable Long comp=p.getData(Attachments.RANDOM_SEED);
 		RandomSource rnd=RandomSource.create(comp);
@@ -134,25 +155,71 @@ public final class Utils {
         }
         return result;
     }
+	/**
+	 * 创建带参数的可翻译文本组件。
+	 *
+	 * @param format  翻译键
+	 * @param objects 格式化参数
+	 * @return 可变文本组件
+	 */
 	public static MutableComponent translate(String format, Object... objects) {
 		return translateWithFallback(format, null, objects);
 	}
 
+	/**
+	 * 创建无可变参数的可翻译文本组件。
+	 *
+	 * @param format 翻译键
+	 * @return 可变文本组件
+	 */
 	public static MutableComponent translate(String format) {
 		return translate(format, new Object[0]);
 	}
 
+	/**
+	 * 创建带参数和回退文本的可翻译文本组件。
+	 *
+	 * @param format   翻译键
+	 * @param fallback 回退文本（翻译键不存在时显示）
+	 * @param objects  格式化参数
+	 * @return 可变文本组件
+	 */
 	public static MutableComponent translateWithFallback(String format, String fallback, Object... objects) {
 		return MutableComponent.create(new TranslatableContents(format, fallback, objects));
 	}
 
+	/**
+	 * 创建无参数但有回退文本的可翻译文本组件。
+	 *
+	 * @param format   翻译键
+	 * @param fallback 回退文本
+	 * @return 可变文本组件
+	 */
 	public static MutableComponent translateWithFallback(String format, String fallback) {
 		return translate(format, fallback, new Object[0]);
 	}
 
+	/**
+	 * 创建纯文本内容组件。
+	 *
+	 * @param content 文本内容
+	 * @return 可变文本组件
+	 */
 	public static MutableComponent string(String content) {
 		return MutableComponent.create(PlainTextContents.create(content));
 	}
+	/**
+	 * 创建根据键动态分发值编解码器的Map流编解码器。
+	 * <p>
+	 * 对Map中的每个条目，使用键对应的专用编解码器对值进行序列化/反序列化。
+	 *
+	 * @param keyCodec 键的流编解码器
+	 * @param toCodec  根据键获取对应的值编解码器的函数
+	 * @param <K>      键类型
+	 * @param <V>      值类型
+	 * @param <B>      ByteBuf子类型
+	 * @return 流编解码器
+	 */
 	public static <K,V,B extends ByteBuf> StreamCodec<B,Map<K,V>> streamDispatchedMap(StreamCodec<? super B,K> keyCodec,Function<K,StreamCodec<? super B,V>> toCodec) {
 		return new StreamCodec<>() {
 			@Override
@@ -177,10 +244,28 @@ public final class Utils {
 			}
 		};
 	}
+	/**
+	 * 将List流编解码器包装为数组流编解码器。
+	 *
+	 * @param codec   List的流编解码器
+	 * @param asArray 数组构造工厂
+	 * @param <T>     元素类型
+	 * @param <B>     ByteBuf子类型
+	 * @return 数组流编解码器
+	 */
 	public static <T,B extends ByteBuf> StreamCodec<B,T[]> asArray(StreamCodec<? super B,List<T>> codec,IntFunction<T[]> asArray) {
 		return codec.<T[]>map(o->o.toArray(asArray),Arrays::asList).cast();
 	}
 	
+	/**
+	 * 基于 {@link ValueIOSerializable} 创建 {@link Codec}。
+	 * <p>
+	 * 利用 ValueIO 框架将可序列化对象转换为 NBT 格式的 Codec。
+	 *
+	 * @param <T>     实现了 {@link ValueIOSerializable} 的类型
+	 * @param factory 空实例的供应者，用于反序列化时创建新对象
+	 * @return 对应的 Codec
+	 */
 	public static <T extends ValueIOSerializable> Codec<T> createCodec(Supplier<T> factory){
 		return Codec.of(new Encoder<>() {
 			@Override
@@ -221,6 +306,15 @@ public final class Utils {
 		}, "valueIO");
 		
 	}
+	/**
+	 * 从 {@link DynamicOps} 中提取 {@link HolderLookup.Provider}。
+	 * <p>
+	 * 如果 ops 是 {@link RegistryOps} 且包含 {@link HolderLookupAdapter}，
+	 * 则从中提取 lookupProvider；否则返回一个空的 RegistryAccess。
+	 *
+	 * @param ops 动态操作上下文
+	 * @return HolderLookup.Provider
+	 */
 	public static HolderLookup.Provider provider(DynamicOps<?> ops) {
 		if(ops instanceof RegistryOps<?> ros) {
 			if(ros.lookupProvider instanceof HolderLookupAdapter lookup) {

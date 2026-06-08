@@ -39,10 +39,24 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 
+/**
+ * 合成配方序列匹配器，用于构建无序配方索引并进行配方查找。
+ * <p>
+ * 支持异步并行预处理原版工作台配方，筛选出符合条件的有序/无序配方并建立索引。
+ */
 public class CraftingSequenceMatcher {
+	/** 已建立的全局无序配方索引。 */
 	public static CraftingRecipeSequence unordered;
-	//每个任务的建议数量
+	/** 每个异步任务处理的配方数量建议值。 */
 	private static final float TASK_EFFORT=300;
+	/**
+	 * 筛选并构建无序配方索引。
+	 * <p>
+	 * 遍历配方列表，筛选出原版的有序/无序配方，排除含有自定义NBT原料和自引用的配方，
+	 * 然后使用异步任务并行处理配方列表，最后优化索引内存占用。
+	 *
+	 * @param recipes 待处理的配方列表
+	 */
 	public static void bake(Collection<RecipeHolder<CraftingRecipe>> recipes) {
 		unordered=new CraftingRecipeSequence();
 		Beecrasy.LOGGER.info("Filtering Recipe From "+recipes.size()+" Recipes");
@@ -106,6 +120,14 @@ public class CraftingSequenceMatcher {
 		Beecrasy.LOGGER.info("Baked "+unordered.size()+" recipe.");
 		Beecrasy.LOGGER.info("Recipe Baking Complete.");
 	}
+	/**
+	 * 将一批配方转换为 {@link SequencedRecipe} 并插入无序索引。
+	 * <p>
+	 * 插入后立即释放每个配方的笛卡尔积缓存以节省内存。
+	 *
+	 * @param param 配方列表
+	 * @return 空列表（仅用于CompletableFuture的返回类型一致）
+	 */
 	public static List<SequencedRecipe> createSequencedRecipe(List<RecipeHolder<CraftingRecipe>> param){
 		for(RecipeHolder<CraftingRecipe> recipe:param) {
 			SequencedRecipe seqr=new SequencedRecipe(recipe);
@@ -114,9 +136,25 @@ public class CraftingSequenceMatcher {
 		}
 		return List.of();
 	}
+	/**
+	 * 判断原料是否为简单无NBT的原版原料。
+	 * <p>
+	 * 仅支持 isSimple() 且 !isCustom() 的原料。
+	 *
+	 * @param igd 待验证的原料
+	 * @return 如果是有效的原版简单原料则返回 {@code true}
+	 */
 	public static boolean isValidIngredient(Ingredient igd) {
 		return igd.isSimple()&&!igd.isCustom();
 	}
+	/**
+	 * 根据物品列表匹配可能的配方。
+	 * <p>
+	 * 先对物品列表按 hashCode 排序，然后委托给无序索引进行匹配。
+	 *
+	 * @param matcher 物品列表
+	 * @return 匹配的配方集合；如果索引尚未建立则返回空集合
+	 */
 	public static Collection<SequencedRecipe> match(List<ItemStack> matcher) {
 		if(unordered==null)
 			return Set.of();
