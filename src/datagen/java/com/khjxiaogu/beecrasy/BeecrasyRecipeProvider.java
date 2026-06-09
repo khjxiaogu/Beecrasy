@@ -30,6 +30,7 @@ import com.google.common.collect.ImmutableSet;
 import com.khjxiaogu.beecrasy.data.BuilderContext;
 import com.khjxiaogu.beecrasy.data.GenomePresets;
 import com.khjxiaogu.beecrasy.data.PressRecipe;
+import com.khjxiaogu.beecrasy.data.RoyalJellyRecipe;
 import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.mojang.datafixers.util.Pair;
 
@@ -57,6 +58,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CookingBookCategory;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Blocks;
@@ -106,6 +108,7 @@ public class BeecrasyRecipeProvider extends RecipeProvider {
 		out.accept("press/comb", new PressRecipe.Builder(BeecrasyRegistries.Items.PRODUCT_COMB,1).addOutput(BeecrasyRegistries.Items.BEESWAX.get(),1)
 				.addOutput(BeecrasyRegistries.Items.HONEY_DROP.get(),1,.8f)
 				.setTime(200).create());
+		out.accept("royal_jelly", RoyalJellyRecipe.createDefault(true, CraftingBookCategory.MISC, ""));
 		try(BuilderContext<GenomePresets.Builder> builder=presetBuilder()){
 			builder.create("genome/base", new GenomePresets.Builder(Constants.BASE_ID))
 			.group("yield")

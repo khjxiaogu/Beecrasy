@@ -17,23 +17,24 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy;
+package com.khjxiaogu.beecrasy.client.renderer;
 
-import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 
-import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.client.data.ParticleDescriptionProvider;
+import com.khjxiaogu.beecrasy.entity.BeeSwarmEntity;
 
-public class BeecrasyParticleProvider extends ParticleDescriptionProvider {
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
 
-	protected BeecrasyParticleProvider(PackOutput output) {
-		super(output);
+public class BeeSwarmRenderer extends EntityRenderer<BeeSwarmEntity,BeeSwarmState> {
+
+	public BeeSwarmRenderer(Context context) {
+		super(context);
 	}
 
 	@Override
-	protected void addDescriptions() {
-		super.spriteSet(BeecrasyParticles.BEE.get(), Beecrasy.rl("bee"));
-		super.spriteSet(BeecrasyParticles.BEE_SWARM.get(), Beecrasy.rl("bee"));
+	public BeeSwarmState createRenderState() {
+		return new BeeSwarmState();
 	}
+
 
 }

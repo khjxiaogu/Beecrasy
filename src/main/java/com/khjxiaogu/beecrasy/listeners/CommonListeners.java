@@ -28,9 +28,11 @@ import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Entities;
 import com.khjxiaogu.beecrasy.Constants;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.WorldCalendar;
+import com.khjxiaogu.beecrasy.entity.BeeSwarmEntity;
 import com.khjxiaogu.beecrasy.events.BeeEnvironmentValidateEvent;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
 import com.khjxiaogu.beecrasy.genome.GeneRegistry;
@@ -56,6 +58,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -71,6 +74,11 @@ public class CommonListeners {
 			p.setData(Attachments.RANDOM_SEED, comp);
 		}
 	}
+	@SubscribeEvent
+	public static void onAttributeCreation(EntityAttributeCreationEvent event) {
+		event.put(Entities.BEE_SWARM.get(), BeeSwarmEntity.createAttributes().build());
+	}
+	
 	@SubscribeEvent
 	public static void onCapabilityInject(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.SKEP_BLOCKENTITY.get(), (be,ctx)->{

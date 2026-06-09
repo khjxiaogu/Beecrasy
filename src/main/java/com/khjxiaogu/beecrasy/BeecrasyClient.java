@@ -20,19 +20,21 @@
 package com.khjxiaogu.beecrasy;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Entities;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Fluids;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
 import com.khjxiaogu.beecrasy.client.BeeTint;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.client.ModelReference;
 import com.khjxiaogu.beecrasy.client.particles.BeeParticle;
+import com.khjxiaogu.beecrasy.client.particles.BeeSwarmParticle;
+import com.khjxiaogu.beecrasy.client.renderer.BeeSwarmRenderer;
 import com.khjxiaogu.beecrasy.client.renderer.PressBlockEntityRenderer;
 import com.khjxiaogu.beecrasy.client.screens.PressScreen;
 import com.khjxiaogu.beecrasy.client.screens.SequenceBlockScreen;
 import com.khjxiaogu.beecrasy.client.screens.SequenceHandHeldScreen;
 import com.khjxiaogu.beecrasy.client.screens.SkepScreen;
 import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTabs;
-
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.FluidModel;
@@ -96,8 +98,10 @@ public class BeecrasyClient {
 	@SubscribeEvent
 	public static void onRegisterRenderer(RegisterRenderers event) {
 		event.registerBlockEntityRenderer(Blocks.PRESS_BLOCKENTITY.get(), PressBlockEntityRenderer::new);
+		event.registerEntityRenderer(Entities.BEE_SWARM.get(),BeeSwarmRenderer::new);
 		
 	}
+	
     @SubscribeEvent
     static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
 
@@ -110,6 +114,7 @@ public class BeecrasyClient {
 	@SubscribeEvent
 	public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
 		event.registerSpriteSet(BeecrasyParticles.BEE.get(), BeeParticle.Factory::new);
+		event.registerSpriteSet(BeecrasyParticles.BEE_SWARM.get(), BeeSwarmParticle.Factory::new);
 	}
     
 }

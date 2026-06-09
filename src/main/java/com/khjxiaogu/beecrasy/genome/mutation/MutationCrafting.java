@@ -43,8 +43,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.RecipeHolder;
 
 /**
  * 合成突变，当蜜蜂具有合成生境时，尝试将产品序列中的物品通过工作台合成配方合并为新物品。

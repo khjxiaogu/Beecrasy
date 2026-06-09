@@ -598,7 +598,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			trans.commit();
 		}
 
-		hiveInfo.beginWork(params, queen, drones);
+		hiveInfo.prepareWork(params, queen, drones);
 		return true;
 	}
 	/**

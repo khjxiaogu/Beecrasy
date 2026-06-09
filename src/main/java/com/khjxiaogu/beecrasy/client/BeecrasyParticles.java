@@ -21,6 +21,7 @@ package com.khjxiaogu.beecrasy.client;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.client.particles.BeeParticleType;
+import com.khjxiaogu.beecrasy.client.particles.BeeSwarmParticleType;
 
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
@@ -46,4 +47,6 @@ public class BeecrasyParticles {
 	 */
 	public static final DeferredHolder<ParticleType<?>,BeeParticleType> BEE = REGISTER.register("bee",
 			() -> new BeeParticleType(false));
+	public static final DeferredHolder<ParticleType<?>,BeeSwarmParticleType> BEE_SWARM = REGISTER.register("swarm_bee",
+		() -> new BeeSwarmParticleType(false));
 }

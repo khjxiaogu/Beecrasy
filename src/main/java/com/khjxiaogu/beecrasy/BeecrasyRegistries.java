@@ -47,6 +47,7 @@ import com.khjxiaogu.beecrasy.components.LarvaProductivity;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
 import com.khjxiaogu.beecrasy.data.GenomePresets;
 import com.khjxiaogu.beecrasy.data.PressRecipe;
+import com.khjxiaogu.beecrasy.entity.BeeSwarmEntity;
 import com.khjxiaogu.beecrasy.item.BeehiveBlockItem;
 import com.khjxiaogu.beecrasy.item.LarvaItem;
 import com.khjxiaogu.beecrasy.item.QueenBeeItem;
@@ -70,6 +71,8 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
@@ -270,6 +273,11 @@ public class BeecrasyRegistries {
 
 	    
 	}
+	public static class Entities{
+		public static final DeferredRegister.Entities ENTITY_TYPES = DeferredRegister.createEntities(Beecrasy.MODID);
+		public static final DeferredHolder<EntityType<?>, EntityType<BeeSwarmEntity>> BEE_SWARM=ENTITY_TYPES.registerEntityType("bee_swarm", BeeSwarmEntity::new, MobCategory.MISC,t->t.sized(0.1f, 0.1f).noLootTable());
+		
+	}
 	public static class Attachments{
 		public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Beecrasy.MODID);
 		public static final DeferredHolder<AttachmentType<?>, AttachmentType<Long>> RANDOM_SEED=ATTACHMENTS.register("seed", ()->AttachmentType.builder(RandomSupport::generateUniqueSeed).serialize(Codec.LONG.fieldOf("seed")).sync(ByteBufCodecs.LONG).copyOnDeath().build());
@@ -320,6 +328,7 @@ public class BeecrasyRegistries {
     	
     	Components.COMPONENTS.register(modEventBus);
     	Attachments.ATTACHMENTS.register(modEventBus);
+    	Entities.ENTITY_TYPES.register(modEventBus);
     	Recipes.RECIPE_SERIALIZERS.register(modEventBus);
     	Recipes.RECIPE_TYPES.register(modEventBus);
     	Menus.MENU_TYPES.register(modEventBus);

@@ -83,13 +83,14 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * 幼虫计数、雄蜂计数、当前进度和最大进度。
 	 */
 	public static record DataRecord(Optional<SerializableRandomSource> random,Optional<Genome[]> queenGenome,
-		Optional<List<Genome>> droneGenomes,int larvaCount,int droneCount,int process,int processMax) {
+		Optional<List<Genome>> droneGenomes,int queenCount,int larvaCount,int droneCount,int process,int processMax) {
 		/** 空数据记录（所有字段均为默认值/空 Optional）。 */
-		public static final DataRecord EMPTY=new DataRecord(Optional.empty(),Optional.empty(),Optional.empty(),0,0,0,0);
+		public static final DataRecord EMPTY=new DataRecord(Optional.empty(),Optional.empty(),Optional.empty(),0,0,0,0,0);
 		public static final Codec<DataRecord> CODEC=RecordCodecBuilder.create(t->t
 			.group(Codec.LONG.xmap(SerializableRandomSource::new, SerializableRandomSource::getSeed).optionalFieldOf("seed").forGetter(o->o.random()),
 				Genome.LIST_CODEC.xmap(o->o.toArray(Genome[]::new),Arrays::asList).optionalFieldOf("queen").forGetter(DataRecord::queenGenome),
 				Genome.LIST_CODEC.optionalFieldOf("drones").forGetter(DataRecord::droneGenomes),
+				Codec.INT.fieldOf("queen").forGetter(DataRecord::queenCount),
 				Codec.INT.fieldOf("larva").forGetter(DataRecord::larvaCount),
 				Codec.INT.fieldOf("drone").forGetter(DataRecord::droneCount),
 				Codec.INT.fieldOf("process").forGetter(DataRecord::process),
@@ -100,6 +101,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				ByteBufCodecs.optional(ByteBufCodecs.LONG.map(SerializableRandomSource::new, SerializableRandomSource::getSeed)),o->o.random(),
 				ByteBufCodecs.optional(Utils.asArray(Genome.STREAM_CODEC.apply(ByteBufCodecs.list()),Genome[]::new)),DataRecord::queenGenome,
 				ByteBufCodecs.optional(Genome.STREAM_CODEC.apply(ByteBufCodecs.list())),DataRecord::droneGenomes,
+				ByteBufCodecs.INT,DataRecord::queenCount,
 				ByteBufCodecs.INT,DataRecord::larvaCount,
 				ByteBufCodecs.INT,DataRecord::droneCount,
 				ByteBufCodecs.INT,DataRecord::process,
@@ -125,6 +127,8 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	int larvaCount;
 	/** 待生成的雄蜂数量。 */
 	int droneCount;
+	/** 待生成的蜂后/蜂王浆数量。 */
+	int queenCount;
 	/** 当前工作进度。 */
 	int process;
 	/** 最大工作进度（即蜂后总寿命对应的 tick 数）。 */
@@ -371,10 +375,11 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @param droneGenomes 雄蜂基因组列表
 	 */
 	@SuppressWarnings("deprecation")
-	public void beginWork(BeeHiveParameterSet params,Genome[] queenGenome,List<Genome> droneGenomes) {
+	public void prepareWork(BeeHiveParameterSet params,Genome[] queenGenome,List<Genome> droneGenomes) {
 		rs=SerializableRandomSource.create(Mth.getSeed(params.position())^params.level().getRandom().nextLong());
 		setQueen(queenGenome);
 		this.droneGenomes=droneGenomes;
+		queenCount=Math.max(BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber()/3, rs), 1);
 		larvaCount=BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber(), rs);
 		droneCount=BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber(), rs);
 		processMax=process=(int) (GenomeDataHelper.getLifespanTicks(queenGenome[0])*params.getParamValue(BeeHiveParameters.LIFESPAN));
@@ -407,19 +412,20 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @return 如果产物处理完成则返回 true
 	 */
 	private boolean finishProduct(BeeHiveParameterSet params) {
-		boolean hasQueen=false;
+		boolean hasQueen=queenCount==0;
 		long secs=WorldCalendar.getCalendar(params.level()).getSeconds();
-
-		for(HiveSlot hi:queenSlot) {
-			if(hi.isEmpty())
-				continue;
-			ItemStack item=hi.getItem();
-			if(item.is(Items.LARVA)) {
-				ItemStack queenStack=item.transmuteCopy(Items.QUEEN_BEE);
-				queenStack.remove(Components.LARVA_PRODUCT);
-				queenStack.remove(Components.LARVA_EXPIRES);
-				hi.setItem(queenStack);
-				hasQueen=true;
+		if(!hasQueen) {
+			for(HiveSlot hi:queenSlot) {
+				if(hi.isEmpty())
+					continue;
+				ItemStack item=hi.getItem();
+				if(item.is(Items.LARVA)) {
+					hi.setItem(LarvaItem.convertToQueen(item));
+					hasQueen=true;
+					queenCount--;
+				}
+				if(queenCount<=0)
+					break;
 			}
 		}
 		if(!hasQueen) {
@@ -437,13 +443,18 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			if(hasLarva) {
 				return false;
 			}
+		}
+		if(queenCount>0) {
 			for(HiveSlot hi:queenSlot) {
 				if(!hi.isEmpty())
 					continue;
 				hi.setItem(Items.ROYAL_JELLY.toStack());
-				return true;
+				queenCount--;
+				if(queenCount<=0)
+					break;
 			}
 		}
+		queenCount=0;
 		for(HiveSlot hi:combSlot) {
 			if(!hi.isEmpty()) {
 				ItemStack item=hi.getItem();
@@ -586,6 +597,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		return new DataRecord(Optional.ofNullable(rs),
 			Optional.ofNullable(queenGenome),
 			Optional.ofNullable(droneGenomes),
+			queenCount,
 			larvaCount,
 			droneCount,
 			process,

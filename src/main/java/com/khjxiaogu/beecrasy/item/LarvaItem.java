@@ -25,6 +25,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.components.LarvaProductivity;
 import com.khjxiaogu.beecrasy.components.WorldCalendar;
 import com.khjxiaogu.beecrasy.genome.Genome;
@@ -67,6 +68,12 @@ public class LarvaItem extends Item {
 			itemStack.set(Components.LARVA_EXPIRES,lo);
 		}
 		return secs>lo+max;
+	}
+	public static ItemStack convertToQueen(ItemStack itemStack) {
+		ItemStack queenStack=itemStack.transmuteCopy(Items.QUEEN_BEE);
+		queenStack.remove(Components.LARVA_PRODUCT);
+		queenStack.remove(Components.LARVA_EXPIRES);
+		return queenStack;
 	}
 	@Override
 	public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
