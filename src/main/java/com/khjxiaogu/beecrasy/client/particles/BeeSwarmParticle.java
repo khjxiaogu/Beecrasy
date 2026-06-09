@@ -21,8 +21,6 @@ package com.khjxiaogu.beecrasy.client.particles;
 
 import org.joml.Vector4fc;
 
-import com.khjxiaogu.beecrasy.client.utils.FrameManager;
-
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
@@ -33,28 +31,31 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
 /**
- * 蜜蜂粒子实体类。
+ * 蜂群粒子——模拟蜜蜂围绕一个中心点进行轨道运动的粒子。
  * <p>
- * 继承自 {@link BeecrasyParticle}，使用 {@link FrameManager} 驱动运动动画。
- * 根据 {@link BeeParticleOption} 中的运动列表或随机权重选择运动序列
- * （10% 概率 8 字舞、20% 概率圆形舞、70% 概率随机漫步）。
+ * 继承自 {@link BeecrasyParticle}，使用轨道物理而非预定义动画：
+ * 每 5 tick 将速度分解为径向和切向分量，径向施加弹簧力将粒子拉向目标轨道半径，
+ * 切向调整至目标速率，从而形成环绕运动。
  * <p>
- * 支持纹理水平镜像翻转渲染、生命周期最后 1 秒线性渐隐，
- * 以及速度分量为零时的随机扰动。
+ * 支持：
+ * <ul>
+ *   <li>通过 {@link BeeSwarmParticleOption} 指定轨道中心 (x,y,z) 和半径 (w)；</li>
+ *   <li>纹理水平翻转渲染（{@link #flipped} 控制 UV 交换）；</li>
+ *   <li>生命周期最后 1 秒（20 tick）线性渐隐；</li>
+ *   <li>落地时轻微弹起。</li>
+ * </ul>
  */
 public class BeeSwarmParticle extends BeecrasyParticle {
 	float centerX,centerY,centerZ,radius;
 	boolean flipped;
 	/**
-	 * 构造一个蜜蜂粒子实例。
+	 * 构造一个蜂群粒子实例。
 	 * <p>
-	 * 初始化粒子属性：重力为 0、尺寸 0.125、摩擦力为 1。
-	 * 根据选项决定运动序列：
-	 * <ul>
-	 *   <li>若选项包含运动列表，则按列表构建 {@link FrameManager}；</li>
-	 *   <li>否则按概率随机选择：10% 8字舞、20% 圆形舞、70% 随机漫步。</li>
-	 * </ul>
-	 * 生命周期由所选运动序列的总时长加上随机扩展决定。
+	 * 初始化粒子属性：重力为 0、尺寸 0.125、摩擦力为 1，生命周期固定 80 tick。
+	 * 根据选项中的轨道中心（{@link BeeSwarmParticleOption#center()}）设置
+	 * {@link #centerX}、{@link #centerY}、{@link #centerZ} 和 {@link #radius}；
+	 * 若选项未提供中心，则以粒子生成位置为中心、半径默认为 1。
+	 * 纹理翻转标志 {@link #flipped} 取自选项或随机决定。
 	 *
 	 * @param world   客户端世界
 	 * @param x       初始 X 坐标
@@ -64,7 +65,7 @@ public class BeeSwarmParticle extends BeecrasyParticle {
 	 * @param motionY 初始 Y 速度
 	 * @param motionZ 初始 Z 速度
 	 * @param sprite  精灵集，用于按年龄切换纹理
-	 * @param option  粒子选项，包含运动序列和翻转参数
+	 * @param option  粒子选项，包含轨道中心/半径和翻转参数
 	 */
 	public BeeSwarmParticle(ClientLevel world, double x, double y, double z, double motionX, double motionY,
 			double motionZ,SpriteSet sprite,BeeSwarmParticleOption option) {
@@ -92,32 +93,34 @@ public class BeeSwarmParticle extends BeecrasyParticle {
 		
 	}
 	/**
-	 * 获取纹理的左侧 U 坐标。
+	 * 获取纹理左侧 U 坐标（水平翻转时与右侧交换）。
 	 * <p>
-	 * 若设置了水平翻转（{@link #flipped}），则交换左右 UV 坐标。
+	 * 当 {@link #flipped} 为 true 时，返回父类的右侧 U 坐标 {@code getU1()}，
+	 * 从而实现纹理水平镜像翻转。
 	 *
-	 * @return 左侧 U 坐标
+	 * @return 纹理左侧 U 坐标
 	 */
     protected float getU0() {
         return flipped?super.getU1():super.getU0();
     }
 
     /**
-     * 获取纹理的右侧 U 坐标。
+     * 获取纹理右侧 U 坐标（水平翻转时与左侧交换）。
      * <p>
-     * 若设置了水平翻转（{@link #flipped}），则交换左右 UV 坐标。
+     * 当 {@link #flipped} 为 true 时，返回父类的左侧 U 坐标 {@code getU0()}，
+     * 与 {@link #getU0()} 配合实现水平镜像效果。
      *
-     * @return 右侧 U 坐标
+     * @return 纹理右侧 U 坐标
      */
     protected float getU1() {
         return flipped?super.getU0():super.getU1();
     }
 	/**
-	 * 随机扰动速度分量。
+	 * 随机设置三轴速度。
 	 * <p>
-	 * 对三个速度分量各施加一个 \u00b10.05 范围内的随机偏移，
-	 * 并将每个分量限幅在 \u00b10.05 内。
-	 * 当速度过零时由 {@link #tick()} 调用。
+	 * 在每个轴上生成 [-0.1, -0.05) 范围的随机值，然后限幅到 [-0.05, 0.05] 范围内。
+	 * 当粒子恰好位于轨道中心（距离中心 < 1e-4）时由 {@link #tick()} 调用，
+	 * 给予粒子一个初始速度以脱离中心点。
 	 */
 	public void randomizeSpeed() {
 		this.xd=super.random.nextFloat()*0.05-0.1;
@@ -128,27 +131,27 @@ public class BeeSwarmParticle extends BeecrasyParticle {
 		this.zd=Mth.clamp(this.zd,-0.05, 0.05);
 	}
 	/**
-	 * 蜜蜂粒子的工厂类。
+	 * {@link BeeSwarmParticle} 的工厂类。
 	 * <p>
-	 * 实现 {@link ParticleProvider} 接口，使用给定的 {@link SpriteSet}
-	 * 创建 {@link BeeSwarmParticle} 实例。
+	 * 实现 {@link ParticleProvider}<{@link BeeSwarmParticleOption}> 接口，
+	 * 使用给定的 {@link SpriteSet} 为创建的粒子提供纹理。
 	 */
 	public static class Factory implements ParticleProvider<BeeSwarmParticleOption> {
 		private final SpriteSet spriteSet;
 
 		/**
-		 * 使用指定的精灵集构造工厂。
+		 * 构造工厂实例。
 		 *
-		 * @param spriteSet 精灵集，用于创建粒子时分配纹理
+		 * @param spriteSet 精灵集，创建粒子时通过它按年龄选取纹理帧
 		 */
 		public Factory(SpriteSet spriteSet) {
 			this.spriteSet = spriteSet;
 		}
 
 		/**
-		 * 创建一个新的蜜蜂粒子实例。
+		 * 创建一个新的蜂群粒子实例。
 		 *
-		 * @param typeIn   粒子选项参数
+		 * @param typeIn   粒子选项（轨道中心/半径 + 翻转标志）
 		 * @param worldIn  客户端世界
 		 * @param x        X 坐标
 		 * @param y        Y 坐标
@@ -156,8 +159,8 @@ public class BeeSwarmParticle extends BeecrasyParticle {
 		 * @param xSpeed   X 速度
 		 * @param ySpeed   Y 速度
 		 * @param zSpeed   Z 速度
-		 * @param random   随机源
-		 * @return 创建的蜜蜂粒子实例
+		 * @param random   Minecraft 随机源
+		 * @return 创建的 {@link BeeSwarmParticle} 实例
 		 */
 		@Override
 		public Particle createParticle(BeeSwarmParticleOption typeIn, ClientLevel worldIn, double x, double y, double z,
@@ -176,7 +179,7 @@ public class BeeSwarmParticle extends BeecrasyParticle {
 		    double ry=y-centerY;
 		    double rz=z-centerZ;
 		    double r = Math.sqrt(rx*rx+ry*ry+rz*rz);
-		    // 若恰好在球心，随机生成一个向外的速度
+		    // 若恰好在球心，随机生成一个速度使其脱离中心
 		    if (r < 1e-4) {
 		    	randomizeSpeed();
 		    }else {
@@ -185,7 +188,7 @@ public class BeeSwarmParticle extends BeecrasyParticle {
 			    double ux = rx * invR;
 			    double uy = ry * invR;
 			    double uz = rz * invR;
-			    // 将当前速度分解为径向分量和切向分量
+			    // 将当前速度分解为径向分量和切向分量（绕轨道运动）
 			    double vx = xd;
 			    double vy = yd;
 			    double vz = zd;
@@ -194,7 +197,7 @@ public class BeeSwarmParticle extends BeecrasyParticle {
 			    double vtan_y = vy - vr * uy;
 			    double vtan_z = vz - vr * uz;
 		
-			    // 径向速度大小
+			    // 用弹簧模型计算径向速度：将粒子拉向目标轨道半径
 			    double radialSpeedNew = -radialStiffness * (r - radius);
 			    double vtan = Math.sqrt(vtan_x * vtan_x + vtan_y * vtan_y + vtan_z * vtan_z);
 			    double targetVtan;
@@ -203,12 +206,12 @@ public class BeeSwarmParticle extends BeecrasyParticle {
 		        } else {
 		        	targetVtan = Math.min(targetTangentialSpeed, vtan + tangentialAdjustRate);
 		        }
-		        // 保持原切向方向，缩放长度
+		        // 保持原切向方向，调整速度大小至目标值
 		        double scale = targetVtan / vtan;
 		        vtan_x *= scale;
 		        vtan_y *= scale;
 		        vtan_z *= scale;
-			    // 合成总速度：v = 径向分量 + 切向分量
+			    // 合成总速度：径向分量（弹簧恢复力）+ 切向分量（轨道运动）
 			    this.xd = vtan_x + radialSpeedNew * ux;
 			    this.yd = vtan_y + radialSpeedNew * uy;
 			    this.zd = vtan_z + radialSpeedNew * uz;
@@ -222,10 +225,10 @@ public class BeeSwarmParticle extends BeecrasyParticle {
 		super.tick();
 	}
 	/**
-	 * 提取渲染状态。
+	 * 提取粒子渲染状态（含渐隐效果）。
 	 * <p>
-	 * 在粒子生命周期的最后 1 秒（20 tick）内，
-	 * 线性渐隐透明度 {@code alpha} 至 0。
+	 * 在粒子生命周期的最后 20 tick（约 1 秒）内，
+	 * 将透明度 {@code alpha} 从当前值线性衰减至 0，实现平滑消失。
 	 *
 	 * @param particleTypeRenderState 粒子渲染状态
 	 * @param camera                  渲染相机

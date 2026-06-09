@@ -31,25 +31,26 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 
 /**
- * 蜜蜂粒子类型类。
+ * 蜂群粒子类型——管理 {@link BeeSwarmParticle} 的序列化与默认选项。
  * <p>
- * 继承 {@link ParticleType}<{@link BeeParticleOption}>，持有预生成的默认随机粒子选项
- * （{@link #RANDOM}），并提供便捷构造方法创建指定运动序列的粒子选项。
- * 管理自身的 Codec 和 StreamCodec。
+ * 继承 {@link ParticleType}<{@link BeeSwarmParticleOption}>，持有预构建的空选项
+ * （{@link #EMPTY}，中心/翻转均为空，由粒子运行时决定），
+ * 并提供便捷方法创建带轨道中心和翻转标志的选项。
+ * 管理自身的 MapCodec 和 StreamCodec。
  */
 public class BeeSwarmParticleType extends ParticleType<BeeSwarmParticleOption> {
-	/** 此粒子类型对应的 MapCodec */
+	/** 此粒子类型对应的 MapCodec，委托给 {@link BeeSwarmParticleOption#codec(ParticleType)} */
 	private final MapCodec<BeeSwarmParticleOption> codec = BeeSwarmParticleOption.codec(this);
-	/** 此粒子类型对应的网络流编解码器 */
+	/** 此粒子类型对应的网络流编解码器，委托给 {@link BeeSwarmParticleOption#streamCodec(ParticleType)} */
     private final StreamCodec<ByteBuf, BeeSwarmParticleOption> streamCodec = BeeSwarmParticleOption.streamCodec(this);
     /**
-     * 预构建的默认随机粒子选项。
-     * 运动序列和翻转标志均为空（{@link Optional#empty()}），
-     * 由粒子实例在初始化时随机选择。
+     * 预构建的空选项实例。
+     * center 和 flipped 均为 {@link Optional#empty()}，
+     * 由 {@link BeeSwarmParticle} 在初始化时自行决定。
      */
 	private final BeeSwarmParticleOption EMPTY=new BeeSwarmParticleOption(this,Optional.empty(),Optional.empty());
 	/**
-	 * 构造蜜蜂粒子类型。
+	 * 构造蜂群粒子类型。
 	 *
 	 * @param overrideLimiter 是否覆盖粒子数量限制器
 	 */
@@ -57,27 +58,28 @@ public class BeeSwarmParticleType extends ParticleType<BeeSwarmParticleOption> {
 		super(overrideLimiter);
 	}
 	/**
-	 * 获取默认的随机粒子选项。
+	 * 获取空选项（中心/翻转均未指定）。
 	 *
-	 * @return 预构建的随机 {@link BeeParticleOption} 实例
+	 * @return 预构建的空 {@link BeeSwarmParticleOption} 实例
 	 */
 	public BeeSwarmParticleOption empty() {
 		return EMPTY;
 	}
 	/**
-	 * 创建指定运动序列的粒子选项（无翻转设置）。
+	 * 创建指定轨道中心（含半径）的粒子选项，翻转标志由粒子运行时决定。
 	 *
-	 * @return 新的 {@link BeeParticleOption} 实例
+	 * @param pos 轨道中心坐标 (x,y,z) 与半径 (w)，封装为 Vector4fc
+	 * @return 新的 {@link BeeSwarmParticleOption} 实例
 	 */
 	public BeeSwarmParticleOption create(Vector4fc pos) {
 		return new BeeSwarmParticleOption(this,Optional.of(pos),Optional.empty());
 	}
 	/**
-	 * 创建指定运动序列和翻转标志的粒子选项。
+	 * 创建指定轨道中心和翻转标志的粒子选项。
 	 *
-	 * @param list 运动序列列表
-	 * @param flip 是否水平翻转纹理
-	 * @return 新的 {@link BeeParticleOption} 实例
+	 * @param pos     轨道中心坐标 (x,y,z) 与半径 (w)
+	 * @param flipped 是否水平翻转纹理
+	 * @return 新的 {@link BeeSwarmParticleOption} 实例
 	 */
 	public BeeSwarmParticleOption create(Vector4fc pos,boolean flipped) {
 		return new BeeSwarmParticleOption(this,Optional.of(pos),Optional.of(flipped));

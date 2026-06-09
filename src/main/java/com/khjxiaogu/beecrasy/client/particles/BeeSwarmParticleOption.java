@@ -37,21 +37,20 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 /**
- * 蜜蜂粒子参数记录类。
+ * 蜂群粒子选项记录——描述粒子轨道的中心位置、半径和纹理翻转。
  * <p>
- * 实现 {@link ParticleOptions} 接口，包含以下可选参数：
+ * 实现 {@link ParticleOptions} 接口，包含以下参数：
  * <ul>
- *   <li>{@code movements}——运动序列列表，指定粒子依次执行的运动模式；</li>
+ *   <li>{@code type}——关联的粒子类型；</li>
+ *   <li>{@code center}——轨道中心坐标 (x,y,z) 和半径 (w)，类型 {@link Vector4fc}；</li>
  *   <li>{@code flipped}——是否水平翻转纹理。</li>
  * </ul>
- * 两个参数均为可选，不指定时由粒子实例随机决定。
- * <p>
  * 提供静态工厂方法 {@link #curry} 用于柯里化——固定 {@link ParticleType} 后
  * 返回二元函数以简化构造。支持 MapCodec 和 StreamCodec 序列化。
  *
- * @param type      关联的粒子类型
- * @param movements 运动序列列表（可选）
- * @param flipped   是否水平翻转纹理（可选）
+ * @param type    关联的粒子类型
+ * @param center  轨道中心 (x,y,z) 和半径 (w)（可选）
+ * @param flipped 是否水平翻转纹理（可选）
  */
 public record BeeSwarmParticleOption(ParticleType<BeeSwarmParticleOption> type,Optional<Vector4fc> center,Optional<Boolean> flipped) implements ParticleOptions{
 	public static final Codec<Vector4fc> POS_CODEC = RecordCodecBuilder.create(t->t.group(
@@ -74,13 +73,13 @@ public record BeeSwarmParticleOption(ParticleType<BeeSwarmParticleOption> type,O
 		}
 	};
 	/**
-	 * 柯里化工厂方法——将 {@link ParticleType} 固定后返回二元函数。
+	 * 柯里化工厂方法——固定 {@link ParticleType} 后返回二元函数。
 	 * <p>
-	 * 返回的函数接受（{@code movements}, {@code flipped}）两个参数，
+	 * 返回的函数接受（{@code center}, {@code flipped}）两个参数，
 	 * 构造一个 {@link BeeSwarmParticleOption} 实例，自动注入已固定的粒子类型。
 	 *
 	 * @param type 要固定的粒子类型
-	 * @return 二元函数（movements, flipped）→ BeeParticleOption
+	 * @return 二元函数 (center, flipped) → BeeSwarmParticleOption
 	 */
 	public static BiFunction<Optional<Vector4fc>,Optional<Boolean>,BeeSwarmParticleOption> curry(ParticleType<BeeSwarmParticleOption> type){
 		return (m,b)->new BeeSwarmParticleOption(type,m,b);
@@ -99,7 +98,7 @@ public record BeeSwarmParticleOption(ParticleType<BeeSwarmParticleOption> type,O
 	 * <p>
 	 * 包含两个可选字段：
 	 * <ul>
-	 *   <li>{@code movements}——运动序列列表；</li>
+	 *   <li>{@code center}——轨道中心坐标和半径；</li>
 	 *   <li>{@code flipped}——水平翻转标志。</li>
 	 * </ul>
 	 *
@@ -115,6 +114,8 @@ public record BeeSwarmParticleOption(ParticleType<BeeSwarmParticleOption> type,O
     /**
      * 获取此粒子选项的网络流编解码器。
      * <p>
+     * center 字段使用 {@link #POS_STREAM_CODEC} 编码/解码 4 个 float；
+     * flipped 字段使用三态编码：0 = 空（未指定）、1 = false、2 = true。
      *
      * @param particleType 关联的粒子类型，注入柯里化工厂
      * @return 流编解码器

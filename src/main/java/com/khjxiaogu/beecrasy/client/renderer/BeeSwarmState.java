@@ -21,6 +21,14 @@ package com.khjxiaogu.beecrasy.client.renderer;
 
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 
+/**
+ * 蜂群实体的渲染状态——承载每帧渲染所需的瞬时数据。
+ * <p>
+ * 继承 {@link EntityRenderState}，当前为空标记类。
+ * {@link BeeSwarmEntity} 的渲染主要依赖粒子效果而非传统模型，
+ * 因此渲染状态中无需传递额外的渲染参数。
+ * 预留以供未来扩展（如颜色、密度等视觉效果参数）。
+ */
 public class BeeSwarmState extends EntityRenderState {
 
 }
