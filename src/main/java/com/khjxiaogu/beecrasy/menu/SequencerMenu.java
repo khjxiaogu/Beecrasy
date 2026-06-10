@@ -28,7 +28,7 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
-public class SequencerMenu extends BeecrasyContainerMenu {
+public abstract class SequencerMenu extends BeecrasyContainerMenu {
 	public final ResourceHandler<ItemResource> handler;
 	protected SequencerMenu(MenuType<?> menuType,int containerId, Inventory inventory,ItemStacksResourceHandler handler) {
 		this(menuType, containerId, inventory, handler,handler::set);
@@ -46,8 +46,15 @@ public class SequencerMenu extends BeecrasyContainerMenu {
 	
 	@Override
 	public void receiveOperation(short opCode, int opData) {
-		
+		if(opCode==0) {
+			this.doSetTab(opData);
+		}
 	}
+	protected abstract void doSetTab(int tab);
+	public void setTab(int tab) {
+		this.sendOperation(0, tab);
+	}
+	public abstract int getTab();
 
 	@Override
 	public boolean quickMoveIn(ItemStack slotStack) {

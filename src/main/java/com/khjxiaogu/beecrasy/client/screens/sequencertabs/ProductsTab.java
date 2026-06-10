@@ -43,6 +43,10 @@ import net.minecraft.world.item.ItemStack;
 public class ProductsTab implements SequencerTab{
 	/** 标签页标题 */
 	public static final Component title=Component.translatable("tab.sequencer.beecrasy.products");
+	/** 表现型标签（母系） */
+	public static final Component PHENO=Component.translatable("genome.beecrasy.genome0");
+	/** 基因型标签（父系） */
+	public static final Component GENO=Component.translatable("genome.beecrasy.genome1");
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor transform, SequencerMenu menu, int x, int y, int w, int h, int mouseX, int mouseY, float partial, Consumer<Component> tooltips) {
 		ItemStack is=menu.getSlot(0).getItem();
@@ -52,27 +56,38 @@ public class ProductsTab implements SequencerTab{
 			List<ProductItem> ah2=null;
 			if(comp.size()>1)
 				ah2=comp.getGenome(1).getAllele(Genes.PRODUCTS);
-			int idx=0;
+			
 			transform.text(Minecraft.getInstance().font, Genes.PRODUCTS.getShortReadableText(), x, y, 0xff81cfff);
-			transform.fill(x+40, y,x+92, y+50, 0x99f18186);
+			drawSlots(transform,x-1,y+14);
+			transform.blit(RenderPipelines.GUI_TEXTURED,SequencerScreen.TEXTURE, x-1, y+16, 176, 150, 17, 14, 256, 256);
+			
+			//transform.fill(x+40, y,x+92, y+50, 0x99f18186);
+			int idx=1;
 			for(ProductItem l:ah1) {
 				ItemStack stack=l.stack().create();
-				int cx=x+40+(idx%3)*16;
-				int cy=y+16*(idx/3);
-				if(mouseX>cx&&mouseY>cy&&mouseX<cx+16&&mouseY<cy+16)
+				int cx=x+0+(idx%5)*19;
+				int cy=y+15+19*(idx/5);
+				if(mouseX>cx&&mouseY>cy&&mouseX<cx+16&&mouseY<cy+16) {
 					Screen.getTooltipFromItem(Minecraft.getInstance(), stack).forEach(tooltips);
+					tooltips.accept(PHENO);
+				}
 				transform.item(stack,cx,cy);
 				idx++;
 			}
-			idx=0;
+			idx=1;
 			if(ah2!=null) {
-				transform.fill(x+40, y+50,x+92, y+100, 0x99b45ba4);
+				//transform.fill(x+40, y+50,x+92, y+100, 0x99b45ba4);
+				drawSlots(transform,x-1,y+59);
+				transform.blit(RenderPipelines.GUI_TEXTURED,SequencerScreen.TEXTURE, x-1, y+61, 176, 164, 17, 14, 256, 256);
+				
 				for(ProductItem l:ah2) {
 					ItemStack stack=l.stack().create();
-					int cx=x+40+(idx%3)*16;
-					int cy=y+50+16*(idx/3);
-					if(mouseX>cx&&mouseY>cy&&mouseX<cx+16&&mouseY<cy+16)
+					int cx=x+0+(idx%5)*19;
+					int cy=y+60+19*(idx/5);
+					if(mouseX>cx&&mouseY>cy&&mouseX<cx+16&&mouseY<cy+16) {
 						Screen.getTooltipFromItem(Minecraft.getInstance(), stack).forEach(tooltips);
+						tooltips.accept(GENO);
+					}
 					transform.item(stack,cx,cy);
 					idx++;
 				}
@@ -80,7 +95,11 @@ public class ProductsTab implements SequencerTab{
 		}
 		
 	}
-
+	private static void drawSlots(GuiGraphicsExtractor graphics, int x, int y) {
+		for(int i=1;i<10;i++) {
+			graphics.blit(RenderPipelines.GUI_TEXTURED,SequencerScreen.TEXTURE, x+(i%5)*19, y+(i/5)*19, 176, 132, 18, 18, 256, 256);
+		}
+	}
 	@Override
 	public void extractBackground(GuiGraphicsExtractor graphics, SequencerMenu menu, int x, int y, int w, int h, int mouseX, int mouseY, float partial) {
 		

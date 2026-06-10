@@ -45,14 +45,16 @@ public class SequencerMenuBlock extends SequencerMenu {
 				return super.isValid(index, resource);
 			}
 		});
-		this.addDataSlots(data=new SimpleContainerData(1));
+		this.addDataSlots(data=new SimpleContainerData(2));
 		this.addDummyTank(2000);
 		
 	}
+	SequencerBlockEntity be;
 	public SequencerMenuBlock( int containerId, Inventory inventory, SequencerBlockEntity access) {
 		this(containerId, inventory, access.inv);
 		this.addDataSlots(data=access);
 		this.addFluidTank(access.tank, access.tank::set, 0);
+		be=access;
 	}
 	protected SequencerMenuBlock(int containerId, Inventory inventory, ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier) {
 		super(Menus.SEQUENCER_BLOCK_MENU.get(), containerId, inventory, handler, slotModifier);
@@ -65,8 +67,23 @@ public class SequencerMenuBlock extends SequencerMenu {
 	public int getEnergy() {
 		return data.get(0);
 	}
+	@Override
+	public int getTab() {
+		return data.get(1);
+	}
+
+	@Override
+	public void setTab(int page) {
+		super.setTab(page);
+		data.set(1, page);
+	}
 	public int getWorkEnergy() {
 		return BeecrasyConfig.SERVER.SEQUENCER_ENERGY.getAsInt();
+	}
+	@Override
+	protected void doSetTab(int tab) {
+		be.page=tab;
+		be.setChanged();
 	}
 
 }

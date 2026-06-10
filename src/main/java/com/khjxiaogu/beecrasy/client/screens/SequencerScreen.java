@@ -54,14 +54,14 @@ public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerS
 	public SequencerScreen(T menu, Inventory inventory, Component title) {
 		super(menu, inventory, title, 176, 225);
 	}
-	/** 当前选中的标签页索引 */
-	int selected=0;
 	/** 当前页面中最大的标签索引 */
 	int maxIndex=0;
 	/** 当前页面的起始标签索引 */
 	int minIndex=0;
 	/** 当前分页页码 */
 	int page=0;
+	
+	int selected=0;
 
 	/** 临时提示文本列表 */
 	private ArrayList<Component> tooltip = new ArrayList<>(2);
@@ -90,6 +90,7 @@ public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerS
 		minIndex=page*5;
 		int tabCount=SequencerTabs.getTabs().size();
 		maxIndex=Math.min(5, tabCount-minIndex);
+		selected=menu.getTab();
 		if(selected>=tabCount) {
 			selected=tabCount-1;
 		}
@@ -148,8 +149,12 @@ public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerS
 			int pos=mouseY-topPos-13;
 			int idx=pos/18;
 			if(idx%18<=15) {
-				if(idx<maxIndex&&idx>=0)
+				if(idx<maxIndex&&idx>=0) {
+					if(menu.getTab()!=idx) {
+						menu.setTab(idx);
+					}
 					selected=idx;
+				}
 			}
 		}
 		return super.mouseClicked(event, doubleClick);

@@ -268,9 +268,10 @@ public class BeecrasyRegistries {
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<LarvaProductivity>> LARVA_PRODUCT=COMPONENTS.registerComponentType("larva_product", t->t.cacheEncoding().persistent(LarvaProductivity.CODEC).networkSynchronized(LarvaProductivity.STREAM_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> LARVA_EXPIRES=COMPONENTS.registerComponentType("larva_expire", t->t.cacheEncoding().persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.LONG));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeehiveArgumenter>> ARGUMENTATION=COMPONENTS.registerComponentType("beehive_argumentation", t->t.cacheEncoding().persistent(BeehiveArgumenter.CODEC).networkSynchronized(BeehiveArgumenter.STREAM_CODEC));
-	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContainerContents>> CONTAINER=COMPONENTS.registerComponentType("container", t->t.cacheEncoding().persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC));
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContainerContents>> CONTAINER=COMPONENTS.registerComponentType("container", t->t.cacheEncoding().persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC).ignoreSwapAnimation());
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeeHiveBaseComponent.BeeHiveBaseData>> BEE_HIVE=COMPONENTS.registerComponentType("bee_hive", t->t.cacheEncoding().ignoreSwapAnimation().persistent(BeeHiveBaseComponent.BeeHiveBaseData.CODEC).networkSynchronized(BeeHiveBaseComponent.BeeHiveBaseData.STREAM_CODEC));
-
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SEQUENCER_TAB=COMPONENTS.registerComponentType("sequencer_tab", t->t.cacheEncoding().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT).ignoreSwapAnimation());
+	    
 	    
 	}
 	public static class Entities{

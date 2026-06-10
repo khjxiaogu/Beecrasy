@@ -38,6 +38,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
@@ -264,7 +266,9 @@ public class BeeNestBlock extends Block {
 	@Override
 	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
 		super.animateTick(state, level, pos, random);
-		
+
+		if(random.nextInt(60)==0)
+		level.playLocalSound(pos, SoundEvents.BEE_LOOP, SoundSource.BLOCKS, Mth.lerp(random.nextFloat(), 0.0f, 0.5f), Mth.lerp(random.nextFloat(), 0.7f, 1.1f), true);
 		if (random.nextFloat()<0.25) {
 			Direction dir=Direction.Plane.HORIZONTAL.getRandomDirection(random);
 			for(int i=0;i<4;i++) {

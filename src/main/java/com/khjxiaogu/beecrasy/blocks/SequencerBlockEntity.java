@@ -38,6 +38,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -51,6 +52,7 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 public class SequencerBlockEntity extends BeecrasyBlockEntity implements MenuProvider,ContainerData {
 	public final int energyCost=BeecrasyConfig.SERVER.SEQUENCER_ENERGY.getAsInt();
 	public static final int ENERGY_BUFF=4;
+	public int page;
 	public SimpleEnergyHandler energy=new SimpleEnergyHandler(energyCost*ENERGY_BUFF) {
 		@Override
 		protected void onEnergyChanged(int previousAmount) {
@@ -102,6 +104,7 @@ public class SequencerBlockEntity extends BeecrasyBlockEntity implements MenuPro
 			nbt.readChild("energy", energy);
 			nbt.readChild("inv", inv);
 			nbt.readChild("fluid", tank);
+			page=nbt.getIntOr("page", 0);
 		}
 	}
 
@@ -111,6 +114,7 @@ public class SequencerBlockEntity extends BeecrasyBlockEntity implements MenuPro
 			nbt.putChild("energy", energy);
 			nbt.putChild("inv", inv);
 			nbt.putChild("fluid", tank);
+			nbt.putInt("page", page);
 		}
 	}
 
@@ -138,6 +142,13 @@ public class SequencerBlockEntity extends BeecrasyBlockEntity implements MenuPro
 					}
 				}
 			}
+			BlockState bs=this.getBlockState();
+			boolean lit=bs.getValue(BlockStateProperties.LIT);
+			boolean afterLit=inv.getAmountAsInt(0)>0;
+			if(lit!=afterLit) {
+				BlockState nextstate=getBlockState().setValue(BlockStateProperties.LIT, afterLit);
+				this.level.setBlockAndUpdate(worldPosition, nextstate);
+			}
 		}
 	}
 
@@ -145,6 +156,8 @@ public class SequencerBlockEntity extends BeecrasyBlockEntity implements MenuPro
 	public int get(int dataId) {
 		if(dataId==0)
 			return energy.getAmountAsInt();
+		if(dataId==1)
+			return page;
 		return 0;
 	}
 
@@ -152,11 +165,14 @@ public class SequencerBlockEntity extends BeecrasyBlockEntity implements MenuPro
 	public void set(int dataId, int value) {
 		if(dataId==0)
 			energy.set(value);
+		if(dataId==1)
+			page=value;
+		
 	}
 
 	@Override
 	public int getCount() {
-		return 1;
+		return 2;
 	}
 
 }

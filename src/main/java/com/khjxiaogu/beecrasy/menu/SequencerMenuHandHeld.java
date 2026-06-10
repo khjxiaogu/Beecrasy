@@ -27,6 +27,7 @@ import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.IndexModifier;
 import net.neoforged.neoforge.transfer.ResourceHandler;
@@ -34,9 +35,11 @@ import net.neoforged.neoforge.transfer.access.ItemAccess;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public class SequencerMenuHandHeld extends SequencerMenu{
 	ItemAccess iaccess;
+	SimpleContainerData tab=new SimpleContainerData(1);
 	public SequencerMenuHandHeld( int containerId, Inventory inventory, RegistryFriendlyByteBuf buf) {
 		super(Menus.SEQUENCER_HANDHELD_MENU.get(), containerId, inventory, new ItemStacksResourceHandler(2) {
 
@@ -49,13 +52,18 @@ public class SequencerMenuHandHeld extends SequencerMenu{
 			}
 			
 		});
+		this.addDataSlots(tab);
 	}
 	public SequencerMenuHandHeld( int containerId, Inventory inventory, ItemAccess access) {
 		this(containerId, inventory, new SequencerItemHandler(access));
 		iaccess=access;
+		Integer seqtab=iaccess.getResource().get(Components.SEQUENCER_TAB);
+		if(seqtab!=null)
+			tab.set(0, seqtab);
 	}
 	public SequencerMenuHandHeld(int containerId, Inventory inventory, SequencerItemHandler slots) {
 		super(Menus.SEQUENCER_HANDHELD_MENU.get(), containerId, inventory, slots,slots::set);
+		this.addDataSlots(tab);
 	}
     
 	@Override
@@ -70,6 +78,28 @@ public class SequencerMenuHandHeld extends SequencerMenu{
 	@Override
 	public boolean stillValid(Player pPlayer) {
 		return iaccess==null?true:iaccess.getAmount()>0;
+	}
+	@Override
+	public int getTab() {
+		return tab.get(0);
+	}
+	@Override
+	public void removed(Player player) {
+		super.removed(player);
+	}
+	@Override
+	public void setTab(int tab) {
+		this.tab.set(0, tab);
+		super.setTab(tab);
+	}
+	@Override
+	protected void doSetTab(int tab) {
+		try (Transaction trans=Transaction.openRoot()){
+			if(this.iaccess.exchange(this.iaccess.getResource().with(Components.SEQUENCER_TAB, tab), 1, trans)==1) {
+				this.tab.set(0, tab);
+				trans.commit();
+			}
+		}
 	}
 	
 	
