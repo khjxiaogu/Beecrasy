@@ -38,15 +38,14 @@ sourceSets {
 		    exclude("**/*.bbmodel") // BlockBench project files
 		    exclude("src/generated/**/.cache") // datagen cache files
 		    exclude("src/generated/.cache") // datagen cache files
-		    exclude('src/generated/resources/client/assets/${mod_id}/lang')// original language file
-		    exclude('assets/${mod_id}/lang')// original language file
+		    exclude('src/generated/resources/client/assets/beecrasy/lang')// original language file
         }
     }
 	datagen {
         compileClasspath += main.compileClasspath
         compileClasspath += main.output
         resources {
-            exclude('assets/${mod_id}/lang')
+            exclude('assets/beecrasy/lang')
         }
     }
     client {}
