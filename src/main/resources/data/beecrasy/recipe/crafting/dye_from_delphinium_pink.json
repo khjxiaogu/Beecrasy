@@ -2,8 +2,7 @@
 	"type": "minecraft:crafting_shapeless",
 	"category": "misc",
 	"ingredients": [
-		"beecrasy:beeswax",
-		"beecrasy:delphinium_pink$"
+		"beecrasy:delphinium_pink"
 	],
 	"result": {
 		"count": 2,

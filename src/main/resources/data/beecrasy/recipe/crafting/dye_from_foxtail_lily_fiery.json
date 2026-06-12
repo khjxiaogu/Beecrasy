@@ -2,8 +2,7 @@
 	"type": "minecraft:crafting_shapeless",
 	"category": "misc",
 	"ingredients": [
-		"beecrasy:beeswax",
-		"beecrasy:foxtail_lily_fiery$"
+		"beecrasy:foxtail_lily_fiery"
 	],
 	"result": {
 		"count": 2,

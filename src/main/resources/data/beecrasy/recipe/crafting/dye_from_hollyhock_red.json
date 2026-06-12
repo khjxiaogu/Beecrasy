@@ -2,8 +2,7 @@
 	"type": "minecraft:crafting_shapeless",
 	"category": "misc",
 	"ingredients": [
-		"beecrasy:beeswax",
-		"beecrasy:hollyhock_red$"
+		"beecrasy:hollyhock_red"
 	],
 	"result": {
 		"count": 2,

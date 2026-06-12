@@ -2,8 +2,7 @@
 	"type": "minecraft:crafting_shapeless",
 	"category": "misc",
 	"ingredients": [
-		"beecrasy:beeswax",
-		"beecrasy:protea$"
+		"beecrasy:protea"
 	],
 	"result": {
 		"count": 2,
