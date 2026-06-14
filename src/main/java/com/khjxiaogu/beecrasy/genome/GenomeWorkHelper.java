@@ -238,16 +238,17 @@ public class GenomeWorkHelper {
 	}
 	public static boolean transformFlowers(Level l,BlockPos pos,int radius,int count){
 		boolean updated=false;
-		final int x0=pos.getX()-radius,x1=pos.getX()+radius;
+		final int x0=pos.getX()-radius;
 		final int y0=pos.getY()-radius,y1=pos.getY()+radius;
-		final int z0=pos.getZ()-radius,z1=pos.getZ()+radius;
+		final int z0=pos.getZ()-radius;
 		BlockPos.MutableBlockPos mutable=new MutableBlockPos();
 		RandomSource rs=l.getRandom();
 		for(int i=0;i<count;i++) {
 			Optional<Holder<Block>> opt=l.registryAccess().get(Tags.FLOWERS_FROM_APICULTURE).flatMap(t->t.getRandomElement(rs));
 			if(opt.isEmpty())
 				continue;
-			mutable.set(rs.nextIntBetweenInclusive(x0, x1),y0, rs.nextIntBetweenInclusive(z0, z1));
+			mutable.set(rs.nextInt(radius*2+1)+x0,y0, rs.nextInt(radius*2+1)+z0);
+			System.out.println(mutable);
 			ChunkPos cp=ChunkPos.containing(mutable);
 			LevelChunk chunk=l.getChunk(cp.x(), cp.z());
 			for(int y=y0;y<=y1;y++) {
@@ -258,15 +259,19 @@ public class GenomeWorkHelper {
 					BlockState bsbelow=chunk.getBlockState(mutable);
 					BlockState toPlace=opt.get().value().defaultBlockState();
 					if(bsbelow.canBeReplaced()) {
-						l.setBlock(mutable.immutable(), toPlace, 3);
-						opt.get().value().setPlacedBy(l, mutable.immutable(), toPlace, null, new ItemStack(opt.get().value().asItem()));
+						BlockPos placing=mutable.immutable();
+						l.setBlock(placing, toPlace, 3);
+						System.out.println(placing);
+						opt.get().value().setPlacedBy(l, placing, toPlace, null, new ItemStack(opt.get().value().asItem()));
 						updated=true;
 					}else{
 						mutable.set(y);
 						BlockState bsabove=chunk.getBlockState(mutable.above());
 						if(bsabove.canBeReplaced()) {
-							l.setBlock(mutable.immutable(), toPlace, 3);
-							opt.get().value().setPlacedBy(l, mutable.immutable(), toPlace, null, new ItemStack(opt.get().value().asItem()));
+							BlockPos placing=mutable.immutable();
+							l.setBlock(placing, toPlace, 3);
+							System.out.println(placing);
+							opt.get().value().setPlacedBy(l, placing, toPlace, null, new ItemStack(opt.get().value().asItem()));
 							updated=true;
 						}
 						

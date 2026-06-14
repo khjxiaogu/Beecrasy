@@ -276,7 +276,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				}
 			}
 		}else {
-			if(processMax>0){
+			if(processMax>=0){
 				if(cooldown<=0) {
 					cooldown=0;
 					if(finishProduct(params)) {
@@ -319,9 +319,30 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				ItemStack item=hi.getItem();
 				if(!item.is(Items.LARVA))
 					continue;
-
 				item.set(Components.LARVA_EXPIRES,secs);
+				Genome pheno=GenomeDataHelper.getPhenoType(item);
+				LarvaProductivity lp=item.get(Components.LARVA_PRODUCT);
+				if(lp==null)
+					lp=LarvaProductivity.DEFAULT;
+
+				float yield=pheno.getAllele(Genes.YIELD).getNumber()/lsAgainstInterval*yieldMod;
+				if(params.hasBiotope(pheno.getAllele(Genes.BIOTOPE))) {
+					lp=lp.increaseBiotoped(yield);
+				}else {
+					lp=lp.increaseWildcard(yield);
+					noBiotope=true;
+				}
+				item.set(Components.LARVA_PRODUCT, lp);
 				
+				hi.setItem(item);
+			}
+		}
+		for(HiveSlot hi:queenSlot) {
+			if(!hi.isEmpty()) {
+				ItemStack item=hi.getItem();
+				if(!item.is(Items.LARVA))
+					continue;
+				item.set(Components.LARVA_EXPIRES,secs);
 				Genome pheno=GenomeDataHelper.getPhenoType(item);
 				LarvaProductivity lp=item.get(Components.LARVA_PRODUCT);
 				if(lp==null)
@@ -381,7 +402,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		rs=SerializableRandomSource.create(Mth.getSeed(params.position())^params.level().getRandom().nextLong());
 		setQueen(queenGenome);
 		this.droneGenomes=droneGenomes;
-		queenCount=Math.max(BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber()/3, rs), 1);
+		queenCount=Math.max(BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber()/5, rs), 1);
 		larvaCount=BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber(), rs);
 		droneCount=BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber(), rs);
 		processMax=process=(int) (GenomeDataHelper.getLifespanTicks(queenGenome[0])*params.getParamValue(BeeHiveParameters.LIFESPAN));
@@ -459,6 +480,15 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		}
 		queenCount=0;
 		for(HiveSlot hi:combSlot) {
+			if(!hi.isEmpty()) {
+				ItemStack item=hi.getItem();
+				if(!item.is(Items.LARVA))
+					continue;
+				ItemStack ret=LarvaItem.getProduct(item, params.level());
+				hi.setItem(ret);
+			}
+		}
+		for(HiveSlot hi:queenSlot) {
 			if(!hi.isEmpty()) {
 				ItemStack item=hi.getItem();
 				if(!item.is(Items.LARVA))
@@ -554,6 +584,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		rs=nbt.getLong("seed").map(SerializableRandomSource::new).orElse(null);
 		setQueen(nbt.read("queen", Genome.LIST_CODEC).map(t->t.toArray(Genome[]::new)).orElse(null));
 		droneGenomes=nbt.read("drones", Genome.LIST_CODEC).orElse(null);
+		queenCount=nbt.getIntOr("queens", 0);
 		larvaCount=nbt.getIntOr("larva", 0);
 		droneCount=nbt.getIntOr("drone", 0);
 		process=nbt.getIntOr("process", 0);
@@ -571,6 +602,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			nbt.store("queen", Genome.LIST_CODEC, Arrays.asList(queenGenome));
 		if(droneGenomes!=null)
 			nbt.store("drones", Genome.LIST_CODEC,droneGenomes);
+		nbt.putInt("queens", queenCount);
 		nbt.putInt("larvaCount", larvaCount);
 		nbt.putInt("droneCount", droneCount);
 		nbt.putInt("process", process);
@@ -586,6 +618,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		droneGenomes=data.droneGenomes().orElse(null);
 		larvaCount=data.larvaCount();
 		droneCount=data.droneCount();
+		queenCount=data.queenCount();
 		process=data.process();
 		processMax=data.processMax();
 	}
