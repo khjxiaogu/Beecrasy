@@ -1,19 +1,20 @@
 /*
- * Copyright (c) 2024 IEEM Trivium Society/khjxiaogu
  *
- * This file is part of Convivium.
+ * Copyright (C) 2026 khjxiaogu
  *
- * Convivium is free software: you can redistribute it and/or modify
- * it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE as published by
+ * This file is part of Beecrasy.
+ *
+ * Beecrasy is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, version 3.
  *
- * Convivium is distributed in the hope that it will be useful,
+ * Beecrasy is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU LESSER GENERAL PUBLIC LICENSE for more details.
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU LESSER GENERAL PUBLIC LICENSE
- * along with Convivium. If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.khjxiaogu.beecrasy.compat;
