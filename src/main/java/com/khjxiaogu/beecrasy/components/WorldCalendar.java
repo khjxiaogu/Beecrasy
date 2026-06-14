@@ -74,6 +74,7 @@ public class WorldCalendar extends SavedData {
 	public long getLastTicks() {
 		return lastTicks;
 	}
+	@SuppressWarnings("resource")
 	public static WorldCalendar getCalendar(ServerLevel level) {
 		return level.getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE);
 	}

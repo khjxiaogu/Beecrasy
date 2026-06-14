@@ -35,6 +35,7 @@ public class QueenBeeItem extends Item {
 		super(properties);
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
 		if(entity.getAge()>200) {

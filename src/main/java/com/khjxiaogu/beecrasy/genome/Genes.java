@@ -151,8 +151,7 @@ public class Genes {
 		(t)->{
 				if(t.isEmpty())
 					return Component.translatable("allele.beecrasy.product.empty");
-				else
-					return t.get(0).stack().get(DataComponents.ITEM_NAME);
+				return t.get(0).stack().get(DataComponents.ITEM_NAME);
 			}
 		, ()->List.of(), 500);
 	/** 产量基因。 */

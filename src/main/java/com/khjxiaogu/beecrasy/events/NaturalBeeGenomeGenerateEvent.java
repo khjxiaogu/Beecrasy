@@ -48,9 +48,11 @@ public class NaturalBeeGenomeGenerateEvent extends Event{
 		this.genome = genome;
 	}
 
+	@SuppressWarnings("resource")
 	public void applyPools(Identifier id) {
 		applyPools(GenomePresets.getPools(level(), id));
 	}
+	@SuppressWarnings("resource")
 	public void applyPools(List<WeightedList<PartialGenome>> list) {
 		for(WeightedList<PartialGenome> li:list) {
 			li.getRandom(level().getRandom()).ifPresent(t->t.apply(genome));

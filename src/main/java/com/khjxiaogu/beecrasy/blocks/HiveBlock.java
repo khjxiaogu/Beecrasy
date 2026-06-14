@@ -20,10 +20,10 @@
 package com.khjxiaogu.beecrasy.blocks;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
-import com.khjxiaogu.beecrasy.utils.Utils;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -38,6 +38,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -66,7 +67,6 @@ public class HiveBlock extends Block  implements BeecrasyEntityBlock<HiveBlockEn
 	}
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
-		RandomSource rnd=Utils.getSyncedRandom(context.getPlayer());
 		return this.defaultBlockState().setValue(BlockStateProperties.LIT, false)
 			.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
 	}
@@ -85,7 +85,13 @@ public class HiveBlock extends Block  implements BeecrasyEntityBlock<HiveBlockEn
     	}
     	return InteractionResult.SUCCESS;
 	}
-
+	@Override
+    protected void onExplosionHit(BlockState state, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> onHit) {
+        if (explosion.canTriggerBlocks() && level.getBlockEntity(pos) instanceof BeeHiveBaseBlockEntity blockEntity) {
+        	blockEntity.component.setShouldWork(true);
+        }
+        super.onExplosionHit(state, level, pos, explosion, onHit);
+    }
     @Override
 	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
     	List<ItemStack> list=super.getDrops(state, params);

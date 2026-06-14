@@ -263,9 +263,8 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         if (this.isInvulnerableTo(level, source)) {
             return false;
-        } else {
-            return super.hurtServer(level, source, damage);
         }
+		return super.hurtServer(level, source, damage);
     }
 
     @Override
@@ -299,12 +298,10 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
         if (state.is(BlockTags.BEE_ATTRACTIVE)) {
             if (state.getValueOrElse(BlockStateProperties.WATERLOGGED, false)) {
                 return false;
-            } else {
-                return state.is(Blocks.SUNFLOWER) ? state.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER : true;
             }
-        } else {
-            return false;
+			return state.is(Blocks.SUNFLOWER) ? state.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER : true;
         }
+		return false;
     }
 
     @Override
@@ -385,10 +382,9 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
         private boolean hasReachedTarget(Vec3 targetPos) {
             if (BeeSwarmEntity.this.closerThan(targetPos, 1)) {
                 return true;
-            } else {
-                Path path = BeeSwarmEntity.this.navigation.getPath();
-                return path != null && path.getTarget().equals(BlockPos.containing(targetPos)) && path.canReach() && path.isDone();
             }
+			Path path = BeeSwarmEntity.this.navigation.getPath();
+			return path != null && path.getTarget().equals(BlockPos.containing(targetPos)) && path.canReach() && path.isDone();
         }
 
     }
@@ -403,6 +399,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
 		return null;
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public void tick() {
 		super.tick();

@@ -68,6 +68,7 @@ public record SingleLine(Gene<?> gene) implements Line {
 	 * @param tooltips 提示文本消费者
 	 * @return 固定返回 8（行高像素）
 	 */
+	@SuppressWarnings("resource")
 	@Override
 	public int extractRenderState(GuiGraphicsExtractor graphics,AllelesHolder ah1,AllelesHolder ah2,int x,int y,int mouseX, int mouseY, Consumer<Component> tooltips) {
 		graphics.text(Minecraft.getInstance().font, gene.getShortReadableText(), x, y, 0xff81cfff);

@@ -283,8 +283,7 @@ public final class Utils {
 				input.serialize(tvo);
 				if(!reporter.isEmpty())
 					return DataResult.error(reporter::getReport, tvo.buildResult()).flatMap(e->ExtraCodecs.NBT.encode(e, ops, prefix));
-				else
-					return ExtraCodecs.NBT.encode(tvo.buildResult(), ops, prefix);
+				return ExtraCodecs.NBT.encode(tvo.buildResult(), ops, prefix);
 				
 			}
 			
@@ -295,8 +294,7 @@ public final class Utils {
 				DataResult<Pair<CompoundTag, S>> dr=ExtraCodecs.NBT.decode(ops, input).flatMap(o->{
 				if(o.getFirst() instanceof CompoundTag ct)
 					return DataResult.success(Pair.of(ct, o.getSecond()));
-				else
-					return DataResult.error(()->"Not a tag compound.");
+				return DataResult.error(()->"Not a tag compound.");
 				});
 				if(dr.isError()) {
 					Error<?> err=dr.error().get();

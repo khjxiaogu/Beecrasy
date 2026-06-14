@@ -141,7 +141,7 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
     	DoubleBlockHalf half = state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF);
     	if(level instanceof ServerLevel serverLevel) {
 	    	if(half==DoubleBlockHalf.UPPER) {
-	    		onTrigger(state,serverLevel,pos.below());
+	    		onTrigger(serverLevel,pos);
 	    	}
 			if(level.getBlockEntity(pos) instanceof PressBlockEntity press) {
 				if (!level.isClientSide())
@@ -153,14 +153,15 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
 
 	@Override
     protected void onExplosionHit(BlockState state, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> onHit) {
+		
         if (explosion.canTriggerBlocks() && state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER) {
-            this.onTrigger(state, level, pos);
+            this.onTrigger(level, pos);
         }
 
         super.onExplosionHit(state, level, pos, explosion, onHit);
     }
-    public void onTrigger(BlockState state, ServerLevel level, BlockPos pos) {
-    	if(level.getBlockEntity(pos) instanceof PressBlockEntity press) {
+    public void onTrigger(ServerLevel level, BlockPos pos) {
+    	if(level.getBlockEntity(pos.below()) instanceof PressBlockEntity press) {
     		press.refillPower();
     	}
     }
@@ -181,6 +182,7 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
 	}
 
 
+	@SuppressWarnings("resource")
 	@Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos pos = context.getClickedPos();
@@ -189,9 +191,8 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
             return this.defaultBlockState()
                 .setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite())
                 .setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.LOWER);
-        } else {
-            return null;
         }
+		return null;
     }
 
     @Override

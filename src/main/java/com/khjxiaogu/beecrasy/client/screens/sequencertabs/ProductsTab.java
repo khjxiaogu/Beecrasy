@@ -47,6 +47,7 @@ public class ProductsTab implements SequencerTab{
 	public static final Component PHENO=Component.translatable("genome.beecrasy.genome0");
 	/** 基因型标签（父系） */
 	public static final Component GENO=Component.translatable("genome.beecrasy.genome1");
+	@SuppressWarnings("resource")
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor transform, SequencerMenu menu, int x, int y, int w, int h, int mouseX, int mouseY, float partial, Consumer<Component> tooltips) {
 		ItemStack is=menu.getSlot(0).getItem();

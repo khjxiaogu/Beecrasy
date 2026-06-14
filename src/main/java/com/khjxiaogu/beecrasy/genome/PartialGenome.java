@@ -62,7 +62,7 @@ public record PartialGenome(Map<Gene<?>, ?> alleles) implements AllelesHolder{
 			output.writeVarInt(value.alleles.size());
 			for(Entry<Gene<?>, ?> ent:value.alleles.entrySet()) {
 				GeneRegistry.STREAM_CODEC.encode(output, ent.getKey());
-				((Gene)ent.getKey()).streamCodec().encode(output, ent.getValue());
+				((StreamCodec)ent.getKey().streamCodec()).encode(output, ent.getValue());
 			}
 		}
 		@SuppressWarnings({ "rawtypes", "unchecked" })

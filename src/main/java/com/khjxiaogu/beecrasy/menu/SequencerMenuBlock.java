@@ -35,6 +35,9 @@ import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 public class SequencerMenuBlock extends SequencerMenu {
 	ContainerData data;
+	/**
+	 * @param buf  
+	 */
 	public SequencerMenuBlock(int containerId, Inventory inventory, RegistryFriendlyByteBuf buf) {
 		super(Menus.SEQUENCER_HANDHELD_MENU.get(), containerId, inventory, new ItemStacksResourceHandler(1) {
 			@Override

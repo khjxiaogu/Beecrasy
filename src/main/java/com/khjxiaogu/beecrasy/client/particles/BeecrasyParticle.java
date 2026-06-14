@@ -51,6 +51,7 @@ public class BeecrasyParticle extends SingleQuadParticle {
 	 * @param z         初始 Z 坐标
 	 * @param p_sprites 精灵集，取第一个精灵作为初始纹理
 	 */
+	@SuppressWarnings("resource")
 	protected BeecrasyParticle(ClientLevel world, double x, double y, double z,SpriteSet p_sprites) {
 		super(world, x, y, z, p_sprites.first());
 		this.spriteSet=p_sprites;
@@ -69,6 +70,7 @@ public class BeecrasyParticle extends SingleQuadParticle {
 	 * @param motionZ   初始 Z 速度
 	 * @param p_sprites 精灵集，取第一个精灵作为初始纹理
 	 */
+	@SuppressWarnings("resource")
 	public BeecrasyParticle(ClientLevel world, double x, double y, double z, double motionX, double motionY, double motionZ,SpriteSet p_sprites) {
 		super(world, x, y, z, motionX, motionY, motionZ, p_sprites.first());
 		this.spriteSet=p_sprites;

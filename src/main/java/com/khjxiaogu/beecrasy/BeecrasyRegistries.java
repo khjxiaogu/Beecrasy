@@ -100,8 +100,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.levelgen.RandomSupport;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.MapColor;
@@ -265,6 +265,11 @@ public class BeecrasyRegistries {
 					.noOcclusion()
 					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
 		}
+		/**
+		 * @param state  
+		 * @param reader 
+		 * @param pos 
+		 */
 		static boolean notSolid(BlockState state, BlockGetter reader, BlockPos pos) {
 			return false;
 		}
@@ -307,6 +312,8 @@ public class BeecrasyRegistries {
 		public static final TagKey<Block> FLOWERS=BlockTags.create(Beecrasy.rl("flowers"));
 		public static final TagKey<Fluid> HONEY=FluidTags.create(Beecrasy.rl("honey"));
 		public static final TagKey<Item> HONEY_DROP=ItemTags.create(Beecrasy.rl("honey"));
+		public static final TagKey<Block> FLOWERS_FROM_APICULTURE=BlockTags.create(Beecrasy.rl("flowers/from_apiculture"));
+		public static final TagKey<Block> TO_BE_FLOWER=BlockTags.create(Beecrasy.rl("can_become_flower"));
 		
 	}
 	public static class Recipes{

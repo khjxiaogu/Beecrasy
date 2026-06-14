@@ -146,9 +146,8 @@ public class RecipeHandler<T extends Recipe<?>> implements ContainerData{
 					recipeTested=false;
 					recipeFinished=false;
 					return true;
-				}else {
-					process=10;
 				}
+				process=10;
 			}
 			return !recipeFinished;
 		}

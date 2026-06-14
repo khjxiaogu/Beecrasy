@@ -20,6 +20,7 @@
 package com.khjxiaogu.beecrasy.listeners;
 
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
@@ -74,7 +75,7 @@ public class ClientListener {
 		if(arguments!=null) {
 			Consumer<Component> csm=event::addTooltipLines;
 			for(Entry<BeehiveParameterType<?>, Object> ent:arguments.modifiers().params().entrySet()) {
-				((BeehiveParameterType)ent.getKey()).desc().accept(ent.getValue(), csm);
+				((BiConsumer)ent.getKey().desc()).accept(ent.getValue(), csm);
 			}
 		}
 	}

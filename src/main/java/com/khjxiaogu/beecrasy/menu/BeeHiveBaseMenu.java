@@ -17,6 +17,9 @@ import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 public abstract class BeeHiveBaseMenu extends BeecrasyContainerMenu {
 	protected ContainerData data;
+	/**
+	 * @param bytebuf  
+	 */
 	public BeeHiveBaseMenu(MenuType<?> menuType, int containerId,Inventory inventory,int slots,RegistryFriendlyByteBuf bytebuf) {
 		this(menuType, containerId,inventory,slots,new ItemStacksResourceHandler(slots));
 		this.addDataSlots(data=new SimpleContainerData(4));

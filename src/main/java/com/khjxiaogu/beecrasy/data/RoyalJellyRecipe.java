@@ -73,6 +73,7 @@ public class RoyalJellyRecipe extends ShapelessRecipe {
 		return super.assemble(input);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public RecipeSerializer getSerializer() {
 		return Recipes.ROYAL_JELLY.value();

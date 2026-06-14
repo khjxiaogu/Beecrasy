@@ -173,6 +173,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @param params 当前环境参数
 	 * @return 找到的生境集合，如果没有花则返回 null
 	 */
+	@SuppressWarnings("resource")
 	public Set<Biotope> updateBiotopes(BeeHiveParameterSet params) {
 		return GenomeWorkHelper.findBiotope(params.level(), params.position(), BeecrasyConfig.SERVER.RADIUS.getAsInt());
 
@@ -234,6 +235,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @param params 当前环境参数集
 	 * @param speed  工作速度倍率
 	 */
+	@SuppressWarnings("resource")
 	public void tick(BeeHiveParameterSet params,int speed) {
 		blocked=false;
 		badEnvironment=false;
@@ -260,6 +262,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				if(process<0)
 					process=0;
 				if(lprocess/interval!=process/interval) {
+					GenomeWorkHelper.transformFlowers(params.level(), params.position(), BeecrasyConfig.SERVER.FLOWER_RADIUS.getAsInt(), BeecrasyConfig.SERVER.FLOWER_RATE.getAsInt());
 					if(fillLarva(params)||fillDrone(params)) {
 						updateCombLifespan(secs);
 						updateQueenLifespan(secs);
@@ -302,6 +305,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @param params   当前环境参数
 	 * @param biotopes 当前环境中的生境集合（可能为 null）
 	 */
+	@SuppressWarnings("resource")
 	private void increaseProduction(BeeHiveParameterSet params) {
 		noBiotope=false;
 
@@ -372,7 +376,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @param queenGenome  蜂后基因组（二倍体）
 	 * @param droneGenomes 雄蜂基因组列表
 	 */
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "resource" })
 	public void prepareWork(BeeHiveParameterSet params,Genome[] queenGenome,List<Genome> droneGenomes) {
 		rs=SerializableRandomSource.create(Mth.getSeed(params.position())^params.level().getRandom().nextLong());
 		setQueen(queenGenome);
@@ -409,6 +413,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @param params 当前环境参数
 	 * @return 如果产物处理完成则返回 true
 	 */
+	@SuppressWarnings("resource")
 	private boolean finishProduct(BeeHiveParameterSet params) {
 		boolean hasQueen=queenCount==0;
 		long secs=WorldCalendar.getCalendar(params.level()).getSeconds();

@@ -99,9 +99,8 @@ public class MutationRegistry {
 			if(rate<chance) {
 				applicable.get(i).mutation.mutate(params, genome, random);
 				break;
-			}else {
-				rate-=chance;
 			}
+			rate-=chance;
 		}
 		
 	}

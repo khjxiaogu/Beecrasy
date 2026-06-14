@@ -87,6 +87,7 @@ public class FluidRenderHelper {
 	 * @param stack 流体栈，用于获取流体类型
 	 * @return 对应的流体模型
 	 */
+	@SuppressWarnings("resource")
 	public static FluidModel getFluidModel(FluidStack stack) {
 		return Minecraft.getInstance().getModelManager().getFluidStateModelSet()
 			.get(stack.getFluid().defaultFluidState());
@@ -109,6 +110,7 @@ public class FluidRenderHelper {
 	 * @param mouseY    鼠标当前 Y 坐标
 	 * @param tooltip   提示文本消费者，用于收集悬停时显示的提示信息
 	 */
+	@SuppressWarnings("resource")
 	public static void handleGuiTank(GuiGraphicsExtractor transform, ResourceHandler<FluidResource> tank,int tankIndex, int x, int y, int w, int h,int mouseX,int mouseY,Consumer<Component> tooltip) {
 		FluidResource fr=tank.getResource(tankIndex);
 		if(fr.isEmpty())return;

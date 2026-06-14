@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
@@ -37,11 +38,13 @@ import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.neoforge.common.NeoForge;
@@ -232,5 +235,46 @@ public class GenomeWorkHelper {
 	public static boolean isValidEnvironment(BeeHiveParameterSet params,AllelesHolder phenoType) {
 		BeeEnvironmentValidateEvent ev=new BeeEnvironmentValidateEvent(params,phenoType);
 		return !NeoForge.EVENT_BUS.post(ev).isCanceled();
+	}
+	public static boolean transformFlowers(Level l,BlockPos pos,int radius,int count){
+		boolean updated=false;
+		final int x0=pos.getX()-radius,x1=pos.getX()+radius;
+		final int y0=pos.getY()-radius,y1=pos.getY()+radius;
+		final int z0=pos.getZ()-radius,z1=pos.getZ()+radius;
+		BlockPos.MutableBlockPos mutable=new MutableBlockPos();
+		RandomSource rs=l.getRandom();
+		for(int i=0;i<count;i++) {
+			Optional<Holder<Block>> opt=l.registryAccess().get(Tags.FLOWERS_FROM_APICULTURE).flatMap(t->t.getRandomElement(rs));
+			if(opt.isEmpty())
+				continue;
+			mutable.set(rs.nextIntBetweenInclusive(x0, x1),y0, rs.nextIntBetweenInclusive(z0, z1));
+			ChunkPos cp=ChunkPos.containing(mutable);
+			LevelChunk chunk=l.getChunk(cp.x(), cp.z());
+			for(int y=y0;y<=y1;y++) {
+				mutable.setY(y);
+				BlockState bs=chunk.getBlockState(mutable);
+				if(bs.is(Tags.TO_BE_FLOWER)&&bs.canBeReplaced()) {
+					mutable.setY(y-1);
+					BlockState bsbelow=chunk.getBlockState(mutable);
+					BlockState toPlace=opt.get().value().defaultBlockState();
+					if(bsbelow.canBeReplaced()) {
+						l.setBlock(mutable, toPlace, 3);
+						opt.get().value().setPlacedBy(l, mutable, toPlace, null, new ItemStack(opt.get().value().asItem()));
+						updated=true;
+					}else{
+						mutable.set(y);
+						BlockState bsabove=chunk.getBlockState(mutable.above());
+						if(bsabove.canBeReplaced()) {
+							l.setBlock(mutable, toPlace, 3);
+							opt.get().value().setPlacedBy(l, mutable, toPlace, null, new ItemStack(opt.get().value().asItem()));
+							updated=true;
+						}
+						
+					}
+				}
+			}
+			
+		}
+		return updated;
 	}
 }

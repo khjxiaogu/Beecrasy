@@ -192,10 +192,10 @@ public class BeecrasyRecipeProvider extends RecipeProvider {
 		return Identifier.fromNamespaceAndPath("c", s);
 	}
 
-	private Identifier mcrl(String s) {
+	private static Identifier mcrl(String s) {
 		return Identifier.withDefaultNamespace(s);
 	}
-	private TagKey<Item> rk(Identifier rl){
+	private static TagKey<Item> rk(Identifier rl){
 		return TagKey.create(Registries.ITEM, rl);
 	}
 

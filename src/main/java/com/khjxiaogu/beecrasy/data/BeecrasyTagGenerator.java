@@ -77,7 +77,7 @@ public abstract class BeecrasyTagGenerator<T> extends TagsProvider<T> {
 	}
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected Registry<T> registry() {
-		return (Registry<T>) BuiltInRegistries.REGISTRY.getValueOrThrow((ResourceKey)registryKey);
+		return BuiltInRegistries.REGISTRY.getValueOrThrow((ResourceKey)registryKey);
 	}
 	@SuppressWarnings("rawtypes")
 	protected ResourceKey rk(DeferredHolder it) {
@@ -104,7 +104,6 @@ public abstract class BeecrasyTagGenerator<T> extends TagsProvider<T> {
 		return Identifier.fromNamespaceAndPath("c", s);
 	}
 
-	@SuppressWarnings("unused")
 	protected Identifier mcId(String s) {
 		return Identifier.withDefaultNamespace(s);
 	}

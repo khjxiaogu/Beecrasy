@@ -33,6 +33,9 @@ import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 public class PressMenu extends BeecrasyContainerMenu {
 	private final ContainerData data;
 	
+	/**
+	 * @param bytebuf  
+	 */
 	public PressMenu(int containerId,Inventory inventory, RegistryFriendlyByteBuf bytebuf) {
 		this(containerId,inventory,new SimpleContainerData(2),new ItemStacksResourceHandler(10));
 		this.addDummyTank(1000);

@@ -381,6 +381,9 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		err=nbt.read("err", ErrCode.CODEC).orElse(ErrCode.OK);
 	}
 
+	public void setShouldWork(boolean shouldWork) {
+		this.shouldWork = shouldWork;
+	}
 	/**
 	 * 将数据写入 NBT（支持客户端/服务端区分）。
 	 * 服务端写入完整数据，客户端只写入界面相关数据。
@@ -478,9 +481,8 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 					}
 				}
 				return null;
-			}else {
-				return argu.modifiers();
 			}
+			return argu.modifiers();
 		}
 		return null;
 	}

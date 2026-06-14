@@ -66,6 +66,9 @@ public class BeecrasyClient {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
+    /**
+	 * @param event  
+	 */
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
     	Beecrasy.LOGGER.info("Beecracy has landed(Not a typo).");
@@ -87,6 +90,7 @@ public class BeecrasyClient {
 		ev.register(Beecrasy.rl("bee_product"), BeeTint.MAP_CODEC);
 		
 	}
+	@SuppressWarnings("resource")
 	@SubscribeEvent
 	public static void registerModels(ModelEvent.RegisterStandalone ev)
 	{

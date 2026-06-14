@@ -96,7 +96,8 @@ public class LarvaItem extends Item {
 			itemStack.setCount(0);
 		}
 	}
-    @Override
+    @SuppressWarnings("resource")
+	@Override
 	public boolean onEntityItemUpdate(ItemStack itemStack, ItemEntity entity) {
     	if(entity.level() instanceof ServerLevel level){
 			long secs=WorldCalendar.getCalendar(level).getSeconds();
@@ -113,6 +114,7 @@ public class LarvaItem extends Item {
     	}
     	return super.onEntityItemUpdate(itemStack, entity);
 	}
+	@SuppressWarnings("resource")
 	@Override
     public void onDestroyed(ItemEntity entity) {
 		if(entity.level() instanceof ServerLevel level){

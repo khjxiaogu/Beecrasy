@@ -137,6 +137,7 @@ public class CommonListeners {
 		event.applyPools(Constants.BASE_ID);
 		event.applyPools(Constants.FOREST_ID);
 	}
+	@SuppressWarnings("resource")
 	@SubscribeEvent
 	public static void addCommands(RegisterCommandsEvent event) {
 		var inspect = Commands.literal("inspect").executes((ctx)->{
@@ -173,6 +174,7 @@ public class CommonListeners {
 		});
 		event.getDispatcher().register(Commands.literal("beecrasy").then(inspect).then(calend));
 	}
+	@SuppressWarnings("resource")
 	@SubscribeEvent
 	public static void tick(ServerTickEvent.Pre event) {
 		long clock=event.getServer().overworld().getOverworldClockTime();

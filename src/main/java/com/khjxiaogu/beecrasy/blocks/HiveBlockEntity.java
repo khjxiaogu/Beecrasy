@@ -25,9 +25,9 @@ import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
-import com.khjxiaogu.beecrasy.beehive.WorkBehaviour;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent.BeeHiveBaseData;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveHandler.DataRecord;
+import com.khjxiaogu.beecrasy.beehive.WorkBehaviour;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation.Builder;
 import com.khjxiaogu.beecrasy.menu.HiveMenu;

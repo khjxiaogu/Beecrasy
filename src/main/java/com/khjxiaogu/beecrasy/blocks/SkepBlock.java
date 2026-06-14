@@ -20,12 +20,12 @@
 package com.khjxiaogu.beecrasy.blocks;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.utils.Utils;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -40,6 +40,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -83,6 +84,13 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 		return this.defaultBlockState().setValue(BlockStateProperties.AGE_2, rnd.nextInt(3)).setValue(BlockStateProperties.LIT, false)
 			.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
 	}
+	@Override
+    protected void onExplosionHit(BlockState state, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> onHit) {
+        if (explosion.canTriggerBlocks() && level.getBlockEntity(pos) instanceof BeeHiveBaseBlockEntity blockEntity) {
+        	blockEntity.component.setShouldWork(true);
+        }
+        super.onExplosionHit(state, level, pos, explosion, onHit);
+    }
 	@Override
 	public DeferredHolder<BlockEntityType<?>, BlockEntityType<SkepBlockEntity>> getBlock() {
 		return Blocks.SKEP_BLOCKENTITY;

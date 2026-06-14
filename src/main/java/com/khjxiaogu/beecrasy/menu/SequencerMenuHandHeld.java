@@ -40,6 +40,9 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 public class SequencerMenuHandHeld extends SequencerMenu{
 	ItemAccess iaccess;
 	SimpleContainerData tab=new SimpleContainerData(1);
+	/**
+	 * @param buf  
+	 */
 	public SequencerMenuHandHeld( int containerId, Inventory inventory, RegistryFriendlyByteBuf buf) {
 		super(Menus.SEQUENCER_HANDHELD_MENU.get(), containerId, inventory, new ItemStacksResourceHandler(2) {
 

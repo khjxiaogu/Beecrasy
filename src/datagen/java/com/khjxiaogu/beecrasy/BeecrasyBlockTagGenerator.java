@@ -44,6 +44,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
@@ -64,5 +65,6 @@ public class BeecrasyBlockTagGenerator extends BeecrasyTagGenerator<Block> {
 		net.add(rk(BEE_NEST_SMALL)).add(rk(BEE_NEST_NASCENT)).add(rk(BEE_NEST_MEDIUM)).add(rk(BEE_NEST_BIG)).add(rk(NATURAL_HIVE));
 		tag(Tags.FLOWERS).addTag(BlockTags.FLOWERS);
 		tag(Genes.Alleles.WILD.getTag()).addTag(BlockTags.FLOWERS);
+		tag(Tags.TO_BE_FLOWER).add(rk(Blocks.SHORT_DRY_GRASS),rk(Blocks.SHORT_GRASS),rk(Blocks.TALL_DRY_GRASS),rk(Blocks.TALL_GRASS),rk(Blocks.LARGE_FERN),rk(Blocks.FERN));
 	}
 }

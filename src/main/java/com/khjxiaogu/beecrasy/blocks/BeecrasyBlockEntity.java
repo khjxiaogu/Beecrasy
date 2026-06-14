@@ -22,7 +22,6 @@ package com.khjxiaogu.beecrasy.blocks;
 import com.khjxiaogu.beecrasy.Beecrasy;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
@@ -34,7 +33,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.capabilities.BlockCapability;
 
 public abstract class BeecrasyBlockEntity extends BlockEntity {
 
@@ -66,10 +64,6 @@ public abstract class BeecrasyBlockEntity extends BlockEntity {
 	}
 
 	public abstract void tick();
-
-	public Object getCapability(BlockCapability<?, Direction> type, Direction d) {
-		return null;
-	};
 
 	@Override
 	public void loadAdditional(ValueInput valueInput) {

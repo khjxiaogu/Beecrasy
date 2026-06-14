@@ -76,6 +76,7 @@ public class MutationSmelting implements Mutation {
 	 * @param random 随机数生成器
 	 * @return 如果成功冶炼了新物品则返回 {@code true}
 	 */
+	@SuppressWarnings("resource")
 	public static boolean handleCraft(BeeHiveParameterSet param,Genome.Builder genome, RandomSource random) {
 		List<ProductItem> products=genome.get(Genes.PRODUCTS);
 		SingleRecipeInput sri=new SingleRecipeInput(products.get(products.size()-1).stack().create());
