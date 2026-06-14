@@ -260,11 +260,9 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				if(process<0)
 					process=0;
 				if(lprocess/interval!=process/interval) {
-					if(larvaCount>0||droneCount>0) {
+					if(fillLarva(params)||fillDrone(params)) {
 						updateCombLifespan(secs);
 						updateQueenLifespan(secs);
-						if(!fillLarva(params))
-							fillDrone(params);
 					}else {
 						int elecInterval=(processMax/2/4);
 						if(lprocess/elecInterval!=process/elecInterval)

@@ -1,11 +1,4 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    "beecrasy:larva",
-    "beecrasy:royal_jelly"
-  ],
-  "result": {
-    "id": "beecrasy:queen_bee"
-  }
+  "type": "beecrasy:royal_jelly",
+  "category": "misc"
 }

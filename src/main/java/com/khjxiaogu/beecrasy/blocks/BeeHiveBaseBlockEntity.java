@@ -19,10 +19,15 @@
 
 package com.khjxiaogu.beecrasy.blocks;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent.BeeHiveBaseData;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -74,5 +79,16 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 		output.discard("work");
 		super.removeComponentsFromTag(output);
 	}
+	@Override
+	protected void applyImplicitComponents(DataComponentGetter components) {
+		BeeHiveBaseData hive=components.get(Components.BEE_HIVE);
+		if(hive!=null)
+		this.component.load(hive);
+		super.applyImplicitComponents(components);
+	}
 
+	@Override
+	protected void collectImplicitComponents(net.minecraft.core.component.DataComponentMap.Builder components) {
+		components.set(Components.BEE_HIVE, component.save());
+	}
 }

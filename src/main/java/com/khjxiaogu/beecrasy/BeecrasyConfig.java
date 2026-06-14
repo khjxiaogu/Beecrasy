@@ -57,6 +57,7 @@ public class BeecrasyConfig {
 
 		public final IntValue SEQUENCER_HONEY;
 		public final IntValue SEQUENCER_ENERGY;
+		public final IntValue SEQUENCER_THROUGHPUT;
 		Server(ModConfigSpec.Builder builder) {
 			builder.push("beehive");
 			LIFESPAN=builder.comment("Lifespan for an average lifespan gene.")
@@ -77,6 +78,8 @@ public class BeecrasyConfig {
 				.defineInRange("honeyCost", 25, 0, Integer.MAX_VALUE);
 			SEQUENCER_ENERGY=builder.comment("Energy consumption in FE.")
 				.defineInRange("energyCost", 5000, 0, Integer.MAX_VALUE);
+			SEQUENCER_THROUGHPUT=builder.comment("Energy input limit in FE.")
+					.defineInRange("energyLimit", 640, 0, Integer.MAX_VALUE);
 			builder.pop();
 		}
 	}

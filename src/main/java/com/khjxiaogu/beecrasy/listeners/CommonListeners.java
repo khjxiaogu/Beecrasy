@@ -81,16 +81,35 @@ public class CommonListeners {
 	
 	@SubscribeEvent
 	public static void onCapabilityInject(RegisterCapabilitiesEvent event) {
+		//skep
 		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.SKEP_BLOCKENTITY.get(), (be,ctx)->{
 			if(ctx==Direction.DOWN)
 				return be.component.getProductInv();
 			return be.component.getExternInv();
 		});
+		//hive
+		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.HIVE_BLOCKENTITY.get(), (be,ctx)->{
+			if(ctx==Direction.DOWN)
+				return be.component.getProductInv();
+			return be.component.getExternInv();
+		});
+		//press
 		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.PRESS_BLOCKENTITY.get(), (be,_)->{
 			return be.getExternInv();
 		});
 		event.registerBlockEntity(Capabilities.Fluid.BLOCK, Blocks.PRESS_BLOCKENTITY.get(), (be,_)->{
 			return be.getExternTank();
+		});
+		//sequencer
+
+		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.SEQUENCER_BLOCKENTITY.get(), (be,_)->{
+			return be.invTransport;
+		});
+		event.registerBlockEntity(Capabilities.Fluid.BLOCK, Blocks.SEQUENCER_BLOCKENTITY.get(), (be,_)->{
+			return be.tank;
+		});
+		event.registerBlockEntity(Capabilities.Energy.BLOCK, Blocks.SEQUENCER_BLOCKENTITY.get(), (be,_)->{
+			return be.energyTransport;
 		});
 	}
 	@SubscribeEvent

@@ -42,12 +42,15 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.DelegatingResourceHandler;
+import net.neoforged.neoforge.transfer.energy.LimitingEnergyHandler;
 import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public class SequencerBlockEntity extends BeecrasyBlockEntity implements MenuProvider,ContainerData {
 	public final int energyCost=BeecrasyConfig.SERVER.SEQUENCER_ENERGY.getAsInt();
@@ -84,6 +87,17 @@ public class SequencerBlockEntity extends BeecrasyBlockEntity implements MenuPro
 			return super.isValid(index, resource)&&resource.is(Tags.HONEY);
 		}
 	};
+	public DelegatingResourceHandler<ItemResource> invTransport=new DelegatingResourceHandler<>(inv) {
+
+		@Override
+		public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+			if((!resource.has(Components.GENOME))||resource.get(Components.GENOME).isInspected())
+				return super.extract(index, resource, amount, transaction);
+			return 0;
+		}
+		
+	};
+	public LimitingEnergyHandler energyTransport=new LimitingEnergyHandler(energy, BeecrasyConfig.SERVER.SEQUENCER_THROUGHPUT.getAsInt(), 0);
 	public SequencerBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
 		super(Blocks.SEQUENCER_BLOCKENTITY.get(), pWorldPosition, pBlockState);
 	}

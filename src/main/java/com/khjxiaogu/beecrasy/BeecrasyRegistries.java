@@ -31,6 +31,8 @@ import com.google.common.collect.ImmutableSet;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
 import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
+import com.khjxiaogu.beecrasy.blocks.HiveBlock;
+import com.khjxiaogu.beecrasy.blocks.HiveBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlock;
 import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.PressBlock;
@@ -47,11 +49,13 @@ import com.khjxiaogu.beecrasy.components.LarvaProductivity;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
 import com.khjxiaogu.beecrasy.data.GenomePresets;
 import com.khjxiaogu.beecrasy.data.PressRecipe;
+import com.khjxiaogu.beecrasy.data.RoyalJellyRecipe;
 import com.khjxiaogu.beecrasy.entity.BeeSwarmEntity;
 import com.khjxiaogu.beecrasy.item.BeehiveBlockItem;
 import com.khjxiaogu.beecrasy.item.LarvaItem;
 import com.khjxiaogu.beecrasy.item.QueenBeeItem;
 import com.khjxiaogu.beecrasy.item.SequencerHandHeld;
+import com.khjxiaogu.beecrasy.menu.HiveMenu;
 import com.khjxiaogu.beecrasy.menu.PressMenu;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuBlock;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuHandHeld;
@@ -96,6 +100,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.BlockEntityType.BlockEntitySupplier;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.RandomSupport;
 import net.minecraft.world.level.material.Fluid;
@@ -182,6 +187,9 @@ public class BeecrasyRegistries {
 	    public static final DeferredBlock<PressBlock> HONEY_PRESS=register("honey_press",PressBlock::new,Blocks::machineProps,UnaryOperator.identity());
 	    public static final DeferredBlock<SequencerBlock> SEQUENCER=register("sequencer",SequencerBlock::new,Blocks::machineProps,UnaryOperator.identity());
 	    public static final DeferredBlock<Block> SKEP=register("skep",SkepBlock::new,(b,p)->new BeehiveBlockItem(b, p, ()->new BeeHiveBaseComponent(1,4,4,0)),Blocks::skepProps,t->t.component(Components.BEE_HIVE, SkepBlockEntity.EMPTY));
+	    public static final DeferredBlock<Block> HIVE=register("hive",HiveBlock::new,(b,p)->new BeehiveBlockItem(b, p, ()->new BeeHiveBaseComponent(2,6,6,0)),Blocks::woodProps,t->t.component(Components.BEE_HIVE, HiveBlockEntity.EMPTY));
+		   
+	    
 	    public static final DeferredBlock<Block> EMPTY_COMB_BLOCK=register("empty_comb_block");
 	    public static final DeferredBlock<Block> HONEY_COMB_BLOCK=register("honey_comb_block");
 	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_NASCENT=register("bee_nest_nascent",p->new BeeNestBlock(p,0,3,BeeNestBlock.NASCENT_SHAPE,BeeNestBlock.NASCENT_CORNER),Blocks::nestProps,UnaryOperator.identity());
@@ -201,11 +209,13 @@ public class BeecrasyRegistries {
 	    public static final DeferredBlock<DoublePlantBlock> FLOWER_PROTEA = register("protea", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
 	    public static final DeferredBlock<DoublePlantBlock> FLOWER_PROTEA_ARTISAN = register("protea_artisan", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
 	    
+	    
 	    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Beecrasy.MODID);
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PressBlockEntity>> PRESS_BLOCKENTITY=BLOCK_ENTITIES.register("honey_press", makeBlockEntityType(PressBlockEntity::new, HONEY_PRESS));
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NaturalHiveBlockEntity>> NATURAL_HIVE_BLOCKENTITY=BLOCK_ENTITIES.register("natural_hive",makeBlockEntityType(NaturalHiveBlockEntity::new, NATURAL_HIVE));
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SkepBlockEntity>> SKEP_BLOCKENTITY=BLOCK_ENTITIES.register("skep", makeBlockEntityType(SkepBlockEntity::new, SKEP));
-	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SequencerBlockEntity>> SEQUENCER_BLOCKENTITY=BLOCK_ENTITIES.register("sequencer", makeBlockEntityType(SequencerBlockEntity::new, SEQUENCER));
+	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HiveBlockEntity>> HIVE_BLOCKENTITY=BLOCK_ENTITIES.register("hive", makeBlockEntityType(HiveBlockEntity::new, HIVE));
+		public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SequencerBlockEntity>> SEQUENCER_BLOCKENTITY=BLOCK_ENTITIES.register("sequencer", makeBlockEntityType(SequencerBlockEntity::new, SEQUENCER));
 
 	    public static DeferredBlock<Block> register(String name){
 	    	return register(name,Block::new,Blocks::genalDeco,UnaryOperator.identity());
@@ -245,6 +255,14 @@ public class BeecrasyRegistries {
 		static Properties nestProps(Properties properties) {
 			return properties.mapColor(MapColor.COLOR_YELLOW).sound(SoundType.GRASS).requiresCorrectToolForDrops()
 					.strength(0.5f).noOcclusion()
+					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
+		}
+		static Properties woodProps(Properties properties) {
+			return properties.mapColor(MapColor.WOOD).sound(SoundType.WOOD)
+		            .instrument(NoteBlockInstrument.BASS)
+		            .strength(2.0F, 3.0F)
+		            .ignitedByLava()
+					.noOcclusion()
 					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
 		}
 		static boolean notSolid(BlockState state, BlockGetter reader, BlockPos pos) {
@@ -303,6 +321,9 @@ public class BeecrasyRegistries {
 		public static final DeferredHolder<RecipeType<?>, RecipeType<GenomePresets>> GENOME_PRESET_TYPE=createType("genome_preset");
 		public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<GenomePresets>> GENOME_PRESET=createSerializer("genome_preset",GenomePresets.CODEC,GenomePresets.STREAM_CODEC);
 		
+
+		public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RoyalJellyRecipe>> ROYAL_JELLY=createSerializer("royal_jelly",RoyalJellyRecipe.CODEC,RoyalJellyRecipe.STREAM_CODEC);
+		
 		public static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> createType(String name) {
 			return RECIPE_TYPES.register(name,RecipeType::simple);
 		}
@@ -318,6 +339,7 @@ public class BeecrasyRegistries {
 		public static final DeferredHolder<MenuType<?>, MenuType<SkepMenu>> SKEP_MENU=MENU_TYPES.register("skep", () -> IMenuTypeExtension.create(SkepMenu::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<SequencerMenuHandHeld>> SEQUENCER_HANDHELD_MENU=MENU_TYPES.register("sequencer_handheld", () -> IMenuTypeExtension.create(SequencerMenuHandHeld::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<SequencerMenuBlock>> SEQUENCER_BLOCK_MENU=MENU_TYPES.register("sequencer_block", () -> IMenuTypeExtension.create(SequencerMenuBlock::new));
+		public static final DeferredHolder<MenuType<?>, MenuType<HiveMenu>> HIVE_MENU=MENU_TYPES.register("hive", () -> IMenuTypeExtension.create(HiveMenu::new));
 		
 	}
     public static void register(IEventBus modEventBus) {
