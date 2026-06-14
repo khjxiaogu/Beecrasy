@@ -59,7 +59,7 @@ public class BeecrasyConfig {
 		public final IntValue INTERVAL;
 		public final IntValue RADIUS;
 		public final IntValue FLOWER_RADIUS;
-		public final IntValue FLOWER_RATE;
+		public final DoubleValue FLOWER_RATE;
 		public final IntValue LARVA_SURVIVE_SECS;
 		public final DoubleValue MUTATION_CHANCE;
 
@@ -77,7 +77,7 @@ public class BeecrasyConfig {
 			FLOWER_RADIUS=builder.comment("Flower transformation radius for a hive.")
 					.defineInRange("hiveFloringRadius", 4, 1, Integer.MAX_VALUE);
 			FLOWER_RATE=builder.comment("Flower transformation try time for a hive.")
-					.defineInRange("hiveFloringRate", 3, 1, Integer.MAX_VALUE);
+					.defineInRange("hiveFloringRate", 1d, 0, Integer.MAX_VALUE);
 			builder.pop();
 			builder.push("bees");
 			LARVA_SURVIVE_SECS=builder.comment("Larva dies when leaving hive for specific seconds(20 ticks), set 0 to disable.")

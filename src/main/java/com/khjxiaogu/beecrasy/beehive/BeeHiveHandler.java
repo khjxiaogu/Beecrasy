@@ -262,7 +262,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				if(process<0)
 					process=0;
 				if(lprocess/interval!=process/interval) {
-					GenomeWorkHelper.transformFlowers(params.level(), params.position(), BeecrasyConfig.SERVER.FLOWER_RADIUS.getAsInt(), BeecrasyConfig.SERVER.FLOWER_RATE.getAsInt());
+					GenomeWorkHelper.transformFlowers(params.level(), params.position(), BeecrasyConfig.SERVER.FLOWER_RADIUS.getAsInt(), (float)BeecrasyConfig.SERVER.FLOWER_RATE.getAsDouble());
 					if(fillLarva(params)||fillDrone(params)) {
 						updateCombLifespan(secs);
 						updateQueenLifespan(secs);

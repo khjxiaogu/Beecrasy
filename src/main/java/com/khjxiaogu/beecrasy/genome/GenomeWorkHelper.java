@@ -236,14 +236,15 @@ public class GenomeWorkHelper {
 		BeeEnvironmentValidateEvent ev=new BeeEnvironmentValidateEvent(params,phenoType);
 		return !NeoForge.EVENT_BUS.post(ev).isCanceled();
 	}
-	public static boolean transformFlowers(Level l,BlockPos pos,int radius,int count){
+	public static boolean transformFlowers(Level l,BlockPos pos,int radius,float count){
 		boolean updated=false;
 		final int x0=pos.getX()-radius;
 		final int y0=pos.getY()-radius,y1=pos.getY()+radius;
 		final int z0=pos.getZ()-radius;
 		BlockPos.MutableBlockPos mutable=new MutableBlockPos();
 		RandomSource rs=l.getRandom();
-		for(int i=0;i<count;i++) {
+		int maxcnt=BeecrasyMath.getRandomRate(count, rs);
+		for(int i=0;i<maxcnt;i++) {
 			Optional<Holder<Block>> opt=l.registryAccess().get(Tags.FLOWERS_FROM_APICULTURE).flatMap(t->t.getRandomElement(rs));
 			if(opt.isEmpty())
 				continue;
@@ -258,11 +259,9 @@ public class GenomeWorkHelper {
 					mutable=mutable.setY(y-1);
 					BlockState bsbelow=chunk.getBlockState(mutable);
 					BlockState toPlace=opt.get().value().defaultBlockState();
-					System.out.println(mutable);
 					if(bsbelow.canBeReplaced()) {
 						BlockPos placing=mutable.immutable();
-						System.out.println("1"+placing);
-						l.setBlock(placing, toPlace, 3);
+						l.setBlock(placing, toPlace, 18);
 						opt.get().value().setPlacedBy(l, placing, toPlace, null, new ItemStack(opt.get().value().asItem()));
 						updated=true;
 					}else{
@@ -271,9 +270,7 @@ public class GenomeWorkHelper {
 						BlockPos placing=mutable.immutable();
 						BlockState bsabove=chunk.getBlockState(placing.above());
 						if(bsabove.canBeReplaced()) {
-
-							System.out.println("2"+placing);
-							l.setBlock(placing, toPlace, 3);
+							l.setBlock(placing, toPlace, 18);
 							opt.get().value().setPlacedBy(l, placing, toPlace, null, new ItemStack(opt.get().value().asItem()));
 							updated=true;
 						}
