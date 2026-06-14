@@ -26,9 +26,11 @@ import java.util.Objects;
 import com.khjxiaogu.beecrasy.beehive.HiveSlot;
 import com.mojang.serialization.Codec;
 
+import net.minecraft.core.Holder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueInput.ValueInputList;
@@ -76,6 +78,11 @@ public class StacksHiveSlot implements HiveSlot,ValueIOSerializable {
 	@Override
 	public ItemStack getItem() {
 		return stack.copy();
+	}
+
+	@Override
+	public boolean is(Holder<Item> item) {
+		return stack.is(item);
 	}
 
 	/**

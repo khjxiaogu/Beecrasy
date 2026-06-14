@@ -100,13 +100,13 @@ public class NaturalHiveBlock extends Block implements BeecrasyEntityBlock<Natur
 		if (params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof NaturalHiveBlockEntity hive) {
 			if(hive.isGrowthStarted&&!hive.hiveInfo.isWorking()) {
 				for(StacksHiveSlot slot:hive.queenSlot) {
-					list.add(slot.getItem().copy());
+					list.add(slot.getItem());
 				}
 				for(StacksHiveSlot slot:hive.combSlot) {
-					list.add(slot.getItem().copy());
+					list.add(slot.getItem());
 				}
 				for(StacksHiveSlot slot:hive.droneSlot) {
-					list.add(slot.getItem().copy());
+					list.add(slot.getItem());
 				}
 			}else {
 				list.add(hive.queen.copy());

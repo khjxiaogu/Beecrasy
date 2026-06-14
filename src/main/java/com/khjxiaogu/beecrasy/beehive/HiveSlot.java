@@ -21,6 +21,8 @@ package com.khjxiaogu.beecrasy.beehive;
 
 import java.util.List;
 
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -43,6 +45,9 @@ public interface HiveSlot {
 	 * @return 如果槽位中没有物品则返回 true
 	 */
 	public boolean isEmpty();
+	default boolean is(Holder<Item> item) {
+		return getItem().is(item);
+	}
 	/**
 	 * 将一个源槽位列表中的物品全部复制到目标槽位列表。
 	 * 复制会在两个列表的公共长度范围内逐槽位进行。

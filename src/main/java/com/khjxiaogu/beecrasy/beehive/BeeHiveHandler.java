@@ -471,13 +471,11 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * 使用优先级队列按相似度降序排列。
 	 */
 	public void elecQueen() {
-		boolean hasEmptyQueen=false;
 		for(HiveSlot hi:queenSlot) {
-			if(hi.isEmpty())
-				hasEmptyQueen=true;
+			if(hi.is(Items.LARVA)) {
+				return;
+			}
 		}
-		if(!hasEmptyQueen)
-			return;
 		PriorityQueue<HiveSlotPriority> queens=new PriorityQueue<>(Comparator.comparingLong(HiveSlotPriority::priority).reversed());
 		for(int i=0;i<combSlot.size();i++) {
 			HiveSlot hi=combSlot.get(i);

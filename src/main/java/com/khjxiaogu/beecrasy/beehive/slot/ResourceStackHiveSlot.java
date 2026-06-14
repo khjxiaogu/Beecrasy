@@ -21,6 +21,8 @@ package com.khjxiaogu.beecrasy.beehive.slot;
 
 import com.khjxiaogu.beecrasy.beehive.HiveSlot;
 
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.StacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
@@ -30,6 +32,10 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
  * 直接操作底层资源句柄中的指定索引，适用于需要直接与物品传输 API 交互的场景。
  */
 public class ResourceStackHiveSlot implements HiveSlot {
+	@Override
+	public boolean is(Holder<Item> item) {
+		return handler.getResource(slot).is(item);
+	}
 	/** 底层资源句柄，提供对物品栈的读写能力。 */
 	protected final StacksResourceHandler<ItemStack,ItemResource> handler;
 	/** 在该资源句柄中对应的槽位索引。 */

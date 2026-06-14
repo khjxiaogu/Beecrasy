@@ -499,7 +499,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		int queenCount=0;
 		for(ResourceStackHiveSlot slot:queenSlot) {
 			if(!slot.isEmpty()) {
-				if(slot.getItem().is(Items.QUEEN_BEE)) {
+				if(slot.is(Items.QUEEN_BEE)) {
 					queenCount++;
 				}else {
 					err=ErrCode.MALFORMED_SLOT;
@@ -517,7 +517,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		int droneCount=0;
 		for(ResourceStackHiveSlot slot:droneSlot) {
 			if(!slot.isEmpty()) {
-				if(slot.getItem().is(Items.DRONE)) {
+				if(slot.is(Items.DRONE)) {
 					droneCount++;
 				}else {
 					err=ErrCode.MALFORMED_SLOT;
@@ -527,7 +527,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		}
 		for(ResourceStackHiveSlot slot:combSlot) {
 			if(!slot.isEmpty()) {
-				if(slot.getItem().is(Items.DRONE)) {
+				if(slot.is(Items.DRONE)) {
 					droneCount++;
 				}else {
 					err=ErrCode.MALFORMED_SLOT;
