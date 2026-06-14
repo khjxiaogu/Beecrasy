@@ -261,18 +261,19 @@ public class GenomeWorkHelper {
 					System.out.println(mutable);
 					if(bsbelow.canBeReplaced()) {
 						BlockPos placing=mutable.immutable();
+						System.out.println("1"+placing);
 						l.setBlock(placing, toPlace, 3);
-						System.out.println(placing);
 						opt.get().value().setPlacedBy(l, placing, toPlace, null, new ItemStack(opt.get().value().asItem()));
 						updated=true;
 					}else{
-						mutable.set(y);
+						mutable=mutable.setY(y);
+						System.out.println(mutable);
 						BlockPos placing=mutable.immutable();
 						BlockState bsabove=chunk.getBlockState(placing.above());
 						if(bsabove.canBeReplaced()) {
-							
+
+							System.out.println("2"+placing);
 							l.setBlock(placing, toPlace, 3);
-							System.out.println(placing);
 							opt.get().value().setPlacedBy(l, placing, toPlace, null, new ItemStack(opt.get().value().asItem()));
 							updated=true;
 						}
