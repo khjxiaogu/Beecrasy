@@ -1,0 +1,11 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"beecrasy:hollyhock_white"
+	],
+	"result": {
+		"count": 2,
+		"id": "minecraft:white_dye"
+	}
+}

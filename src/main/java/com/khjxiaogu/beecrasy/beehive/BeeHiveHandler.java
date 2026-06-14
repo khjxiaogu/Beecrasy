@@ -101,9 +101,9 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				ByteBufCodecs.optional(ByteBufCodecs.LONG.map(SerializableRandomSource::new, SerializableRandomSource::getSeed)),o->o.random(),
 				ByteBufCodecs.optional(Utils.asArray(Genome.STREAM_CODEC.apply(ByteBufCodecs.list()),Genome[]::new)),DataRecord::queenGenome,
 				ByteBufCodecs.optional(Genome.STREAM_CODEC.apply(ByteBufCodecs.list())),DataRecord::droneGenomes,
-				ByteBufCodecs.INT,DataRecord::queenCount,
-				ByteBufCodecs.INT,DataRecord::larvaCount,
-				ByteBufCodecs.INT,DataRecord::droneCount,
+				ByteBufCodecs.VAR_INT,DataRecord::queenCount,
+				ByteBufCodecs.VAR_INT,DataRecord::larvaCount,
+				ByteBufCodecs.VAR_INT,DataRecord::droneCount,
 				ByteBufCodecs.INT,DataRecord::process,
 				ByteBufCodecs.INT,DataRecord::processMax,
 				DataRecord::new

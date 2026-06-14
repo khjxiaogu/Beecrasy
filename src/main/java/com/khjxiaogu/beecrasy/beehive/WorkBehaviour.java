@@ -44,7 +44,7 @@ public enum WorkBehaviour{
 	/** 使用整数序数进行序列化的编解码器。 */
 	public static final Codec<WorkBehaviour> CODEC=Codec.INT.xmap(i->WorkBehaviour.values()[i], WorkBehaviour::ordinal);
 	/** 用于网络数据包传输的流式编解码器。 */
-	public static final StreamCodec<ByteBuf,WorkBehaviour> STREAM_CODEC=ByteBufCodecs.INT.map(i->WorkBehaviour.values()[i], WorkBehaviour::ordinal);
+	public static final StreamCodec<ByteBuf,WorkBehaviour> STREAM_CODEC=ByteBufCodecs.VAR_INT.map(i->WorkBehaviour.values()[i], WorkBehaviour::ordinal);
 	/**
 	 * 获取该工作模式对应的可翻译文本组件。
 	 * @return 用于 GUI 显示的文本组件
