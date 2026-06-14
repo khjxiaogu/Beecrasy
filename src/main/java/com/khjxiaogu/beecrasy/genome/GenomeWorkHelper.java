@@ -247,17 +247,18 @@ public class GenomeWorkHelper {
 			Optional<Holder<Block>> opt=l.registryAccess().get(Tags.FLOWERS_FROM_APICULTURE).flatMap(t->t.getRandomElement(rs));
 			if(opt.isEmpty())
 				continue;
-			mutable.set(rs.nextInt(radius*2+1)+x0,y0, rs.nextInt(radius*2+1)+z0);
-			System.out.println(mutable);
+			mutable=mutable.set(rs.nextInt(radius*2+1)+x0,y0, rs.nextInt(radius*2+1)+z0);
+			
 			ChunkPos cp=ChunkPos.containing(mutable);
 			LevelChunk chunk=l.getChunk(cp.x(), cp.z());
 			for(int y=y0;y<=y1;y++) {
-				mutable.setY(y);
+				mutable=mutable.setY(y);
 				BlockState bs=chunk.getBlockState(mutable);
 				if(bs.is(Tags.TO_BE_FLOWER)&&bs.canBeReplaced()) {
-					mutable.setY(y-1);
+					mutable=mutable.setY(y-1);
 					BlockState bsbelow=chunk.getBlockState(mutable);
 					BlockState toPlace=opt.get().value().defaultBlockState();
+					System.out.println(mutable);
 					if(bsbelow.canBeReplaced()) {
 						BlockPos placing=mutable.immutable();
 						l.setBlock(placing, toPlace, 3);
@@ -266,9 +267,10 @@ public class GenomeWorkHelper {
 						updated=true;
 					}else{
 						mutable.set(y);
-						BlockState bsabove=chunk.getBlockState(mutable.above());
+						BlockPos placing=mutable.immutable();
+						BlockState bsabove=chunk.getBlockState(placing.above());
 						if(bsabove.canBeReplaced()) {
-							BlockPos placing=mutable.immutable();
+							
 							l.setBlock(placing, toPlace, 3);
 							System.out.println(placing);
 							opt.get().value().setPlacedBy(l, placing, toPlace, null, new ItemStack(opt.get().value().asItem()));
