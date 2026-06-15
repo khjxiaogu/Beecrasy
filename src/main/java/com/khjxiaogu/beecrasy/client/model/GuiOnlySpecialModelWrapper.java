@@ -41,8 +41,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4fc;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
@@ -52,7 +50,6 @@ public class GuiOnlySpecialModelWrapper<T> implements ItemModel {
     private final ModelRenderProperties properties;
     private final Supplier<Vector3fc[]> extents;
     private final Matrix4fc transformation;
-
     public GuiOnlySpecialModelWrapper(SpecialModelRenderer<T> specialRenderer, ModelRenderProperties properties, Matrix4fc transformation) {
         this.specialRenderer = specialRenderer;
         this.properties = properties;
@@ -74,28 +71,31 @@ public class GuiOnlySpecialModelWrapper<T> implements ItemModel {
         @Nullable ItemOwner owner,
         int seed
     ) {
-        output.appendModelIdentityElement(this);
-        ItemStackRenderState.LayerRenderState layer = output.newLayer();
-        if (item.hasFoil()) {
-            ItemStackRenderState.FoilType foilType = ItemStackRenderState.FoilType.STANDARD;
-            layer.setFoilType(foilType);
-            output.setAnimated();
-            output.appendModelIdentityElement(foilType);
-        }
 
-        T argument = this.specialRenderer.extractArgument(item);
-        layer.setExtents(this.extents);
-        layer.setLocalTransform(this.transformation);
-        if(displayContext==ItemDisplayContext.GUI)
-        	layer.setupSpecialModel(this.specialRenderer, argument);
-        if (argument != null) {
-            output.appendModelIdentityElement(argument);
-        }
 
-        this.properties.applyToLayer(layer, displayContext);
+
+        if(displayContext==ItemDisplayContext.GUI) {
+            output.appendModelIdentityElement(this);
+            ItemStackRenderState.LayerRenderState layer = output.newLayer();
+            if (item.hasFoil()) {
+                ItemStackRenderState.FoilType foilType = ItemStackRenderState.FoilType.STANDARD;
+                layer.setFoilType(foilType);
+                output.setAnimated();
+                output.appendModelIdentityElement(foilType);
+            }
+            T argument = this.specialRenderer.extractArgument(item);
+            layer.setExtents(this.extents);
+            layer.setLocalTransform(this.transformation);
+	        layer.setupSpecialModel(this.specialRenderer, argument);
+	        if (argument != null) {
+	            output.appendModelIdentityElement(argument);
+	        }
+        }
     }
+    
 
     public record Unbaked(Identifier base, Optional<Transformation> transformation, SpecialModelRenderer.Unbaked<?> specialModel) implements ItemModel.Unbaked {
+    	
         public static final MapCodec<GuiOnlySpecialModelWrapper.Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(
             i -> i.group(
                     Identifier.CODEC.fieldOf("base").forGetter(GuiOnlySpecialModelWrapper.Unbaked::base),
@@ -104,7 +104,9 @@ public class GuiOnlySpecialModelWrapper<T> implements ItemModel {
                 )
                 .apply(i, GuiOnlySpecialModelWrapper.Unbaked::new)
         );
-
+        public Unbaked(Identifier base, SpecialModelRenderer.Unbaked<?> specialModel) {
+        	this(base,Optional.empty(),specialModel);
+        }
         @Override
         public void resolveDependencies(ResolvableModel.Resolver resolver) {
             resolver.markDependency(this.base);
@@ -116,10 +118,9 @@ public class GuiOnlySpecialModelWrapper<T> implements ItemModel {
             SpecialModelRenderer<?> bakedSpecialModel = this.specialModel.bake(context);
             if (bakedSpecialModel == null) {
                 return context.missingItemModel(modelTransform);
-            } else {
-                ModelRenderProperties properties = this.getProperties(context);
-                return new GuiOnlySpecialModelWrapper<>(bakedSpecialModel, properties, modelTransform);
             }
+			ModelRenderProperties properties = this.getProperties(context);
+			return new GuiOnlySpecialModelWrapper<>(bakedSpecialModel, properties, modelTransform);
         }
 
         private ModelRenderProperties getProperties(ItemModel.BakingContext context) {

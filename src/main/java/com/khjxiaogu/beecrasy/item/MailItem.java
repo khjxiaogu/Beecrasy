@@ -105,9 +105,8 @@ public class MailItem extends Item{
 								stack.shrink(1);
 								trans.commit();
 								return InteractionResult.CONSUME;
-							}else {
-								context.getPlayer().sendSystemMessage(LetterStatus.PLAYER_NOT_EXIST.text);
 							}
+							context.getPlayer().sendSystemMessage(LetterStatus.PLAYER_NOT_EXIST.text);
 							
 						}else {
 							context.getPlayer().sendSystemMessage(LetterStatus.NOT_ENOUGH_POSTAGE.text);

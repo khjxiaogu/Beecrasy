@@ -1,4 +1,4 @@
-// 26.1.2	2026-06-15T18:34:04.1162033	Model Definitions - beecrasy
+// 26.1.2	2026-06-15T23:47:19.0891268	Model Definitions - beecrasy
 4c7cf0e4438c3d08128faa6e528770e3dde1c048 assets/beecrasy/blockstates/bee_nest_big.json
 2ec8c8a692b2ead7a010c6a08f4f7e90599bd066 assets/beecrasy/blockstates/bee_nest_medium.json
 809435de1f5dafa7eb21969f597c32b89a31100d assets/beecrasy/blockstates/bee_nest_nascent.json
@@ -27,6 +27,8 @@ fee78f5ff2576eed19bc1a43b362134a781c1271 assets/beecrasy/items/bee_nest_medium.j
 05220e930b51e5c6496ac9396f0c75262b6ab8af assets/beecrasy/items/empty_comb_block.json
 b25a79f5949ebb2bc40f3bf8e594125e7723167b assets/beecrasy/items/foxtail_lily.json
 d9784cb99483b74bbee0a6ccef98a82348b26018 assets/beecrasy/items/foxtail_lily_fiery.json
+efe959c93d6c870d222423f5549035b03ea25105 assets/beecrasy/items/handheld_mailbox.json
+2e340d7ad2aa45d62b1c75fa140325c15e26e51e assets/beecrasy/items/handheld_mailbox_active.json
 196ab2314730d438f4f23d08f033dcab34c5a5a2 assets/beecrasy/items/handheld_sequencer.json
 6f9e4edfeef0b80456ca2061eb5c7590578cfa57 assets/beecrasy/items/handheld_sequencer_active.json
 d6d02f7663e8d82cbbc08ee0a5f2d1b9d2247eb8 assets/beecrasy/items/hive.json
@@ -47,7 +49,7 @@ e9cc4f2cb81b0d68b69bb6e00d8541bbe09c1aa3 assets/beecrasy/items/incense_humidity_
 4057d3acbc1e604c45fb43c17f9d4df8a0711d3a assets/beecrasy/items/larva.json
 daf4bc0cd56bc6f54c1e037134be60cf26268106 assets/beecrasy/items/mail.json
 7905422778539df4e7a68bc269e74893f7fc8ced assets/beecrasy/items/natural_hive.json
-c9c5f58559adab97eb86d1be61bdaa176b5cdde8 assets/beecrasy/items/package.json
+3b27ae7f3a0ae65f356f8280cb06b47e4f51c2a1 assets/beecrasy/items/package.json
 9b5b776e43f7aaaef0df0ebf58c8f8757abc9d50 assets/beecrasy/items/pheromone.json
 409cb43de0068ea6e52cbe634881e7c4b021659e assets/beecrasy/items/product_comb.json
 5bd910141be0350a89cc6d358380caf5aadd152d assets/beecrasy/items/protea.json
@@ -75,6 +77,8 @@ cf71e7334fc989f2bbdd2907328ee5a6942f6249 assets/beecrasy/models/item/delphinium_
 c7a383d258306e5aa54d72e30a62d869925c3200 assets/beecrasy/models/item/drone.json
 563ebbc0f74ece3452bd0e957770c56233e8ca7c assets/beecrasy/models/item/foxtail_lily.json
 48f390366f1993c027b1b3ae7c9fb54847c235f6 assets/beecrasy/models/item/foxtail_lily_fiery.json
+e7895274d6654d00125ad1e960981f5f3fc4b8d5 assets/beecrasy/models/item/handheld_mailbox.json
+951dddcd33c850e5b64841ca6bab597c2f4b01cf assets/beecrasy/models/item/handheld_mailbox_active.json
 e0079aaa498e64a952216e2aa13ef41f59517d7a assets/beecrasy/models/item/handheld_sequencer.json
 4b5b106ade8a818c345a0c674586fe8da8467b53 assets/beecrasy/models/item/handheld_sequencer_active.json
 d1064bb2b7b4c881c548b1bfb4ba597bb7beb482 assets/beecrasy/models/item/hollyhock_pink.json

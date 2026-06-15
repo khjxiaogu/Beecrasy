@@ -144,13 +144,12 @@ public class MailScreen extends AbstractContainerScreen<MailMenu> {
         if (event.isEscape()) {
             this.minecraft.player.closeContainer();
             return true;
-        } else {
-        	if(this.getFocused() instanceof EditBox name) {
-        		name.keyPressed(event);
-        		if(name.canConsumeInput())
-        			return true;
-        	}
         }
+		if(this.getFocused() instanceof EditBox name) {
+			name.keyPressed(event);
+			if(name.canConsumeInput())
+				return true;
+		}
     	return super.keyPressed(event);
     }
 	/**
@@ -175,7 +174,6 @@ public class MailScreen extends AbstractContainerScreen<MailMenu> {
 			graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos+24, topPos+6,176+11, 19, 11, 11,256,256);
 			graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos+24, topPos+26,176+11*3, 19, 11, 11,256,256);
 		}
-		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight,256,256);
 	}
 
 	public boolean isMouseIn(int mouseX, int mouseY, int x, int y, int w, int h) {

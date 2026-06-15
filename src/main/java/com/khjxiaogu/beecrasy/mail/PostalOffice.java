@@ -87,6 +87,7 @@ public class PostalOffice extends SavedData {
 	}
 	public boolean hasDeliveryTask(ServerLevel level,UUID mailId) {
 		EntityReference<Entity> delivery=entities.get(mailId);
+
 		if(delivery==null||delivery.getEntity(level, Entity.class)==null) {
 			return false;
 		}
@@ -94,6 +95,7 @@ public class PostalOffice extends SavedData {
 	}
 	public void addDeliveryTask(Entity entity,UUID mailId) {
 		entities.put(mailId, EntityReference.of(entity));
+		this.setDirty();
 	}
 	public boolean deliver(UUID mailId,ServerPlayer sp) {
 		Mail mail=pending.get(mailId);
@@ -103,7 +105,7 @@ public class PostalOffice extends SavedData {
 		is.set(Components.MAIL, mail.getMail(sp.level()));
 		is.set(Components.CONTAINER,mail.items());
 		boolean hasItem=false;
-		for(int i=0;i<8;i++) {
+		for(int i=0;i<mail.items().getSlots();i++) {
 			if(!mail.items().getStackInSlot(i).isEmpty()) {
 				hasItem=true;
 			}
@@ -115,11 +117,21 @@ public class PostalOffice extends SavedData {
 		this.setDirty();
 		return true;
 	}
+	public int getMailCount(ServerPlayer sp){
+		UUID puid=sp.getGameProfile().id();
+		int count=0;
+		for(Mail mail:pending.values()) {
+			if(puid.equals(mail.receiver())) {
+				count++;
+			}
+		}
+		return count;
+	}
 	public List<Mail> collectMails(ServerPlayer sp){
 		UUID puid=sp.getGameProfile().id();
 		List<Mail> available=new ArrayList<>(pending.size());
 		for(Mail mail:pending.values()) {
-			if(puid.equals(mail.receiver())) {
+			if(puid.equals(mail.receiver())&&!hasDeliveryTask(sp.level(),mail.letterId())) {
 				available.add(mail);
 			}
 		}

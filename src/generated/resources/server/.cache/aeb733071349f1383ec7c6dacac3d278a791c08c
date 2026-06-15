@@ -1,6 +1,7 @@
-// 26.1.2	2026-06-14T19:06:01.5432532	Tags for minecraft:block mod id beecrasy
+// 26.1.2	2026-06-15T23:26:27.0435424	Tags for minecraft:block mod id beecrasy
 f049a190f9dca32aadb0734d4b14eaa9ab353236 data/beecrasy/tags/block/can_become_flower.json
 a72c613d8786fc7756573ffec9c22f7ed2973d9e data/beecrasy/tags/block/flowers.json
 a72c613d8786fc7756573ffec9c22f7ed2973d9e data/beecrasy/tags/block/flowers/biotope_wild.json
+8ba328e8e418cb5d5632d8df1b26737ece9c3fda data/beecrasy/tags/block/mailbox.json
 8ba328e8e418cb5d5632d8df1b26737ece9c3fda data/beecrasy/tags/block/minable_net.json
 56983d7830421f7957592d9559f78fa07b20ae78 data/minecraft/tags/block/mineable/pickaxe.json

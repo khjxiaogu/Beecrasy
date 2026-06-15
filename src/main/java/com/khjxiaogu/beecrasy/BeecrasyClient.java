@@ -33,6 +33,7 @@ import com.khjxiaogu.beecrasy.client.particles.BeeSwarmParticle;
 import com.khjxiaogu.beecrasy.client.renderer.BeeSwarmRenderer;
 import com.khjxiaogu.beecrasy.client.renderer.PressBlockEntityRenderer;
 import com.khjxiaogu.beecrasy.client.screens.HiveScreen;
+import com.khjxiaogu.beecrasy.client.screens.MailBoxScreen;
 import com.khjxiaogu.beecrasy.client.screens.MailScreen;
 import com.khjxiaogu.beecrasy.client.screens.PressScreen;
 import com.khjxiaogu.beecrasy.client.screens.SequenceBlockScreen;
@@ -87,6 +88,8 @@ public class BeecrasyClient {
 		event.register(Menus.SEQUENCER_HANDHELD_MENU.get(), SequenceHandHeldScreen::new);
 		event.register(Menus.SEQUENCER_BLOCK_MENU.get(), SequenceBlockScreen::new);
 		event.register(Menus.MAIL_MENU.get(), MailScreen::new);
+		event.register(Menus.MAILBOX_MENU.get(), MailBoxScreen::new);
+		
 		
 		
 		SequencerTabs.init();

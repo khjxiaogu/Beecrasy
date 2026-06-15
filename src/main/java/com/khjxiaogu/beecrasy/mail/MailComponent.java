@@ -22,21 +22,26 @@ package com.khjxiaogu.beecrasy.mail;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.players.NameAndId;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.item.component.TooltipProvider;
 import net.neoforged.neoforge.common.UsernameCache;
 
-public record MailComponent(String sender,String receiver,Optional<ItemStackTemplate> icon,String line1,String line2,boolean readOnly) {
+public record MailComponent(String sender,String receiver,Optional<ItemStackTemplate> icon,String line1,String line2,boolean readOnly) implements TooltipProvider{
 	public static final Codec<MailComponent> CODEC=RecordCodecBuilder.create(t->t.group(
 		Codec.STRING.fieldOf("sender").forGetter(MailComponent::sender),
 		Codec.STRING.fieldOf("receiver").forGetter(MailComponent::receiver),
@@ -101,5 +106,14 @@ public record MailComponent(String sender,String receiver,Optional<ItemStackTemp
 			return Optional.of(new Mail(letterId,sender,uuid,icon,line1,line2,items));
 		}
 		return Optional.empty();
+	}
+	@Override
+	public void addToTooltip(TooltipContext context, Consumer<Component> consumer, TooltipFlag flag,
+			DataComponentGetter components) {
+		if(readOnly) {
+			consumer.accept(Component.translatable("tooltip.correspondence.sender",sender()));
+		}else {
+			consumer.accept(Component.translatable("tooltip.correspondence.receiver",receiver()));
+		}
 	}
 }

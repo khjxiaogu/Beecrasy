@@ -195,7 +195,8 @@ public class CommonListeners {
 				return;
 			PostalOffice po=PostalOffice.getPostalOffice(serverPlayer.level());
 			int count=po.collectMails(serverPlayer).size();
-			serverPlayer.sendSystemMessage(Component.translatable("message.postal.mail_recived_count",count));
+			if(count>0)
+				serverPlayer.sendSystemMessage(Component.translatable("message.postal.mail_recived_count",count));
 		}
 	}
 	

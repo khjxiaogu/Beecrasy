@@ -127,8 +127,8 @@ public class MailMenu extends BeecrasyContainerMenu{
 			int amount=resources.getAmountAsInt(i);
 			int capacity=resources.getCapacityAsInt(i, ir);
 			if(amount>0) {
-				if(capacity==1) {
-					postage+=1;
+				if(capacity<=4) {
+					postage+=amount;
 				}else {
 					postage+=Math.ceilDiv(amount*4, capacity);
 				}

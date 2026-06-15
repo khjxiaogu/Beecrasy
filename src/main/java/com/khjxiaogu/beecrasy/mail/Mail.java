@@ -21,7 +21,6 @@ package com.khjxiaogu.beecrasy.mail;
 
 import java.util.Optional;
 import java.util.UUID;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -30,12 +29,11 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.players.NameAndId;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.common.UsernameCache;
 
-public record Mail(UUID letterId,UUID sender,UUID receiver,Optional<ItemStackTemplate> icon,String line1,String line2,ItemContainerContents items) {
+public record Mail(UUID letterId,UUID sender,UUID receiver,Optional<ItemStackTemplate> icon,String line1,String line2,ItemContainerContents items){
 
 	public static final Codec<Mail> CODEC=RecordCodecBuilder.create(t->t.group(
 		UUIDUtil.CODEC.fieldOf("letterId").forGetter(Mail::letterId),

@@ -53,11 +53,13 @@ import com.khjxiaogu.beecrasy.data.RoyalJellyRecipe;
 import com.khjxiaogu.beecrasy.entity.BeeSwarmEntity;
 import com.khjxiaogu.beecrasy.item.BeehiveBlockItem;
 import com.khjxiaogu.beecrasy.item.LarvaItem;
+import com.khjxiaogu.beecrasy.item.MailBoxItem;
 import com.khjxiaogu.beecrasy.item.MailItem;
 import com.khjxiaogu.beecrasy.item.QueenBeeItem;
 import com.khjxiaogu.beecrasy.item.SequencerHandHeld;
 import com.khjxiaogu.beecrasy.mail.MailComponent;
 import com.khjxiaogu.beecrasy.menu.HiveMenu;
+import com.khjxiaogu.beecrasy.menu.MailBoxMenu;
 import com.khjxiaogu.beecrasy.menu.MailMenu;
 import com.khjxiaogu.beecrasy.menu.PressMenu;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuBlock;
@@ -157,6 +159,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> BUTTERFLY_NET=ITEMS.registerSimpleItem("butterfly_net",s->s.tool(ToolMaterial.WOOD,Tags.MINABLE_NET, 1.0f, -2.8f, 0).stacksTo(1));
 	    
 	    public static final DeferredItem<Item> MAIL=ITEMS.registerItem("mail",MailItem::new,t->t.component(Components.CONTAINER, ItemContainerContents.EMPTY).component(Components.MAIL, MailComponent.EMPTY));
+	    public static final DeferredItem<Item> MAILBOX=ITEMS.registerItem("handheld_mailbox",MailBoxItem::new,t->t.stacksTo(1));
 	    
 	    public static Item.Properties pheromono(Item.Properties p,Consumer<BeeHiveArgumentation.Builder> components) {
 
@@ -356,6 +359,7 @@ public class BeecrasyRegistries {
 		public static final DeferredHolder<MenuType<?>, MenuType<SequencerMenuBlock>> SEQUENCER_BLOCK_MENU=MENU_TYPES.register("sequencer_block", () -> IMenuTypeExtension.create(SequencerMenuBlock::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<HiveMenu>> HIVE_MENU=MENU_TYPES.register("hive", () -> IMenuTypeExtension.create(HiveMenu::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<MailMenu>> MAIL_MENU=MENU_TYPES.register("mail", () -> IMenuTypeExtension.create(MailMenu::new));
+		public static final DeferredHolder<MenuType<?>, MenuType<MailBoxMenu>> MAILBOX_MENU=MENU_TYPES.register("mailbox", () -> IMenuTypeExtension.create(MailBoxMenu::new));
 		
 	}
     public static void register(IEventBus modEventBus) {

@@ -32,11 +32,13 @@ import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry.BeehiveParameterT
 import com.khjxiaogu.beecrasy.components.BeehiveArgumenter;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.genome.Genes;
+import com.khjxiaogu.beecrasy.mail.MailComponent;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -71,12 +73,16 @@ public class ClientListener {
 			}
 		}
 
-		@Nullable BeehiveArgumenter arguments=stack.get(Components.ARGUMENTATION);
+		BeehiveArgumenter arguments=stack.get(Components.ARGUMENTATION);
 		if(arguments!=null) {
 			Consumer<Component> csm=event::addTooltipLines;
 			for(Entry<BeehiveParameterType<?>, Object> ent:arguments.modifiers().params().entrySet()) {
 				((BiConsumer)ent.getKey().desc()).accept(ent.getValue(), csm);
 			}
+		}
+		MailComponent mail=stack.get(Components.MAIL);
+		if(mail!=null) {
+			mail.addToTooltip(event.getContext(), event::addTooltipLines, TooltipFlag.NORMAL, stack);
 		}
 	}
 }

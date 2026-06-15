@@ -83,6 +83,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
     private @Nullable UUID mailId;
     private BeeSwarmEntity.GoToTargetGoal goToTargetGoal;
     private int remainTargetTick;
+    private int lifeSpanTicks;
 	public BeeSwarmEntity(EntityType<? extends BeeSwarmEntity> type,Level level) {
 		super(type, level);
 		this.moveControl = new FlyingMoveControl(this, 20, true);
@@ -115,6 +116,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
         super.addAdditionalSaveData(output);
         output.storeNullable("target_pos", Vec3.CODEC, this.targetPos);
         output.storeNullable("mail_id", UUIDUtil.CODEC, this.mailId);
+        output.putInt("lifespan", lifeSpanTicks);
         output.storeNullable("traceTarget", EntityReference.codec(), traceTarget);
         output.putInt("remainTargetTick", remainTargetTick);
     }
@@ -124,6 +126,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
         super.readAdditionalSaveData(input);
         this.targetPos = input.read("target_pos", Vec3.CODEC).orElse(null);
         this.mailId = input.read("mail_id", UUIDUtil.CODEC).orElse(null);
+        this.lifeSpanTicks=input.getIntOr("lifespan", 0);
         this.traceTarget = input.read("traceTarget",EntityReference.<Entity>codec()).orElse(null);
         this.remainTargetTick = input.getIntOr("remainTargetTick", 0);
     }
@@ -165,8 +168,23 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
     }
 
 
-    @Override
+    public int getLifeSpanTicks() {
+		return lifeSpanTicks;
+	}
+
+	public void setLifeSpanTicks(int lifeSpanTicks) {
+		this.lifeSpanTicks = lifeSpanTicks;
+	}
+
+	@Override
     protected void customServerAiStep(ServerLevel level) {
+    	if(lifeSpanTicks>0) {
+    		lifeSpanTicks--;
+    		if(lifeSpanTicks<=0) {
+    			this.discard();
+    			return;
+    		}
+    	}
     	if(traceTarget!=null) {
     		Entity entity=traceTarget.getEntity(level, Entity.class);
     		if(entity!=null) {
@@ -185,16 +203,20 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
     		}
     	}
     	if(hasTarget()&&this.closerThan(targetPos, 2)) {
-    		if(mailId!=null) {
-	    		PostalOffice po=PostalOffice.getPostalOffice(level);
-	    		Entity entity=traceTarget.getEntity(level, Entity.class);
-	    		if(entity instanceof ServerPlayer sp)
-		    		if(po.deliver(mailId, sp)) {
-		    			mailId=null;
-		    		}
-    		}
     		remainTargetTick++;
-    		if(remainTargetTick>=10) {
+    		
+    		if(mailId!=null) {
+    			if(remainTargetTick>=20) {
+		    		PostalOffice po=PostalOffice.getPostalOffice(level);
+		    		Entity entity=traceTarget.getEntity(level, Entity.class);
+		    		if(entity instanceof ServerPlayer sp)
+			    		if(po.deliver(mailId, sp)) {
+			    			mailId=null;
+			    		}
+    			}
+    		}
+    		
+    		if(remainTargetTick>=40) {
     			this.discard();
     		}
     	}
@@ -258,6 +280,26 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
     }
 
     @Override
+	public void push(Entity entity) {
+
+	}
+
+	@Override
+	protected void pushEntities() {
+
+	}
+
+	@Override
+	public void push(Vec3 impulse) {
+
+	}
+
+	@Override
+	public void push(double xa, double ya, double za) {
+
+	}
+
+	@Override
     protected SoundEvent getAmbientSound() {
         return null;
     }
@@ -432,7 +474,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
 		super.tick();
 		if(super.level().isClientSide()) {
 			if(super.random.nextInt(4)==0) {
-				double dx=this.position().x(),dy=this.position().y(),dz=this.position().z();
+				double dx=this.position().x()+this.getKnownSpeed().x,dy=this.position().y()+this.getKnownSpeed().y,dz=this.position().z()+this.getKnownSpeed().z;
 
 				level().addParticle(BeecrasyParticles.BEE_SWARM.get()
 					.create(new Vector4f((float)dx,

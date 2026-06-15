@@ -29,9 +29,11 @@ import com.khjxiaogu.beecrasy.genome.GeneRegistry;
 import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.khjxiaogu.beecrasy.genome.gene.Allele;
 import com.khjxiaogu.beecrasy.genome.gene.EnumAlleleType;
+import com.khjxiaogu.beecrasy.item.MailBoxItem;
 import com.khjxiaogu.beecrasy.mail.LetterStatus;
 
 import net.minecraft.data.PackOutput;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -87,6 +89,12 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 		}
 		this.add("message.postal.mail_recived", "You got mail.");
 		this.add("message.postal.mail_recived_count", "You have %s mail.");
+		this.add("tooltip.correspondence.sender", "By %s");
+		this.add("tooltip.correspondence.receiver", "To %s");
+		this.add(MailBoxItem.IN_PROGRESS, "Deliver in progress.");
+		this.add(MailBoxItem.NOT_EXPOSE, "You should be in open air to receive mail.");
+		this.add(MailBoxItem.NOT_VALID_PATH, "No vaild path for delivering.");
+
 	}
 	public <T extends Allele> void addAllele(EnumAlleleType<T> type) {
 		for(T t:type) {

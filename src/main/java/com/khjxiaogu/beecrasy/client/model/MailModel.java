@@ -40,7 +40,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 
 public record MailModel(float dx,float dy,float scale) implements SpecialModelRenderer<ItemStack> {
-
     public record Unbaked(float dx,float dy,float scale) implements SpecialModelRenderer.Unbaked<ItemStack> {
         public static final MapCodec<Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(t->t.group(
         	Codec.FLOAT.optionalFieldOf("x",0f).forGetter(Unbaked::dx),
@@ -64,8 +63,9 @@ public record MailModel(float dx,float dy,float scale) implements SpecialModelRe
 		if(argument!=null) {
 			poseStack.pushPose();
 			ItemStackRenderState state=new ItemStackRenderState();
-			Minecraft.getInstance().getItemModelResolver().appendItemLayers(state, argument, ItemDisplayContext.GUI, Minecraft.getInstance().level, null, outlineColor);
-			poseStack.translate(dx, dy, 1.5f);
+			Minecraft.getInstance().getItemModelResolver().updateForTopItem(state, argument, ItemDisplayContext.GUI, Minecraft.getInstance().level, null, 7);
+			//.appendItemLayers(state, argument,ItemDisplayContext.GUI, Minecraft.getInstance().level,  null, outlineColor);
+			poseStack.translate(dx, dy, 0.505f);
 			poseStack.scale(scale,scale,1f);
 			state.submit(poseStack, submitNodeCollector, lightCoords, overlayCoords, outlineColor);
 			poseStack.popPose();
