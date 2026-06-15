@@ -1,0 +1,8 @@
+{
+	"parent": "minecraft:block/orientable",
+	"textures": {
+		"front": "beecrasy:block/bee_city_queen_cell_front",
+		"side": "beecrasy:block/bee_city_queen_cell_side",
+		"top": "beecrasy:block/bee_city_empty_comb_1"
+	}
+}
