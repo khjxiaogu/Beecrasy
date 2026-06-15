@@ -1,0 +1,7 @@
+{
+	"parent": "minecraft:block/cube_column",
+	"textures": {
+		"end": "beecrasy:block/bee_city_core_end",
+		"side": "beecrasy:block/bee_city_core_side"
+	}
+}
