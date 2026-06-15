@@ -26,11 +26,14 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
 import com.khjxiaogu.beecrasy.client.BeeTint;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.client.ModelReference;
+import com.khjxiaogu.beecrasy.client.model.GuiOnlySpecialModelWrapper;
+import com.khjxiaogu.beecrasy.client.model.MailModel;
 import com.khjxiaogu.beecrasy.client.particles.BeeParticle;
 import com.khjxiaogu.beecrasy.client.particles.BeeSwarmParticle;
 import com.khjxiaogu.beecrasy.client.renderer.BeeSwarmRenderer;
 import com.khjxiaogu.beecrasy.client.renderer.PressBlockEntityRenderer;
 import com.khjxiaogu.beecrasy.client.screens.HiveScreen;
+import com.khjxiaogu.beecrasy.client.screens.MailScreen;
 import com.khjxiaogu.beecrasy.client.screens.PressScreen;
 import com.khjxiaogu.beecrasy.client.screens.SequenceBlockScreen;
 import com.khjxiaogu.beecrasy.client.screens.SequenceHandHeldScreen;
@@ -51,8 +54,10 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderer
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.event.RegisterFluidModelsEvent;
+import net.neoforged.neoforge.client.event.RegisterItemModelsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.model.standalone.SimpleUnbakedStandaloneModel;
@@ -81,6 +86,7 @@ public class BeecrasyClient {
 		event.register(Menus.PRESS_MENU.get(), PressScreen::new);
 		event.register(Menus.SEQUENCER_HANDHELD_MENU.get(), SequenceHandHeldScreen::new);
 		event.register(Menus.SEQUENCER_BLOCK_MENU.get(), SequenceBlockScreen::new);
+		event.register(Menus.MAIL_MENU.get(), MailScreen::new);
 		
 		
 		SequencerTabs.init();
@@ -106,6 +112,14 @@ public class BeecrasyClient {
 		event.registerBlockEntityRenderer(Blocks.PRESS_BLOCKENTITY.get(), PressBlockEntityRenderer::new);
 		event.registerEntityRenderer(Entities.BEE_SWARM.get(),BeeSwarmRenderer::new);
 		
+	}
+	@SubscribeEvent
+	public static void registerSpecialModelType(RegisterSpecialModelRendererEvent event) {
+		event.register(Beecrasy.rl("mail"), MailModel.Unbaked.MAP_CODEC);
+	}
+	@SubscribeEvent
+	public static void registerItemModelType(RegisterItemModelsEvent event) {
+		event.register(Beecrasy.rl("gui_only"), GuiOnlySpecialModelWrapper.Unbaked.MAP_CODEC);
 	}
 	
     @SubscribeEvent

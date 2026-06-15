@@ -26,11 +26,9 @@ import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
-import net.neoforged.neoforge.transfer.item.ItemAccessItemHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 
-public class SequencerItemHandler extends ItemAccessItemHandler {
+public class SequencerItemHandler extends ModifiableItemAccessHandler {
 	public final static Identifier SEQUENCER=       Beecrasy.rl("handheld_sequencer");
 	public final static Identifier SEQUENCER_ACTIVE=Beecrasy.rl("handheld_sequencer_active");
 	public SequencerItemHandler(ItemAccess itemAccess) {
@@ -53,13 +51,5 @@ public class SequencerItemHandler extends ItemAccessItemHandler {
 			return resource.has(Components.GENOME);
 		}
 		return ItemValidateHelper.isHoney(resource.toStack());
-	}
-	public void set(int index, ItemResource resource, int amount) {
-		try(Transaction trans=Transaction.openRoot()) {
-			int amt=itemAccess.getAmount();
-			if(itemAccess.exchange(this.update(itemAccess.getResource(), index, resource, amount),amt , trans)==amt) {
-				trans.commit();
-			}
-		}
 	}
 }

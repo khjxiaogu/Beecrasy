@@ -83,6 +83,7 @@ public class SequencerHandHeld extends Item{
 				}
 				
 			});
+			return InteractionResult.SUCCESS;
 		}
 		return super.use(level, player, hand);
 	}

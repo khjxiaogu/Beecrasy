@@ -23,6 +23,7 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 /**
  * 物品类型验证工具类。
@@ -75,5 +76,8 @@ public class ItemValidateHelper {
 	 */
 	public static boolean isHoney(ItemStack stack) {
 		return stack.is(Items.HONEY_DROP);
+	}
+	public static boolean isHoney(ItemResource resource) {
+		return resource.is(Items.HONEY_DROP.get());
 	}
 }

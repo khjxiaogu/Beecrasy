@@ -19,10 +19,13 @@
 
 package com.khjxiaogu.beecrasy;
 
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.client.BeeTint;
+import com.khjxiaogu.beecrasy.client.model.GuiOnlySpecialModelWrapper;
+import com.khjxiaogu.beecrasy.client.model.MailModel;
 
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.ItemModelOutput;
@@ -91,6 +94,11 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 		this.texture(Items.BUTTERFLY_NET);
 		this.texture(Items.ROYAL_JELLY);
 		this.texture(Items.HONEY_BUCKET);
+		
+		this.itemModelOutput.accept(  Items.MAIL.get()      ,               ItemModelUtils.composite(plain("letter" ),new GuiOnlySpecialModelWrapper.Unbaked(Beecrasy.rl("item/letter" ),Optional.empty(), new MailModel.Unbaked(7/16f,1-9/16f,.25f))));
+		this.itemModelOutput.register(Beecrasy.rl("package"),new ClientItem(ItemModelUtils.composite(plain("package"),new GuiOnlySpecialModelWrapper.Unbaked(Beecrasy.rl("item/package"),Optional.empty(), new MailModel.Unbaked(.5f,.5f,.5f))),ClientItem.Properties.DEFAULT));
+		
+		
 		
 	}
     public void generateBeeTint(ItemLike item) {

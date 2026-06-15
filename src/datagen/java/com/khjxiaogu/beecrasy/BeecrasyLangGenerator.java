@@ -29,6 +29,7 @@ import com.khjxiaogu.beecrasy.genome.GeneRegistry;
 import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.khjxiaogu.beecrasy.genome.gene.Allele;
 import com.khjxiaogu.beecrasy.genome.gene.EnumAlleleType;
+import com.khjxiaogu.beecrasy.mail.LetterStatus;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
@@ -79,6 +80,13 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 		for(WorkBehaviour work:WorkBehaviour.values()) {
 			this.add(work.getTranslationKey(), capitalizeWords(work.name().toLowerCase()));
 		}
+		for(LetterStatus ls:LetterStatus.values()) {
+			if(ls!=LetterStatus.OK) {
+				this.add(ls.transKey,capitalizeWords(ls.name().toLowerCase()));
+			}
+		}
+		this.add("message.postal.mail_recived", "You got mail.");
+		this.add("message.postal.mail_recived_count", "You have %s mail.");
 	}
 	public <T extends Allele> void addAllele(EnumAlleleType<T> type) {
 		for(T t:type) {

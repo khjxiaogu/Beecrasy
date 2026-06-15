@@ -66,5 +66,6 @@ public class BeecrasyBlockTagGenerator extends BeecrasyTagGenerator<Block> {
 		tag(Tags.FLOWERS).addTag(BlockTags.FLOWERS);
 		tag(Genes.Alleles.WILD.getTag()).addTag(BlockTags.FLOWERS);
 		tag(Tags.TO_BE_FLOWER).add(rk(Blocks.SHORT_DRY_GRASS),rk(Blocks.SHORT_GRASS),rk(Blocks.TALL_DRY_GRASS),rk(Blocks.TALL_GRASS),rk(Blocks.LARGE_FERN),rk(Blocks.FERN));
+		tag(Tags.MAILBOX).add(rk(BEE_NEST_SMALL)).add(rk(BEE_NEST_NASCENT)).add(rk(BEE_NEST_MEDIUM)).add(rk(BEE_NEST_BIG)).add(rk(NATURAL_HIVE));
 	}
 }

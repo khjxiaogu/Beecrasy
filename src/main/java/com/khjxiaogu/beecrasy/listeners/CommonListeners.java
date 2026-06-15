@@ -41,6 +41,7 @@ import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.gene.Humidity;
 import com.khjxiaogu.beecrasy.genome.gene.Temperature;
+import com.khjxiaogu.beecrasy.mail.PostalOffice;
 import com.mojang.brigadier.Command;
 
 import net.minecraft.ChatFormatting;
@@ -187,6 +188,15 @@ public class CommonListeners {
 		if(!temp.isValidFor(event.getParams(), humid))
 			event.setCanceled(true);
 	}
-	
+	@SubscribeEvent
+	public static void playerLoggedIn(PlayerLoggedInEvent event) {
+		if(event.getEntity() instanceof ServerPlayer serverPlayer){
+			if(serverPlayer.isFakePlayer())
+				return;
+			PostalOffice po=PostalOffice.getPostalOffice(serverPlayer.level());
+			int count=po.collectMails(serverPlayer).size();
+			serverPlayer.sendSystemMessage(Component.translatable("message.postal.mail_recived_count",count));
+		}
+	}
 	
 }

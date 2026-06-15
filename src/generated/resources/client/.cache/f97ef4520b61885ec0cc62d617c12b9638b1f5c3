@@ -1,9 +1,10 @@
-// 26.1.2	2026-06-07T01:20:39.7271548	Model Definitions - beecrasy
+// 26.1.2	2026-06-15T18:34:04.1162033	Model Definitions - beecrasy
 4c7cf0e4438c3d08128faa6e528770e3dde1c048 assets/beecrasy/blockstates/bee_nest_big.json
 2ec8c8a692b2ead7a010c6a08f4f7e90599bd066 assets/beecrasy/blockstates/bee_nest_medium.json
 809435de1f5dafa7eb21969f597c32b89a31100d assets/beecrasy/blockstates/bee_nest_nascent.json
 8a9e804d7dac6731ec202764038459f0517624c8 assets/beecrasy/blockstates/bee_nest_small.json
 0421f7d00984c72d386246ba35ac6ad901ad20a0 assets/beecrasy/blockstates/empty_comb_block.json
+5517fc25ede7ca1e319f61921062c240091a6ccd assets/beecrasy/blockstates/hive.json
 934b37cd81699370380cc4c660d5fefaf7c38378 assets/beecrasy/blockstates/honey_comb_block.json
 4033c97bfe7bdf13bd4322943e4a3d1e34959fe8 assets/beecrasy/blockstates/honey_press.json
 9bbaef9400e03940e7fa2efaf1490bd03ed593c6 assets/beecrasy/blockstates/natural_hive.json
@@ -28,6 +29,7 @@ b25a79f5949ebb2bc40f3bf8e594125e7723167b assets/beecrasy/items/foxtail_lily.json
 d9784cb99483b74bbee0a6ccef98a82348b26018 assets/beecrasy/items/foxtail_lily_fiery.json
 196ab2314730d438f4f23d08f033dcab34c5a5a2 assets/beecrasy/items/handheld_sequencer.json
 6f9e4edfeef0b80456ca2061eb5c7590578cfa57 assets/beecrasy/items/handheld_sequencer_active.json
+d6d02f7663e8d82cbbc08ee0a5f2d1b9d2247eb8 assets/beecrasy/items/hive.json
 ec501f1f195a62da9f2907c0106e3f6e42e79a98 assets/beecrasy/items/hollyhock_pink.json
 85a82a745a3ac18674e1db0cee306f8adc551fbc assets/beecrasy/items/hollyhock_red.json
 5530623be4d867e60636b7ce2915eadd6c83a4b3 assets/beecrasy/items/hollyhock_white.json
@@ -43,7 +45,9 @@ e9cc4f2cb81b0d68b69bb6e00d8541bbe09c1aa3 assets/beecrasy/items/incense_humidity_
 84ebe70ad63bb8fd7913036b419589ce7bfb7986 assets/beecrasy/items/incense_longer_lifespan.json
 261844a068e0400f0bdadd11e92c0532c699c8e7 assets/beecrasy/items/incense_shorter_lifespan.json
 4057d3acbc1e604c45fb43c17f9d4df8a0711d3a assets/beecrasy/items/larva.json
+daf4bc0cd56bc6f54c1e037134be60cf26268106 assets/beecrasy/items/mail.json
 7905422778539df4e7a68bc269e74893f7fc8ced assets/beecrasy/items/natural_hive.json
+c9c5f58559adab97eb86d1be61bdaa176b5cdde8 assets/beecrasy/items/package.json
 9b5b776e43f7aaaef0df0ebf58c8f8757abc9d50 assets/beecrasy/items/pheromone.json
 409cb43de0068ea6e52cbe634881e7c4b021659e assets/beecrasy/items/product_comb.json
 5bd910141be0350a89cc6d358380caf5aadd152d assets/beecrasy/items/protea.json
@@ -86,6 +90,8 @@ afe5b8a27500ce6fb912dae520014d0799a8f0cb assets/beecrasy/models/item/incense_hig
 57b3ebc6ee7a3388c6efffe27d9ca6ca2778042e assets/beecrasy/models/item/incense_longer_lifespan.json
 72a952156bc58851b772512d50e7dc2e7c623640 assets/beecrasy/models/item/incense_shorter_lifespan.json
 313ee95e06d7990b9e02f915ef83e1d1981918b0 assets/beecrasy/models/item/larva.json
+c8a4ffbd0b7685c0eef13bfcc216c9ef4cc9fec7 assets/beecrasy/models/item/letter.json
+c0680d96470231142003cf029ea81da814806daf assets/beecrasy/models/item/package.json
 4e1e50878b74c1b40c034e986cebf704069826fa assets/beecrasy/models/item/pheromone.json
 2bf3324e99c913df6803ceae3e8cb8f789b3db14 assets/beecrasy/models/item/product_comb.json
 faaec2d0fcb978426ba581e3c2694aedef65ab40 assets/beecrasy/models/item/protea.json

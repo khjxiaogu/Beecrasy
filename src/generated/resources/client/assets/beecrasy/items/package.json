@@ -1,0 +1,21 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "beecrasy:item/package"
+      },
+      {
+        "type": "beecrasy:gui_only",
+        "base": "beecrasy:item/package",
+        "model": {
+          "type": "beecrasy:mail",
+          "scale": 0.5,
+          "x": 0.5,
+          "y": 0.5
+        }
+      }
+    ]
+  }
+}

@@ -32,6 +32,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -107,7 +108,7 @@ public record BeeTint(int defaultColor) implements ItemTintSource {
 		        	product=prod.create();
 		        ItemStackRenderState irs=new ItemStackRenderState();
 		        Minecraft.getInstance().getItemModelResolver().appendItemLayers(irs, product, ItemDisplayContext.GUI, level, owner, 0);
-		        TextureAtlasSprite sprite=irs.pickParticleMaterial(level.getRandom()).sprite();
+		        TextureAtlasSprite sprite=irs.pickParticleMaterial(level==null?RandomSource.create():level.getRandom()).sprite();
 		        return TintColorCache.getTintColor(sprite);
     		}finally {
     			calculating.set(false);

@@ -80,7 +80,7 @@ public class SequencerMenuHandHeld extends SequencerMenu{
 	}
 	@Override
 	public boolean stillValid(Player pPlayer) {
-		return iaccess==null?true:iaccess.getAmount()>0;
+		return iaccess==null||iaccess.getAmount()==1;
 	}
 	@Override
 	public int getTab() {

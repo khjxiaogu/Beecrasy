@@ -53,9 +53,12 @@ import com.khjxiaogu.beecrasy.data.RoyalJellyRecipe;
 import com.khjxiaogu.beecrasy.entity.BeeSwarmEntity;
 import com.khjxiaogu.beecrasy.item.BeehiveBlockItem;
 import com.khjxiaogu.beecrasy.item.LarvaItem;
+import com.khjxiaogu.beecrasy.item.MailItem;
 import com.khjxiaogu.beecrasy.item.QueenBeeItem;
 import com.khjxiaogu.beecrasy.item.SequencerHandHeld;
+import com.khjxiaogu.beecrasy.mail.MailComponent;
 import com.khjxiaogu.beecrasy.menu.HiveMenu;
+import com.khjxiaogu.beecrasy.menu.MailMenu;
 import com.khjxiaogu.beecrasy.menu.PressMenu;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuBlock;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuHandHeld;
@@ -152,6 +155,9 @@ public class BeecrasyRegistries {
 	    //工具
 	    public static final DeferredItem<Item> SEQUENCER=ITEMS.registerItem("handheld_sequencer",SequencerHandHeld::new,t->t.component(Components.CONTAINER, ItemContainerContents.EMPTY).stacksTo(1));
 	    public static final DeferredItem<Item> BUTTERFLY_NET=ITEMS.registerSimpleItem("butterfly_net",s->s.tool(ToolMaterial.WOOD,Tags.MINABLE_NET, 1.0f, -2.8f, 0).stacksTo(1));
+	    
+	    public static final DeferredItem<Item> MAIL=ITEMS.registerItem("mail",MailItem::new,t->t.component(Components.CONTAINER, ItemContainerContents.EMPTY).component(Components.MAIL, MailComponent.EMPTY));
+	    
 	    public static Item.Properties pheromono(Item.Properties p,Consumer<BeeHiveArgumentation.Builder> components) {
 
 	    	BeeHiveArgumentation.Builder arb=new BeeHiveArgumentation.Builder();
@@ -294,6 +300,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContainerContents>> CONTAINER=COMPONENTS.registerComponentType("container", t->t.cacheEncoding().persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC).ignoreSwapAnimation());
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeeHiveBaseComponent.BeeHiveBaseData>> BEE_HIVE=COMPONENTS.registerComponentType("bee_hive", t->t.cacheEncoding().ignoreSwapAnimation().persistent(BeeHiveBaseComponent.BeeHiveBaseData.CODEC).networkSynchronized(BeeHiveBaseComponent.BeeHiveBaseData.STREAM_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SEQUENCER_TAB=COMPONENTS.registerComponentType("sequencer_tab", t->t.cacheEncoding().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT).ignoreSwapAnimation());
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<MailComponent>> MAIL=COMPONENTS.registerComponentType("mail", t->t.cacheEncoding().persistent(MailComponent.CODEC).networkSynchronized(MailComponent.STREAM_CODEC).ignoreSwapAnimation());
 	    
 	    
 	}
@@ -314,6 +321,7 @@ public class BeecrasyRegistries {
 		public static final TagKey<Item> HONEY_DROP=ItemTags.create(Beecrasy.rl("honey"));
 		public static final TagKey<Block> FLOWERS_FROM_APICULTURE=BlockTags.create(Beecrasy.rl("flowers/from_apiculture"));
 		public static final TagKey<Block> TO_BE_FLOWER=BlockTags.create(Beecrasy.rl("can_become_flower"));
+		public static final TagKey<Block> MAILBOX=BlockTags.create(Beecrasy.rl("mailbox"));
 		
 	}
 	public static class Recipes{
@@ -347,6 +355,7 @@ public class BeecrasyRegistries {
 		public static final DeferredHolder<MenuType<?>, MenuType<SequencerMenuHandHeld>> SEQUENCER_HANDHELD_MENU=MENU_TYPES.register("sequencer_handheld", () -> IMenuTypeExtension.create(SequencerMenuHandHeld::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<SequencerMenuBlock>> SEQUENCER_BLOCK_MENU=MENU_TYPES.register("sequencer_block", () -> IMenuTypeExtension.create(SequencerMenuBlock::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<HiveMenu>> HIVE_MENU=MENU_TYPES.register("hive", () -> IMenuTypeExtension.create(HiveMenu::new));
+		public static final DeferredHolder<MenuType<?>, MenuType<MailMenu>> MAIL_MENU=MENU_TYPES.register("mail", () -> IMenuTypeExtension.create(MailMenu::new));
 		
 	}
     public static void register(IEventBus modEventBus) {

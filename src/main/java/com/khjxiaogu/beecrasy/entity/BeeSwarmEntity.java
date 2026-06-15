@@ -21,15 +21,19 @@ package com.khjxiaogu.beecrasy.entity;
 
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
+import com.khjxiaogu.beecrasy.mail.PostalOffice;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
@@ -76,7 +80,8 @@ import net.minecraft.world.phys.Vec3;
 public class BeeSwarmEntity extends Animal implements FlyingAnimal {
     private @Nullable EntityReference<Entity> traceTarget;
     private @Nullable Vec3 targetPos;
-    private BeeSwarmEntity.GoToTargetHiveGoal goToHiveGoal;
+    private @Nullable UUID mailId;
+    private BeeSwarmEntity.GoToTargetGoal goToTargetGoal;
     private int remainTargetTick;
 	public BeeSwarmEntity(EntityType<? extends BeeSwarmEntity> type,Level level) {
 		super(type, level);
@@ -100,8 +105,8 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
 
     @Override
     protected void registerGoals() {
-        this.goToHiveGoal = new BeeSwarmEntity.GoToTargetHiveGoal();
-        this.goalSelector.addGoal(5, this.goToHiveGoal);
+        this.goToTargetGoal = new BeeSwarmEntity.GoToTargetGoal();
+        this.goalSelector.addGoal(5, this.goToTargetGoal);
         this.goalSelector.addGoal(9, new FloatGoal(this));
     }
 
@@ -109,6 +114,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
     protected void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
         output.storeNullable("target_pos", Vec3.CODEC, this.targetPos);
+        output.storeNullable("mail_id", UUIDUtil.CODEC, this.mailId);
         output.storeNullable("traceTarget", EntityReference.codec(), traceTarget);
         output.putInt("remainTargetTick", remainTargetTick);
     }
@@ -117,6 +123,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
         this.targetPos = input.read("target_pos", Vec3.CODEC).orElse(null);
+        this.mailId = input.read("mail_id", UUIDUtil.CODEC).orElse(null);
         this.traceTarget = input.read("traceTarget",EntityReference.<Entity>codec()).orElse(null);
         this.remainTargetTick = input.getIntOr("remainTargetTick", 0);
     }
@@ -154,7 +161,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
 
     @VisibleForDebug
     public int getTravellingTicks() {
-        return this.goToHiveGoal.travellingTicks;
+        return this.goToTargetGoal.travellingTicks;
     }
 
 
@@ -162,12 +169,32 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
     protected void customServerAiStep(ServerLevel level) {
     	if(traceTarget!=null) {
     		Entity entity=traceTarget.getEntity(level, Entity.class);
-    		if(entity!=null)
+    		if(entity!=null) {
     			this.targetPos=entity.getEyePosition();
+    		}else {
+    			remainTargetTick++;
+        		if(remainTargetTick>=40) {
+        			this.discard();
+        		}
+    		}
     	}
-    	if(hasTarget()&&this.closerThan(targetPos, 1)) {
+    	if(mailId!=null){
+    		PostalOffice po=PostalOffice.getPostalOffice(level);
+    		if(!po.isStillValid(mailId)) {
+    			this.discard();
+    		}
+    	}
+    	if(hasTarget()&&this.closerThan(targetPos, 2)) {
+    		if(mailId!=null) {
+	    		PostalOffice po=PostalOffice.getPostalOffice(level);
+	    		Entity entity=traceTarget.getEntity(level, Entity.class);
+	    		if(entity instanceof ServerPlayer sp)
+		    		if(po.deliver(mailId, sp)) {
+		    			mailId=null;
+		    		}
+    		}
     		remainTargetTick++;
-    		if(remainTargetTick>=40) {
+    		if(remainTargetTick>=10) {
     			this.discard();
     		}
     	}
@@ -312,12 +339,12 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
 
 
     @VisibleForDebug
-    public class GoToTargetHiveGoal extends Goal {
+    public class GoToTargetGoal extends Goal {
         private int travellingTicks;
         private @Nullable Path lastPath;
         private int ticksStuck;
 
-        GoToTargetHiveGoal() {
+        GoToTargetGoal() {
             Objects.requireNonNull(BeeSwarmEntity.this);
             super();
             this.setFlags(EnumSet.of(Goal.Flag.MOVE));
@@ -519,5 +546,23 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
 	@Override
 	public boolean isPushable() {
 		return false;
+	}
+
+	public EntityReference<Entity> getTraceTarget() {
+		return traceTarget;
+	}
+
+	public void setTraceTarget(Entity traceTarget) {
+		this.traceTarget = EntityReference.of(traceTarget);
+	}
+	public void resetTraceTarget() {
+		this.traceTarget = null;
+	}
+	public UUID getMailId() {
+		return mailId;
+	}
+
+	public void setMailId(UUID mailId) {
+		this.mailId = mailId;
 	}
 }
