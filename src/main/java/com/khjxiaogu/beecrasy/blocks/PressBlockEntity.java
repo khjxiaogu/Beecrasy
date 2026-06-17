@@ -19,8 +19,6 @@
 
 package com.khjxiaogu.beecrasy.blocks;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Recipes;
@@ -240,7 +238,7 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 		return recipeHandler;
 	}
 	@Override
-	public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+	public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
 		return new PressMenu(containerId,inventory,this);
 	}
 	@Override

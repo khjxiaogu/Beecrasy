@@ -21,8 +21,6 @@ package com.khjxiaogu.beecrasy.blocks;
 
 import java.util.Map;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 
 import net.minecraft.core.BlockPos;
@@ -92,7 +90,7 @@ public class SequencerBlock extends Block implements BeecrasyEntityBlock<Sequenc
 		builder.add(BlockStateProperties.LIT);
 	}
 	@Override
-	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
 
 		return this.defaultBlockState().setValue(BlockStateProperties.LIT, false)
 			.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());

@@ -22,8 +22,6 @@ package com.khjxiaogu.beecrasy.blocks;
 import java.util.List;
 import java.util.Map;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries;
 import com.khjxiaogu.beecrasy.beehive.slot.StacksHiveSlot;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
@@ -127,7 +125,7 @@ public class NaturalHiveBlock extends Block implements BeecrasyEntityBlock<Natur
 
 	@SuppressWarnings("resource")
 	@Override
-	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		BlockPos pos = context.getClickedPos();
 		BlockPos below = pos.below();
 		Level level = context.getLevel();

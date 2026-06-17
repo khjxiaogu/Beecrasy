@@ -31,6 +31,7 @@ import com.khjxiaogu.beecrasy.genome.gene.Temperature;
 import com.khjxiaogu.beecrasy.genome.mutation.MutationAppendSequence;
 import com.khjxiaogu.beecrasy.genome.mutation.MutationCrafting;
 import com.khjxiaogu.beecrasy.genome.mutation.MutationDecreaseSequence;
+import com.khjxiaogu.beecrasy.genome.mutation.MutationIncreaseYield;
 import com.khjxiaogu.beecrasy.genome.mutation.MutationSmelting;
 import com.mojang.serialization.Codec;
 
@@ -135,6 +136,12 @@ public class Genes {
 		public static final Mutation CRAFTING=MutationRegistry.register(Beecrasy.rl("crafting"), new MutationCrafting());
 		/** 熔炼突变。 */
 		public static final Mutation SMELTING=MutationRegistry.register(Beecrasy.rl("smelting"), new MutationSmelting());
+		/** 母系增加产量突变。 */
+		public static final Mutation MATERNAL_YIELD=MutationRegistry.register(Beecrasy.rl("maternal_yield"), new MutationIncreaseYield.Maternal());
+		/** 父系增加产量突变。 */
+		public static final Mutation PATERNAL_YIELD=MutationRegistry.register(Beecrasy.rl("paternal_yield"), new MutationIncreaseYield.Paternal());
+		
+		
 	}
 	/** 温度基因。 */
 	public static final Gene<Temperature> TEMPERATURE=GeneRegistry.register(Alleles.TEMPERATURE, ()->Alleles.MODERATE_TEMPERATURE, 100);

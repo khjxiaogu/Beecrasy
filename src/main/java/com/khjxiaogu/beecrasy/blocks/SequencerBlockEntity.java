@@ -20,8 +20,6 @@
 package com.khjxiaogu.beecrasy.blocks;
 
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
@@ -103,7 +101,7 @@ public class SequencerBlockEntity extends BeecrasyBlockEntity implements MenuPro
 	}
 
 	@Override
-	public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+	public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
 		return new SequencerMenuBlock(containerId,inventory,this);
 	}
 

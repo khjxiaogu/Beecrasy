@@ -50,10 +50,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
@@ -205,11 +207,14 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 */
 	public void updateQueenLifespan(long secs) {
 		for(HiveSlot slot:queenSlot) {
-			ItemStack stack=slot.getItem();
-			if(stack.is(Items.LARVA)) {
-				stack.set(Components.LARVA_EXPIRES,secs);
-				slot.setItem(stack);
-			}
+			updateLifespan(slot, secs);
+		}
+	}
+	private static void updateLifespan(HiveSlot slot,long secs) {
+		ItemStack stack=slot.getItem();
+		if(stack.is(Items.LARVA)&&stack.has(Components.LARVA_EXPIRES)) {
+			stack.set(Components.LARVA_EXPIRES,secs);
+			slot.setItem(stack);
 		}
 	}
 	/**
@@ -218,11 +223,25 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 */
 	public void updateCombLifespan(long secs) {
 		for(HiveSlot slot:combSlot) {
-			ItemStack stack=slot.getItem();
-			if(stack.is(Items.LARVA)) {
-				stack.set(Components.LARVA_EXPIRES,secs);
-				slot.setItem(stack);
+			updateLifespan(slot, secs);
+		}
+	}
+	public static void checkCombLifespan(HiveSlot slot,long secs,RandomSource rnd) {
+		ItemStack stack=slot.getItem();
+		if(stack.is(Items.LARVA)) {
+			if(LarvaItem.isExpired(stack, secs)) {
+				slot.setItem(LarvaItem.getProduct(stack, stack.count(), rnd));
 			}
+		}
+	}
+	@SuppressWarnings("resource")
+	public void tickNotWorking(ServerLevel level) {
+		long secs=WorldCalendar.getCalendar(level).getSeconds();
+		for(HiveSlot slot:combSlot) {
+			checkCombLifespan(slot, secs, level.getRandom());
+		}
+		for(HiveSlot slot:queenSlot) {
+			checkCombLifespan(slot, secs, level.getRandom());
 		}
 	}
 	/**
@@ -240,7 +259,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		blocked=false;
 		badEnvironment=false;
 		noFlower=false;
-		long secs=params.level().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE).getSeconds();
+		long secs=WorldCalendar.getCalendar(params.level()).getSeconds();
 		if(process>0) {
 			if(biotopeCooldown<=0) {
 				biotopeCooldown=0;
@@ -263,7 +282,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 					process=0;
 				if(lprocess/interval!=process/interval) {
 					GenomeWorkHelper.transformFlowers(params.level(), params.position(), BeecrasyConfig.SERVER.FLOWER_RADIUS.getAsInt(), (float)BeecrasyConfig.SERVER.FLOWER_RATE.getAsDouble());
-					if(fillLarva(params)||fillDrone(params)) {
+					if(fillLarva(params,secs)||fillDrone(params)) {
 						updateCombLifespan(secs);
 						updateQueenLifespan(secs);
 					}else {
@@ -293,10 +312,34 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			for(HiveSlot slot:combSlot) {
 				ItemStack itemStack=slot.getItem();
 				if(LarvaItem.isExpired(itemStack,secs)) {
-					ItemStack ret=LarvaItem.getProduct(itemStack, params.level());
+					ItemStack ret=LarvaItem.getProduct(itemStack, itemStack.count(), params.level().getRandom());
 					slot.setItem(ret);
 				}
 			}
+		}
+	}
+	private void increaseProduction(BeeHiveParameterSet params,HiveSlot hi,long secs,float yieldMod) {
+		if(!hi.isEmpty()) {
+			ItemStack item=hi.getItem();
+			if(!item.is(Items.LARVA))
+				return;
+			if(item.has(Components.LARVA_EXPIRES))
+				item.set(Components.LARVA_EXPIRES,secs);
+			Genome pheno=GenomeDataHelper.getPhenoType(item);
+			LarvaProductivity lp=item.get(Components.LARVA_PRODUCT);
+			if(lp==null)
+				lp=LarvaProductivity.DEFAULT;
+
+			float yield=pheno.getAllele(Genes.YIELD).getNumber()/lsAgainstInterval*yieldMod;
+			if(params.hasBiotope(pheno.getAllele(Genes.BIOTOPE))) {
+				lp=lp.increaseBiotoped(yield);
+			}else {
+				lp=lp.increaseWildcard(yield);
+				noBiotope=true;
+			}
+			item.set(Components.LARVA_PRODUCT, lp);
+			
+			hi.setItem(item);
 		}
 	}
 	/**
@@ -315,50 +358,10 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		updateQueenLifespan(secs);
 		float yieldMod=params.getParamValue(BeeHiveParameters.YIELD);
 		for(HiveSlot hi:combSlot) {
-			if(!hi.isEmpty()) {
-				ItemStack item=hi.getItem();
-				if(!item.is(Items.LARVA))
-					continue;
-				item.set(Components.LARVA_EXPIRES,secs);
-				Genome pheno=GenomeDataHelper.getPhenoType(item);
-				LarvaProductivity lp=item.get(Components.LARVA_PRODUCT);
-				if(lp==null)
-					lp=LarvaProductivity.DEFAULT;
-
-				float yield=pheno.getAllele(Genes.YIELD).getNumber()/lsAgainstInterval*yieldMod;
-				if(params.hasBiotope(pheno.getAllele(Genes.BIOTOPE))) {
-					lp=lp.increaseBiotoped(yield);
-				}else {
-					lp=lp.increaseWildcard(yield);
-					noBiotope=true;
-				}
-				item.set(Components.LARVA_PRODUCT, lp);
-				
-				hi.setItem(item);
-			}
+			increaseProduction(params,hi,secs,yieldMod);
 		}
 		for(HiveSlot hi:queenSlot) {
-			if(!hi.isEmpty()) {
-				ItemStack item=hi.getItem();
-				if(!item.is(Items.LARVA))
-					continue;
-				item.set(Components.LARVA_EXPIRES,secs);
-				Genome pheno=GenomeDataHelper.getPhenoType(item);
-				LarvaProductivity lp=item.get(Components.LARVA_PRODUCT);
-				if(lp==null)
-					lp=LarvaProductivity.DEFAULT;
-
-				float yield=pheno.getAllele(Genes.YIELD).getNumber()/lsAgainstInterval*yieldMod;
-				if(params.hasBiotope(pheno.getAllele(Genes.BIOTOPE))) {
-					lp=lp.increaseBiotoped(yield);
-				}else {
-					lp=lp.increaseWildcard(yield);
-					noBiotope=true;
-				}
-				item.set(Components.LARVA_PRODUCT, lp);
-				
-				hi.setItem(item);
-			}
+			increaseProduction(params,hi,secs,yieldMod);
 		}
 	}
 	/**
@@ -414,13 +417,14 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @param params 当前环境参数
 	 * @return 如果成功填充则返回 true
 	 */
-	private boolean fillLarva(BeeHiveParameterSet params) {
+	private boolean fillLarva(BeeHiveParameterSet params,long secs) {
 		if(larvaCount<=0)
 			return false;
 		for(HiveSlot hi:combSlot) {
 			if(hi.isEmpty()) {
 				ItemStack larvaStack=Items.LARVA.toStack();
 				GenomeDataHelper.setDiploidGenome(larvaStack, makeLarva(params));
+				larvaStack.set(Components.LARVA_EXPIRES, secs);
 				hi.setItem(larvaStack);
 				larvaCount--;
 				return true;
@@ -457,9 +461,11 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			for(HiveSlot hi:combSlot) {
 				if(!hi.isEmpty()) {
 					ItemStack stack=hi.getItem();
-						if(stack.is(Items.LARVA)) {
-						stack.set(Components.LARVA_EXPIRES,secs);
-						hi.setItem(stack);
+					if(stack.is(Items.LARVA)) {
+						if(stack.has(Components.LARVA_EXPIRES)) {
+							stack.set(Components.LARVA_EXPIRES,secs);
+							hi.setItem(stack);
+						}
 						hasLarva=true;
 					}
 				}
@@ -484,7 +490,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				ItemStack item=hi.getItem();
 				if(!item.is(Items.LARVA))
 					continue;
-				ItemStack ret=LarvaItem.getProduct(item, params.level());
+				ItemStack ret=LarvaItem.getProduct(item, item.count(), params.level().getRandom());
 				hi.setItem(ret);
 			}
 		}
@@ -493,7 +499,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				ItemStack item=hi.getItem();
 				if(!item.is(Items.LARVA))
 					continue;
-				ItemStack ret=LarvaItem.getProduct(item, params.level());
+				ItemStack ret=LarvaItem.getProduct(item, item.count(), params.level().getRandom());
 				hi.setItem(ret);
 			}
 		}

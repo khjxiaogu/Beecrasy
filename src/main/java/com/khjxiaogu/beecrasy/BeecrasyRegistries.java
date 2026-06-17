@@ -65,6 +65,7 @@ import com.khjxiaogu.beecrasy.menu.PressMenu;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuBlock;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuHandHeld;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
+import com.khjxiaogu.beecrasy.utils.RecipeCache;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
@@ -151,7 +152,7 @@ public class BeecrasyRegistries {
 	    
 	    //蜜蜂相关
 	    public static final DeferredItem<Item> DRONE=ITEMS.registerSimpleItem("drone",t->t.component(Components.GENOME, GenomeComponent.HAPLOID_EMPTY).stacksTo(1));
-	    public static final DeferredItem<Item> LARVA=ITEMS.registerItem("larva",LarvaItem::new,t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY.asInspected()).stacksTo(1));
+	    public static final DeferredItem<Item> LARVA=ITEMS.registerItem("larva",LarvaItem::new,t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY).stacksTo(1));
 	    public static final DeferredItem<Item> PRODUCT_COMB=ITEMS.registerSimpleItem("product_comb");
 	    public static final DeferredItem<Item> QUEEN_BEE=ITEMS.registerItem("queen_bee",QueenBeeItem::new,t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY).stacksTo(1));
 	    //工具
@@ -341,7 +342,9 @@ public class BeecrasyRegistries {
 		
 
 		public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RoyalJellyRecipe>> ROYAL_JELLY=createSerializer("royal_jelly",RoyalJellyRecipe.CODEC,RoyalJellyRecipe.STREAM_CODEC);
-		
+		static {
+			PressRecipe.recipe=new RecipeCache<>(PRESS_TYPE);
+		}
 		public static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> createType(String name) {
 			return RECIPE_TYPES.register(name,RecipeType::simple);
 		}
@@ -374,6 +377,7 @@ public class BeecrasyRegistries {
     	Entities.ENTITY_TYPES.register(modEventBus);
     	Recipes.RECIPE_SERIALIZERS.register(modEventBus);
     	Recipes.RECIPE_TYPES.register(modEventBus);
+    	PressRecipe.recipe.registerEvents();
     	Menus.MENU_TYPES.register(modEventBus);
     	Fluids.FLUID_TYPES.register(modEventBus);
     	Fluids.FLUIDS.register(modEventBus);

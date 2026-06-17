@@ -22,8 +22,6 @@ package com.khjxiaogu.beecrasy.blocks;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries;
 
 import net.minecraft.core.BlockPos;
@@ -184,7 +182,7 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
 
 	@SuppressWarnings("resource")
 	@Override
-    public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos pos = context.getClickedPos();
         Level level = context.getLevel();
         if (pos.getY() < level.getMaxY() && level.getBlockState(pos.above()).canBeReplaced(context)) {
@@ -196,7 +194,7 @@ public class PressBlock extends Block implements BeecrasyEntityBlock<PressBlockE
     }
 
     @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity by, ItemStack itemStack) {
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity by, ItemStack itemStack) {
         level.setBlock(pos.above(), state.setValue(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER), 3);
     }
 

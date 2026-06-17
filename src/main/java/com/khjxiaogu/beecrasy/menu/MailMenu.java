@@ -25,8 +25,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
@@ -42,8 +40,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.NameAndId;
-import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -97,7 +93,7 @@ public class MailMenu extends BeecrasyContainerMenu{
 		}
 	}
 	public void checkStatus() {
-		if(this.inventory.player instanceof ServerPlayer serverPlayer) {
+		if(this.inventory.player instanceof ServerPlayer) {
 			MailComponent mc=iaccess.getResource().get(Components.MAIL);
 			if(mc==null)
 				mc=MailComponent.EMPTY;
@@ -142,7 +138,7 @@ public class MailMenu extends BeecrasyContainerMenu{
 	public static void openMenu(ServerPlayer player,ItemAccess access) {
 		player.openMenu(new MenuProvider() {
 			@Override
-			public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+			public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
 				return new MailMenu(containerId,inventory,access);
 			}
 			@Override

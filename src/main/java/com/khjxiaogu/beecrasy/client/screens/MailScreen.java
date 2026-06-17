@@ -22,7 +22,6 @@ package com.khjxiaogu.beecrasy.client.screens;
 import java.util.ArrayList;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
-import com.khjxiaogu.beecrasy.client.FluidRenderHelper;
 import com.khjxiaogu.beecrasy.mail.LetterStatus;
 import com.khjxiaogu.beecrasy.menu.MailMenu;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;

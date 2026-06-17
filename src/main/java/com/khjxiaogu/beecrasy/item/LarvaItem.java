@@ -21,8 +21,6 @@ package com.khjxiaogu.beecrasy.item;
 
 import java.util.stream.Stream;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
@@ -31,7 +29,9 @@ import com.khjxiaogu.beecrasy.components.WorldCalendar;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
 
+import net.minecraft.core.component.DataComponentHolder;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -45,27 +45,25 @@ public class LarvaItem extends Item {
 	public LarvaItem(Properties properties) {
 		super(properties);
 	}
-	public static ItemStack getProduct(ItemStack itemStack, ServerLevel level) {
-		int count=itemStack.count();
+	public static ItemStack getProduct(DataComponentHolder itemStack,int count, RandomSource rnd) {
 	
 		Genome pheno=GenomeDataHelper.getPhenoType(itemStack);
 
 		LarvaProductivity lp=itemStack.get(Components.LARVA_PRODUCT);
 		if(lp!=null) {
-			ItemStack ret=lp.getProduction(pheno, level.getRandom());
+			ItemStack ret=lp.getProduction(pheno, rnd);
 			ret.setCount(count*ret.count());
 			return ret;
 		}
 		return ItemStack.EMPTY;
 	}
-	public static boolean isExpired(ItemStack itemStack, long secs) {
+	public static boolean isExpired(DataComponentHolder itemStack, long secs) {
 		int max=BeecrasyConfig.SERVER.LARVA_SURVIVE_SECS.getAsInt();
 		if(max==0)
 			return false;
 		Long lo=itemStack.get(Components.LARVA_EXPIRES);
 		if(lo==null) {
-			lo=secs;
-			itemStack.set(Components.LARVA_EXPIRES,lo);
+			return false;
 		}
 		return secs>lo+max;
 	}
@@ -76,12 +74,12 @@ public class LarvaItem extends Item {
 		return queenStack;
 	}
 	@Override
-	public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
+	public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, EquipmentSlot slot) {
 		super.inventoryTick(itemStack, level, owner, slot);
 		long secs=WorldCalendar.getCalendar(level).getSeconds();
 		
 		if(isExpired(itemStack,secs)) {
-			ItemStack ret=getProduct(itemStack, level);
+			ItemStack ret=getProduct(itemStack,itemStack.count(), level.getRandom());
 			if(!ret.isEmpty()) {
 				if(owner instanceof Player p) {
 					p.getInventory().placeItemBackInInventory(ret);
@@ -103,7 +101,7 @@ public class LarvaItem extends Item {
 			long secs=WorldCalendar.getCalendar(level).getSeconds();
 			
 			if(isExpired(itemStack,secs)) {
-				ItemStack ret=getProduct(itemStack, level);
+				ItemStack ret=getProduct(itemStack,itemStack.count(), level.getRandom());
 				if(!ret.isEmpty()) {
 					ItemUtils.onContainerDestroyed(entity, Stream.of(ret));
 				}
@@ -118,7 +116,7 @@ public class LarvaItem extends Item {
 	@Override
     public void onDestroyed(ItemEntity entity) {
 		if(entity.level() instanceof ServerLevel level){
-			ItemStack ret=getProduct(entity.getItem(), level);
+			ItemStack ret=getProduct(entity.getItem(),entity.getItem().count(), level.getRandom());
 			if(!ret.isEmpty()) {
 				ItemUtils.onContainerDestroyed(entity, Stream.of(ret));
 			}

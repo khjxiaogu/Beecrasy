@@ -30,13 +30,9 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.ItemModel;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
-import net.minecraft.client.renderer.item.ModelRenderProperties;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.special.SpecialModelRenderers;
-import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ResolvableModel;
-import net.minecraft.client.resources.model.ResolvedModel;
-import net.minecraft.client.resources.model.sprite.TextureSlots;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -47,12 +43,10 @@ import org.jspecify.annotations.Nullable;
 
 public class GuiOnlySpecialModelWrapper<T> implements ItemModel {
     private final SpecialModelRenderer<T> specialRenderer;
-    private final ModelRenderProperties properties;
     private final Supplier<Vector3fc[]> extents;
     private final Matrix4fc transformation;
-    public GuiOnlySpecialModelWrapper(SpecialModelRenderer<T> specialRenderer, ModelRenderProperties properties, Matrix4fc transformation) {
+    public GuiOnlySpecialModelWrapper(SpecialModelRenderer<T> specialRenderer, Matrix4fc transformation) {
         this.specialRenderer = specialRenderer;
-        this.properties = properties;
         this.extents = Suppliers.memoize(() -> {
             Set<Vector3fc> results = new HashSet<>();
             specialRenderer.getExtents(results::add);
@@ -119,15 +113,7 @@ public class GuiOnlySpecialModelWrapper<T> implements ItemModel {
             if (bakedSpecialModel == null) {
                 return context.missingItemModel(modelTransform);
             }
-			ModelRenderProperties properties = this.getProperties(context);
-			return new GuiOnlySpecialModelWrapper<>(bakedSpecialModel, properties, modelTransform);
-        }
-
-        private ModelRenderProperties getProperties(ItemModel.BakingContext context) {
-            ModelBaker baker = context.blockModelBaker();
-            ResolvedModel model = baker.getModel(this.base);
-            TextureSlots textureSlots = model.getTopTextureSlots();
-            return ModelRenderProperties.fromResolvedModel(baker, model, textureSlots);
+			return new GuiOnlySpecialModelWrapper<>(bakedSpecialModel, modelTransform);
         }
 
         @Override

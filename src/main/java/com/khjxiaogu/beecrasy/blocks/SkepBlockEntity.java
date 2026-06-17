@@ -21,8 +21,6 @@ package com.khjxiaogu.beecrasy.blocks;
 
 import java.util.Optional;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent.BeeHiveBaseData;
@@ -75,7 +73,7 @@ public class SkepBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvi
 	}
 
 	@Override
-	public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+	public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
 		return new SkepMenu(containerId,inventory,this);
 	}
 

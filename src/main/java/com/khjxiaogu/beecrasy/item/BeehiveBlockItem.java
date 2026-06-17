@@ -21,8 +21,6 @@ package com.khjxiaogu.beecrasy.item;
 
 import java.util.function.Supplier;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent.BeeHiveBaseData;
@@ -46,7 +44,7 @@ public class BeehiveBlockItem extends BlockItem {
 	}
 	
 	@Override
-	public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
+	public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, EquipmentSlot slot) {
 
 		BeeHiveBaseData data=itemStack.get(Components.BEE_HIVE);
 		if(data!=null) {

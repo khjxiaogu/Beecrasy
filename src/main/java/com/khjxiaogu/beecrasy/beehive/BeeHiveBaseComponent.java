@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.beehive.slot.ResourceStackHiveSlot;
@@ -456,7 +454,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 	 */
 	protected BeeHiveArgumentation extractArgumentation(ServerLevel serverLevel,int slot,TransactionContext root) {
 		ItemResource ir=internInv.getResource(slot);
-		@Nullable BeehiveArgumenter argu=ir.get(Components.ARGUMENTATION);
+		BeehiveArgumenter argu=ir.get(Components.ARGUMENTATION);
 		if(argu!=null) {
 			if(argu.consumeOnUse()) {
 				try(Transaction trans=Transaction.open(root)){
@@ -562,7 +560,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 				if(getInternInv().getAmountAsInt(i)>0) {
 					ItemResource stack=getInternInv().getResource(i);
 					if(stack.is(Items.QUEEN_BEE.get())) {
-						@Nullable GenomeComponent comp=stack.get(Components.GENOME);
+						GenomeComponent comp=stack.get(Components.GENOME);
 						if(comp!=null) {
 							if(getInternInv().extract(i, stack, 1, trans)==1) {
 								queen=comp.toArray();
@@ -671,6 +669,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 					}
 				}
 			}
+			return;
 		}else if(hiveInfo.isWorking()) {
 			err=ErrCode.OK;
 			BeeHiveParameterSet params=buildParams(serverLevel, worldPosition).build();
@@ -684,6 +683,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 				err=ErrCode.EMPTY_QUEEN;
 			else if(hiveInfo.isNoBiotope())
 				err=ErrCode.NO_BIOTOPE;
+			return;
 		}else if(shouldWork) {
 			if(canBeginWork()) {
 				beginingTicks=1;
@@ -691,6 +691,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		}else if(err==ErrCode.OK) {
 			err=ErrCode.MANUAL_HALT;
 		}
+		hiveInfo.tickNotWorking(serverLevel);
 	}
 	/**
 	 * 标记数据已变更，需要保存到磁盘。

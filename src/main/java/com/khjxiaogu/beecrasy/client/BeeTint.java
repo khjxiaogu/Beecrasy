@@ -19,8 +19,6 @@
 
 package com.khjxiaogu.beecrasy.client;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
 import com.mojang.serialization.MapCodec;
@@ -100,7 +98,7 @@ public record BeeTint(int defaultColor) implements ItemTintSource {
     	if(!calculating.get()) {
     		try {
     			calculating.set(true);
-		        @Nullable ItemStackTemplate prod=itemStack.get(Components.TINT_STACK);
+		        ItemStackTemplate prod=itemStack.get(Components.TINT_STACK);
 		        ItemStack product;
 		        if(prod==null)
 		        	product=itemStack;

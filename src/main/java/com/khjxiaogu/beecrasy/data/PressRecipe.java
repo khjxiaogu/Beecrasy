@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Recipes;
+import com.khjxiaogu.beecrasy.utils.RecipeCache;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -109,6 +110,7 @@ public record PressRecipe(SizedIngredient input,List<PossibleOutput> output,int 
 		ByteBufCodecs.optional(FluidStackTemplate.STREAM_CODEC),PressRecipe::fluid,
 		PressRecipe::new
 		);
+	public static RecipeCache<PressRecipe> recipe;
 	@Override
 	public boolean matches(RandomizableRecipeInput inv, Level worldIn) {
 		return input.test(inv.getItem(0));

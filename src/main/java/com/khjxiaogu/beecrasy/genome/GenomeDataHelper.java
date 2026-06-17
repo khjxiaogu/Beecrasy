@@ -26,6 +26,7 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 
+import net.minecraft.core.component.DataComponentHolder;
 import net.neoforged.neoforge.common.MutableDataComponentHolder;
 
 
@@ -117,7 +118,7 @@ public final class GenomeDataHelper {
 	 * @param stack 物品数据组件持有者
 	 * @return 包含两个基因组的数组（无组件时用默认值填充）
 	 */
-	public static Genome[] getAsDiploid(MutableDataComponentHolder stack) {
+	public static Genome[] getAsDiploid(DataComponentHolder stack) {
 		GenomeComponent component=stack.get(Components.GENOME);
 		if(component!=null) {
 			return getAsDiploid(component);
@@ -130,7 +131,7 @@ public final class GenomeDataHelper {
 	 * @param stack 物品数据组件持有者
 	 * @return 表现型基因组，无组件时返回默认基因组
 	 */
-	public static Genome getPhenoType(MutableDataComponentHolder stack) {
+	public static Genome getPhenoType(DataComponentHolder stack) {
 		GenomeComponent component=stack.get(Components.GENOME);
 		if(component!=null) {
 			return getPhenoType(component);

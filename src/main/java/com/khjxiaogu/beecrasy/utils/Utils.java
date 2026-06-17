@@ -31,8 +31,6 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -105,7 +103,7 @@ public final class Utils {
 	 * @return 与玩家同步的随机数生成器
 	 */
 	public static RandomSource getSyncedRandom(Player p) {
-		@Nullable Long comp=p.getData(Attachments.RANDOM_SEED);
+		Long comp=p.getData(Attachments.RANDOM_SEED);
 		RandomSource rnd=RandomSource.create(comp);
 		p.setData(Attachments.RANDOM_SEED.get(), rnd.nextLong());
 		return rnd;

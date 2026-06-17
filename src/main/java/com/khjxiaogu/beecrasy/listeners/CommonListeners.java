@@ -21,8 +21,6 @@ package com.khjxiaogu.beecrasy.listeners;
 
 import java.util.function.Consumer;
 
-import org.jspecify.annotations.Nullable;
-
 import com.ibm.icu.util.Calendar;
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
@@ -68,7 +66,7 @@ public class CommonListeners {
 	@SubscribeEvent
 	public static void onLogin(PlayerLoggedInEvent event) {
 		Player p=event.getEntity();
-		@Nullable Long comp=p.getData(Attachments.RANDOM_SEED);
+		Long comp=p.getData(Attachments.RANDOM_SEED);
 		//Neoforge会初始化一个默认值，这里只做备用
 		if(comp==null) {
 			comp=RandomSupport.generateUniqueSeed();

@@ -23,8 +23,6 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
@@ -65,7 +63,7 @@ public class ClientListener {
 		}
 		if(stack.is(Items.PRODUCT_COMB)) {
 
-			@Nullable ItemStackTemplate product=stack.get(Components.COMB_PRODUCT);
+			ItemStackTemplate product=stack.get(Components.COMB_PRODUCT);
 			if(product==null) {
 				event.addTooltipLines(Component.translatable("tooltip.beecrasy.no_special_product"));
 			}else {

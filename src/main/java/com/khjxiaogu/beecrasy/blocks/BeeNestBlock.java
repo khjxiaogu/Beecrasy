@@ -22,8 +22,6 @@ package com.khjxiaogu.beecrasy.blocks;
 import java.util.List;
 import java.util.Map;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
@@ -185,7 +183,7 @@ public class BeeNestBlock extends Block {
 		NeoForge.EVENT_BUS.post(event);
 		List<ItemStack> loot = super.getDrops(state, params);
 		Genome genome = event.genome.build();
-		@Nullable ItemInstance tool=params.getOptionalParameter(LootContextParams.TOOL);
+		ItemInstance tool=params.getOptionalParameter(LootContextParams.TOOL);
 		if(tool!=null&&tool.count()>0) {
 			ItemStack drone = Items.DRONE.toStack(2);
 			GenomeDataHelper.setHaploidGenome(drone, genome);
@@ -215,7 +213,7 @@ public class BeeNestBlock extends Block {
 
 	@SuppressWarnings("resource")
 	@Override
-	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		BlockPos pos = context.getClickedPos();
 		BlockPos above = pos.above();
 		Level level = context.getLevel();

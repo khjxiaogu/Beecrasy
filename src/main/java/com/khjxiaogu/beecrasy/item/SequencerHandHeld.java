@@ -21,8 +21,6 @@ package com.khjxiaogu.beecrasy.item;
 
 import java.util.List;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuHandHeld;
@@ -70,7 +68,7 @@ public class SequencerHandHeld extends Item{
 			((ServerPlayer) player).openMenu(new MenuProvider() {
 
 				@Override
-				public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+				public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
 					return new SequencerMenuHandHeld(containerId,inventory,ItemAccess.forPlayerSlot(player, switch (hand) {
 	                case MAIN_HAND -> player.getInventory().getSelectedSlot();
 	                case OFF_HAND -> Inventory.SLOT_OFFHAND;
@@ -89,7 +87,7 @@ public class SequencerHandHeld extends Item{
 	}
 
 	@Override
-	public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
+	public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, EquipmentSlot slot) {
 		
 		super.inventoryTick(itemStack, level, owner, slot);
 

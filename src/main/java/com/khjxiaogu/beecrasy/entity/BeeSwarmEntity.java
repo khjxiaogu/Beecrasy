@@ -228,7 +228,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
     }
 
     @VisibleForDebug
-    public @Nullable Vec3 getTargetPos() {
+    public Vec3 getTargetPos() {
         return this.targetPos;
     }
 
@@ -464,7 +464,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
 	}
 
 	@Override
-	public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
+	public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
 		return null;
 	}
 
@@ -571,7 +571,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
 	}
 
 	@Override
-	public boolean canBeCollidedWith(@Nullable Entity other) {
+	public boolean canBeCollidedWith(Entity other) {
 		return false;
 	}
 

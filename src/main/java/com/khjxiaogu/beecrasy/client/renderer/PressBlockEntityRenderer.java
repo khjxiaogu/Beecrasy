@@ -20,7 +20,6 @@
 package com.khjxiaogu.beecrasy.client.renderer;
 
 import org.joml.Quaternionf;
-import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.blocks.PressBlockEntity;
 import com.khjxiaogu.beecrasy.client.ModelReference;
@@ -87,7 +86,7 @@ public class PressBlockEntityRenderer implements BlockEntityRenderer<PressBlockE
 	 * @param breakProgress  破坏进度覆盖层（可为 null）
 	 */
 	@Override
-	public void extractRenderState(PressBlockEntity blockEntity, PressRenderState state, float partialTicks, Vec3 cameraPosition, @Nullable CrumblingOverlay breakProgress) {
+	public void extractRenderState(PressBlockEntity blockEntity, PressRenderState state, float partialTicks, Vec3 cameraPosition, CrumblingOverlay breakProgress) {
 		BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
 		state.animateProcess=new Quaternionf().rotateY(getAngle((blockEntity.currentTicks)/20f,blockEntity.maxTicks/20f)*Mth.PI*2);

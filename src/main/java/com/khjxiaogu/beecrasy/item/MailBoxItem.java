@@ -19,8 +19,6 @@
 
 package com.khjxiaogu.beecrasy.item;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.mail.PostalOffice;
 import com.khjxiaogu.beecrasy.menu.MailBoxMenu;
@@ -65,7 +63,7 @@ public class MailBoxItem extends Item{
     }
 
 	@Override
-	public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
+	public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, EquipmentSlot slot) {
 		if(owner instanceof ServerPlayer sp) {
 			if(!(sp.containerMenu instanceof MailBoxMenu)) {
 				if(sp.tickCount%20==0) {
@@ -87,7 +85,7 @@ public class MailBoxItem extends Item{
 				player.openMenu(new MenuProvider() {
 	
 					@Override
-					public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+					public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
 						return new MailBoxMenu(containerId,inventory,serverPlayer,ItemAccess.forPlayerSlot(serverPlayer, switch (hand) {
 		                case MAIN_HAND -> player.getInventory().getSelectedSlot();
 		                case OFF_HAND -> Inventory.SLOT_OFFHAND;

@@ -54,7 +54,7 @@ public record MailModel(float dx,float dy,float scale) implements SpecialModelRe
         }
 
 		@Override
-		public @Nullable SpecialModelRenderer<ItemStack> bake(BakingContext context) {
+		public SpecialModelRenderer<ItemStack> bake(BakingContext context) {
 			return new MailModel(dx,dy,scale);
 		}
     }

@@ -25,6 +25,8 @@ import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry.BeehiveParameterT
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
 import com.khjxiaogu.beecrasy.beehive.ErrCode;
 import com.khjxiaogu.beecrasy.beehive.WorkBehaviour;
+import com.khjxiaogu.beecrasy.compat.ChanceCallback;
+import com.khjxiaogu.beecrasy.compat.category.PressCategory;
 import com.khjxiaogu.beecrasy.genome.GeneRegistry;
 import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.khjxiaogu.beecrasy.genome.gene.Allele;
@@ -94,6 +96,8 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 		this.add(MailBoxItem.IN_PROGRESS, "Deliver in progress.");
 		this.add(MailBoxItem.NOT_EXPOSE, "You should be in open air to receive mail.");
 		this.add(MailBoxItem.NOT_VALID_PATH, "No vaild path for delivering.");
+		this.add(PressCategory.titleId, "Honey Press");
+		this.add(ChanceCallback.titleId, "Chance: %s");
 
 	}
 	public <T extends Allele> void addAllele(EnumAlleleType<T> type) {

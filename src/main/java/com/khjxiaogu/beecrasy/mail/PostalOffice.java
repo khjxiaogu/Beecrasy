@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.jspecify.annotations.Nullable;
-
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
@@ -76,7 +74,7 @@ public class PostalOffice extends SavedData {
 	}
 	public void post(Mail mail,ServerLevel sl) {
 		pending.put(mail.letterId(), mail);
-		@Nullable ServerPlayer reciver=sl.getServer().getPlayerList().getPlayer(mail.receiver());
+		ServerPlayer reciver=sl.getServer().getPlayerList().getPlayer(mail.receiver());
 		if(reciver!=null) {
 			reciver.sendSystemMessage(Component.translatable("message.postal.mail_recived"));
 		}
