@@ -157,6 +157,8 @@
   "item.beecrasy.royal_jelly": "Royal Jelly",
   "item.beecrasy.sequencer": "Sequencer",
   "item.beecrasy.skep": "Skep",
+  "jei.category.beecrasy.press.title": "Honey Press",
+  "jei.tooltip.beecrasy.chance": "Chance: %s",
   "message.mailbox.in_progress": "Deliver in progress.",
   "message.mailbox.no_valid_path": "No vaild path for delivering.",
   "message.mailbox.not_open_area": "You should be in open air to receive mail.",

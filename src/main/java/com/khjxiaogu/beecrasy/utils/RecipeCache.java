@@ -20,9 +20,12 @@
 package com.khjxiaogu.beecrasy.utils;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import org.jspecify.annotations.Nullable;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
@@ -52,9 +55,13 @@ public class RecipeCache<T extends Recipe<? extends RecipeInput>> {
 		NeoForge.EVENT_BUS.addListener(this::onRecipeSend);
 	}
 	public Collection<RecipeHolder<T>> getRecipes(){
+		if(recipes==null)
+			return Collections.emptyList();
 		return recipes.values(); 
 	}
-	public RecipeHolder<T> get(Identifier id){
+	public @Nullable RecipeHolder<T> get(Identifier id){
+		if(recipes==null)
+			return null;
 		return recipes.get(id); 
 	}
 }
