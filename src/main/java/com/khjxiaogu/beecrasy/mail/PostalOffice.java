@@ -25,10 +25,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.joml.Vector3fc;
+
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.menu.MailMenu;
+import com.khjxiaogu.beecrasy.network.ClientMailReceivedMessage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -42,6 +45,8 @@ import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class PostalOffice extends SavedData {
 	Map<UUID,Mail> pending=new LinkedHashMap<>();
@@ -95,7 +100,7 @@ public class PostalOffice extends SavedData {
 		entities.put(mailId, EntityReference.of(entity));
 		this.setDirty();
 	}
-	public boolean deliver(UUID mailId,ServerPlayer sp) {
+	public boolean deliver(Vec3 source,UUID mailId,ServerPlayer sp) {
 		Mail mail=pending.get(mailId);
 		if(mail==null||!mail.receiver().equals(sp.getUUID()))
 			return false;
@@ -112,6 +117,7 @@ public class PostalOffice extends SavedData {
 		pending.remove(mailId);
 		entities.remove(mailId);
 		sp.getInventory().placeItemBackInInventory(is);
+		PacketDistributor.sendToPlayersTrackingChunk(sp.level(), sp.chunkPosition(), new ClientMailReceivedMessage(sp.getId(),mail.icon(), hasItem, (float)source.x(), (float)source.y(), (float)source.z()));
 		this.setDirty();
 		return true;
 	}

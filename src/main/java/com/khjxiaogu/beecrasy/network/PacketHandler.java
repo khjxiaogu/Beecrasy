@@ -42,7 +42,8 @@ public class PacketHandler {
 		PayloadRegistrar registry=ev.registrar(Beecrasy.MODID);
 		registry.playToServer(ContainerOperationMessage.TYPE, ContainerOperationMessage.CODEC,ContainerOperationMessage::handle);
 		registry.playToClient(ContainerTankMessage.TYPE, ContainerTankMessage.CODEC, ContainerTankMessage::handle);
-		registry.playToServer(MailMessage.TYPE, MailMessage.CODEC,MailMessage::handle);
+		registry.playToServer(MailEditMessage.TYPE, MailEditMessage.CODEC,MailEditMessage::handle);
+		registry.playToClient(ClientMailReceivedMessage.TYPE, ClientMailReceivedMessage.CODEC,ClientMailReceivedMessage::handle);
 		registry.versioned("1");
 	}
 }

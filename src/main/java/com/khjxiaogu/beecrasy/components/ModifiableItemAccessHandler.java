@@ -40,5 +40,11 @@ public class ModifiableItemAccessHandler extends ItemAccessItemHandler {
 			}
 		}
 	}
-
+	public void set(int index, ItemResource resource, int amount,Transaction trans) {
+		int amt=itemAccess.getAmount();
+		if(itemAccess.exchange(this.update(itemAccess.getResource(), index, resource, amount),amt , trans)==amt) {
+			trans.commit();
+		}
+		
+	}
 }

@@ -210,7 +210,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
 		    		PostalOffice po=PostalOffice.getPostalOffice(level);
 		    		Entity entity=traceTarget.getEntity(level, Entity.class);
 		    		if(entity instanceof ServerPlayer sp)
-			    		if(po.deliver(mailId, sp)) {
+			    		if(po.deliver(this.position(),mailId, sp)) {
 			    			mailId=null;
 			    		}
     			}

@@ -25,7 +25,7 @@ import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.mail.LetterStatus;
 import com.khjxiaogu.beecrasy.menu.MailMenu;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
-import com.khjxiaogu.beecrasy.network.MailMessage;
+import com.khjxiaogu.beecrasy.network.MailEditMessage;
 import com.khjxiaogu.beecrasy.network.PacketHandler;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -94,13 +94,13 @@ public class MailScreen extends AbstractContainerScreen<MailMenu> {
 			name.setValue(menu.receiver);
 		}
 		name.setResponder(t->{
-			PacketHandler.sendToServer(MailMessage.ofReceiver(this.menu.containerId, t));
+			PacketHandler.sendToServer(MailEditMessage.ofReceiver(this.menu.containerId, t));
 		});
 		text1.setResponder(t->{
-			PacketHandler.sendToServer(MailMessage.ofLine1(this.menu.containerId, t));
+			PacketHandler.sendToServer(MailEditMessage.ofLine1(this.menu.containerId, t));
 		});
 		text2.setResponder(t->{
-			PacketHandler.sendToServer(MailMessage.ofLine2(this.menu.containerId, t));
+			PacketHandler.sendToServer(MailEditMessage.ofLine2(this.menu.containerId, t));
 		});
 
 	}

@@ -96,13 +96,13 @@ public class MailItem extends Item{
 						if(mah.extract(8, rc, postage, trans)==postage) {
 							PostalOffice po=PostalOffice.getPostalOffice(sl);
 							ItemStack remain=rc.toStack(mah.getAmountAsInt(8));
+							mah.set(8, ItemResource.EMPTY, 0,trans);
 							ItemContainerContents contents = ia.getResource().get(Components.CONTAINER);
 							Optional<Mail> mail=mailcomp.resolveMail(po.createUUID(), context.getPlayer().getUUID(), contents, sl);
 							if(mail.isPresent()) {
 								po.post(mail.get(),sl);
-								mah.set(8, ItemResource.EMPTY, 0);
-								context.getPlayer().getInventory().placeItemBackInInventory(remain);
 								stack.shrink(1);
+								context.getPlayer().getInventory().placeItemBackInInventory(remain);
 								trans.commit();
 								return InteractionResult.CONSUME;
 							}
