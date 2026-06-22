@@ -17,12 +17,13 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.blocks;
+package com.khjxiaogu.beecrasy.blocks.machine;
 
 import java.util.List;
 import java.util.function.BiConsumer;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries;
+import com.khjxiaogu.beecrasy.blocks.BeecrasyEntityBlock;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

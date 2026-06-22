@@ -17,15 +17,14 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.blocks;
+package com.khjxiaogu.beecrasy.blocks.bee.beecity;
 
 import java.util.List;
 import java.util.function.BiConsumer;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.blocks.BeecrasyEntityBlock;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
-import com.khjxiaogu.beecrasy.utils.Utils;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -36,13 +35,12 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,53 +50,39 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
-public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEntity>{
-	private static final VoxelShape SKEP2 = Block.box( 2,  0,  2, 14,  12, 14);
-
-	private static final VoxelShape SKEP1 = Shapes.or(Block.box( 1,  0,  1, 15,  12, 15), Block.box( 3,  12,  3, 13,  14, 13)).optimize();
-	public SkepBlock(Properties properties) {
+public class BeeCityCoreBlock extends Block  implements BeecrasyEntityBlock<BeeCityCoreBlockEntity>{
+	public BeeCityCoreBlock(Properties properties) {
 		super(properties);
 		
 	}
 	@Override
-	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-		return state.getValue(BlockStateProperties.AGE_2)==2?SKEP2:SKEP1;
-	}
-	@Override
 	protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
-		builder.add(BlockStateProperties.HORIZONTAL_FACING);
-		builder.add(BlockStateProperties.AGE_2);
 		builder.add(BlockStateProperties.LIT);
 	}
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
-		RandomSource rnd=Utils.getSyncedRandom(context.getPlayer());
-		return this.defaultBlockState().setValue(BlockStateProperties.AGE_2, rnd.nextInt(3)).setValue(BlockStateProperties.LIT, false)
-			.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
+		return this.defaultBlockState().setValue(BlockStateProperties.LIT, false);
 	}
 	@Override
     protected void onExplosionHit(BlockState state, ServerLevel level, BlockPos pos, Explosion explosion, BiConsumer<ItemStack, BlockPos> onHit) {
-        if (explosion.canTriggerBlocks() && level.getBlockEntity(pos) instanceof BeeHiveBaseBlockEntity blockEntity) {
+        if (explosion.canTriggerBlocks() && level.getBlockEntity(pos) instanceof BeeCityCoreBlockEntity blockEntity) {
         	blockEntity.component.setShouldWork(true);
         }
         super.onExplosionHit(state, level, pos, explosion, onHit);
     }
 	@Override
-	public DeferredHolder<BlockEntityType<?>, BlockEntityType<SkepBlockEntity>> getBlock() {
-		return Blocks.SKEP_BLOCKENTITY;
+	public DeferredHolder<BlockEntityType<?>, BlockEntityType<BeeCityCoreBlockEntity>> getBlock() {
+		return Blocks.BEE_CITY_CORE_BLOCKENTITY;
 	}
     @Override
 	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
     	if(level instanceof ServerLevel) {
-			if(level.getBlockEntity(pos) instanceof SkepBlockEntity blockEntity) {
+			if(level.getBlockEntity(pos) instanceof MenuProvider blockEntity) {
 				if (!level.isClientSide())
 					((ServerPlayer) player).openMenu(blockEntity);
 				
@@ -110,7 +94,7 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
     @Override
 	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
     	List<ItemStack> list=super.getDrops(state, params);
-		if (params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof SkepBlockEntity blockEntity) {
+		if (params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof BeeCityCoreBlockEntity blockEntity) {
 			ItemStacksResourceHandler inv=blockEntity.component.getInternInv();
 			for (int i = 9; i < inv.size(); i++) {
 				ItemResource is = inv.getResource(i);
@@ -119,9 +103,6 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 				}
 			}
 			
-			list.add(blockEntity.getItem());
-		}else {
-			list.add(new ItemStack(Blocks.SKEP.asItem()));
 		}
 		return list;
 	}
@@ -130,6 +111,7 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
 		super.animateTick(state, level, pos, random);
 		if(state.getValue(BlockStateProperties.LIT)) {
+			
 			int count = 2;
 			if(random.nextInt(20)==0)
 			level.playLocalSound(pos, SoundEvents.BEE_LOOP, SoundSource.BLOCKS, Mth.lerp(random.nextFloat(), 0.0f, 0.5f), Mth.lerp(random.nextFloat(), 0.7f, 1.1f), true);
@@ -159,12 +141,8 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 						level.addParticle(BeecrasyParticles.BEE.get().random(), mpos.x(), mpos.y(),mpos.z(), speedvec.x(),
 								0.0D, speedvec.z());
 				}
+				
 			}
 		}
-	}
-	@Override
-	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData,
-			Player player) {
-		return (level.getBlockEntity(pos) instanceof SkepBlockEntity blockEntity) ? blockEntity.getItem() : super.getCloneItemStack(level, pos, state, includeData,player);
 	}
 }

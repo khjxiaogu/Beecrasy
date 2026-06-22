@@ -35,7 +35,6 @@ import com.khjxiaogu.beecrasy.item.MailBoxItem;
 import com.khjxiaogu.beecrasy.mail.LetterStatus;
 
 import net.minecraft.data.PackOutput;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -69,6 +68,7 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 		addArgumenter(BeeHiveParameters.YIELD);
 		addArgumenter(BeeHiveParameters.TEMPERATURE);
 		addArgumenter(BeeHiveParameters.HUMIDITY);
+		addArgumenter(BeeHiveParameters.FERTILITY);
 		addMultilineArgumenter(BeeHiveParameters.MUTATION_DIRECTOR);
 		sequencerTab("basic");
 		sequencerTab("products");

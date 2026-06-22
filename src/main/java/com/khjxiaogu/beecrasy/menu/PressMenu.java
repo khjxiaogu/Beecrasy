@@ -20,7 +20,7 @@
 package com.khjxiaogu.beecrasy.menu;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
-import com.khjxiaogu.beecrasy.blocks.PressBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.machine.PressBlockEntity;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;

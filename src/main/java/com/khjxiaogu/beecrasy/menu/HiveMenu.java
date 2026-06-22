@@ -20,7 +20,8 @@
 package com.khjxiaogu.beecrasy.menu;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
-import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.bee.BeeHiveBaseBlockEntity;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.transfer.IndexModifier;

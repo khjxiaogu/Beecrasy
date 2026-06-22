@@ -40,6 +40,9 @@ public interface HiveSlot {
 	 * @param stack 要放入的物品栈
 	 */
 	public void setItem(ItemStack stack);
+	default boolean isValid() {
+		return true;
+	}
 	/**
 	 * 检查该槽位是否为空。
 	 * @return 如果槽位中没有物品则返回 true

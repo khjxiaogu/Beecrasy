@@ -29,7 +29,7 @@ import static com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks.*;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Fluids;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Tags;
-import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
+import com.khjxiaogu.beecrasy.blocks.bee.BeeNestBlock;
 import com.khjxiaogu.beecrasy.data.BeecrasyTagGenerator;
 
 import net.minecraft.core.HolderLookup;

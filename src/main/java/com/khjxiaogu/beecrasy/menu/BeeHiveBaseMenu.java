@@ -21,7 +21,7 @@ package com.khjxiaogu.beecrasy.menu;
 
 import com.khjxiaogu.beecrasy.beehive.ErrCode;
 import com.khjxiaogu.beecrasy.beehive.WorkBehaviour;
-import com.khjxiaogu.beecrasy.blocks.BeeHiveBaseBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.bee.BeeHiveBaseBlockEntity;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;

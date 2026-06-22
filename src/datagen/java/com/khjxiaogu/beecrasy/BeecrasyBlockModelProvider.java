@@ -32,7 +32,7 @@ import java.util.function.UnaryOperator;
 
 import com.google.common.collect.ImmutableList;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
-import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
+import com.khjxiaogu.beecrasy.blocks.bee.BeeNestBlock;
 
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelOutput;
@@ -107,7 +107,12 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 			this.getVariantBuilder(Blocks.HIVE.get(), bmf("hive"))
 			.with(ROTATION_HORIZONTAL_FACING)
 			);
-		
+		this.simpleBlockItem(Blocks.BEE_CITY_CORE.get());
+		this.blockItemModel(Blocks.BEE_CITY_COMB.get(),Beecrasy.rl("bee_city_empty_comb"));
+		this.blockStateOutput.accept(this.getVariantBuilder(Blocks.BEE_CITY_COMB.get())
+			.with(PropertyDispatch.initial(BlockStateProperties.LIT)
+				.generate(t->t?genBlock("bee_city_honey_comb"):genBlock("bee_city_empty_comb"))
+				));
 		this.itemModelOutput.accept(Blocks.HONEY_PRESS.asItem(), 
 			ItemModelUtils.composite(
 				this.plainBlockModel(Beecrasy.rl("honey_press_base")),

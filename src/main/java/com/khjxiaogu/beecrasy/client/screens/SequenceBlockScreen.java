@@ -21,7 +21,7 @@ package com.khjxiaogu.beecrasy.client.screens;
 
 import java.util.function.Consumer;
 
-import com.khjxiaogu.beecrasy.blocks.SequencerBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.machine.SequencerBlockEntity;
 import com.khjxiaogu.beecrasy.client.FluidRenderHelper;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuBlock;
 

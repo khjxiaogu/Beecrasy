@@ -19,8 +19,8 @@
 
 package com.khjxiaogu.beecrasy;
 
-import java.util.Optional;
 import java.util.function.BiConsumer;
+
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.client.BeeTint;

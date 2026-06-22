@@ -17,13 +17,14 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.blocks;
+package com.khjxiaogu.beecrasy.blocks.bee;
 
 import java.util.List;
 import java.util.Map;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries;
 import com.khjxiaogu.beecrasy.beehive.slot.StacksHiveSlot;
+import com.khjxiaogu.beecrasy.blocks.BeecrasyEntityBlock;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 
 import net.minecraft.core.BlockPos;

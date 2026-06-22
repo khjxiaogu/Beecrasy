@@ -21,7 +21,9 @@ package com.khjxiaogu.beecrasy.beehive;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.PriorityQueue;
@@ -55,7 +57,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
@@ -74,6 +75,65 @@ import net.neoforged.neoforge.common.util.ValueIOSerializable;
  * 实现了 {@link ValueIOSerializable} 用于数据持久化，以及 {@link ContainerData} 用于容器同步。
  */
 public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
+	public static class ValidSlotIterator<T extends HiveSlot> implements Iterator<T> {
+		/** 底层迭代器 */
+		private final Iterator<T> iterator;
+		/** 缓存的下一个符合条件的元素 */
+		private T nextItem;
+
+		/**
+		 * 使用底层迭代器构造可操作条目迭代器。
+		 *
+		 * @param iterator 底层迭代器
+		 */
+		public ValidSlotIterator(Iterator<T> iterator) {
+			this.iterator = iterator;
+			advance();
+		}
+		/**
+		 * 预加载下一个符合条件的元素。
+		 */
+		private void advance() {
+			while (iterator.hasNext()) {
+				T item = iterator.next();
+				if (item.isValid()) {
+					nextItem = item;
+					return;
+				}
+			}
+			nextItem = null;
+		}
+		@Override
+		public boolean hasNext() {
+			return nextItem != null;
+		}
+		@Override
+		public T next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			T result = nextItem;
+			advance();
+			return result;
+		}
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	}
+	public static class HiveSlotIterable<T extends HiveSlot> implements Iterable<T>{
+		private final Iterable<T> backed;
+		public HiveSlotIterable(Iterable<T> backed) {
+			super();
+			this.backed = backed;
+		}
+		@Override
+		public Iterator<T> iterator() {
+			return new ValidSlotIterator<>(backed.iterator());
+		}
+
+	}
+	
 	/**
 	 * 用于优先级队列的槽位优先级记录。
 	 * 在蜂后选举中根据基因组相似度排序。
@@ -112,11 +172,11 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				);
 	}
 	/** 巢脾槽位列表（存放幼虫和产物）。 */
-	List<? extends HiveSlot> combSlot;
+	HiveSlotIterable<? extends HiveSlot> combSlot;
 	/** 雄蜂槽位列表。 */
-	List<? extends HiveSlot> droneSlot;
+	HiveSlotIterable<? extends HiveSlot> droneSlot;
 	/** 蜂后槽位列表（存放蜂后/王台）。 */
-	List<? extends HiveSlot> queenSlot;
+	HiveSlotIterable<? extends HiveSlot> queenSlot;
 	
 	/** 可序列化的随机数源，用于保证工作周期中所有随机操作的一致性。 */
 	SerializableRandomSource rs;
@@ -161,11 +221,11 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @param droneSlot 雄蜂槽位列表
 	 * @param combSlot  巢脾/产物槽位列表
 	 */
-	public BeeHiveHandler(List<? extends HiveSlot> queenSlot, List<? extends HiveSlot> droneSlot, List<? extends HiveSlot> combSlot) {
+	public BeeHiveHandler(Iterable<? extends HiveSlot> queenSlot, Iterable<? extends HiveSlot> droneSlot, Iterable<? extends HiveSlot> combSlot) {
 		super();
-		this.queenSlot = queenSlot;
-		this.droneSlot = droneSlot;
-		this.combSlot = combSlot;
+		this.queenSlot = new HiveSlotIterable<>(queenSlot);
+		this.droneSlot = new HiveSlotIterable<>(droneSlot);
+		this.combSlot = new HiveSlotIterable<>(combSlot);
 		this.interval=BeecrasyConfig.SERVER.INTERVAL.getAsInt();
 		this.lsAgainstInterval=BeecrasyConfig.SERVER.LIFESPAN.getAsInt()*.5f/BeecrasyConfig.SERVER.INTERVAL.getAsInt();
 	}
@@ -405,9 +465,14 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		rs=SerializableRandomSource.create(Mth.getSeed(params.position())^params.level().getRandom().nextLong());
 		setQueen(queenGenome);
 		this.droneGenomes=droneGenomes;
-		queenCount=Math.max(BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber()/5, rs), 1);
-		larvaCount=BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber(), rs);
-		droneCount=BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber(), rs);
+	
+		queenCount=Math.max(BeecrasyMath.getRandomRate((float) Math.log10(queenGenome[0].getAllele(Genes.FERTILITY).getNumber()
+			*params.getParamValue(BeeHiveParameters.FERTILITY)
+			*queenGenome[0].getAllele(Genes.YIELD).getNumber()
+			*params.getParamValue(BeeHiveParameters.YIELD)
+			*2), rs), 1);
+		larvaCount=BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber()*params.getParamValue(BeeHiveParameters.FERTILITY), rs);
+		droneCount=BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber()*params.getParamValue(BeeHiveParameters.FERTILITY), rs);
 		processMax=process=(int) (GenomeDataHelper.getLifespanTicks(queenGenome[0])*params.getParamValue(BeeHiveParameters.LIFESPAN));
 		
 	}
@@ -516,8 +581,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			}
 		}
 		PriorityQueue<HiveSlotPriority> queens=new PriorityQueue<>(Comparator.comparingLong(HiveSlotPriority::priority).reversed());
-		for(int i=0;i<combSlot.size();i++) {
-			HiveSlot hi=combSlot.get(i);
+		for(HiveSlot hi:combSlot) {
 			if(!hi.isEmpty()) {
 				queens.add(new HiveSlotPriority(hi,GenomeWorkHelper.checkSimilarityPoint(queenGenome, GenomeDataHelper.getAsDiploid(hi.getItem()))));
 			}

@@ -17,7 +17,7 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.blocks;
+package com.khjxiaogu.beecrasy.blocks.bee;
 
 import java.util.List;
 import java.util.Map;

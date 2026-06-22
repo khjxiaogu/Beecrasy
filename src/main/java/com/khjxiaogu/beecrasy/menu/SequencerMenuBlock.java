@@ -22,7 +22,7 @@ package com.khjxiaogu.beecrasy.menu;
 import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
-import com.khjxiaogu.beecrasy.blocks.SequencerBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.machine.SequencerBlockEntity;
 
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;

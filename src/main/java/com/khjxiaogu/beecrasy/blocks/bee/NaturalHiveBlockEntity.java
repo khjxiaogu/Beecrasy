@@ -17,7 +17,7 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.blocks;
+package com.khjxiaogu.beecrasy.blocks.bee;
 
 import java.util.List;
 
@@ -26,6 +26,7 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveHandler;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
 import com.khjxiaogu.beecrasy.beehive.slot.StacksHiveSlot;
+import com.khjxiaogu.beecrasy.blocks.BeecrasyBlockEntity;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
 import com.khjxiaogu.beecrasy.genome.Genome;

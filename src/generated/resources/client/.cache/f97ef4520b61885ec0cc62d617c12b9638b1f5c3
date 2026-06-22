@@ -1,4 +1,6 @@
-// 26.1.2	2026-06-15T23:47:19.0891268	Model Definitions - beecrasy
+// 26.1.2	2026-06-22T11:55:43.2511772	Model Definitions - beecrasy
+b37b94e51da68f8716902fdb1a5afcafd524c300 assets/beecrasy/blockstates/bee_city_comb.json
+8bbcba3bf0bc0c88d414a125277b141b1ee0f6f8 assets/beecrasy/blockstates/bee_city_core.json
 4c7cf0e4438c3d08128faa6e528770e3dde1c048 assets/beecrasy/blockstates/bee_nest_big.json
 2ec8c8a692b2ead7a010c6a08f4f7e90599bd066 assets/beecrasy/blockstates/bee_nest_medium.json
 809435de1f5dafa7eb21969f597c32b89a31100d assets/beecrasy/blockstates/bee_nest_nascent.json
@@ -13,6 +15,8 @@
 7bb29d5e7184ee156bdf67a3fea4183dd53592cc assets/beecrasy/items/apite.json
 c61b4b82f4072097ed9b7aa0bf9d62b4a1f37bca assets/beecrasy/items/asphodel.json
 5bc948201b4d7c12fedc6ff4dc09679a4c4f1904 assets/beecrasy/items/beeswax.json
+351c1f6f1cdfe56c445f4714394933737720ca2d assets/beecrasy/items/bee_city_comb.json
+f3789e180aabdd3fa07473a6837bf3e12c9811eb assets/beecrasy/items/bee_city_core.json
 fc818c7338ff33020f5c021c9f9e1be9886c4bcd assets/beecrasy/items/bee_nest_big.json
 fee78f5ff2576eed19bc1a43b362134a781c1271 assets/beecrasy/items/bee_nest_medium.json
 4d528535d86e6fbcdc845beb9c41a6d3d2859d66 assets/beecrasy/items/bee_nest_nascent.json
@@ -58,6 +62,9 @@ acf2909014c79b4d48c92242195a349a81c2d7fd assets/beecrasy/items/queen_bee.json
 5ded0302ccde35853a3e2bb124df600e5a3c8a67 assets/beecrasy/items/royal_jelly.json
 4bd6c4da6d092e47eeef22f2dc4f7e887e42dd94 assets/beecrasy/items/sequencer.json
 7fd1954a87eedde5b940287b5b3e21e5dd5d9a35 assets/beecrasy/items/skep.json
+fefaf064a23d032a9f1fa04186bbd9f7700ee24b assets/beecrasy/models/block/bee_city_empty_comb_0.json
+16c21ae00b667d207b81a50ca6c763e891e79177 assets/beecrasy/models/block/bee_city_empty_comb_1.json
+3eac23f9472618fae3f395a1d933119e541143af assets/beecrasy/models/block/bee_city_empty_comb_2.json
 e44fd8c3c29021db95976df9827280bcb522f318 assets/beecrasy/models/block/empty_comb_block_0.json
 100965d4a9a5d2d44b9ed654c4462f7c0b99824b assets/beecrasy/models/block/empty_comb_block_1.json
 1182ce2ea8ee4c0202c30c7e3a96f1724562566e assets/beecrasy/models/block/empty_comb_block_2.json

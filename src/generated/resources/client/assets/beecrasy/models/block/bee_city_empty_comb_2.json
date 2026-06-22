@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "beecrasy:block/bee_city_empty_comb_2"
+  }
+}

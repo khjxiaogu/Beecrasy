@@ -21,7 +21,7 @@ package com.khjxiaogu.beecrasy.client.renderer;
 
 import org.joml.Quaternionf;
 
-import com.khjxiaogu.beecrasy.blocks.PressBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.machine.PressBlockEntity;
 import com.khjxiaogu.beecrasy.client.ModelReference;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.QuadInstance;

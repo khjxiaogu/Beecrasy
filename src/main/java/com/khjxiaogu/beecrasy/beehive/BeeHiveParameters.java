@@ -81,6 +81,8 @@ public class BeeHiveParameters {
 	public static final BeehiveParameterType<Float> TEMPERATURE=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("temperature"),0f, (value,adder)->adder.accept(formatNumberLanguage(Beecrasy.rl("temperature"),value)));
 	/** 湿度参数：环境湿度的量化值。默认值为 0.0，加法合并。 */
 	public static final BeehiveParameterType<Float> HUMIDITY=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("humidity"),0f, (value,adder)->adder.accept(formatNumberLanguage(Beecrasy.rl("humidity"),value)));
+	/** 繁殖率参数：影响后代生成效率。默认值为 1.0，加法合并。 */
+	public static final BeehiveParameterType<Float> FERTILITY=BeeHiveParameterRegistry.registerNumeric(Beecrasy.rl("fertility"),1f, (value,adder)->adder.accept(formatPercentageLanguage(Beecrasy.rl("fertility"),value)));
 	
 	public static final BeehiveParameterType<List<Item>> MUTATION_DIRECTOR=BeeHiveParameterRegistry.register(Beecrasy.rl("result"), Codec.list(BuiltInRegistries.ITEM.byNameCodec()), ByteBufCodecs.registry(Registries.ITEM).apply(ByteBufCodecs.list()), Utils::concatList, List::of, (value,adder)->{
 		adder.accept(Component.translatable(getLanguageKey(Beecrasy.rl("result"))));

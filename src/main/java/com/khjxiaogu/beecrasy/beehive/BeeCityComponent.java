@@ -20,27 +20,30 @@
 package com.khjxiaogu.beecrasy.beehive;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.IntStream;
 
+import com.google.common.collect.Iterators;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Capability;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.beehive.slot.BeeCityCoreCombSlot;
 import com.khjxiaogu.beecrasy.beehive.slot.ResourceStackHiveSlot;
-import com.khjxiaogu.beecrasy.beehive.slot.StacksHiveSlot;
+import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
+import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider.HiveSlotType;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeehiveArgumenter;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
+import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation.Builder;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
 import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
@@ -55,7 +58,7 @@ import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * 蜂巢基础组件。
+ * 巨构蜂巢组件。
  * 蜂巢方块的顶层逻辑组件，管理：
  * <ul>
  *   <li>物品槽位（蜂后/雄蜂/巢脾/额外槽位）</li>
@@ -66,136 +69,72 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * </ul>
  * 实现了 {@link ValueIOSerializable} 用于持久化。
  */
-public class BeeHiveBaseComponent implements ValueIOSerializable{
-	
-	/**
-	 * 蜂巢基础数据记录。
-	 * 用于磁盘存档和网络同步的不可变数据快照，包含所有槽位、蜂巢处理器状态、参数增强项、冷却时间和工作模式。
-	 */
-	public static class BeeHiveBaseData{
-		
-		public static final Codec<BeeHiveBaseData> CODEC=RecordCodecBuilder.create(t->t
-			.group(StacksHiveSlot.LIST_CODEC.fieldOf("queen").forGetter(BeeHiveBaseData::queenSlot),
-				StacksHiveSlot.LIST_CODEC.fieldOf("comb").forGetter(BeeHiveBaseData::combSlot),
-				StacksHiveSlot.LIST_CODEC.fieldOf("drone").forGetter(BeeHiveBaseData::droneSlot),
-				BeeHiveHandler.DataRecord.CODEC.fieldOf("hive").forGetter(BeeHiveBaseData::hiveInfo),
-				BeeHiveArgumentation.CODEC.optionalFieldOf("arguments").forGetter(BeeHiveBaseData::arguments),
-				Codec.INT.optionalFieldOf("begining",0).forGetter(BeeHiveBaseData::beginingTicks),
-				WorkBehaviour.CODEC.fieldOf("work").forGetter(BeeHiveBaseData::work)
-				)
-			.apply(t, BeeHiveBaseData::new));
-		public static final StreamCodec<RegistryFriendlyByteBuf,BeeHiveBaseData> STREAM_CODEC=StreamCodec
-				.composite(StacksHiveSlot.LIST_STREAM_CODEC,BeeHiveBaseData::queenSlot,
-					StacksHiveSlot.LIST_STREAM_CODEC,BeeHiveBaseData::combSlot,
-					StacksHiveSlot.LIST_STREAM_CODEC,BeeHiveBaseData::droneSlot,
-					BeeHiveHandler.DataRecord.STREAM_CODEC,BeeHiveBaseData::hiveInfo,
-					ByteBufCodecs.optional(BeeHiveArgumentation.STREAM_CODEC),BeeHiveBaseData::arguments,
-					ByteBufCodecs.VAR_INT,BeeHiveBaseData::beginingTicks,
-					WorkBehaviour.STREAM_CODEC,BeeHiveBaseData::work,
-					BeeHiveBaseData::new
-					);
-		protected final List<StacksHiveSlot> queenSlot;
-		/** 巢脾/产物槽位列表。 */
-		protected final List<StacksHiveSlot> combSlot;
-		/** 雄蜂槽位列表。 */
-		protected final List<StacksHiveSlot> droneSlot;
-		/** 蜂巢处理器数据快照。 */
-		protected final BeeHiveHandler.DataRecord hiveInfo;
-		/** 参数增强项（可选，如信息素等物品提供的临时参数加成）。 */
-		protected final Optional<BeeHiveArgumentation> arguments;
-		/** 冷却计时器（工作开始前的等待 tick 数）。 */
-		protected final int beginingTicks;
-		/** 工作模式。 */
-		protected final WorkBehaviour work;
-		/**
-		 * 从现有的 HiveSlot 列表创建数据记录（深拷贝槽位内容）。
-		 * @param queenSlot    蜂后槽位列表
-		 * @param combSlot     巢脾槽位列表
-		 * @param droneSlot    雄蜂槽位列表
-		 * @param hiveInfo     蜂巢处理器数据快照
-		 * @param arguments    参数增强项
-		 * @param beginingTicks 冷却计时
-		 * @param work         工作模式
-		 */
-		public BeeHiveBaseData(List<? extends HiveSlot> queenSlot, List<? extends HiveSlot> combSlot,
-			List<? extends HiveSlot> droneSlot,
-			BeeHiveHandler.DataRecord hiveInfo, Optional<BeeHiveArgumentation> arguments,int beginingTicks, WorkBehaviour work) {
-			super();
-			
-			this.queenSlot = StacksHiveSlot.createSlots(queenSlot);
-			this.combSlot = StacksHiveSlot.createSlots(combSlot);
-			this.droneSlot = StacksHiveSlot.createSlots(droneSlot);
-			this.hiveInfo = hiveInfo;
-			this.arguments = arguments;
-			this.beginingTicks = beginingTicks;
-			this.work=work;
-		}
-		/**
-		 * 通过指定槽位数创建数据记录（所有槽位初始为空）。
-		 * @param queenSlot    蜂后槽位数量
-		 * @param combSlot     巢脾槽位数量
-		 * @param droneSlot    雄蜂槽位数量
-		 * @param hiveInfo     蜂巢处理器数据快照
-		 * @param arguments    参数增强项
-		 * @param work         工作模式
-		 */
-		public BeeHiveBaseData(int queenSlot,int combSlot,
-				int droneSlot,
-				BeeHiveHandler.DataRecord hiveInfo, Optional<BeeHiveArgumentation> arguments, WorkBehaviour work) {
-				super();
-				
-				this.queenSlot = StacksHiveSlot.createSlots(queenSlot);
-				this.combSlot = StacksHiveSlot.createSlots(combSlot);
-				this.droneSlot = StacksHiveSlot.createSlots(droneSlot);
-				this.hiveInfo = hiveInfo;
-				this.arguments = arguments;
-				this.beginingTicks = 0;
-				this.work=work;
-			}
-		/**
-		 * 从现有的 BeeHiveBaseComponent 实例创建数据记录快照。
-		 * @param comp 源组件
-		 */
-		public BeeHiveBaseData(BeeHiveBaseComponent comp) {
-			this(comp.queenSlot,comp.combSlot,comp.droneSlot,comp.hiveInfo.save(),Optional.ofNullable(comp.arguments),comp.beginingTicks,comp.work);
-		}
-		@Override
-		public int hashCode() {
-			return Objects.hash(arguments, combSlot, droneSlot, hiveInfo, queenSlot, work);
-		}
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) return true;
-			if (obj == null) return false;
-			if (getClass() != obj.getClass()) return false;
-			BeeHiveBaseData other = (BeeHiveBaseData) obj;
-			return Objects.equals(arguments, other.arguments) && Objects.equals(combSlot, other.combSlot) && Objects.equals(droneSlot, other.droneSlot) && Objects.equals(hiveInfo, other.hiveInfo)
-				&& Objects.equals(queenSlot, other.queenSlot) && work == other.work;
-		}
-		public List<StacksHiveSlot> queenSlot() {
-			return queenSlot;
-		}
-		public List<StacksHiveSlot> combSlot() {
-			return combSlot;
-		}
-		public List<StacksHiveSlot> droneSlot() {
-			return droneSlot;
-		}
-		public BeeHiveHandler.DataRecord hiveInfo() {
-			return hiveInfo;
-		}
-		public Optional<BeeHiveArgumentation> arguments() {
-			return arguments;
-		}
-		public int beginingTicks() {
-			return beginingTicks;
-		}
-		public WorkBehaviour work() {
-			return work;
-		}
-		
-	}
+public class BeeCityComponent implements ValueIOSerializable{
+	public static class BeeCityIterator implements Iterator<HiveSlot> {
+		/** 底层迭代器 */
+		private Iterator<? extends HiveSlot> iterator;
+		/** 缓存的下一个符合条件的元素 */
+		private HiveSlot nextItem;
+		private final ServerLevel level;
+		private final Iterator<BlockPos> pos;
+		private final HiveSlotType type;
 
+		public BeeCityIterator(Iterator<? extends HiveSlot> iterator, ServerLevel level, Iterator<BlockPos> pos, HiveSlotType type) {
+			super();
+			this.iterator = iterator;
+			this.level = level;
+			this.pos = pos;
+			this.type = type;
+		}
+		/**
+		 * 预加载下一个符合条件的元素。
+		 */
+		private void advance() {
+			while(iterator!=null) {
+				while (iterator.hasNext()) {
+					HiveSlot item = iterator.next();
+					if (item.isValid()) {
+						nextItem = item;
+						return;
+					}
+				}
+				advanceIterator();
+			}
+			nextItem = null;
+		}
+		private void advanceIterator() {
+			while (pos.hasNext()) {
+				BlockPos item = pos.next();
+				if(!level.isLoaded(item))
+					continue;
+				HiveSlotProvider slots=level.getCapability(Capability.BEE_CITY_BLOCK, item);
+				if (slots!=null) {
+					iterator=IntStream.range(0, slots.getSlots(type)).mapToObj(t->slots.getSlot(type,t)).iterator();
+					return;
+				}else {
+					pos.remove();
+				}
+			}
+			iterator = null;
+		}
+		@Override
+		public boolean hasNext() {
+			return nextItem != null;
+		}
+		@Override
+		public HiveSlot next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			HiveSlot result = nextItem;
+			advance();
+			return result;
+		}
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	}
 	/** 内部物品栈资源句柄（所有槽位的底层存储）。 */
 	protected ItemStacksResourceHandler internInv;
 	/** 外部访问委托（用于管道/漏斗等自动化设备的外部输入验证）。 */
@@ -203,13 +142,14 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 	/** 产物输出委托（限制仅允许从巢脾槽位提取产物）。 */
 	protected DelegatingResourceHandler<ItemResource> productInv;
 	/** 蜂后槽位列表。 */
-	protected List<ResourceStackHiveSlot> queenSlot;
+	protected List<HiveSlot> queenSlot;
 	/** 巢脾/产物槽位列表。 */
-	protected List<ResourceStackHiveSlot> combSlot;
+	protected List<HiveSlot> combSlot;
 	/** 雄蜂槽位列表。 */
-	protected List<ResourceStackHiveSlot> droneSlot;
+	protected List<HiveSlot> droneSlot;
 	/** 额外槽位列表（用于模组扩展）。 */
-	protected List<ResourceStackHiveSlot> extraSlot;
+	protected List<HiveSlot> extraSlot;
+	protected Set<BlockPos> pos;
 	/** 蜂巢工作周期处理器。 */
 	public final BeeHiveHandler hiveInfo;
 	/** 参数增强项（由物品如信息素提供的临时参数加成）。 */
@@ -226,14 +166,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 	public ErrCode err=ErrCode.OK;
 	/** 冷却总时长（tick 数）。 */
 	public static final int COOLDOWN_TIME=100;
-	/**
-	 * 从数据记录创建蜂巢基础组件。
-	 * @param data 包含初始状态的数据记录
-	 */
-	public BeeHiveBaseComponent(BeeHiveBaseData data) {
-		this(data.queenSlot.size(),data.droneSlot.size(),data.combSlot.size(),0);
-		load(data);
-	}
+	public ServerLevel level;
 	/**
 	 * 创建指定容量的蜂巢基础组件。
 	 * 初始化所有内部槽位和资源句柄，设置各区域（蜂后/雄蜂/巢脾/额外）的验证规则。
@@ -242,7 +175,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 	 * @param comb  巢脾槽位数量
 	 * @param extra 额外槽位数量
 	 */
-	public BeeHiveBaseComponent(int queen,int drone,int comb,int extra) {
+	public BeeCityComponent(int queen,int drone,int comb,int extra) {
 		internInv = new ItemStacksResourceHandler(queen+drone+comb+extra) {
 			@Override
 			protected void onContentsChanged(int slot, ItemStack stack) {
@@ -311,13 +244,19 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		}
 		combSlot=new ArrayList<>(comb);
 		for(int i=0;i<comb;i++) {
-			combSlot.add(new ResourceStackHiveSlot(getInternInv(),i+queen+drone));
+			combSlot.add(new BeeCityCoreCombSlot(getInternInv(),i+queen+drone));
 		}
 		extraSlot=new ArrayList<>(extra);
 		for(int i=0;i<extra;i++) {
 			extraSlot.add(new ResourceStackHiveSlot(getInternInv(),i+queen+drone+comb));
 		}
-		hiveInfo= new BeeHiveHandler(queenSlot,droneSlot,combSlot);
+		hiveInfo= new BeeHiveHandler(
+			()-> new BeeCityIterator(queenSlot.iterator(),level,pos.iterator(),HiveSlotType.QUEEN),
+			()-> new BeeCityIterator(droneSlot.iterator(),level,pos.iterator(),HiveSlotType.COMB),
+			()-> new BeeCityIterator(combSlot.iterator(),level,pos.iterator(),HiveSlotType.COMB));
+	}
+	public void appendHiveCity(BlockPos pos) {
+		this.pos.add(pos);
 	}
 	/**
 	 * 验证额外槽位是否允许放入指定物品。
@@ -326,8 +265,8 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 	 * @param resource 待验证的物品资源
 	 * @return 如果允许放入则返回 true
 	 */
-	protected boolean isValidForExtra(int index, ItemResource resource) {
-		return false;
+	public boolean isValidForExtra(int index, ItemResource resource) {
+		return ItemValidateHelper.isArgument(resource.toStack());
 	}
 	/**
 	 * 将完整数据序列化到 ValueOutput 中。
@@ -400,25 +339,6 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 		nbt.store("err", ErrCode.CODEC, err);
 	}
 	/**
-	 * 从数据记录加载状态（覆盖当前内存状态）。
-	 * @param data 源数据记录
-	 */
-	public void load(BeeHiveBaseData data) {
-		HiveSlot.copy(data.queenSlot, queenSlot);
-		HiveSlot.copy(data.droneSlot, droneSlot);
-		HiveSlot.copy(data.combSlot, combSlot);
-		hiveInfo.read(data.hiveInfo);
-		arguments=data.arguments.orElse(null);
-		work=data.work;
-	}
-	/**
-	 * 将当前状态保存为数据记录。
-	 * @return 包含当前状态快照的数据记录
-	 */
-	public BeeHiveBaseData save() {
-		return new BeeHiveBaseData(this);
-	}
-	/**
 	 * 构建蜂巢参数集构建器。
 	 * 从世界中获取当前环境参数，如果存在参数增强项则应用其提供的参数覆盖。
 	 * @param serverLevel  服务端世界
@@ -439,20 +359,16 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 	 * @param root         事务上下文
 	 * @return 参数增强项构建器
 	 */
-	protected BeeHiveArgumentation.Builder buildArgumentation(ServerLevel serverLevel, BlockPos worldPosition,TransactionContext root) {
-		return new BeeHiveArgumentation.Builder();
-	}
-	/**
-	 * 从指定槽位的物品中提取参数增强项。
-	 * 如果物品带有 {@link BeehiveArgumenter} 组件，根据其 consumeOnUse 属性决定是否消耗物品，
-	 * 并返回其中的参数修饰器。
-	 * @param serverLevel 服务端世界
-	 * @param slot        槽位索引
-	 * @param root        事务上下文
-	 * @return 参数增强项，如果物品不适用或提取失败则返回 null
-	 */
-	protected BeeHiveArgumentation extractArgumentation(ServerLevel serverLevel,int slot,TransactionContext root) {
-		return BeehiveArgumenter.extractArgumentation(serverLevel, internInv, slot, root);
+	public Builder buildArgumentation(ServerLevel level,BlockPos worldPosition,TransactionContext root) {
+
+		Builder builder= new BeeHiveArgumentation.Builder();
+		BeeHiveArgumentation arg1=BeehiveArgumenter.extractArgumentation(level, internInv, 5, root);
+		if(arg1!=null)
+			builder.addParams(arg1);
+		builder.addParam(BeeHiveParameters.YIELD,pos.size()*0.1f);
+		builder.addParam(BeeHiveParameters.SPEED,pos.size()*0.1f);
+		builder.addParam(BeeHiveParameters.FERTILITY,pos.size()*0.1f);
+		return builder;
 	}
 	/**
 	 * 检查是否可以开始工作。
@@ -467,7 +383,7 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			return false;
 		}
 		int queenCount=0;
-		for(ResourceStackHiveSlot slot:queenSlot) {
+		for(HiveSlot slot:queenSlot) {
 			if(!slot.isEmpty()) {
 				if(slot.is(Items.QUEEN_BEE)) {
 					queenCount++;
@@ -485,23 +401,10 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			return false;
 		}
 		int droneCount=0;
-		for(ResourceStackHiveSlot slot:droneSlot) {
+		for(HiveSlot slot:(Iterable<HiveSlot>)(()-> new BeeCityIterator(Iterators.concat(droneSlot.iterator(), combSlot.iterator()),level,pos.iterator(),HiveSlotType.COMB))) {
 			if(!slot.isEmpty()) {
 				if(slot.is(Items.DRONE)) {
 					droneCount++;
-				}else {
-					err=ErrCode.MALFORMED_SLOT;
-					return false;
-				}
-			}
-		}
-		for(ResourceStackHiveSlot slot:combSlot) {
-			if(!slot.isEmpty()) {
-				if(slot.is(Items.DRONE)) {
-					droneCount++;
-				}else {
-					err=ErrCode.MALFORMED_SLOT;
-					return false;
 				}
 			}
 		}
@@ -567,7 +470,16 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			}
 			trans.commit();
 		}
-
+		for(HiveSlot slot:(Iterable<HiveSlot>)(()-> new BeeCityIterator(Collections.emptyIterator(),level,pos.iterator(),HiveSlotType.COMB))) {
+			if(slot.is(Items.DRONE)) {
+				ItemStack stack=slot.getItem();
+				GenomeComponent comp=stack.get(Components.GENOME);
+				if(comp!=null) {
+					drones.add(comp.getGenome(0));
+					slot.setItem(ItemStack.EMPTY);
+				}
+			}
+		}
 		hiveInfo.prepareWork(params, queen, drones);
 		return true;
 	}

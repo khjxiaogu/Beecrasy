@@ -17,7 +17,7 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.blocks;
+package com.khjxiaogu.beecrasy.blocks.bee;
 
 import java.util.Optional;
 
@@ -28,7 +28,7 @@ import com.khjxiaogu.beecrasy.beehive.BeeHiveHandler.DataRecord;
 import com.khjxiaogu.beecrasy.beehive.WorkBehaviour;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation.Builder;
-import com.khjxiaogu.beecrasy.menu.SkepMenu;
+import com.khjxiaogu.beecrasy.menu.HiveMenu;
 import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
 
 import net.minecraft.core.BlockPos;
@@ -43,11 +43,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-public class SkepBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvider{
-	public static final BeeHiveBaseData EMPTY=new BeeHiveBaseData(1, 4, 4, DataRecord.EMPTY, Optional.empty(), WorkBehaviour.MAUNAL);
-	public static class SkepComponent extends BeeHiveBaseComponent{
+public class HiveBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvider{
+	public static final BeeHiveBaseData EMPTY=new BeeHiveBaseData(2, 6, 6, DataRecord.EMPTY, Optional.empty(), WorkBehaviour.MAUNAL);
+	public static class HiveComponent extends BeeHiveBaseComponent{
 
-		public SkepComponent(int queen, int drone, int comb, int extra) {
+		public HiveComponent(int queen, int drone, int comb, int extra) {
 			super(queen, drone, comb, extra);
 		}
 
@@ -59,36 +59,35 @@ public class SkepBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvi
 		public Builder buildArgumentation(ServerLevel level,BlockPos worldPosition,TransactionContext root) {
 
 			Builder builder= super.buildArgumentation(level,worldPosition,root);
-			BeeHiveArgumentation arg1=super.extractArgumentation(level, 9, root);
+			BeeHiveArgumentation arg1=super.extractArgumentation(level, 14, root);
 			if(arg1!=null)
 				builder.addParams(arg1);
-			BeeHiveArgumentation arg2=super.extractArgumentation(level, 10, root);
+			BeeHiveArgumentation arg2=super.extractArgumentation(level, 15, root);
 			if(arg2!=null)
 				builder.addParams(arg2);
+			BeeHiveArgumentation arg3=super.extractArgumentation(level, 16, root);
+			if(arg3!=null)
+				builder.addParams(arg3);
 			return builder;
 		}
 	}
-	public SkepBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-		super(Blocks.SKEP_BLOCKENTITY.get(), pWorldPosition, pBlockState, new SkepComponent(1, 4, 4, 2));
+	public HiveBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
+		super(Blocks.HIVE_BLOCKENTITY.get(), pWorldPosition, pBlockState, new HiveComponent(2, 6, 6, 3));
 	}
 
 	@Override
 	public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
-		return new SkepMenu(containerId,inventory,this);
+		return new HiveMenu(containerId,inventory,this);
 	}
 
 	@Override
 	public Component getDisplayName() {
-		return Blocks.SKEP.get().getName();
+		return Blocks.HIVE.get().getName();
 	}
+
 	public ItemStack getItem() {
-
-		ItemStack skepStack=new ItemStack(Blocks.SKEP.asItem(),1);
-		skepStack.applyComponents(collectComponents());
-		return skepStack;
+		ItemStack stack=new ItemStack(Blocks.HIVE.asItem(),1);
+		stack.applyComponents(collectComponents());
+		return stack;
 	}
-
-
-
-
 }

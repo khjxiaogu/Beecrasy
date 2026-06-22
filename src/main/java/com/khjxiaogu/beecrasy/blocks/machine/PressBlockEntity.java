@@ -17,11 +17,12 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.blocks;
+package com.khjxiaogu.beecrasy.blocks.machine;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Recipes;
+import com.khjxiaogu.beecrasy.blocks.BeecrasyBlockEntity;
 import com.khjxiaogu.beecrasy.data.PressRecipe;
 import com.khjxiaogu.beecrasy.data.RandomizableRecipeInput;
 import com.khjxiaogu.beecrasy.menu.PressMenu;

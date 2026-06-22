@@ -17,26 +17,24 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.blocks;
+package com.khjxiaogu.beecrasy.blocks.bee.beecity;
 
-import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
-import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
-import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent.BeeHiveBaseData;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.beehive.BeeCityComponent;
+import com.khjxiaogu.beecrasy.blocks.BeecrasyBlockEntity;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
-	public final BeeHiveBaseComponent component;
-	public BeeHiveBaseBlockEntity(BlockEntityType<?> pType, BlockPos pWorldPosition, BlockState pBlockState,BeeHiveBaseComponent component) {
-		super(pType, pWorldPosition, pBlockState);
-		this.component=component;
+public class BeeCityCoreBlockEntity extends BeecrasyBlockEntity {
+	public final BeeCityComponent component;
+	public BeeCityCoreBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
+		super(Blocks.BEE_CITY_CORE_BLOCKENTITY.get(), pWorldPosition, pBlockState);
+		this.component=new BeeCityComponent(1,2,2,1);
 	}
 
 	@Override
@@ -66,27 +64,4 @@ public class BeeHiveBaseBlockEntity extends BeecrasyBlockEntity {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public void removeComponentsFromTag(ValueOutput output) {
-
-		output.discard("inv");
-		output.discard("hive");
-		output.discard("nextWork");
-		output.discard("arguments");
-		output.discard("work");
-		super.removeComponentsFromTag(output);
-	}
-	@Override
-	protected void applyImplicitComponents(DataComponentGetter components) {
-		BeeHiveBaseData hive=components.get(Components.BEE_HIVE);
-		if(hive!=null)
-		this.component.load(hive);
-		super.applyImplicitComponents(components);
-	}
-
-	@Override
-	protected void collectImplicitComponents(net.minecraft.core.component.DataComponentMap.Builder components) {
-		components.set(Components.BEE_HIVE, component.save());
-	}
 }

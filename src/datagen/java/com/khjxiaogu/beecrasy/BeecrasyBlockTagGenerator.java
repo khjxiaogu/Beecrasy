@@ -26,7 +26,7 @@ import java.util.function.UnaryOperator;
 import com.google.common.collect.ImmutableSet;
 import static com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks.*;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Tags;
-import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
+import com.khjxiaogu.beecrasy.blocks.bee.BeeNestBlock;
 import com.khjxiaogu.beecrasy.data.BeecrasyTagGenerator;
 import com.khjxiaogu.beecrasy.genome.Genes;
 
@@ -67,5 +67,6 @@ public class BeecrasyBlockTagGenerator extends BeecrasyTagGenerator<Block> {
 		tag(Genes.Alleles.WILD.getTag()).addTag(BlockTags.FLOWERS);
 		tag(Tags.TO_BE_FLOWER).add(rk(Blocks.SHORT_DRY_GRASS),rk(Blocks.SHORT_GRASS),rk(Blocks.TALL_DRY_GRASS),rk(Blocks.TALL_GRASS),rk(Blocks.LARGE_FERN),rk(Blocks.FERN));
 		tag(Tags.MAILBOX).add(rk(BEE_NEST_SMALL)).add(rk(BEE_NEST_NASCENT)).add(rk(BEE_NEST_MEDIUM)).add(rk(BEE_NEST_BIG)).add(rk(NATURAL_HIVE));
+		tag(Tags.BEECITY_SPREADABLE).add(rk(EMPTY_COMB_BLOCK)).add(rk(HONEY_COMB_BLOCK));
 	}
 }

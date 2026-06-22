@@ -30,17 +30,22 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableSet;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
-import com.khjxiaogu.beecrasy.blocks.BeeNestBlock;
-import com.khjxiaogu.beecrasy.blocks.HiveBlock;
-import com.khjxiaogu.beecrasy.blocks.HiveBlockEntity;
-import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlock;
-import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlockEntity;
-import com.khjxiaogu.beecrasy.blocks.PressBlock;
-import com.khjxiaogu.beecrasy.blocks.PressBlockEntity;
-import com.khjxiaogu.beecrasy.blocks.SequencerBlock;
-import com.khjxiaogu.beecrasy.blocks.SequencerBlockEntity;
-import com.khjxiaogu.beecrasy.blocks.SkepBlock;
-import com.khjxiaogu.beecrasy.blocks.SkepBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
+import com.khjxiaogu.beecrasy.blocks.bee.BeeNestBlock;
+import com.khjxiaogu.beecrasy.blocks.bee.HiveBlock;
+import com.khjxiaogu.beecrasy.blocks.bee.HiveBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.bee.NaturalHiveBlock;
+import com.khjxiaogu.beecrasy.blocks.bee.NaturalHiveBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.bee.SkepBlock;
+import com.khjxiaogu.beecrasy.blocks.bee.SkepBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityCombBlock;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityCombBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityCoreBlock;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityCoreBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.machine.PressBlock;
+import com.khjxiaogu.beecrasy.blocks.machine.PressBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.machine.SequencerBlock;
+import com.khjxiaogu.beecrasy.blocks.machine.SequencerBlockEntity;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeehiveArgumenter;
@@ -116,6 +121,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
@@ -219,6 +225,9 @@ public class BeecrasyRegistries {
 	    public static final DeferredBlock<DoublePlantBlock> FLOWER_PROTEA = register("protea", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
 	    public static final DeferredBlock<DoublePlantBlock> FLOWER_PROTEA_ARTISAN = register("protea_artisan", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
 	    
+	    public static final DeferredBlock<BeeCityCoreBlock> BEE_CITY_CORE=register("bee_city_core",BeeCityCoreBlock::new,Blocks::nestProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeCityCombBlock> BEE_CITY_COMB=register("bee_city_comb",BeeCityCombBlock::new,Blocks::nestProps,UnaryOperator.identity());
+	    
 	    
 	    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Beecrasy.MODID);
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PressBlockEntity>> PRESS_BLOCKENTITY=BLOCK_ENTITIES.register("honey_press", makeBlockEntityType(PressBlockEntity::new, HONEY_PRESS));
@@ -227,6 +236,10 @@ public class BeecrasyRegistries {
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<HiveBlockEntity>> HIVE_BLOCKENTITY=BLOCK_ENTITIES.register("hive", makeBlockEntityType(HiveBlockEntity::new, HIVE));
 		public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SequencerBlockEntity>> SEQUENCER_BLOCKENTITY=BLOCK_ENTITIES.register("sequencer", makeBlockEntityType(SequencerBlockEntity::new, SEQUENCER));
 
+		public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BeeCityCoreBlockEntity>> BEE_CITY_CORE_BLOCKENTITY=BLOCK_ENTITIES.register("bee_city_core", makeBlockEntityType(BeeCityCoreBlockEntity::new, BEE_CITY_CORE));
+		public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BeeCityCombBlockEntity>> BEE_CITY_COMB_BLOCKENTITY=BLOCK_ENTITIES.register("bee_city_comb", makeBlockEntityType(BeeCityCombBlockEntity::new, BEE_CITY_COMB));
+
+		
 	    public static DeferredBlock<Block> register(String name){
 	    	return register(name,Block::new,Blocks::genalDeco,UnaryOperator.identity());
 	    }
@@ -308,6 +321,10 @@ public class BeecrasyRegistries {
 	    
 	    
 	}
+	public static class Capability{
+		public static final BlockCapability<HiveSlotProvider, Void> BEE_CITY_BLOCK=BlockCapability.createVoid(Beecrasy.rl("bee_city_block"), HiveSlotProvider.class);
+		
+	}
 	public static class Entities{
 		public static final DeferredRegister.Entities ENTITY_TYPES = DeferredRegister.createEntities(Beecrasy.MODID);
 		public static final DeferredHolder<EntityType<?>, EntityType<BeeSwarmEntity>> BEE_SWARM=ENTITY_TYPES.registerEntityType("bee_swarm", BeeSwarmEntity::new, MobCategory.MISC,t->t.sized(0.1f, 0.1f).noLootTable());
@@ -326,6 +343,7 @@ public class BeecrasyRegistries {
 		public static final TagKey<Block> FLOWERS_FROM_APICULTURE=BlockTags.create(Beecrasy.rl("flowers/from_apiculture"));
 		public static final TagKey<Block> TO_BE_FLOWER=BlockTags.create(Beecrasy.rl("can_become_flower"));
 		public static final TagKey<Block> MAILBOX=BlockTags.create(Beecrasy.rl("mailbox"));
+		public static final TagKey<Block> BEECITY_SPREADABLE=BlockTags.create(Beecrasy.rl("beecity_spreadable"));
 		
 	}
 	public static class Recipes{

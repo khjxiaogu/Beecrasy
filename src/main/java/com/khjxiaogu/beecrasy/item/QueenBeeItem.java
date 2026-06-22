@@ -20,7 +20,7 @@
 package com.khjxiaogu.beecrasy.item;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
-import com.khjxiaogu.beecrasy.blocks.NaturalHiveBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.bee.NaturalHiveBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
