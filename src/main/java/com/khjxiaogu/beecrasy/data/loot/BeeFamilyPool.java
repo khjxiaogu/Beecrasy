@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
+import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
@@ -73,16 +74,16 @@ public class BeeFamilyPool extends LootPoolSingletonContainer {
         BeeHiveParameterSet params=new BeeHiveParameterSet.Builder(context.getLevel(), 
         	BlockPos.containing(context.getParameter(LootContextParams.ORIGIN)))
         	.build();
-        Genome data=func.applySingle(params, null,0);
+        GenomeComponent data=func.apply(params, GenomeComponent.HAPLOID_EMPTY);
 		ItemStack drone = Items.DRONE.toStack(droneCount.getInt(context));
-		GenomeDataHelper.setHaploidGenome(drone, data);
+		GenomeDataHelper.setGenomeComponent(drone, data.reduceHaploid());
 		output.accept(drone);
 		ItemStack queen = Items.QUEEN_BEE.toStack(queenCount.getInt(context));
-		GenomeDataHelper.setDiploidGenome(queen, data, data);
+		GenomeDataHelper.setGenomeComponent(queen, data.reduceDiploid());
 		output.accept(queen);
-		List<ProductItem> product = data.getAllele(Genes.PRODUCTS);
+		List<ProductItem> product = data.getGenome(0).getAllele(Genes.PRODUCTS);
 		if (!product.isEmpty()) {
-			for (ProductWithCount i : GenomeWorkHelper.pickProduct(data.getAllele(Genes.BIOTOPE), product, context.getRandom(), combCount.getInt(context))) {
+			for (ProductWithCount i : GenomeWorkHelper.pickProduct(data.getGenome(0).getAllele(Genes.BIOTOPE), product, context.getRandom(), combCount.getInt(context))) {
 				output.accept(i.createProductComb());
 			}
 		}

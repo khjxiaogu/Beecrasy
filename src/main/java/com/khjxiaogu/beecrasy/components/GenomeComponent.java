@@ -39,8 +39,7 @@ public class GenomeComponent implements Iterable<Genome>{
 	public static final GenomeComponent DIPLOID_EMPTY=new GenomeComponent(false);
 	public static final Codec<GenomeComponent> CODEC=RecordCodecBuilder.create(t->t.group(
 		Codec.BOOL.fieldOf("inspected").forGetter(o->o.inspected),
-		Genome.CODEC.fieldOf("genome_1").forGetter(o->o.genomes[0]),
-		Genome.CODEC.optionalFieldOf("genome_2").forGetter(o->o.genomes.length>1?Optional.of(o.genomes[1]):Optional.empty())
+		Codec.list(Genome.CODEC).optionalFieldOf("genomes",List.of(Genome.DEFAULT)).forGetter(o->List.of(o.genomes))
 		).apply(t, GenomeComponent::new)
 		);
 	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> EMPTY_CODEC= new StreamCodec<>() {
@@ -92,6 +91,22 @@ public class GenomeComponent implements Iterable<Genome>{
 		if(inspected)
 			return this;
 		return new GenomeComponent(true,genomes);
+	}
+	public GenomeComponent reduceHaploid() {
+		if(genomes.length==0)
+			return HAPLOID_EMPTY;
+		if(genomes.length==1)
+			return this;
+		return new GenomeComponent(true,genomes[0]);
+	}
+	public GenomeComponent reduceDiploid() {
+		if(genomes.length==0)
+			return DIPLOID_EMPTY;
+		if(genomes.length==1)
+			return new GenomeComponent(true,genomes[0],genomes[0]);
+		if(genomes.length==2)
+			return this;
+		return new GenomeComponent(true,genomes[0],genomes[1]);
 	}
 	public int size() {
 		return genomes.length;

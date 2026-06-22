@@ -37,7 +37,7 @@ public record GenomeSetter(Optional<PartialGenome> template,List<Identifier> poo
 		i->i.group(
 		PartialGenome.CODEC.optionalFieldOf("template").forGetter(GenomeSetter::template),
     	ExtraCodecs.compactListCodec(Identifier.CODEC).optionalFieldOf("genetic_pool",List.of()).forGetter(GenomeSetter::pools),
-    	ExtraCodecs.compactListCodec(Codec.INT).optionalFieldOf("position",IntList.of(0)).forGetter(GenomeSetter::applies),
+    	ExtraCodecs.compactListCodec(Codec.INT).optionalFieldOf("position",IntList.of()).forGetter(GenomeSetter::applies),
     	Codec.BOOL.optionalFieldOf("natural",false).forGetter(GenomeSetter::applyNatural)
     	).apply(i, GenomeSetter::new));
 	public GenomeSetter(Optional<PartialGenome> template,List<Identifier> pools,List<Integer> applies,boolean applyNatural) {

@@ -63,6 +63,13 @@ public final class GenomeDataHelper {
 		}
 		stack.set(Components.GENOME, genome.toComponent());
 	}
+	public static void setGenomeComponent(MutableDataComponentHolder stack,GenomeComponent genome) {
+		List<ProductItem> products=genome.getGenome(0).getAllele(Genes.PRODUCTS);
+		if(!products.isEmpty()) {
+			stack.set(Components.TINT_STACK, products.get(0).stack());
+		}
+		stack.set(Components.GENOME, genome);
+	}
 	/**
 	 * 将两个单倍基因组作为二倍体写入物品组件。
 	 *

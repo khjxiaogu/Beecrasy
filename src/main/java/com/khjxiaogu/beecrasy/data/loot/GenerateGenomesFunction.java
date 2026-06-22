@@ -134,8 +134,14 @@ public class GenerateGenomesFunction extends LootItemConditionalFunction {
         		nbgge.applyPools(id);
         	}
         	PartialGenome pg=nbgge.genome.build();
-        	for(int pos:setter.applies()) {
-        		builders[pos]=pg.apply(builders[pos]);
+        	if(!setter.applies().isEmpty()) {
+	        	for(int pos:setter.applies()) {
+	        		builders[pos]=pg.apply(builders[pos]);
+	        	}
+        	}else {
+        		for(int i=0;i<builders.length;i++) {
+	        		builders[i]=pg.apply(builders[i]);
+	        	}
         	}
         }
         Genome[] genomes=new Genome[builders.length];

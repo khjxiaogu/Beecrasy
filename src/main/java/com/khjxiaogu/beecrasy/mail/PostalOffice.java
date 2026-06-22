@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.joml.Vector3fc;
-
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;

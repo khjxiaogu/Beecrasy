@@ -33,6 +33,7 @@ public class BeeCityCoreCombSlot extends ResourceStackHiveSlot {
 		super(handler, slot);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean is(Holder<Item> item) {
 		if(item.is(Items.PRODUCT_COMB))

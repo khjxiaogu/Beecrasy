@@ -27,6 +27,7 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Tags;
 import com.khjxiaogu.beecrasy.data.loot.BeeFamilyPool;
 import com.khjxiaogu.beecrasy.data.loot.GenerateGenomesFunction;
+import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.advancements.criterion.StatePropertiesPredicate;
@@ -35,6 +36,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -107,7 +109,6 @@ public class BeecrasyLootProvider extends BlockLootSubProvider {
         	.add(BeeFamilyPool.builder(GenerateGenomesFunction.builder().begin().setNatural()
         		.addPool(Constants.BASE_ID)
         		.addPool(Constants.FOREST_ID)
-        		.addPos(0)
         		.add().build(), UniformGenerator.between(1,2), new ConstantValue(1), UniformGenerator.between(0,1)))));
 
 		this.add(Blocks.BEE_NEST_SMALL.get(),
@@ -116,7 +117,6 @@ public class BeecrasyLootProvider extends BlockLootSubProvider {
         	.add(BeeFamilyPool.builder(GenerateGenomesFunction.builder().begin().setNatural()
         		.addPool(Constants.BASE_ID)
         		.addPool(Constants.FOREST_ID)
-        		.addPos(0)
         		.add().build(), UniformGenerator.between(2,3), new ConstantValue(1), UniformGenerator.between(1,2)))));
 
 		this.add(Blocks.BEE_NEST_MEDIUM.get(),
@@ -125,7 +125,6 @@ public class BeecrasyLootProvider extends BlockLootSubProvider {
         	.add(BeeFamilyPool.builder(GenerateGenomesFunction.builder().begin().setNatural()
         		.addPool(Constants.BASE_ID)
         		.addPool(Constants.FOREST_ID)
-        		.addPos(0)
         		.add().build(), UniformGenerator.between(2,4), new ConstantValue(1), UniformGenerator.between(1,3)))));
 
 		this.add(Blocks.BEE_NEST_BIG.get(),
@@ -134,7 +133,6 @@ public class BeecrasyLootProvider extends BlockLootSubProvider {
         	.add(BeeFamilyPool.builder(GenerateGenomesFunction.builder().begin().setNatural()
         		.addPool(Constants.BASE_ID)
         		.addPool(Constants.FOREST_ID)
-        		.addPos(0)
         		.add().build(), UniformGenerator.between(2,5), new ConstantValue(1), UniformGenerator.between(2,4)))));
 	}
 
