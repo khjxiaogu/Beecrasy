@@ -372,8 +372,8 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			nbt.readChild("hive", hiveInfo);
 			shouldWork=nbt.getBooleanOr("nextWork", false);
 			arguments=nbt.read("arguments", BeeHiveArgumentation.CODEC).orElse(null);
+			beginingTicks=nbt.getIntOr("cooldown", 0);
 		}
-		beginingTicks=nbt.getIntOr("cooldown", 0);
 		work=nbt.read("work", WorkBehaviour.CODEC).orElse(WorkBehaviour.MAUNAL);
 		err=nbt.read("err", ErrCode.CODEC).orElse(ErrCode.OK);
 	}
@@ -394,8 +394,8 @@ public class BeeHiveBaseComponent implements ValueIOSerializable{
 			nbt.putBoolean("nextWork", shouldWork);
 			if(arguments!=null)
 				nbt.store("arguments", BeeHiveArgumentation.CODEC, arguments);
+			nbt.putInt("cooldown", beginingTicks);
 		}
-		nbt.putInt("cooldown", beginingTicks);
 		nbt.store("work", WorkBehaviour.CODEC, work);
 		nbt.store("err", ErrCode.CODEC, err);
 	}

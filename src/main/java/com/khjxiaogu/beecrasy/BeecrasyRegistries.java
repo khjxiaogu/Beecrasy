@@ -42,6 +42,8 @@ import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityCombBlock;
 import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityCombBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityCoreBlock;
 import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityCoreBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityQueenBlock;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityQueenBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.machine.PressBlock;
 import com.khjxiaogu.beecrasy.blocks.machine.PressBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.machine.SequencerBlock;
@@ -227,6 +229,7 @@ public class BeecrasyRegistries {
 	    
 	    public static final DeferredBlock<BeeCityCoreBlock> BEE_CITY_CORE=register("bee_city_core",BeeCityCoreBlock::new,Blocks::nestProps,UnaryOperator.identity());
 	    public static final DeferredBlock<BeeCityCombBlock> BEE_CITY_COMB=register("bee_city_comb",BeeCityCombBlock::new,Blocks::nestProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeCityQueenBlock> BEE_CITY_QUEEN=register("bee_city_queen",BeeCityQueenBlock::new,Blocks::nestProps,UnaryOperator.identity());
 	    
 	    
 	    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Beecrasy.MODID);
@@ -238,6 +241,7 @@ public class BeecrasyRegistries {
 
 		public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BeeCityCoreBlockEntity>> BEE_CITY_CORE_BLOCKENTITY=BLOCK_ENTITIES.register("bee_city_core", makeBlockEntityType(BeeCityCoreBlockEntity::new, BEE_CITY_CORE));
 		public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BeeCityCombBlockEntity>> BEE_CITY_COMB_BLOCKENTITY=BLOCK_ENTITIES.register("bee_city_comb", makeBlockEntityType(BeeCityCombBlockEntity::new, BEE_CITY_COMB));
+		public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<BeeCityQueenBlockEntity>> BEE_CITY_QUEEN_BLOCKENTITY=BLOCK_ENTITIES.register("bee_city_queen", makeBlockEntityType(BeeCityQueenBlockEntity::new, BEE_CITY_QUEEN));
 
 		
 	    public static DeferredBlock<Block> register(String name){

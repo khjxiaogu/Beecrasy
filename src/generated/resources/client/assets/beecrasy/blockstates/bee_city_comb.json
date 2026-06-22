@@ -5,23 +5,22 @@
         "model": "beecrasy:block/bee_city_empty_comb_0"
       },
       {
-        "model": "beecrasy:block/bee_city_empty_comb_0"
-      },
-      {
         "model": "beecrasy:block/bee_city_empty_comb_1"
-      },
-      {
-        "model": "beecrasy:block/bee_city_empty_comb_1"
-      },
-      {
-        "model": "beecrasy:block/bee_city_empty_comb_2"
       },
       {
         "model": "beecrasy:block/bee_city_empty_comb_2"
       }
     ],
-    "lit=true": {
-      "model": "beecrasy:block/bee_city_honey_comb_0"
-    }
+    "lit=true": [
+      {
+        "model": "beecrasy:block/bee_city_honey_comb_0"
+      },
+      {
+        "model": "beecrasy:block/bee_city_honey_comb_1"
+      },
+      {
+        "model": "beecrasy:block/bee_city_honey_comb_2"
+      }
+    ]
   }
 }

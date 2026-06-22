@@ -239,13 +239,15 @@ public class BeeCityComponent implements ValueIOSerializable{
 			queenSlot.add(new ResourceStackHiveSlot(getInternInv(),i));
 		}
 		droneSlot=new ArrayList<>(drone);
-		for(int i=0;i<drone;i++) {
-			droneSlot.add(new ResourceStackHiveSlot(getInternInv(),i+queen));
-		}
+		if(drone>0)
+			for(int i=0;i<drone;i++) {
+				droneSlot.add(new ResourceStackHiveSlot(getInternInv(),i+queen));
+			}
 		combSlot=new ArrayList<>(comb);
-		for(int i=0;i<comb;i++) {
-			combSlot.add(new BeeCityCoreCombSlot(getInternInv(),i+queen+drone));
-		}
+		if(comb>0)
+			for(int i=0;i<comb;i++) {
+				combSlot.add(new BeeCityCoreCombSlot(getInternInv(),i+queen+drone));
+			}
 		extraSlot=new ArrayList<>(extra);
 		for(int i=0;i<extra;i++) {
 			extraSlot.add(new ResourceStackHiveSlot(getInternInv(),i+queen+drone+comb));
@@ -311,8 +313,9 @@ public class BeeCityComponent implements ValueIOSerializable{
 			nbt.readChild("hive", hiveInfo);
 			shouldWork=nbt.getBooleanOr("nextWork", false);
 			arguments=nbt.read("arguments", BeeHiveArgumentation.CODEC).orElse(null);
+
+			beginingTicks=nbt.getIntOr("cooldown", 0);
 		}
-		beginingTicks=nbt.getIntOr("cooldown", 0);
 		work=nbt.read("work", WorkBehaviour.CODEC).orElse(WorkBehaviour.MAUNAL);
 		err=nbt.read("err", ErrCode.CODEC).orElse(ErrCode.OK);
 	}
@@ -333,8 +336,8 @@ public class BeeCityComponent implements ValueIOSerializable{
 			nbt.putBoolean("nextWork", shouldWork);
 			if(arguments!=null)
 				nbt.store("arguments", BeeHiveArgumentation.CODEC, arguments);
+			nbt.putInt("cooldown", beginingTicks);
 		}
-		nbt.putInt("cooldown", beginingTicks);
 		nbt.store("work", WorkBehaviour.CODEC, work);
 		nbt.store("err", ErrCode.CODEC, err);
 	}

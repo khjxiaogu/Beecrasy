@@ -113,6 +113,9 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 			.with(PropertyDispatch.initial(BlockStateProperties.LIT)
 				.generate(t->t?genBlock("bee_city_honey_comb"):genBlock("bee_city_empty_comb"))
 				));
+		this.blockItemModel(Blocks.BEE_CITY_QUEEN.get(),Beecrasy.rl("bee_city_queen_cell"));
+		this.blockStateOutput.accept(this.getVariantBuilder(Blocks.BEE_CITY_QUEEN.get(),bmf("bee_city_queen_cell"))
+			.with(ROTATION_FACING));
 		this.itemModelOutput.accept(Blocks.HONEY_PRESS.asItem(), 
 			ItemModelUtils.composite(
 				this.plainBlockModel(Beecrasy.rl("honey_press_base")),
@@ -261,7 +264,7 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 				rl = Identifier.fromNamespaceAndPath(this.modid, "block/" + name + "_"+i);
 				if (existsModel(rl))
 					ids.add(super.plainModel(rl));
-				if (existsTexture(rl))
+				else if (existsTexture(rl))
 					ids.add(super.plainModel(ModelTemplates.CUBE_ALL.create(rl, TextureMapping.cube(new Material(rl,false)), modelOutput)));
 				else
 					break;

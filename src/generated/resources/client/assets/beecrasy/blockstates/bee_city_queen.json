@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "beecrasy:block/bee_city_queen_cell",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "beecrasy:block/bee_city_queen_cell",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "beecrasy:block/bee_city_queen_cell"
+    },
+    "facing=south": {
+      "model": "beecrasy:block/bee_city_queen_cell",
+      "y": 180
+    },
+    "facing=up": {
+      "model": "beecrasy:block/bee_city_queen_cell",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "beecrasy:block/bee_city_queen_cell",
+      "y": 270
+    }
+  }
+}
