@@ -32,6 +32,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ExtraCodecs;
 
 public class GenomeComponent implements Iterable<Genome>{
 
@@ -39,7 +40,7 @@ public class GenomeComponent implements Iterable<Genome>{
 	public static final GenomeComponent DIPLOID_EMPTY=new GenomeComponent(false);
 	public static final Codec<GenomeComponent> CODEC=RecordCodecBuilder.create(t->t.group(
 		Codec.BOOL.fieldOf("inspected").forGetter(o->o.inspected),
-		Codec.list(Genome.CODEC).optionalFieldOf("genomes",List.of(Genome.DEFAULT)).forGetter(o->List.of(o.genomes))
+		ExtraCodecs.nonEmptyList(Codec.list(Genome.CODEC)).optionalFieldOf("genomes",List.of(Genome.DEFAULT)).forGetter(o->List.of(o.genomes))
 		).apply(t, GenomeComponent::new)
 		);
 	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> EMPTY_CODEC= new StreamCodec<>() {
