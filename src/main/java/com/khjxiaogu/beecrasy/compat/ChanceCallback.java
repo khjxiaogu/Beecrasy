@@ -19,7 +19,7 @@
 
 package com.khjxiaogu.beecrasy.compat;
 
-import com.khjxiaogu.beecrasy.data.PossibleOutput;
+import com.khjxiaogu.beecrasy.data.recipe.PossibleOutput;
 
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;

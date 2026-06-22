@@ -17,7 +17,7 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.data;
+package com.khjxiaogu.beecrasy.data.recipe;
 
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;

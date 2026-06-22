@@ -133,8 +133,6 @@ public class CommonListeners {
 				}
 			}
 		}
-		event.applyPools(Constants.BASE_ID);
-		event.applyPools(Constants.FOREST_ID);
 	}
 	@SuppressWarnings("resource")
 	@SubscribeEvent

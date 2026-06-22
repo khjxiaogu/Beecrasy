@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.compat.ChanceCallback;
-import com.khjxiaogu.beecrasy.data.PossibleOutput;
-import com.khjxiaogu.beecrasy.data.PressRecipe;
+import com.khjxiaogu.beecrasy.data.recipe.PossibleOutput;
+import com.khjxiaogu.beecrasy.data.recipe.PressRecipe;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;

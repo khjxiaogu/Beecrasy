@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "items": "#beecrasy:net"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "beecrasy:bee_family",
+          "comb": {
+            "type": "minecraft:uniform",
+            "max": 3.0,
+            "min": 1.0
+          },
+          "drone": {
+            "type": "minecraft:uniform",
+            "max": 4.0,
+            "min": 2.0
+          },
+          "genetic_pool": [
+            "beecrasy:base",
+            "beecrasy:woods"
+          ],
+          "natural": true,
+          "queen": 1.0
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "beecrasy:blocks/bee_nest_medium"
+}

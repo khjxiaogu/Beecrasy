@@ -28,9 +28,9 @@ import java.util.function.BiConsumer;
 
 import com.google.common.collect.ImmutableSet;
 import com.khjxiaogu.beecrasy.data.BuilderContext;
-import com.khjxiaogu.beecrasy.data.GenomePresets;
-import com.khjxiaogu.beecrasy.data.PressRecipe;
-import com.khjxiaogu.beecrasy.data.RoyalJellyRecipe;
+import com.khjxiaogu.beecrasy.data.recipe.GenomePresets;
+import com.khjxiaogu.beecrasy.data.recipe.PressRecipe;
+import com.khjxiaogu.beecrasy.data.recipe.RoyalJellyRecipe;
 import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.mojang.datafixers.util.Pair;
 

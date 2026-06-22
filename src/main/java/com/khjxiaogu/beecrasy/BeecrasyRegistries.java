@@ -54,9 +54,11 @@ import com.khjxiaogu.beecrasy.components.BeehiveArgumenter;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.LarvaProductivity;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
-import com.khjxiaogu.beecrasy.data.GenomePresets;
-import com.khjxiaogu.beecrasy.data.PressRecipe;
-import com.khjxiaogu.beecrasy.data.RoyalJellyRecipe;
+import com.khjxiaogu.beecrasy.data.loot.BeeFamilyPool;
+import com.khjxiaogu.beecrasy.data.loot.GenerateGenomesFunction;
+import com.khjxiaogu.beecrasy.data.recipe.GenomePresets;
+import com.khjxiaogu.beecrasy.data.recipe.PressRecipe;
+import com.khjxiaogu.beecrasy.data.recipe.RoyalJellyRecipe;
 import com.khjxiaogu.beecrasy.entity.BeeSwarmEntity;
 import com.khjxiaogu.beecrasy.item.BeehiveBlockItem;
 import com.khjxiaogu.beecrasy.item.LarvaItem;
@@ -119,6 +121,8 @@ import net.minecraft.world.level.levelgen.RandomSupport;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -210,10 +214,10 @@ public class BeecrasyRegistries {
 	    
 	    public static final DeferredBlock<Block> EMPTY_COMB_BLOCK=register("empty_comb_block");
 	    public static final DeferredBlock<Block> HONEY_COMB_BLOCK=register("honey_comb_block");
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_NASCENT=register("bee_nest_nascent",p->new BeeNestBlock(p,0,3,BeeNestBlock.NASCENT_SHAPE,BeeNestBlock.NASCENT_CORNER),Blocks::nestProps,UnaryOperator.identity());
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_SMALL=register("bee_nest_small",p->new BeeNestBlock(p,0,2,BeeNestBlock.SMALL_SHAPE,BeeNestBlock.SMALL_CORNER),Blocks::nestProps,UnaryOperator.identity());
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_MEDIUM=register("bee_nest_medium",p->new BeeNestBlock(p,1,3,BeeNestBlock.MEDIUM_SHAPE,BeeNestBlock.MEDIUM_CORNER),Blocks::nestProps,UnaryOperator.identity());
-	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_BIG=register("bee_nest_big",p->new BeeNestBlock(p,2,4,BeeNestBlock.LARGE_SHAPE,BeeNestBlock.LARGE_CORNER),Blocks::nestProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_NASCENT=register("bee_nest_nascent",p->new BeeNestBlock(p,BeeNestBlock.NASCENT_SHAPE,BeeNestBlock.NASCENT_CORNER),Blocks::nestProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_SMALL=register("bee_nest_small",p->new BeeNestBlock(p,BeeNestBlock.SMALL_SHAPE,BeeNestBlock.SMALL_CORNER),Blocks::nestProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_MEDIUM=register("bee_nest_medium",p->new BeeNestBlock(p,BeeNestBlock.MEDIUM_SHAPE,BeeNestBlock.MEDIUM_CORNER),Blocks::nestProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeNestBlock> BEE_NEST_BIG=register("bee_nest_big",p->new BeeNestBlock(p,BeeNestBlock.LARGE_SHAPE,BeeNestBlock.LARGE_CORNER),Blocks::nestProps,UnaryOperator.identity());
 	    public static final DeferredBlock<NaturalHiveBlock> NATURAL_HIVE=register("natural_hive",NaturalHiveBlock::new,Blocks::nestProps,UnaryOperator.identity());
 	    public static final DeferredBlock<DoublePlantBlock> FLOWER_ASPHODEL=register("asphodel",DoublePlantBlock::new,Blocks::flower,UnaryOperator.identity());
 	    public static final DeferredBlock<DoublePlantBlock> FLOWER_DELPHINIUM_BLUE = register("delphinium_blue", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
@@ -344,6 +348,7 @@ public class BeecrasyRegistries {
 		public static final TagKey<Block> FLOWERS=BlockTags.create(Beecrasy.rl("flowers"));
 		public static final TagKey<Fluid> HONEY=FluidTags.create(Beecrasy.rl("honey"));
 		public static final TagKey<Item> HONEY_DROP=ItemTags.create(Beecrasy.rl("honey"));
+		public static final TagKey<Item> NET=ItemTags.create(Beecrasy.rl("net"));
 		public static final TagKey<Block> FLOWERS_FROM_APICULTURE=BlockTags.create(Beecrasy.rl("flowers/from_apiculture"));
 		public static final TagKey<Block> TO_BE_FLOWER=BlockTags.create(Beecrasy.rl("can_become_flower"));
 		public static final TagKey<Block> MAILBOX=BlockTags.create(Beecrasy.rl("mailbox"));
@@ -387,6 +392,14 @@ public class BeecrasyRegistries {
 		public static final DeferredHolder<MenuType<?>, MenuType<MailBoxMenu>> MAILBOX_MENU=MENU_TYPES.register("mailbox", () -> IMenuTypeExtension.create(MailBoxMenu::new));
 		
 	}
+	public static class Loots{
+		public static final DeferredRegister<MapCodec<? extends LootItemFunction>> LOOT_FUNCTION_TYPES = DeferredRegister
+			.create(Registries.LOOT_FUNCTION_TYPE, Beecrasy.MODID);
+		public static final DeferredHolder<MapCodec<? extends LootItemFunction>, MapCodec<GenerateGenomesFunction>> GENERATE_GENOME=LOOT_FUNCTION_TYPES.register("genome", ()->GenerateGenomesFunction.MAP_CODEC);
+		public static final DeferredRegister<MapCodec<? extends LootPoolEntryContainer>> LOOT_POOL_ENTRY_TYPE = DeferredRegister
+			.create(Registries.LOOT_POOL_ENTRY_TYPE, Beecrasy.MODID);
+		public static final DeferredHolder<MapCodec<? extends LootPoolEntryContainer>,MapCodec<BeeFamilyPool>> BEE_FAMILY_POOL=LOOT_POOL_ENTRY_TYPE.register("bee_family",()-> BeeFamilyPool.MAP_CODEC);
+	}
     public static void register(IEventBus modEventBus) {
     	// Register the Deferred Register to the mod event bus so blocks get registered
     	Blocks.BLOCKS.register(modEventBus);
@@ -403,6 +416,8 @@ public class BeecrasyRegistries {
     	Menus.MENU_TYPES.register(modEventBus);
     	Fluids.FLUID_TYPES.register(modEventBus);
     	Fluids.FLUIDS.register(modEventBus);
+    	Loots.LOOT_FUNCTION_TYPES.register(modEventBus);
+    	Loots.LOOT_POOL_ENTRY_TYPE.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         Tabs.CREATIVE_MODE_TABS.register(modEventBus);
         

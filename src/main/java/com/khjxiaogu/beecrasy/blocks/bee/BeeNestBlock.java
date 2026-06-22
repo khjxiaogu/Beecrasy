@@ -19,30 +19,17 @@
 
 package com.khjxiaogu.beecrasy.blocks.bee;
 
-import java.util.List;
 import java.util.Map;
 
-import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
-import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
-import com.khjxiaogu.beecrasy.genome.Genes;
-import com.khjxiaogu.beecrasy.genome.Genome;
-import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
-import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
-import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper.ProductWithCount;
-import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.item.ItemInstance;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -57,13 +44,10 @@ import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.NeoForge;
 
 public class BeeNestBlock extends Block {
 	public static enum Facing implements StringRepresentable {
@@ -133,9 +117,8 @@ public class BeeNestBlock extends Block {
 	
 	public static final EnumProperty<Facing> BEE_NEST_FACING = EnumProperty.create("faces", Facing.class);
 	public static final BooleanProperty HAS_HONEY = BooleanProperty.create("honey");
-	protected final int combCountMin, combCountMax;
 	protected final Map<Direction, VoxelShape> corner,ceiling;
-	public BeeNestBlock(Properties properties, int combCountMin, int combCountMaxExclusive,VoxelShape ceiling,VoxelShape corner) {
+	public BeeNestBlock(Properties properties,VoxelShape ceiling,VoxelShape corner) {
 		super(properties);
 		this.registerDefaultState(
 			this.stateDefinition
@@ -143,9 +126,6 @@ public class BeeNestBlock extends Block {
 				.setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
 				.setValue(BEE_NEST_FACING, Facing.CEILING)
 				.setValue(HAS_HONEY, false));
-
-		this.combCountMin = combCountMin;
-		this.combCountMax = combCountMaxExclusive;
 		this.ceiling = Shapes.rotateHorizontal(ceiling);
 		this.corner = Shapes.rotateHorizontal(corner);
 	}
@@ -173,34 +153,6 @@ public class BeeNestBlock extends Block {
 		return state;
 
 	}
-
-	@SuppressWarnings("resource")
-	@Override
-	protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-		BlockPos pos = BlockPos.containing(params.getParameter(LootContextParams.ORIGIN));
-		ServerLevel level = params.getLevel();
-		NaturalBeeGenomeGenerateEvent event = new NaturalBeeGenomeGenerateEvent(level, pos, Genome.builder());
-		NeoForge.EVENT_BUS.post(event);
-		List<ItemStack> loot = super.getDrops(state, params);
-		Genome genome = event.genome.build();
-		ItemInstance tool=params.getOptionalParameter(LootContextParams.TOOL);
-		if(tool!=null&&tool.count()>0) {
-			ItemStack drone = Items.DRONE.toStack(2);
-			GenomeDataHelper.setHaploidGenome(drone, genome);
-			loot.add(drone);
-		}
-		ItemStack queen = Items.QUEEN_BEE.toStack();
-		GenomeDataHelper.setDiploidGenome(queen, genome, genome);
-		loot.add(queen);
-		List<ProductItem> product = genome.getAllele(Genes.PRODUCTS);
-		if (!product.isEmpty()) {
-			for (ProductWithCount i : GenomeWorkHelper.pickProduct(genome.getAllele(Genes.BIOTOPE), product, level.getRandom(), Mth.lerpInt(level.getRandom().nextFloat(), combCountMin, combCountMax))) {
-				loot.add(i.createProductComb());
-			}
-		}
-		return loot;
-	}
-
 	@Override
 	protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
 		BlockPos above = pos.above();

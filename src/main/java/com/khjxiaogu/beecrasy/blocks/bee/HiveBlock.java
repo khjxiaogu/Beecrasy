@@ -104,10 +104,6 @@ public class HiveBlock extends Block  implements BeecrasyEntityBlock<HiveBlockEn
 					list.add(is.toStack(inv.getAmountAsInt(i)));
 				}
 			}
-			
-			list.add(blockEntity.getItem());
-		}else {
-			list.add(new ItemStack(Blocks.HIVE.asItem()));
 		}
 		return list;
 	}

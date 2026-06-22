@@ -19,14 +19,35 @@
 
 package com.khjxiaogu.beecrasy;
 
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.loot.packs.VanillaArchaeologyLoot;
+import net.minecraft.data.loot.packs.VanillaBlockInteractLoot;
+import net.minecraft.data.loot.packs.VanillaBlockLoot;
+import net.minecraft.data.loot.packs.VanillaChargedCreeperExplosionLoot;
+import net.minecraft.data.loot.packs.VanillaChestLoot;
+import net.minecraft.data.loot.packs.VanillaEntityInteractLoot;
+import net.minecraft.data.loot.packs.VanillaEntityLoot;
+import net.minecraft.data.loot.packs.VanillaEquipmentLoot;
+import net.minecraft.data.loot.packs.VanillaFishingLoot;
+import net.minecraft.data.loot.packs.VanillaGiftLoot;
+import net.minecraft.data.loot.packs.VanillaPiglinBarterLoot;
+import net.minecraft.data.loot.packs.VanillaShearingLoot;
 import net.minecraft.data.registries.VanillaRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.Util;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -44,7 +65,11 @@ public class BeecrasyDataGenerator {
 		gen.addProvider(true,new BeecrasyFluidTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
 		gen.addProvider(true,new BeecrasyItemTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
 		gen.addProvider(true, new BeecrasyRecipeProvider.Runner(gen.getPackOutput(), completablefuture));
-		
+		gen.addProvider(true, new LootTableProvider(gen.getPackOutput(),Set.of(),
+            List.of(
+                new LootTableProvider.SubProviderEntry(BeecrasyLootProvider::new, LootContextParamSets.BLOCK)
+            ),event.getLookupProvider()
+        ));
 	}
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent.Client event) {

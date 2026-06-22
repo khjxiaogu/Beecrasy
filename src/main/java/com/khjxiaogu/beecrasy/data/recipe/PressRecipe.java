@@ -17,7 +17,7 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.data;
+package com.khjxiaogu.beecrasy.data.recipe;
 
 import java.util.ArrayList;
 import java.util.List;

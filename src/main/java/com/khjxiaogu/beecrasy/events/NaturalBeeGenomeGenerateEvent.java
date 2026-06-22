@@ -19,12 +19,12 @@
 
 package com.khjxiaogu.beecrasy.events;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
-import com.khjxiaogu.beecrasy.data.GenomePresets;
-import com.khjxiaogu.beecrasy.genome.Genome;
-import com.khjxiaogu.beecrasy.genome.Genome.Builder;
+import com.khjxiaogu.beecrasy.data.recipe.GenomePresets;
 import com.khjxiaogu.beecrasy.genome.PartialGenome;
 
 import net.minecraft.core.BlockPos;
@@ -35,25 +35,29 @@ import net.neoforged.bus.api.Event;
 
 public class NaturalBeeGenomeGenerateEvent extends Event{
 	public final BeeHiveParameterSet params;
-	public final Genome.Builder genome;
-	public NaturalBeeGenomeGenerateEvent(ServerLevel level, BlockPos pos,Builder genome) {
+	public final PartialGenome.Builder genome;
+	private final Set<Identifier> sets=new HashSet<>();
+	public NaturalBeeGenomeGenerateEvent(ServerLevel level, BlockPos pos, PartialGenome.Builder genome) {
 		super();
 		this.params=new BeeHiveParameterSet.Builder(level,pos).build();
 		this.genome = genome;
 	}
 	
-	public NaturalBeeGenomeGenerateEvent(BeeHiveParameterSet params, Builder genome) {
+	public NaturalBeeGenomeGenerateEvent(BeeHiveParameterSet params, PartialGenome.Builder genome) {
 		super();
 		this.params = params;
 		this.genome = genome;
 	}
-
-	@SuppressWarnings("resource")
-	public void applyPools(Identifier id) {
-		applyPools(GenomePresets.getPools(level(), id));
+	public boolean hasPool(Identifier id) {
+		return sets.contains(id);
 	}
 	@SuppressWarnings("resource")
-	public void applyPools(List<WeightedList<PartialGenome>> list) {
+	public void applyPools(Identifier id) {
+		if(sets.add(id))
+			applyPools(GenomePresets.getPools(level(), id));
+	}
+	@SuppressWarnings("resource")
+	private void applyPools(List<WeightedList<PartialGenome>> list) {
 		for(WeightedList<PartialGenome> li:list) {
 			li.getRandom(level().getRandom()).ifPresent(t->t.apply(genome));
 		}

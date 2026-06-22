@@ -119,10 +119,6 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 					list.add(is.toStack(inv.getAmountAsInt(i)));
 				}
 			}
-			
-			list.add(blockEntity.getItem());
-		}else {
-			list.add(new ItemStack(Blocks.SKEP.asItem()));
 		}
 		return list;
 	}

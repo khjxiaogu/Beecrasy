@@ -233,6 +233,10 @@ public record PartialGenome(Map<Gene<?>, ?> alleles) implements AllelesHolder{
 		public PartialGenome build() {
 			return new PartialGenome(Map.copyOf(alleles));
 		}
+		@SuppressWarnings("unchecked")
+		public <T> T get(Gene<T> type) {
+			return (T) alleles.get(type);
+		}
 		
 	}
 	/**
@@ -260,5 +264,22 @@ public record PartialGenome(Map<Gene<?>, ?> alleles) implements AllelesHolder{
 		}
 		return builder;
 	}
-
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Genome createGenome() {
+		Genome.Builder builder=new Genome.Builder();
+		for(Entry<Gene<?>, ?> ent:alleles.entrySet()) {
+			builder.add((Gene)ent.getKey(), ent.getValue());
+		}
+		return builder.build();
+	}
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public PartialGenome.Builder apply(PartialGenome.Builder builder) {
+		for(Entry<Gene<?>, ?> ent:alleles.entrySet()) {
+			builder.add((Gene)ent.getKey(), ent.getValue());
+		}
+		return builder;
+	}
+	public PartialGenome.Builder createBuilder() {
+		return new PartialGenome.Builder(alleles);
+	}
 }

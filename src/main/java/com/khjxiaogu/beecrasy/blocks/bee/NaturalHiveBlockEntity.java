@@ -29,8 +29,8 @@ import com.khjxiaogu.beecrasy.beehive.slot.StacksHiveSlot;
 import com.khjxiaogu.beecrasy.blocks.BeecrasyBlockEntity;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
-import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
+import com.khjxiaogu.beecrasy.genome.PartialGenome;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -56,9 +56,9 @@ public class NaturalHiveBlockEntity extends BeecrasyBlockEntity{
 		if(isGrowthStarted)return;
 		GenomeComponent comp=queen.get(Components.GENOME);
 		if(comp!=null) {
-			NaturalBeeGenomeGenerateEvent event = new NaturalBeeGenomeGenerateEvent(param, Genome.builder());
+			NaturalBeeGenomeGenerateEvent event = new NaturalBeeGenomeGenerateEvent(param, new PartialGenome.Builder());
 			NeoForge.EVENT_BUS.post(event);
-			hiveInfo.prepareWork(param, GenomeDataHelper.getAsDiploid(comp), List.of(event.genome.build()));
+			hiveInfo.prepareWork(param, GenomeDataHelper.getAsDiploid(comp), List.of(event.genome.build().createGenome()));
 			isGrowthStarted=true;
 		}
 	}
