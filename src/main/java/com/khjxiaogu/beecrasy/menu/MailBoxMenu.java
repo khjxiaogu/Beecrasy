@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Entities;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
@@ -32,6 +33,7 @@ import com.khjxiaogu.beecrasy.entity.BeeSwarmEntity;
 import com.khjxiaogu.beecrasy.item.MailBoxItem;
 import com.khjxiaogu.beecrasy.mail.Mail;
 import com.khjxiaogu.beecrasy.mail.MailHelper;
+import com.khjxiaogu.beecrasy.mail.PlayerPostalOffice;
 import com.khjxiaogu.beecrasy.mail.PostalOffice;
 
 import net.minecraft.core.BlockPos;
@@ -91,7 +93,7 @@ public class MailBoxMenu extends BeecrasyContainerMenu {
 	@SuppressWarnings("resource")
 	public MailBoxMenu(int containerId,Inventory inventory,ServerPlayer player,ItemAccess handAccess) {
 		this(Menus.MAILBOX_MENU.get(), containerId,inventory,new ItemStacksResourceHandler(27));
-		List<Mail> mails=PostalOffice.getPostalOffice(player.level()).collectMails(player);
+		List<Mail> mails=player.getData(Attachments.MAIL).collectMails(player);
 		this.hand=handAccess;
 		for(int i=0;i<27;i++) {
 			if(i>=mails.size()) {
@@ -120,7 +122,7 @@ public class MailBoxMenu extends BeecrasyContainerMenu {
 			if(height<=player.getY()) {
 				UUID uuid=mailIds.get(slotIndex);
 				if(uuid!=null) {
-					PostalOffice po=PostalOffice.getPostalOffice(level);
+					PlayerPostalOffice po=player.getData(Attachments.MAIL);
 					if(!po.hasDeliveryTask(level, uuid)) {
 						BlockPos pos=MailHelper.findManhattanTopRandomPos(level, player.blockPosition(), 5, 20);
 						if(pos!=null) {
@@ -174,7 +176,7 @@ public class MailBoxMenu extends BeecrasyContainerMenu {
 	public void removed(Player player) {
 		if(player instanceof ServerPlayer sp)
 			try(Transaction trans=Transaction.openRoot()){
-				if(hand.exchange(hand.getResource().with(DataComponents.ITEM_MODEL, PostalOffice.getPostalOffice(sp.level()).getMailCount(sp)>0?MAILBOX_ACTIVE:MAILBOX), 1, trans)==1)
+				if(hand.exchange(hand.getResource().with(DataComponents.ITEM_MODEL, player.getData(Attachments.MAIL).getMailCount()>0?MAILBOX_ACTIVE:MAILBOX), 1, trans)==1)
 					trans.commit();
 			}
 		super.removed(player);

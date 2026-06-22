@@ -26,7 +26,9 @@ import java.util.UUID;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
+import com.khjxiaogu.beecrasy.mail.PlayerPostalOffice;
 import com.khjxiaogu.beecrasy.mail.PostalOffice;
 
 import net.minecraft.core.BlockPos;
@@ -194,10 +196,11 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
         		if(remainTargetTick>=40) {
         			this.discard();
         		}
+        		return;
     		}
     	}
+    	PlayerPostalOffice po=traceTarget.getEntity(level, Entity.class).getData(Attachments.MAIL);
     	if(mailId!=null){
-    		PostalOffice po=PostalOffice.getPostalOffice(level);
     		if(!po.isStillValid(mailId)) {
     			this.discard();
     		}
@@ -207,7 +210,6 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
     		
     		if(mailId!=null) {
     			if(remainTargetTick>=20) {
-		    		PostalOffice po=PostalOffice.getPostalOffice(level);
 		    		Entity entity=traceTarget.getEntity(level, Entity.class);
 		    		if(entity instanceof ServerPlayer sp)
 			    		if(po.deliver(this.position(),mailId, sp)) {
@@ -219,6 +221,8 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
     		if(remainTargetTick>=40) {
     			this.discard();
     		}
+    	}else {
+    		remainTargetTick=0;
     	}
     }
 

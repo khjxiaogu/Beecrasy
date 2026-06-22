@@ -39,6 +39,7 @@ import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.gene.Humidity;
 import com.khjxiaogu.beecrasy.genome.gene.Temperature;
+import com.khjxiaogu.beecrasy.mail.PlayerPostalOffice;
 import com.khjxiaogu.beecrasy.mail.PostalOffice;
 import com.mojang.brigadier.Command;
 
@@ -190,7 +191,10 @@ public class CommonListeners {
 			if(serverPlayer.isFakePlayer())
 				return;
 			PostalOffice po=PostalOffice.getPostalOffice(serverPlayer.level());
-			int count=po.collectMails(serverPlayer).size();
+			po.updatePendingMails(serverPlayer);
+
+			PlayerPostalOffice ppo=serverPlayer.getData(Attachments.MAIL);
+			int count=ppo.getMailCount();
 			if(count>0)
 				serverPlayer.sendSystemMessage(Component.translatable("message.postal.mail_recived_count",count));
 		}

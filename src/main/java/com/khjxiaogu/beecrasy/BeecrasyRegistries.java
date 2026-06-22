@@ -67,6 +67,7 @@ import com.khjxiaogu.beecrasy.item.MailItem;
 import com.khjxiaogu.beecrasy.item.QueenBeeItem;
 import com.khjxiaogu.beecrasy.item.SequencerHandHeld;
 import com.khjxiaogu.beecrasy.mail.MailComponent;
+import com.khjxiaogu.beecrasy.mail.PlayerPostalOffice;
 import com.khjxiaogu.beecrasy.menu.HiveMenu;
 import com.khjxiaogu.beecrasy.menu.MailBoxMenu;
 import com.khjxiaogu.beecrasy.menu.MailMenu;
@@ -341,6 +342,8 @@ public class BeecrasyRegistries {
 	public static class Attachments{
 		public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Beecrasy.MODID);
 		public static final DeferredHolder<AttachmentType<?>, AttachmentType<Long>> RANDOM_SEED=ATTACHMENTS.register("seed", ()->AttachmentType.builder(RandomSupport::generateUniqueSeed).serialize(Codec.LONG.fieldOf("seed")).sync(ByteBufCodecs.LONG).copyOnDeath().build());
+		public static final DeferredHolder<AttachmentType<?>, AttachmentType<PlayerPostalOffice>> MAIL=ATTACHMENTS.register("mailbox", ()->AttachmentType.serializable(()->new PlayerPostalOffice()).copyHandler((t,h,p)->new PlayerPostalOffice(t)).copyOnDeath().build());
+		
 		
 	}
 	public static class Tags{

@@ -19,6 +19,7 @@
 
 package com.khjxiaogu.beecrasy.item;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.mail.PostalOffice;
 import com.khjxiaogu.beecrasy.menu.MailBoxMenu;
@@ -67,7 +68,7 @@ public class MailBoxItem extends Item{
 		if(owner instanceof ServerPlayer sp) {
 			if(!(sp.containerMenu instanceof MailBoxMenu)) {
 				if(sp.tickCount%20==0) {
-					itemStack.set(DataComponents.ITEM_MODEL,PostalOffice.getPostalOffice(level).getMailCount(sp)>0?MailBoxMenu.MAILBOX_ACTIVE:MailBoxMenu.MAILBOX);
+					itemStack.set(DataComponents.ITEM_MODEL,owner.getData(Attachments.MAIL).getMailCount()>0?MailBoxMenu.MAILBOX_ACTIVE:MailBoxMenu.MAILBOX);
 				}
 			}
 		}
