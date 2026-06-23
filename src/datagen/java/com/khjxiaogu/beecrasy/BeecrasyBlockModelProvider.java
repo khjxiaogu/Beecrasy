@@ -108,6 +108,9 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 			.with(ROTATION_HORIZONTAL_FACING)
 			);
 		this.simpleBlockItem(Blocks.BEE_CITY_CORE.get());
+		this.simpleBlockItem(Blocks.BEEPER.get(), Identifier.withDefaultNamespace("note_block"));
+		this.simpleBlockItem(Blocks.BEEDIBOX.get(), Identifier.withDefaultNamespace("jukebox"));
+		
 		this.blockItemModel(Blocks.BEE_CITY_COMB.get(),Beecrasy.rl("bee_city_empty_comb"));
 		this.blockStateOutput.accept(this.getVariantBuilder(Blocks.BEE_CITY_COMB.get())
 			.with(PropertyDispatch.initial(BlockStateProperties.LIT)

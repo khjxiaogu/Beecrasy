@@ -34,7 +34,6 @@ import com.khjxiaogu.beecrasy.item.MailBoxItem;
 import com.khjxiaogu.beecrasy.mail.Mail;
 import com.khjxiaogu.beecrasy.mail.MailHelper;
 import com.khjxiaogu.beecrasy.mail.PlayerPostalOffice;
-import com.khjxiaogu.beecrasy.mail.PostalOffice;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -101,7 +100,7 @@ public class MailBoxMenu extends BeecrasyContainerMenu {
 			}
 			Mail mail=mails.get(i);
 			mailIds.add(mail.letterId());
-			data.set(i, ItemResource.of(Items.MAIL.getDelegate()).with(Components.MAIL, mail.getMail(player.level())).with(DataComponents.ITEM_MODEL, mail.items().nonEmptyItemCopyStream().findAny().isPresent()?MailMenu.PACKAGE:MailMenu.LETTER), 1);
+			data.set(i, ItemResource.of(Items.MAIL.getDelegate()).with(Components.MAIL, mail.getMail()).with(DataComponents.ITEM_MODEL, mail.items().nonEmptyItemCopyStream().findAny().isPresent()?MailMenu.PACKAGE:MailMenu.LETTER), 1);
 		}
 	}
 	private MailBoxMenu(MenuType<?> menuType,int containerId, Inventory inventory, ItemStacksResourceHandler slots) {
@@ -174,7 +173,7 @@ public class MailBoxMenu extends BeecrasyContainerMenu {
 
 	@Override
 	public void removed(Player player) {
-		if(player instanceof ServerPlayer sp)
+		if(player instanceof ServerPlayer)
 			try(Transaction trans=Transaction.openRoot()){
 				if(hand.exchange(hand.getResource().with(DataComponents.ITEM_MODEL, player.getData(Attachments.MAIL).getMailCount()>0?MAILBOX_ACTIVE:MAILBOX), 1, trans)==1)
 					trans.commit();

@@ -27,7 +27,6 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Entities;
-import com.khjxiaogu.beecrasy.Constants;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.WorldCalendar;
 import com.khjxiaogu.beecrasy.entity.BeeSwarmEntity;

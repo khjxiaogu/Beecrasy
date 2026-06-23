@@ -21,6 +21,7 @@ package com.khjxiaogu.beecrasy.mail;
 
 import java.util.Optional;
 import java.util.UUID;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -28,7 +29,6 @@ import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.neoforge.common.UsernameCache;
@@ -53,7 +53,7 @@ public record Mail(UUID letterId,UUID sender,UUID receiver,Optional<ItemStackTem
 		ByteBufCodecs.STRING_UTF8,Mail::line2,
 		ItemContainerContents.STREAM_CODEC,Mail::items,
 			Mail::new);
-	public MailComponent getMail(ServerLevel server) {
+	public MailComponent getMail() {
 		
 		Optional<String> idSender  =Optional.ofNullable(UsernameCache.getLastKnownUsername(sender));
 		Optional<String> idReceiver=Optional.ofNullable(UsernameCache.getLastKnownUsername(receiver));

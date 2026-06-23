@@ -17,34 +17,23 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.blocks;
+package com.khjxiaogu.beecrasy.beedi;
 
-import java.util.NoSuchElementException;
+import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 
-import com.khjxiaogu.beecrasy.beehive.HiveSlot;
 
-import net.minecraft.core.BlockPos;
+public record NoteInfo(long ticks,float pitch,float volume){
 
-public interface HiveSlotProvider {
-	public static enum HiveSlotType{
-		QUEEN,
-		COMB,
-		ARGUMENT;
-	}
 	/**
-	 * @param type  
+	 * Instantiates a new NoteInfo.<br>
+	 * 新建一个NoteInfo类<br>
+	 *
+	 * @param key the key<br>
+	 * @param tick the tick<br>
+	 * @param vol the vol<br>
 	 */
-	default int getSlots(HiveSlotType type) {
-		return 0;
+	public NoteInfo(int key, long tick, int vol) {
+		this(tick,BeecrasyMath.noteToPitch(key),vol/127f);
 	}
-	/**
-	 * @param type  
-	 * @param index 
-	 */
-	default HiveSlot getSlot(HiveSlotType type,int index) {
-		throw new NoSuchElementException();
-	};
-	boolean isBindable(BlockPos core);
-	boolean bind(BlockPos core);
-	boolean unbind(BlockPos core);
+
 }

@@ -28,6 +28,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableSet;
+import com.khjxiaogu.beecrasy.beedi.BeediDisk;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
 import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
@@ -44,6 +45,9 @@ import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityCoreBlock;
 import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityCoreBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityQueenBlock;
 import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityQueenBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.machine.BeediboxBlock;
+import com.khjxiaogu.beecrasy.blocks.machine.BeediboxBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.machine.BeeperBlock;
 import com.khjxiaogu.beecrasy.blocks.machine.PressBlock;
 import com.khjxiaogu.beecrasy.blocks.machine.PressBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.machine.SequencerBlock;
@@ -87,6 +91,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
@@ -175,6 +180,12 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> MAIL=ITEMS.registerItem("mail",MailItem::new,t->t.component(Components.CONTAINER, ItemContainerContents.EMPTY).component(Components.MAIL, MailComponent.EMPTY));
 	    public static final DeferredItem<Item> MAILBOX=ITEMS.registerItem("handheld_mailbox",MailBoxItem::new,t->t.stacksTo(1));
 	    
+	    //光盘
+	    public static final DeferredItem<Item> MUSIC_FLIGHT_OF_THE_BUMBLE_BEE=ITEMS.registerSimpleItem("flight_of_the_bumble_bee",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(1260,Beecrasy.rl("flight_of_the_bumble_bee"),1)));
+	    public static final DeferredItem<Item> MUSIC_SEIKILOS_EPITAPH=ITEMS.registerSimpleItem("seikilos_epitaph",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(500,Beecrasy.rl("seikilos_epitaph"),2)));
+	    
+	    
+	    
 	    public static Item.Properties pheromono(Item.Properties p,Consumer<BeeHiveArgumentation.Builder> components) {
 
 	    	BeeHiveArgumentation.Builder arb=new BeeHiveArgumentation.Builder();
@@ -235,6 +246,11 @@ public class BeecrasyRegistries {
 	    public static final DeferredBlock<BeeCityCoreBlock> BEE_CITY_CORE=register("bee_city_core",BeeCityCoreBlock::new,Blocks::nestProps,UnaryOperator.identity());
 	    public static final DeferredBlock<BeeCityCombBlock> BEE_CITY_COMB=register("bee_city_comb",BeeCityCombBlock::new,Blocks::nestProps,UnaryOperator.identity());
 	    public static final DeferredBlock<BeeCityQueenBlock> BEE_CITY_QUEEN=register("bee_city_queen",BeeCityQueenBlock::new,Blocks::nestProps,UnaryOperator.identity());
+
+	    public static final DeferredBlock<BeeperBlock> BEEPER=register("beeper",BeeperBlock::new,Blocks::woodProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeediboxBlock> BEEDIBOX=register("beedibox",BeediboxBlock::new,Blocks::woodProps,UnaryOperator.identity());
+	    
+	    
 	    
 	    
 	    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Beecrasy.MODID);
@@ -247,6 +263,8 @@ public class BeecrasyRegistries {
 		public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BeeCityCoreBlockEntity>> BEE_CITY_CORE_BLOCKENTITY=BLOCK_ENTITIES.register("bee_city_core", makeBlockEntityType(BeeCityCoreBlockEntity::new, BEE_CITY_CORE));
 		public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BeeCityCombBlockEntity>> BEE_CITY_COMB_BLOCKENTITY=BLOCK_ENTITIES.register("bee_city_comb", makeBlockEntityType(BeeCityCombBlockEntity::new, BEE_CITY_COMB));
 		public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<BeeCityQueenBlockEntity>> BEE_CITY_QUEEN_BLOCKENTITY=BLOCK_ENTITIES.register("bee_city_queen", makeBlockEntityType(BeeCityQueenBlockEntity::new, BEE_CITY_QUEEN));
+
+		public static final DeferredHolder<BlockEntityType<?>,BlockEntityType<BeediboxBlockEntity>> BEEDIBOX_BLOCKENTITY=BLOCK_ENTITIES.register("beedibox", makeBlockEntityType(BeediboxBlockEntity::new, BEEDIBOX));
 
 		
 	    public static DeferredBlock<Block> register(String name){
@@ -327,6 +345,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeeHiveBaseComponent.BeeHiveBaseData>> BEE_HIVE=COMPONENTS.registerComponentType("bee_hive", t->t.cacheEncoding().ignoreSwapAnimation().persistent(BeeHiveBaseComponent.BeeHiveBaseData.CODEC).networkSynchronized(BeeHiveBaseComponent.BeeHiveBaseData.STREAM_CODEC));
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SEQUENCER_TAB=COMPONENTS.registerComponentType("sequencer_tab", t->t.cacheEncoding().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT).ignoreSwapAnimation());
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<MailComponent>> MAIL=COMPONENTS.registerComponentType("mail", t->t.cacheEncoding().persistent(MailComponent.CODEC).networkSynchronized(MailComponent.STREAM_CODEC).ignoreSwapAnimation());
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeediDisk>> BEEDI_RECORD=COMPONENTS.registerComponentType("midi", t->t.cacheEncoding().persistent(BeediDisk.CODEC).networkSynchronized(BeediDisk.STREAM_CODEC));
 	    
 	    
 	}
@@ -342,7 +361,7 @@ public class BeecrasyRegistries {
 	public static class Attachments{
 		public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Beecrasy.MODID);
 		public static final DeferredHolder<AttachmentType<?>, AttachmentType<Long>> RANDOM_SEED=ATTACHMENTS.register("seed", ()->AttachmentType.builder(RandomSupport::generateUniqueSeed).serialize(Codec.LONG.fieldOf("seed")).sync(ByteBufCodecs.LONG).copyOnDeath().build());
-		public static final DeferredHolder<AttachmentType<?>, AttachmentType<PlayerPostalOffice>> MAIL=ATTACHMENTS.register("mailbox", ()->AttachmentType.serializable(()->new PlayerPostalOffice()).copyHandler((t,h,p)->new PlayerPostalOffice(t)).copyOnDeath().build());
+		public static final DeferredHolder<AttachmentType<?>, AttachmentType<PlayerPostalOffice>> MAIL=ATTACHMENTS.register("mailbox", ()->AttachmentType.serializable(()->new PlayerPostalOffice()).copyHandler((t,_,_)->new PlayerPostalOffice(t)).copyOnDeath().build());
 		
 		
 	}
@@ -403,6 +422,12 @@ public class BeecrasyRegistries {
 			.create(Registries.LOOT_POOL_ENTRY_TYPE, Beecrasy.MODID);
 		public static final DeferredHolder<MapCodec<? extends LootPoolEntryContainer>,MapCodec<BeeFamilyPool>> BEE_FAMILY_POOL=LOOT_POOL_ENTRY_TYPE.register("bee_family",()-> BeeFamilyPool.MAP_CODEC);
 	}
+	public static class Sounds{
+		public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister
+			.create(Registries.SOUND_EVENT, Beecrasy.MODID);
+		public static final DeferredHolder<SoundEvent, SoundEvent> BEE_NOTE=SOUND_EVENTS.register("beenote", SoundEvent::createVariableRangeEvent);
+	}
+	
     public static void register(IEventBus modEventBus) {
     	// Register the Deferred Register to the mod event bus so blocks get registered
     	Blocks.BLOCKS.register(modEventBus);
@@ -421,6 +446,7 @@ public class BeecrasyRegistries {
     	Fluids.FLUIDS.register(modEventBus);
     	Loots.LOOT_FUNCTION_TYPES.register(modEventBus);
     	Loots.LOOT_POOL_ENTRY_TYPE.register(modEventBus);
+    	Sounds.SOUND_EVENTS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         Tabs.CREATIVE_MODE_TABS.register(modEventBus);
         

@@ -21,7 +21,6 @@ package com.khjxiaogu.beecrasy.item;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
-import com.khjxiaogu.beecrasy.mail.PostalOffice;
 import com.khjxiaogu.beecrasy.menu.MailBoxMenu;
 
 import net.minecraft.core.component.DataComponents;

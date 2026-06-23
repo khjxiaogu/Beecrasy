@@ -26,10 +26,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.Util;
 
 /**
  * 数学和集合相关的通用工具方法。
@@ -184,5 +186,14 @@ public final class BeecrasyMath {
 		}
 		return commonCount;
 	}
-
+	public static float[] notes=Util.make(()->{
+		float[] values=new float[256];
+		for(int i=0;i<values.length;i++) {
+			values[i]=(float) Math.pow(2, ((i-60)/12f));
+		}
+		return values;
+	});
+	public static float noteToPitch(int note) {
+		return notes[Objects.checkIndex(note,256)];
+	}
 }

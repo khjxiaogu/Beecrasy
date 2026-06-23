@@ -29,7 +29,6 @@ import org.jspecify.annotations.Nullable;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.mail.PlayerPostalOffice;
-import com.khjxiaogu.beecrasy.mail.PostalOffice;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;

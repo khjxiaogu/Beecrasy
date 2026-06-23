@@ -26,7 +26,6 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.genome.Genes;
-import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
 import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
 import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper.ProductWithCount;

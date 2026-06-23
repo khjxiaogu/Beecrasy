@@ -84,9 +84,6 @@ public record MailComponent(String sender,String receiver,Optional<ItemStackTemp
 	public MailComponent withLines(String receiver,String line1,String line2) {
 		return new MailComponent(sender,receiver,icon,line1,line2,readOnly);
 	}
-	public MailComponent withItems(ItemContainerContents items) {
-		return new MailComponent(sender,receiver,icon,line1,line2,readOnly);
-	}
 	public Optional<Mail> resolveMail(UUID letterId,UUID sender,ItemContainerContents items,ServerLevel server) {
 		UUID uuid=null;
 		if(server.getServer().isSingleplayer()) {

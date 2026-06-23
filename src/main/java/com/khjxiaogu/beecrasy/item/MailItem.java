@@ -101,7 +101,7 @@ public class MailItem extends Item{
 							Optional<Mail> mail=mailcomp.resolveMail(po.createUUID(), context.getPlayer().getUUID(), contents, sl);
 							if(mail.isPresent()) {
 								po.post(mail.get(),sl);
-								stack.shrink(1);
+								stack.consume(1,context.getPlayer());
 								context.getPlayer().getInventory().placeItemBackInInventory(remain);
 								trans.commit();
 								return InteractionResult.CONSUME;

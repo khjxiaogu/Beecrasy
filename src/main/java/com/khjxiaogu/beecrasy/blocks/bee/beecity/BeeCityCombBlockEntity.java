@@ -26,7 +26,6 @@ import com.khjxiaogu.beecrasy.beehive.HiveSlot;
 import com.khjxiaogu.beecrasy.beehive.slot.ResourceStackHiveSlot;
 import com.khjxiaogu.beecrasy.blocks.BeecrasyBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
-import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider.HiveSlotType;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

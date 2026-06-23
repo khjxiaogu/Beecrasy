@@ -101,8 +101,9 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 			.create(MailBoxMenu.MAILBOX_ACTIVE.withPrefix("item/"), TextureMapping.layer0(new Material(MailBoxMenu.MAILBOX_ACTIVE.withPrefix("item/"))), this.modelOutput)),ClientItem.Properties.DEFAULT));
 		this.itemModelOutput.accept(  Items.MAIL.get()      ,               ItemModelUtils.composite(plain("letter" ),new GuiOnlySpecialModelWrapper.Unbaked(Beecrasy.rl("item/letter" ), new MailModel.Unbaked(7/16f,1-9/16f,.25f))));
 		this.itemModelOutput.register(Beecrasy.rl("package"),new ClientItem(ItemModelUtils.composite(plain("package"),new GuiOnlySpecialModelWrapper.Unbaked(Beecrasy.rl("item/package"), new MailModel.Unbaked(4/16f,1-10/16f,.5f))),ClientItem.Properties.DEFAULT));
-		
-		
+
+		this.itemModelOutput.accept(Items.MUSIC_SEIKILOS_EPITAPH.get(),ItemModelUtils.plainModel(Identifier.withDefaultNamespace("item/music_disc_13")));
+		this.itemModelOutput.accept(Items.MUSIC_FLIGHT_OF_THE_BUMBLE_BEE.get(),ItemModelUtils.plainModel(Identifier.withDefaultNamespace("item/music_disc_13")));
 		
 	}
     public void generateBeeTint(ItemLike item) {
@@ -141,6 +142,7 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 		texture(name, name);
 	}
 	public void texture(Item name, String par) {
+
 		this.itemModelOutput.accept(name,
 			ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM.create(ModelLocationUtils.getModelLocation(name), TextureMapping.layer0(new Material(Identifier.fromNamespaceAndPath(Beecrasy.MODID, "item/"+par))), this.modelOutput)
 				));

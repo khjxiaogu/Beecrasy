@@ -20,6 +20,7 @@
 package com.khjxiaogu.beecrasy.beehive;
 
 import java.util.List;
+
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation.Builder;
 import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
@@ -232,7 +233,7 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 	/**
 	 * 构建参数增强项。
 	 * 子类可重写此方法以提供自定义的参数增强方式。
-	 * @param serverLevel  服务端世界
+	 * @param level  服务端世界
 	 * @param worldPosition 蜂巢方块位置
 	 * @param root         事务上下文
 	 * @return 参数增强项构建器

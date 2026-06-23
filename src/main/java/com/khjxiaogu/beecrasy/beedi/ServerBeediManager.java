@@ -17,34 +17,24 @@
  * along with Beecrasy. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.khjxiaogu.beecrasy.blocks;
+package com.khjxiaogu.beecrasy.beedi;
 
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
-import com.khjxiaogu.beecrasy.beehive.HiveSlot;
+import com.khjxiaogu.beecrasy.network.BeediPlayStatusMessage;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.neoforged.neoforge.network.PacketDistributor;
 
-public interface HiveSlotProvider {
-	public static enum HiveSlotType{
-		QUEEN,
-		COMB,
-		ARGUMENT;
+public class ServerBeediManager {
+	public static void playSong(ServerLevel l,BlockPos pos,Identifier song) {
+		PacketDistributor.sendToPlayersNear(l, null, pos.getX(), pos.getY(), pos.getZ(), 64, new BeediPlayStatusMessage(Optional.of(song),pos));
+		
 	}
-	/**
-	 * @param type  
-	 */
-	default int getSlots(HiveSlotType type) {
-		return 0;
+	public static void stopSong(ServerLevel l,BlockPos pos) {
+		PacketDistributor.sendToPlayersInDimension(l, new BeediPlayStatusMessage(Optional.empty(),pos));
+		
 	}
-	/**
-	 * @param type  
-	 * @param index 
-	 */
-	default HiveSlot getSlot(HiveSlotType type,int index) {
-		throw new NoSuchElementException();
-	};
-	boolean isBindable(BlockPos core);
-	boolean bind(BlockPos core);
-	boolean unbind(BlockPos core);
 }

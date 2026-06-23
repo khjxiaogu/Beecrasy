@@ -30,6 +30,7 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.menu.MailMenu;
 import com.khjxiaogu.beecrasy.network.ClientMailReceivedMessage;
 import com.mojang.serialization.Codec;
+
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
@@ -70,7 +71,7 @@ public class PlayerPostalOffice implements ValueIOSerializable{
 		if(mail==null)
 			return false;
 		ItemStack is=new ItemStack(Items.MAIL.getDelegate());
-		is.set(Components.MAIL, mail.getMail(sp.level()));
+		is.set(Components.MAIL, mail.getMail());
 		is.set(Components.CONTAINER,mail.items());
 		boolean hasItem=false;
 		for(int i=0;i<mail.items().getSlots();i++) {
