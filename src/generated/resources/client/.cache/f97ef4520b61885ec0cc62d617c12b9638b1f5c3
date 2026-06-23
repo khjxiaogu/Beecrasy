@@ -1,6 +1,5 @@
-// 26.1.2	2026-06-24T04:22:56.4216737	Model Definitions - beecrasy
+// 26.1.2	2026-06-24T07:45:37.8781353	Model Definitions - beecrasy
 6cb8297f174f17491c397c09ba4b9fe213aeca3d assets/beecrasy/blockstates/beedibox.json
-8d27d20cb2298faf3824f095c9d18268cf94d2bb assets/beecrasy/blockstates/beeper.json
 dac4306f0432186d4a9af9fdc4328aea740acb73 assets/beecrasy/blockstates/bee_city_comb.json
 8bbcba3bf0bc0c88d414a125277b141b1ee0f6f8 assets/beecrasy/blockstates/bee_city_core.json
 3e9521dfb3281d264d91ab85b6f7f2bed09215db assets/beecrasy/blockstates/bee_city_queen.json
@@ -8,6 +7,7 @@ dac4306f0432186d4a9af9fdc4328aea740acb73 assets/beecrasy/blockstates/bee_city_co
 2ec8c8a692b2ead7a010c6a08f4f7e90599bd066 assets/beecrasy/blockstates/bee_nest_medium.json
 809435de1f5dafa7eb21969f597c32b89a31100d assets/beecrasy/blockstates/bee_nest_nascent.json
 8a9e804d7dac6731ec202764038459f0517624c8 assets/beecrasy/blockstates/bee_nest_small.json
+8d27d20cb2298faf3824f095c9d18268cf94d2bb assets/beecrasy/blockstates/buzzer.json
 0421f7d00984c72d386246ba35ac6ad901ad20a0 assets/beecrasy/blockstates/empty_comb_block.json
 5517fc25ede7ca1e319f61921062c240091a6ccd assets/beecrasy/blockstates/hive.json
 934b37cd81699370380cc4c660d5fefaf7c38378 assets/beecrasy/blockstates/honey_comb_block.json
@@ -18,7 +18,6 @@ dac4306f0432186d4a9af9fdc4328aea740acb73 assets/beecrasy/blockstates/bee_city_co
 7bb29d5e7184ee156bdf67a3fea4183dd53592cc assets/beecrasy/items/apite.json
 c61b4b82f4072097ed9b7aa0bf9d62b4a1f37bca assets/beecrasy/items/asphodel.json
 7ae4e00f9c4ed463dfb25b81770493ba5d610b72 assets/beecrasy/items/beedibox.json
-778e72d2c884cdb4ed6cbeb1bca80286266920d1 assets/beecrasy/items/beeper.json
 5bc948201b4d7c12fedc6ff4dc09679a4c4f1904 assets/beecrasy/items/beeswax.json
 351c1f6f1cdfe56c445f4714394933737720ca2d assets/beecrasy/items/bee_city_comb.json
 f3789e180aabdd3fa07473a6837bf3e12c9811eb assets/beecrasy/items/bee_city_core.json
@@ -29,6 +28,7 @@ fee78f5ff2576eed19bc1a43b362134a781c1271 assets/beecrasy/items/bee_nest_medium.j
 62852ceaa9b8ba1ecd5d1095c58b769ef3e23072 assets/beecrasy/items/bee_nest_small.json
 017add17bee591b6c2ebbb0f491693cc964d6786 assets/beecrasy/items/bumblebee_jasper.json
 2a3622776abd3de1c57730ddebd209f2d053757e assets/beecrasy/items/butterfly_net.json
+778e72d2c884cdb4ed6cbeb1bca80286266920d1 assets/beecrasy/items/buzzer.json
 3be828cb4f6143daec68282662d52071b09877cf assets/beecrasy/items/comb_foundation.json
 0d0527497f9915a7d21eae763ea9a13fef891858 assets/beecrasy/items/delphinium_blue.json
 2750efbbd6627bd50bf8e310107b0e885997fbed assets/beecrasy/items/delphinium_pink.json

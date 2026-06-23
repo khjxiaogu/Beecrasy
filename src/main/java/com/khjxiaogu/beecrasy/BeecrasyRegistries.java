@@ -247,7 +247,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredBlock<BeeCityCombBlock> BEE_CITY_COMB=register("bee_city_comb",BeeCityCombBlock::new,Blocks::nestProps,UnaryOperator.identity());
 	    public static final DeferredBlock<BeeCityQueenBlock> BEE_CITY_QUEEN=register("bee_city_queen",BeeCityQueenBlock::new,Blocks::nestProps,UnaryOperator.identity());
 
-	    public static final DeferredBlock<BeeperBlock> BEEPER=register("beeper",BeeperBlock::new,Blocks::woodProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeeperBlock> BEEPER=register("buzzer",BeeperBlock::new,Blocks::woodProps,UnaryOperator.identity());
 	    public static final DeferredBlock<BeediboxBlock> BEEDIBOX=register("beedibox",BeediboxBlock::new,Blocks::woodProps,UnaryOperator.identity());
 	    
 	    
