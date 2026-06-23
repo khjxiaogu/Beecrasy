@@ -19,8 +19,14 @@
 
 package com.khjxiaogu.beecrasy.blocks.bee.beecity;
 
+import java.util.List;
+
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.beehive.HiveSlot;
+import com.khjxiaogu.beecrasy.beehive.slot.ResourceStackHiveSlot;
 import com.khjxiaogu.beecrasy.blocks.BeecrasyBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
+import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider.HiveSlotType;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -32,11 +38,53 @@ import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 public class BeeCityCombBlockEntity extends BeecrasyBlockEntity {
 	public final ItemStacksResourceHandler container=new ItemStacksResourceHandler(2);
+	public final List<ResourceStackHiveSlot> resources=List.of(new ResourceStackHiveSlot(container,0),new ResourceStackHiveSlot(container,1));
 	public BlockPos corePos;
 	public BeeCityCombBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
 		super(Blocks.BEE_CITY_CORE_BLOCKENTITY.get(), pWorldPosition, pBlockState);
 	}
+	public HiveSlotProvider slots=new HiveSlotProvider() {
 
+		@Override
+		public boolean isBindable(BlockPos core) {
+			return corePos==null||core.equals(corePos);
+		}
+
+		@Override
+		public boolean bind(BlockPos core) {
+			if(isBindable(core)) {
+				corePos=core;
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public boolean unbind(BlockPos core) {
+			if(core.equals(corePos)) {
+				corePos=null;
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public int getSlots(HiveSlotType type) {
+			if(type==HiveSlotType.COMB) {
+				return 2;
+			}
+			return HiveSlotProvider.super.getSlots(type);
+		}
+
+		@Override
+		public HiveSlot getSlot(HiveSlotType type, int index) {
+			if(type==HiveSlotType.COMB) {
+				return resources.get(index);
+			}
+			return HiveSlotProvider.super.getSlot(type, index);
+		}
+		
+	};
 	@Override
 	public void readCustomNBT(ValueInput nbt, boolean isClient) {
 		if(!isClient) {

@@ -21,7 +21,9 @@ package com.khjxiaogu.beecrasy.blocks.bee.beecity;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.beehive.BeeCityComponent;
+import com.khjxiaogu.beecrasy.beehive.HiveSlot;
 import com.khjxiaogu.beecrasy.blocks.BeecrasyBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +35,48 @@ import net.minecraft.world.level.storage.ValueOutput;
 public class BeeCityQueenBlockEntity extends BeecrasyBlockEntity {
 	public final BeeCityComponent component;
 	public BlockPos corePos;
+	public HiveSlotProvider slots=new HiveSlotProvider() {
+
+		@Override
+		public boolean isBindable(BlockPos core) {
+			return corePos==null||core.equals(corePos);
+		}
+
+		@Override
+		public boolean bind(BlockPos core) {
+			if(isBindable(core)) {
+				corePos=core;
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public boolean unbind(BlockPos core) {
+			if(core.equals(corePos)) {
+				corePos=null;
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public int getSlots(HiveSlotType type) {
+			if(type==HiveSlotType.QUEEN) {
+				return 1;
+			}
+			return HiveSlotProvider.super.getSlots(type);
+		}
+
+		@Override
+		public HiveSlot getSlot(HiveSlotType type, int index) {
+			if(type==HiveSlotType.QUEEN) {
+				return component.getQueenSlot().get(index);
+			}
+			return HiveSlotProvider.super.getSlot(type, index);
+		}
+		
+	};
 	public BeeCityQueenBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
 		super(Blocks.BEE_CITY_CORE_BLOCKENTITY.get(), pWorldPosition, pBlockState);
 		this.component=new BeeCityComponent(1,0,0,1);
@@ -56,9 +100,9 @@ public class BeeCityQueenBlockEntity extends BeecrasyBlockEntity {
 	@Override
 	public void tick() {
 		if(level instanceof ServerLevel serverLevel) {
-			component.tick(serverLevel, worldPosition,1, level.hasNeighborSignal(worldPosition));
+			component.tick(serverLevel, worldPosition, 1, level.hasNeighborSignal(worldPosition));
 			if(component.isChanged()) {
-				this.setChanged();
+				setChanged();
 				component.setChanged(false);
 			}
 			boolean oldstate=this.getBlockState().getValue(BlockStateProperties.LIT);

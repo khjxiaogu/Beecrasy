@@ -198,37 +198,35 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
         		}
         		return;
     		}
-    	}
-    	PlayerPostalOffice po=traceTarget.getEntity(level, Entity.class).getData(Attachments.MAIL);
-    	if(mailId!=null){
-    		if(!po.isStillValid(mailId)) {
-    			this.discard();
+    		if(entity instanceof ServerPlayer sp) {
+	    		PlayerPostalOffice po=sp.getData(Attachments.MAIL);
+	    		if(mailId!=null) {
+	        		if(!po.isStillValid(mailId)) {
+	        			this.discard();
+	        			return;
+	        		}
+	        		if(remainTargetTick>=20) {
+			    		if(po.deliver(this.position(),mailId, sp)) {
+			    			mailId=null;
+			    			traceTarget=null;
+			    		}
+	    			}
+	        	}
     		}
     	}
     	if(hasTarget()&&this.closerThan(targetPos, 2)) {
     		remainTargetTick++;
-    		
-    		if(mailId!=null) {
-    			if(remainTargetTick>=20) {
-		    		Entity entity=traceTarget.getEntity(level, Entity.class);
-		    		if(entity instanceof ServerPlayer sp)
-			    		if(po.deliver(this.position(),mailId, sp)) {
-			    			mailId=null;
-			    		}
-    			}
-    		}
-    		
     		if(remainTargetTick>=40) {
     			this.discard();
     		}
-    	}else {
+		}else {
     		remainTargetTick=0;
     	}
     }
 
     @VisibleForDebug
     public boolean hasTarget() {
-        return this.targetPos != null||traceTarget != null;
+        return this.targetPos != null;
     }
 
     @VisibleForDebug

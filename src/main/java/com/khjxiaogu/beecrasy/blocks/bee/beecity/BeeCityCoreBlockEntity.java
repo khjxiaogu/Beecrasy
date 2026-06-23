@@ -50,9 +50,9 @@ public class BeeCityCoreBlockEntity extends BeecrasyBlockEntity {
 	@Override
 	public void tick() {
 		if(level instanceof ServerLevel serverLevel) {
-			component.tick(serverLevel, worldPosition,1, level.hasNeighborSignal(worldPosition));
+			component.tick(serverLevel, worldPosition, 1, level.hasNeighborSignal(worldPosition));
 			if(component.isChanged()) {
-				this.setChanged();
+				setChanged();
 				component.setChanged(false);
 			}
 			boolean oldstate=this.getBlockState().getValue(BlockStateProperties.LIT);

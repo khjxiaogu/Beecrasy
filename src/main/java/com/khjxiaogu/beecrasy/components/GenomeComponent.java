@@ -98,16 +98,16 @@ public class GenomeComponent implements Iterable<Genome>{
 			return HAPLOID_EMPTY;
 		if(genomes.length==1)
 			return this;
-		return new GenomeComponent(true,genomes[0]);
+		return new GenomeComponent(this.isInspected(),genomes[0]);
 	}
 	public GenomeComponent reduceDiploid() {
 		if(genomes.length==0)
 			return DIPLOID_EMPTY;
 		if(genomes.length==1)
-			return new GenomeComponent(true,genomes[0],genomes[0]);
+			return new GenomeComponent(this.isInspected(),genomes[0],genomes[0]);
 		if(genomes.length==2)
 			return this;
-		return new GenomeComponent(true,genomes[0],genomes[1]);
+		return new GenomeComponent(this.isInspected(),genomes[0],genomes[1]);
 	}
 	public int size() {
 		return genomes.length;
