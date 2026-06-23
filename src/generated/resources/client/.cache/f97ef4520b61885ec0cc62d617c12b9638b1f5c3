@@ -1,4 +1,6 @@
-// 26.1.2	2026-06-22T12:07:07.8060926	Model Definitions - beecrasy
+// 26.1.2	2026-06-24T04:22:56.4216737	Model Definitions - beecrasy
+6cb8297f174f17491c397c09ba4b9fe213aeca3d assets/beecrasy/blockstates/beedibox.json
+8d27d20cb2298faf3824f095c9d18268cf94d2bb assets/beecrasy/blockstates/beeper.json
 dac4306f0432186d4a9af9fdc4328aea740acb73 assets/beecrasy/blockstates/bee_city_comb.json
 8bbcba3bf0bc0c88d414a125277b141b1ee0f6f8 assets/beecrasy/blockstates/bee_city_core.json
 3e9521dfb3281d264d91ab85b6f7f2bed09215db assets/beecrasy/blockstates/bee_city_queen.json
@@ -15,6 +17,8 @@ dac4306f0432186d4a9af9fdc4328aea740acb73 assets/beecrasy/blockstates/bee_city_co
 490b7132bf36d3df7974797a3f15d0159d3d5b39 assets/beecrasy/blockstates/skep.json
 7bb29d5e7184ee156bdf67a3fea4183dd53592cc assets/beecrasy/items/apite.json
 c61b4b82f4072097ed9b7aa0bf9d62b4a1f37bca assets/beecrasy/items/asphodel.json
+7ae4e00f9c4ed463dfb25b81770493ba5d610b72 assets/beecrasy/items/beedibox.json
+778e72d2c884cdb4ed6cbeb1bca80286266920d1 assets/beecrasy/items/beeper.json
 5bc948201b4d7c12fedc6ff4dc09679a4c4f1904 assets/beecrasy/items/beeswax.json
 351c1f6f1cdfe56c445f4714394933737720ca2d assets/beecrasy/items/bee_city_comb.json
 f3789e180aabdd3fa07473a6837bf3e12c9811eb assets/beecrasy/items/bee_city_core.json
@@ -31,6 +35,7 @@ fee78f5ff2576eed19bc1a43b362134a781c1271 assets/beecrasy/items/bee_nest_medium.j
 8b7bdef3200c38c58c7bdddfbb3dc7cb2b2d2eb4 assets/beecrasy/items/delphinium_violet.json
 1620b022d57f99dc6fc8d1f39d2ace3f48628838 assets/beecrasy/items/drone.json
 05220e930b51e5c6496ac9396f0c75262b6ab8af assets/beecrasy/items/empty_comb_block.json
+4ac4abb1a7c15a15d901716b47b658f476124a90 assets/beecrasy/items/flight_of_the_bumble_bee.json
 b25a79f5949ebb2bc40f3bf8e594125e7723167b assets/beecrasy/items/foxtail_lily.json
 d9784cb99483b74bbee0a6ccef98a82348b26018 assets/beecrasy/items/foxtail_lily_fiery.json
 efe959c93d6c870d222423f5549035b03ea25105 assets/beecrasy/items/handheld_mailbox.json
@@ -62,6 +67,7 @@ daf4bc0cd56bc6f54c1e037134be60cf26268106 assets/beecrasy/items/mail.json
 e2229b3cd32dd8d13f330dccbfba79ba402dfcaf assets/beecrasy/items/protea_artisan.json
 acf2909014c79b4d48c92242195a349a81c2d7fd assets/beecrasy/items/queen_bee.json
 5ded0302ccde35853a3e2bb124df600e5a3c8a67 assets/beecrasy/items/royal_jelly.json
+4ac4abb1a7c15a15d901716b47b658f476124a90 assets/beecrasy/items/seikilos_epitaph.json
 4bd6c4da6d092e47eeef22f2dc4f7e887e42dd94 assets/beecrasy/items/sequencer.json
 7fd1954a87eedde5b940287b5b3e21e5dd5d9a35 assets/beecrasy/items/skep.json
 e44fd8c3c29021db95976df9827280bcb522f318 assets/beecrasy/models/block/empty_comb_block_0.json
