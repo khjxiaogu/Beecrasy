@@ -117,14 +117,16 @@ public class PheromoneRecipe extends ShapelessRecipe {
 		ItemStack otherItem = null;
 		for (int i = 0; i < input.size(); i++) {
 			ItemStack cur = input.getItem(i);
-			if (!cur.is(Items.PHEROMONO)) {
+			if (!cur.isEmpty()&&!cur.is(Items.PHEROMONO)) {
 				otherItem = cur;
 				break;
 			}
 		}
 		ItemStack result=super.assemble(input);
-		if (otherItem != null)
+		if (otherItem != null) {
 			result.set(Components.ARGUMENTATION,new BeehiveArgumenter(new BeeHiveArgumentation.Builder().addParam(BeeHiveParameters.MUTATION_DIRECTOR, List.of(otherItem.getItem())).build(),true));
+			result.set(Components.TINT_STACK,ItemStackTemplate.fromNonEmptyStack(otherItem));
+		}
 		return result;
 	}
 

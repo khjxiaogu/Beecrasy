@@ -64,11 +64,14 @@ public class BeediboxBlockEntity extends BeecrasyBlockEntity {
 					ServerBeediManager.stopSong(serverLevel, worldPosition);
 					ticks=0;
 				}
-			level.setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockStateProperties.HAS_RECORD, !getResource(index).isEmpty()));
-			setChanged();
+			if(!isRemoving) {
+				level.setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockStateProperties.HAS_RECORD, !getResource(index).isEmpty()));
+				setChanged();
+			}
 		}
 		
 	};
+	
 	long ticks;
 	public BeediboxBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
 		super(Blocks.BEEDIBOX_BLOCKENTITY.get(), pWorldPosition, pBlockState);
@@ -97,7 +100,7 @@ public class BeediboxBlockEntity extends BeecrasyBlockEntity {
 	public boolean isPlaying() {
 		return ticks>0;
 	}
-
+	boolean isRemoving=false;
     public void popOutTheItem() {
         if (this.level != null && !this.level.isClientSide()) {
             BlockPos pos = this.getBlockPos();
@@ -120,5 +123,9 @@ public class BeediboxBlockEntity extends BeecrasyBlockEntity {
 		BeediDisk id=disk.getResource(0).get(Components.BEEDI_RECORD);
 		return id==null?0:id.comparatorOutput();
 	}
-
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+    	isRemoving=true;
+        this.popOutTheItem();
+    }
 }

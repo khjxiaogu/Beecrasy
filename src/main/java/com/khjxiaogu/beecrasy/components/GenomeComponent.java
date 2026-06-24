@@ -43,23 +43,12 @@ public class GenomeComponent implements Iterable<Genome>{
 		ExtraCodecs.nonEmptyList(Codec.list(Genome.CODEC)).optionalFieldOf("genomes",List.of(Genome.DEFAULT)).forGetter(o->List.of(o.genomes))
 		).apply(t, GenomeComponent::new)
 		);
-	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> EMPTY_CODEC= new StreamCodec<>() {
-        @Override
-        public GenomeComponent decode(RegistryFriendlyByteBuf input) {
-            return HAPLOID_EMPTY;
-        }
 
-        @Override
-        public void encode(RegistryFriendlyByteBuf output, GenomeComponent value) {
-            
-        }
-    };
-	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> FULL_CODEC=Genome.STREAM_CODEC.apply(ByteBufCodecs.list())
-		.map(t->new GenomeComponent(true,t), t->List.of(t.genomes));
-	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> NETWORK_CODEC=ByteBufCodecs.BOOL
-		.<RegistryFriendlyByteBuf>cast()
-		.dispatch(t->t.inspected,
-		n->(n?FULL_CODEC:EMPTY_CODEC));
+	public static final StreamCodec<RegistryFriendlyByteBuf,GenomeComponent> NETWORK_CODEC=StreamCodec.composite(
+			ByteBufCodecs.BOOL,o->o.inspected,
+			Genome.STREAM_CODEC.apply(ByteBufCodecs.list()), o->List.of(o.genomes),
+			GenomeComponent::new
+			);
 	private final boolean inspected;
 	private final Genome[] genomes;
 	private GenomeComponent(boolean haploid) {

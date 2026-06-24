@@ -42,7 +42,7 @@ public class BeecrasyMidiProcessor extends MidiBinaryBakery {
 	protected void gather() {
 		File resourcePath=new File("../../src/datagen/resources");
 		try {
-			//this.addTask(Beecrasy.rl("flight_of_the_bumble_bee"), new MidiSheet(new FileInputStream(new File(resourcePath,"flight_of_the_bumble_bee.mid"))));
+			this.addTask(Beecrasy.rl("flight_of_the_bumble_bee"), new MidiSheet(new FileInputStream(new File(resourcePath,"flight_of_the_bumble_bee.mid"))));
 			this.addTask(Beecrasy.rl("seikilos_epitaph"), new MidiSheet(new FileInputStream(new File(resourcePath,"seikilos_epitaph.mid"))));
 		} catch (IOException | InvalidMidiDataException e) {
 			e.printStackTrace();
