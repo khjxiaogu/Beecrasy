@@ -1,5 +1,6 @@
-// 26.1.2	2026-06-22T19:03:35.3959907	Loot Tables
+// 26.1.2	2026-06-24T12:40:38.5580329	Loot Tables
 7187d2dc86d9fbbba5cb2a5a7f4836e7085cdb78 data/beecrasy/loot_table/blocks/asphodel.json
+11a1a8d34e43f35b3045de456862ce8610ad88e6 data/beecrasy/loot_table/blocks/beedibox.json
 22e0dc3b1a873bd2b3c009538713bfca27f46859 data/beecrasy/loot_table/blocks/bee_city_comb.json
 0f7a5eb49d2757baf860073b74641a22d4219897 data/beecrasy/loot_table/blocks/bee_city_core.json
 a6068c4df5b1f12054d93c1f530685f8faf4eeb8 data/beecrasy/loot_table/blocks/bee_city_queen.json
@@ -7,6 +8,7 @@ a6068c4df5b1f12054d93c1f530685f8faf4eeb8 data/beecrasy/loot_table/blocks/bee_cit
 62dbcc1cbd280b0c00e3f5f4b3a12ea897cf4717 data/beecrasy/loot_table/blocks/bee_nest_medium.json
 5869af91dc0c1f0f6b56bea31af57a656d2cde16 data/beecrasy/loot_table/blocks/bee_nest_nascent.json
 2248c00782ca735d03456cdc28fc0d6876160cd0 data/beecrasy/loot_table/blocks/bee_nest_small.json
+7401a902c6bd0528d8d12894b029f92bd9ecdb43 data/beecrasy/loot_table/blocks/buzzer.json
 25b3d43c1f90efcab67f942ea16de1effa47f908 data/beecrasy/loot_table/blocks/delphinium_blue.json
 854cf8da6a2a8f7b04841fe8b4ba8bf9fa260488 data/beecrasy/loot_table/blocks/delphinium_pink.json
 937e4d5e63433af756ca345a4a547a2b45114470 data/beecrasy/loot_table/blocks/delphinium_violet.json

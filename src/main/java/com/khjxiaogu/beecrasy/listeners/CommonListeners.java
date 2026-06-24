@@ -25,6 +25,7 @@ import com.ibm.icu.util.Calendar;
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Capability;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Entities;
 import com.khjxiaogu.beecrasy.beedi.ServerBeediManager;
@@ -115,6 +116,28 @@ public class CommonListeners {
 		});
 		event.registerBlockEntity(Capabilities.Energy.BLOCK, Blocks.SEQUENCER_BLOCKENTITY.get(), (be,_)->{
 			return be.energyTransport;
+		});
+		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.BEEDIBOX_BLOCKENTITY.get(), (be,_)->{
+			return be.disk;
+		});
+		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.BEE_CITY_CORE_BLOCKENTITY.get(), (be,ctx)->{
+			if(ctx==Direction.DOWN)
+				return be.component.getProductInv();
+			return be.component.getExternInv();
+		});
+		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.BEE_CITY_COMB_BLOCKENTITY.get(), (be,_)->{
+			return be.container;
+		});
+		event.registerBlockEntity(Capabilities.Item.BLOCK, Blocks.BEE_CITY_QUEEN_BLOCKENTITY.get(), (be,ctx)->{
+			if(ctx==Direction.DOWN)
+				return be.component.getProductInv();
+			return be.component.getExternInv();
+		});
+		event.registerBlockEntity(Capability.BEE_CITY_BLOCK, Blocks.BEE_CITY_COMB_BLOCKENTITY.get(), (be,_)->{
+			return be.slots;
+		});
+		event.registerBlockEntity(Capability.BEE_CITY_BLOCK, Blocks.BEE_CITY_QUEEN_BLOCKENTITY.get(), (be,_)->{
+			return be.slots;
 		});
 	}
 	@SubscribeEvent

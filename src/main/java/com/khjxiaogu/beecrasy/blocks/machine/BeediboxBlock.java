@@ -85,24 +85,25 @@ public class BeediboxBlock extends Block implements BeecrasyEntityBlock<Beedibox
             return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
 		ItemStack toInsert = player.getItemInHand(hand);
-
-        if (!level.isClientSide()) {
-            
-            if (level.getBlockEntity(pos) instanceof BeediboxBlockEntity box) {
-            	try(Transaction trans=Transaction.openRoot()){
-            		if(box.disk.insert(0, ItemResource.of(toInsert), 1, trans)==1) {
-            			trans.commit();
-            			toInsert.consume(1, player);
-            			level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(player, state));
-            		}
-            	}
-            }
-
-            player.awardStat(Stats.PLAY_RECORD);
-        }
-
-        return InteractionResult.SUCCESS;
-        
+		if(!toInsert.isEmpty()) {
+	        if (!level.isClientSide()) {
+	            
+	            if (level.getBlockEntity(pos) instanceof BeediboxBlockEntity box) {
+	            	try(Transaction trans=Transaction.openRoot()){
+	            		if(box.disk.insert(0, ItemResource.of(toInsert), 1, trans)==1) {
+	            			trans.commit();
+	            			toInsert.consume(1, player);
+	            			level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(player, state));
+	            		}
+	            	}
+	            }
+	
+	            player.awardStat(Stats.PLAY_RECORD);
+	        }
+	
+	        return InteractionResult.SUCCESS;
+		}
+		return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
     @Override

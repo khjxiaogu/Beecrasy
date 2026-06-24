@@ -175,7 +175,7 @@ public class BeediManager implements ResourceManagerReloadListener{
     		return Sounds.BEE_NOTE_FAST.get();
     	if(len<750)
     		return Sounds.BEE_NOTE.get();
-    	if(len<2000)
+    	if(len<1500)
     		return Sounds.BEE_NOTE_SLOW.get();
 		return Sounds.BEE_NOTE_EXTRA_SLOW.get();
     }

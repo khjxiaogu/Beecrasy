@@ -39,7 +39,7 @@ import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public class BeediboxBlockEntity extends BeecrasyBlockEntity {
-	ItemStacksResourceHandler disk=new ItemStacksResourceHandler(1) {
+	public final ItemStacksResourceHandler disk=new ItemStacksResourceHandler(1) {
 
 		@Override
 		public boolean isValid(int index, ItemResource resource) {

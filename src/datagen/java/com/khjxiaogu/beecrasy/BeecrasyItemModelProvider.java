@@ -104,6 +104,7 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 
 		this.itemModelOutput.accept(Items.MUSIC_SEIKILOS_EPITAPH.get(),ItemModelUtils.plainModel(Identifier.withDefaultNamespace("item/music_disc_13")));
 		this.itemModelOutput.accept(Items.MUSIC_FLIGHT_OF_THE_BUMBLE_BEE.get(),ItemModelUtils.plainModel(Identifier.withDefaultNamespace("item/music_disc_13")));
+		this.itemModelOutput.accept(Items.MUSIC_FLIGHT_OF_THE_BUMBLE_BEE_BITS.get(),ItemModelUtils.plainModel(Identifier.withDefaultNamespace("item/music_disc_13")));
 		
 	}
     public void generateBeeTint(ItemLike item) {

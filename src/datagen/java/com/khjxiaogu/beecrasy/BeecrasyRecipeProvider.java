@@ -27,6 +27,7 @@ import java.util.function.BiConsumer;
 
 import com.khjxiaogu.beecrasy.data.BuilderContext;
 import com.khjxiaogu.beecrasy.data.recipe.GenomePresets;
+import com.khjxiaogu.beecrasy.data.recipe.PheromoneRecipe;
 import com.khjxiaogu.beecrasy.data.recipe.PressRecipe;
 import com.khjxiaogu.beecrasy.data.recipe.RoyalJellyRecipe;
 import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
@@ -93,6 +94,7 @@ public class BeecrasyRecipeProvider extends RecipeProvider {
 				.addOutput(BeecrasyRegistries.Items.HONEY_DROP.get(),1,.8f)
 				.setTime(200).create());
 		out.accept("royal_jelly", RoyalJellyRecipe.createDefault(true, CraftingBookCategory.MISC, ""));
+		out.accept("pheromone_set_type", PheromoneRecipe.createDefault(true, CraftingBookCategory.MISC, ""));
 		try(BuilderContext<GenomePresets.Builder> builder=presetBuilder()){
 			builder.create("genome/base", new GenomePresets.Builder(Constants.BASE_ID))
 			.group("yield")
