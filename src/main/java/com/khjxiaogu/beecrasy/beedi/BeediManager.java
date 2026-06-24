@@ -37,9 +37,13 @@ import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Sounds;
 import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -152,11 +156,13 @@ public class BeediManager implements ResourceManagerReloadListener{
 	public void tick(ClientLevel level) {
 		for(Entry<BlockPos, TrackPlayer> ent:playingBeediSongs.entrySet()) {
 			NotePlayer player;
-			if(level.isLoaded(ent.getKey())) {
+			BlockPos pos=ent.getKey();
+			if(level.isLoaded(pos)) {
 				player=(e,p,v,l)->{
 					float pitch=BeecrasyMath.noteToPitch(p);
 					int len=(int) (l*pitch);
-					level.playLocalSound(ent.getKey(), e.apply(len), SoundSource.RECORDS, v/127f, pitch, false);};
+					level.addParticle(ParticleTypes.NOTE, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, p%24 / 24.0, 0.0, 0.0);
+					level.playLocalSound(pos, e.apply(len), SoundSource.RECORDS, v/127f, pitch, false);};
 			}else
 				player=(_,_,_,_)->{};
 			ent.getValue().tick(player);
@@ -167,6 +173,7 @@ public class BeediManager implements ResourceManagerReloadListener{
         MidiSheet file=loadedFiles.get(song);
         if(file!=null) {
 	        this.playingBeediSongs.put(pos, file.createPlayerBaked(id.map(BuiltInRegistries.SOUND_EVENT::getValue).map(t->(IntFunction<SoundEvent>)_->t).orElse(this::getSound),speed,offset));
+	        Minecraft.getInstance().gui.setNowPlaying(Component.translatable(song.toLanguageKey("record", "title")));
 	        notifyNearbyEntities(level, pos, true);
         }
     }

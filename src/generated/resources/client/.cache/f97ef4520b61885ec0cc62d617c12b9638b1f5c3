@@ -1,4 +1,4 @@
-// 26.1.2	2026-06-24T07:45:37.8781353	Model Definitions - beecrasy
+// 26.1.2	2026-06-24T16:05:58.7357586	Model Definitions - beecrasy
 6cb8297f174f17491c397c09ba4b9fe213aeca3d assets/beecrasy/blockstates/beedibox.json
 dac4306f0432186d4a9af9fdc4328aea740acb73 assets/beecrasy/blockstates/bee_city_comb.json
 8bbcba3bf0bc0c88d414a125277b141b1ee0f6f8 assets/beecrasy/blockstates/bee_city_core.json
@@ -36,6 +36,7 @@ fee78f5ff2576eed19bc1a43b362134a781c1271 assets/beecrasy/items/bee_nest_medium.j
 1620b022d57f99dc6fc8d1f39d2ace3f48628838 assets/beecrasy/items/drone.json
 05220e930b51e5c6496ac9396f0c75262b6ab8af assets/beecrasy/items/empty_comb_block.json
 4ac4abb1a7c15a15d901716b47b658f476124a90 assets/beecrasy/items/flight_of_the_bumble_bee.json
+4ac4abb1a7c15a15d901716b47b658f476124a90 assets/beecrasy/items/flight_of_the_bumble_bee_bits.json
 b25a79f5949ebb2bc40f3bf8e594125e7723167b assets/beecrasy/items/foxtail_lily.json
 d9784cb99483b74bbee0a6ccef98a82348b26018 assets/beecrasy/items/foxtail_lily_fiery.json
 efe959c93d6c870d222423f5549035b03ea25105 assets/beecrasy/items/handheld_mailbox.json

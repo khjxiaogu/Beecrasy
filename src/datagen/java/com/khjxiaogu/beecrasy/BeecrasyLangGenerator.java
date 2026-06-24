@@ -98,7 +98,8 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 		this.add(MailBoxItem.NOT_VALID_PATH, "No vaild path for delivering.");
 		this.add(PressCategory.titleId, "Honey Press");
 		this.add(ChanceCallback.titleId, "Chance: %s");
-
+		this.addCd("flight_of_the_bumble_bee");
+		this.addCd("seikilos_epitaph");
 	}
 	public <T extends Allele> void addAllele(EnumAlleleType<T> type) {
 		for(T t:type) {
@@ -106,7 +107,9 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 			this.add(type.getShortLanguageKey(t), capitalizeWords(t.getId()).substring(0,Math.min(t.getId().length(), 4)));
 		}
 	}
-	
+	public void addCd(String name) {
+		this.add(Beecrasy.rl(name).toLanguageKey("record", "title"), capitalizeWords(name));
+	}
 	public void sequencerTab(String name) {
 		this.add("tab.sequencer.beecrasy."+name, capitalizeWords(name));
 	}
