@@ -23,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.beehive.BeeCityComponent;
+import com.khjxiaogu.beecrasy.beehive.BeeCityQueenComponent;
 import com.khjxiaogu.beecrasy.beehive.HiveSlot;
 import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
 import com.khjxiaogu.beecrasy.blocks.bee.BeeHiveBaseBlockEntity;
@@ -41,19 +42,18 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 public class BeeCityQueenBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvider{
-	public final BeeCityComponent component;
-	public BlockPos corePos;
+	public final BeeCityQueenComponent component;
 	public HiveSlotProvider slots=new HiveSlotProvider() {
 
 		@Override
 		public boolean isBindable(BlockPos core) {
-			return corePos==null||core.equals(corePos);
+			return component.corePos==null||core.equals(component.corePos);
 		}
 
 		@Override
 		public boolean bind(BlockPos core) {
 			if(isBindable(core)) {
-				corePos=core;
+				component.corePos=core;
 				return true;
 			}
 			return false;
@@ -61,8 +61,8 @@ public class BeeCityQueenBlockEntity extends BeeHiveBaseBlockEntity implements M
 
 		@Override
 		public boolean unbind(BlockPos core) {
-			if(core.equals(corePos)) {
-				corePos=null;
+			if(core.equals(component.corePos)) {
+				component.corePos=null;
 				return true;
 			}
 			return false;
@@ -86,28 +86,25 @@ public class BeeCityQueenBlockEntity extends BeeHiveBaseBlockEntity implements M
 		
 	};
 	public BeeCityQueenBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-		super(Blocks.BEE_CITY_QUEEN_BLOCKENTITY.get(), pWorldPosition, pBlockState,this.component=new BeeCityComponent(1,0,0,1));
+		super(Blocks.BEE_CITY_QUEEN_BLOCKENTITY.get(), pWorldPosition, pBlockState,this.component=new BeeCityQueenComponent(1,0,0,1));
 		;
 	}
 
 	@Override
 	public void readCustomNBT(ValueInput nbt, boolean isClient) {
 		component.readCustomNBT(nbt, isClient);
-		corePos=nbt.read("core", BlockPos.CODEC).orElse(null);
 	}
 
 	@Override
 	public void writeCustomNBT(ValueOutput nbt, boolean isClient) {
-		
 		component.writeCustomNBT(nbt, isClient);
-
-		nbt.storeNullable("core", BlockPos.CODEC, corePos);
 	}
 	
 
 	@Override
 	public void tick() {
 		if(level instanceof ServerLevel serverLevel) {
+			component.level=serverLevel;
 			component.tick(serverLevel, worldPosition, 1, level.hasNeighborSignal(worldPosition));
 			if(component.isChanged()) {
 				setChanged();

@@ -19,9 +19,14 @@
 
 package com.khjxiaogu.beecrasy.blocks.bee.beecity;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Capability;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Tags;
+import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
 import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.core.BlockPos;
@@ -30,12 +35,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class BeeCitySpreadHelper {
-	public Pair<BlockPos,Direction> findFirstValid(Level level,BlockPos current,Set<BlockPos> poss) {
-		for(Direction dir:Direction.values()) {
+	public static Pair<BlockPos,Direction> findFirstValid(Level level,BlockPos core,BlockPos current,Set<BlockPos> poss) {
+		List<Direction> dirs=new ArrayList<>(List.of(Direction.values()));
+		Collections.shuffle(dirs);
+		for(Direction dir:dirs) {
 			BlockPos cur=current.relative(dir);
 			if(!poss.contains(cur)) {
 				BlockState bs=level.getBlockState(cur);
-				if(bs.is(Tags.BEECITY_SPREADABLE)) {
+				if(bs.is(Tags.BEECITY_SPREADABLE)||(level.getCapability(Capability.BEE_CITY_BLOCK,cur) instanceof HiveSlotProvider provider&&provider.isBindable(core))) {
 					for(Direction dir2:Direction.values()) {
 						BlockPos cur2=cur.relative(dir2);
 						BlockState bs2=level.getBlockState(cur2);
@@ -47,7 +54,7 @@ public class BeeCitySpreadHelper {
 				if(bs.canBeReplaced()||bs.isEmpty()||!bs.isCollisionShapeFullBlock(level, current)) {
 					cur=current.relative(dir,2);
 					BlockState bs3=level.getBlockState(cur);
-					if(bs3.is(Tags.BEECITY_SPREADABLE)) {
+					if(bs3.is(Tags.BEECITY_SPREADABLE)||(level.getCapability(Capability.BEE_CITY_BLOCK,cur) instanceof HiveSlotProvider provider&&provider.isBindable(core))) {
 						for(Direction dir2:Direction.values()) {
 							BlockPos cur2=cur.relative(dir2);
 							BlockState bs2=level.getBlockState(cur2);

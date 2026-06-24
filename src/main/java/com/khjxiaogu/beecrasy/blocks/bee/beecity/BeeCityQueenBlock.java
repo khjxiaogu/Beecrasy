@@ -104,8 +104,8 @@ public class BeeCityQueenBlock extends Block  implements BeecrasyEntityBlock<Bee
 	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
 		super.animateTick(state, level, pos, random);
 		if(state.getValue(BlockStateProperties.LIT)) {
-			if(level.getBlockEntity(pos) instanceof BeeCityQueenBlockEntity blockEntity&&blockEntity.corePos!=null) {
-				BlockState bs=level.getBlockState(blockEntity.corePos);
+			if(level.getBlockEntity(pos) instanceof BeeCityQueenBlockEntity blockEntity&&blockEntity.component.corePos!=null) {
+				BlockState bs=level.getBlockState(blockEntity.component.corePos);
 				if(bs.hasProperty(BlockStateProperties.LIT)&&bs.getValue(BlockStateProperties.LIT)) {
 					int count = 2;
 					if(random.nextInt(20)==0)

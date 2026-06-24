@@ -315,7 +315,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @param speed  工作速度倍率
 	 */
 	@SuppressWarnings("resource")
-	public void tick(BeeHiveParameterSet params,int speed) {
+	public int tick(BeeHiveParameterSet params,int speed) {
 		blocked=false;
 		badEnvironment=false;
 		noFlower=false;
@@ -340,18 +340,23 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				process-=BeecrasyMath.getRandomRate(params.getParamValue(BeeHiveParameters.SPEED)*speed, rs);
 				if(process<0)
 					process=0;
-				if(lprocess/interval!=process/interval) {
-					GenomeWorkHelper.transformFlowers(params.level(), params.position(), BeecrasyConfig.SERVER.FLOWER_RADIUS.getAsInt(), (float)BeecrasyConfig.SERVER.FLOWER_RATE.getAsDouble());
-					if(fillLarva(params,secs)||fillDrone(params)) {
-						updateCombLifespan(secs);
-						updateQueenLifespan(secs);
-					}else {
-						int elecInterval=(processMax/2/4);
-						if(lprocess/elecInterval!=process/elecInterval)
-							elecQueen();
-						increaseProduction(params);
+				int ltick=lprocess/interval;
+				int ctick=process/interval;
+				if(ltick>ctick) {
+					for(int i=ctick;i<ltick;i++) {
+						GenomeWorkHelper.transformFlowers(params.level(), params.position(), BeecrasyConfig.SERVER.FLOWER_RADIUS.getAsInt(), (float)BeecrasyConfig.SERVER.FLOWER_RATE.getAsDouble());
+						if(fillLarva(params,secs)||fillDrone(params)) {
+							updateCombLifespan(secs);
+							updateQueenLifespan(secs);
+						}else {
+							int elecInterval=(processMax/2/4);
+							if(lprocess/elecInterval!=process/elecInterval)
+								elecQueen();
+							increaseProduction(params);
+						}
 					}
-					
+
+					return ltick-ctick;
 				}
 			}
 		}else {
@@ -377,6 +382,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				}
 			}
 		}
+		return 0;
 	}
 	private void increaseProduction(BeeHiveParameterSet params,HiveSlot hi,long secs,float yieldMod) {
 		if(!hi.isEmpty()) {
@@ -470,6 +476,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			*params.getParamValue(BeeHiveParameters.FERTILITY)
 			*queenGenome[0].getAllele(Genes.YIELD).getNumber()
 			*params.getParamValue(BeeHiveParameters.YIELD)
+			*Math.log(droneGenomes.size())
 			*2), rs), 1);
 		larvaCount=BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber()*params.getParamValue(BeeHiveParameters.FERTILITY), rs);
 		droneCount=BeecrasyMath.getRandomRate(queenGenome[0].getAllele(Genes.FERTILITY).getNumber()*params.getParamValue(BeeHiveParameters.FERTILITY), rs);

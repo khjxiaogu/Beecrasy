@@ -244,7 +244,7 @@ public class BeeHiveBaseComponent extends AbstractBeeComponent{
 		return BeehiveArgumenter.extractArgumentation(serverLevel, internInv, slot, root);
 	}
 	@Override
-	protected boolean canBeginWork() {
+	protected boolean canBeginWork(ServerLevel level) {
 
 		if(work==WorkBehaviour.MAUNAL&&!shouldWork) {
 			err=ErrCode.MANUAL_HALT;

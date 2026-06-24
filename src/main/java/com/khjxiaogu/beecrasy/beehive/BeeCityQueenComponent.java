@@ -20,21 +20,13 @@
 package com.khjxiaogu.beecrasy.beehive;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
-
-import com.google.common.collect.Iterators;
-import com.khjxiaogu.beecrasy.BeecrasyRegistries.Capability;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.beehive.slot.BeeCityCoreCombSlot;
 import com.khjxiaogu.beecrasy.beehive.slot.ResourceStackHiveSlot;
-import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
 import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider.HiveSlotType;
-import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCitySpreadHelper;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityCoreBlockEntity;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation.Builder;
 import com.khjxiaogu.beecrasy.components.BeehiveArgumenter;
@@ -42,17 +34,12 @@ import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
 import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
-import com.mojang.datafixers.util.Pair;
-
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.RootCommitJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -68,10 +55,9 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * </ul>
  * 实现了 {@link ValueIOSerializable} 用于持久化。
  */
-public class BeeCityComponent extends AbstractBeeComponent{
-
-	protected LinkedHashSet<BlockPos> pos=new LinkedHashSet<>();
+public class BeeCityQueenComponent extends AbstractBeeComponent{
 	public ServerLevel level;
+	public BlockPos corePos;
 	/**
 	 * 创建指定容量的蜂巢基础组件。
 	 * 初始化所有内部槽位和资源句柄，设置各区域（蜂后/雄蜂/巢脾/额外）的验证规则。
@@ -80,13 +66,25 @@ public class BeeCityComponent extends AbstractBeeComponent{
 	 * @param comb  巢脾槽位数量
 	 * @param extra 额外槽位数量
 	 */
-	public BeeCityComponent(int queen,int drone,int comb,int extra) {
+	public BeeCityQueenComponent(int queen,int drone,int comb,int extra) {
 		super(queen,drone,comb,extra);
 
 
 	}
-	public void appendHiveCity(BlockPos pos) {
-		this.pos.add(pos);
+	public Set<BlockPos> getConnected(ServerLevel level){
+		BeeCityComponent comp=getConnectedComponent(level);
+		if(comp!=null) {
+			return comp.pos;
+		}
+		return Set.of();
+	}
+	public BeeCityComponent getConnectedComponent(ServerLevel level){
+		if(corePos!=null&&level.isLoaded(corePos)) {
+			if(level.getBlockEntity(corePos) instanceof BeeCityCoreBlockEntity be) {
+				return be.component;
+			}
+		}
+		return null;
 	}
 	@Override
 	public BeeHiveHandler createHiveInfo(int queen,int drone,int comb,int extra) {
@@ -109,9 +107,9 @@ public class BeeCityComponent extends AbstractBeeComponent{
 			extraSlot.add(new ResourceStackHiveSlot(getInternInv(),i+queen+drone+comb));
 		}
 		return new BeeHiveHandler(
-			()-> new BeeCityIterator(queenSlot.iterator(),level,pos.iterator(),HiveSlotType.QUEEN),
-			()-> new BeeCityIterator(droneSlot.iterator(),level,pos.iterator(),HiveSlotType.COMB),
-			()-> new BeeCityIterator(combSlot.iterator(),level,pos.iterator(),HiveSlotType.COMB));
+			()-> new BeeCityIterator(queenSlot.iterator(),level,getConnected(level).iterator(),HiveSlotType.QUEEN),
+			()-> new BeeCityIterator(droneSlot.iterator(),level,getConnected(level).iterator(),HiveSlotType.COMB),
+			()-> new BeeCityIterator(combSlot.iterator(),level,getConnected(level).iterator(),HiveSlotType.COMB));
 	}
 	/**
 	 * 验证额外槽位是否允许放入指定物品。
@@ -127,15 +125,20 @@ public class BeeCityComponent extends AbstractBeeComponent{
 	public Builder buildArgumentation(ServerLevel level, BlockPos worldPosition, TransactionContext root) {
 		
 		Builder builder= super.buildArgumentation(level, worldPosition, root);
-		BeeHiveArgumentation arg1=BeehiveArgumenter.extractArgumentation(level, internInv, 5, root);
+		BeeHiveArgumentation arg1=BeehiveArgumenter.extractArgumentation(level, internInv, 1, root);
 		if(arg1!=null)
 			builder.addParams(arg1);
-		builder.addParam(BeeHiveParameters.YIELD,pos.size()*0.1f);
-		builder.addParam(BeeHiveParameters.SPEED,pos.size()*0.1f);
-		builder.addParam(BeeHiveParameters.FERTILITY,pos.size()*0.1f);
+		builder.addParam(BeeHiveParameters.YIELD,getConnected(level).size()*0.1f);
+		builder.addParam(BeeHiveParameters.SPEED,getConnected(level).size()*0.1f);
+		builder.addParam(BeeHiveParameters.FERTILITY,getConnected(level).size()*0.1f);
 		return builder;
 	}
 	protected boolean canBeginWork(ServerLevel level) {
+		BeeCityComponent coreComp=getConnectedComponent(level);
+		if(coreComp==null||!coreComp.hiveInfo.isWorking()) {
+			err=ErrCode.MANUAL_HALT;
+			return false;
+		}
 		int queenCount=0;
 		for(HiveSlot slot:queenSlot) {
 			if(!slot.isEmpty()) {
@@ -154,51 +157,13 @@ public class BeeCityComponent extends AbstractBeeComponent{
 			err=ErrCode.MISSING_QUEEN;
 			return false;
 		}
-		int droneCount=0;
-		for(HiveSlot slot:(Iterable<HiveSlot>)(()-> new BeeCityIterator(Iterators.concat(droneSlot.iterator(), combSlot.iterator()),level,pos.iterator(),HiveSlotType.COMB))) {
-			if(!slot.isEmpty()) {
-				if(slot.is(Items.DRONE)) {
-					droneCount++;
-				}
-			}
-		}
-		if(droneCount<=0) {
-			err=ErrCode.MISSING_DRONE;
-			return false;
-		}
 		err=ErrCode.OK;
 		return true;
-	}
-	@Override
-	protected void tickExtraWorking(BeeHiveParameterSet params, int time) {
-		super.tickExtraWorking(params, time);
-		for(int i=0;i<time;i++) {
-			Set<BlockPos> cps=new HashSet<>(pos);
-			for(int j=0;j<2;j++) {
-				int index=params.level().getRandom().nextInt(pos.size()+1);
-				BlockPos checkPos;
-				if(index==0)
-					checkPos=params.position();
-				else
-					checkPos=Iterators.get(pos.iterator(), index-1);
-				Pair<BlockPos, Direction> result=BeeCitySpreadHelper.findFirstValid(params.level(), params.position(), checkPos, cps);
-				if(result!=null) {
-					if(params.level().getCapability(Capability.BEE_CITY_BLOCK,result.getFirst()) instanceof HiveSlotProvider provider&&provider.isBindable(params.position())) {
-						provider.bind(params.position());
-						this.appendHiveCity(result.getFirst());
-						return;
-					}
-				}
-				
-			}
-		}
-		
 	}
 	protected boolean beginGrowth(ServerLevel serverLevel, BlockPos worldPosition) {
 		Genome[] queen=null;
 		BeeHiveParameterSet params=null;
-		List<Genome> drones=new ArrayList<>(10);
-		List<HiveSlot> empties=new ArrayList<>();
+		BeeCityComponent coreComp=getConnectedComponent(level);
 		try(Transaction trans=Transaction.openRoot()){
 			int qn=queenSlot.size();
 			for(int i=0;i<qn;i++) {
@@ -217,43 +182,18 @@ public class BeeCityComponent extends AbstractBeeComponent{
 			}
 			if(queen==null)
 				return false;
+			if(coreComp.hiveInfo.droneGenomes.size()<=0)
+				return false;
 			arguments=buildArgumentation(serverLevel,worldPosition,trans).build();
+	
 			params=buildParams(serverLevel, worldPosition).build();
 			if(!GenomeWorkHelper.isValidEnvironment(params, queen[0])) {
 				err=ErrCode.INVALID_ENVIRONMENT;
 				return false;
 			}
-			int maxSlot=droneSlot.size()+combSlot.size();
-			for(int i=0;i<maxSlot;i++) {
-				int slot=qn+i;
-				if(getInternInv().getAmountAsInt(slot)>0) {
-					ItemResource stack=getInternInv().getResource(slot);
-					if(stack.is(Items.DRONE.get())) {
-						GenomeComponent comp=stack.get(Components.GENOME);
-						if(comp!=null) {
-							if(getInternInv().extract(slot, stack, 1, trans)==1)
-								drones.add(comp.getGenome(0));
-						}
-					}
-				}
-			}
-			for(HiveSlot slot:(Iterable<HiveSlot>)(()-> new BeeCityIterator(Collections.emptyIterator(),serverLevel,pos.iterator(),HiveSlotType.COMB))) {
-				if(slot.is(Items.DRONE)) {
-					ItemStack stack=slot.getItem();
-					GenomeComponent comp=stack.get(Components.GENOME);
-					if(comp!=null) {
-						drones.add(comp.getGenome(0));
-						empties.add(slot);
-					}
-				}
-			}
-			if(drones.size()<=0)
-				return false;
 			trans.commit();
 		}
-		for(HiveSlot hs:empties)
-			hs.setItem(ItemStack.EMPTY);
-		hiveInfo.prepareWork(params, queen, drones);
+		hiveInfo.prepareWork(params, queen, coreComp.hiveInfo.droneGenomes);
 		return true;
 	}
 	/**
@@ -265,10 +205,7 @@ public class BeeCityComponent extends AbstractBeeComponent{
 	@Override
 	public void readCustomNBT(ValueInput nbt, boolean isClient) {
 		super.readCustomNBT(nbt, isClient);
-		if(!isClient) {
-			pos.clear();
-			nbt.read("positions", BlockPos.CODEC.listOf()).ifPresent(pos::addAll);
-		}
+		corePos=nbt.read("corePos", BlockPos.CODEC).orElse(null);
 	}
 
 	/**
@@ -280,9 +217,8 @@ public class BeeCityComponent extends AbstractBeeComponent{
 	@Override
 	public void writeCustomNBT(ValueOutput nbt, boolean isClient) {
 		super.writeCustomNBT(nbt, isClient);
-		if(!isClient) {
-			nbt.store("positions", BlockPos.CODEC.listOf(), new ArrayList<>(pos));
-		}
+		nbt.storeNullable("corePos", BlockPos.CODEC, corePos);
+		
 	}
 
 }

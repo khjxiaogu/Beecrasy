@@ -188,7 +188,7 @@ public class BeecrasyRegistries {
 	    
 	    //光盘
 	    public static final DeferredItem<Item> MUSIC_FLIGHT_OF_THE_BUMBLE_BEE=ITEMS.registerSimpleItem("flight_of_the_bumble_bee",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(1260,Beecrasy.rl("flight_of_the_bumble_bee"),1)));
-	    public static final DeferredItem<Item> MUSIC_FLIGHT_OF_THE_BUMBLE_BEE_BITS=ITEMS.registerSimpleItem("flight_of_the_bumble_bee_bits",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(1260,Beecrasy.rl("flight_of_the_bumble_bee"),Optional.of(Identifier.withDefaultNamespace("block.note_block.bit")),1,0,0.75f)));
+	    public static final DeferredItem<Item> MUSIC_FLIGHT_OF_THE_BUMBLE_BEE_BITS=ITEMS.registerSimpleItem("flight_of_the_bumble_bee_bits",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(1260,Beecrasy.rl("flight_of_the_bumble_bee"),Optional.of(Identifier.withDefaultNamespace("block.note_block.bit")),1,0,1f)));
 	    
 	    
 	    public static final DeferredItem<Item> MUSIC_SEIKILOS_EPITAPH=ITEMS.registerSimpleItem("seikilos_epitaph",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(500,Beecrasy.rl("seikilos_epitaph"),2)));

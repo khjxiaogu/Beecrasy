@@ -158,6 +158,7 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 			protected void onContentsChanged(int slot, ItemStack stack) {
 				if(slot<queen&&this.getAmountAsInt(slot)>0&&!hiveInfo.isWorking()) {
 					shouldWork=true;
+					err=ErrCode.OK;
 				}
 				beginingTicks=0;
 				setChanged();
@@ -253,9 +254,10 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 	 * 检查是否可以开始工作。
 	 * 验证条件包括：工作模式、蜂后数量、雄蜂数量、槽位内容格式等。
 	 * 同时设置错误码 {@link #err} 指示具体失败原因。
+	 * @param level TODO
 	 * @return 如果可以开始工作则返回 true
 	 */
-	protected abstract boolean canBeginWork();
+	protected abstract boolean canBeginWork(ServerLevel level);
 
 	/**
 	 * 开始一个繁殖/工作周期。
@@ -329,7 +331,7 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 			beginingTicks+=speed;
 			if(beginingTicks>=COOLDOWN_TIME) {
 				beginingTicks=0;
-				if(canBeginWork()) {
+				if(canBeginWork(serverLevel)) {
 					shouldWork=false;
 					if(beginGrowth(serverLevel, worldPosition)) {
 						setChanged();
@@ -340,7 +342,9 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 		}else if(hiveInfo.isWorking()) {
 			err=ErrCode.OK;
 			BeeHiveParameterSet params=buildParams(serverLevel, worldPosition).build();
-			hiveInfo.tick(params,speed);
+			int ticks=hiveInfo.tick(params,speed);
+			if(ticks!=0)
+				tickExtraWorking(params,ticks);
 			setChanged();
 			if(hiveInfo.isBadEnvironment())
 				err=ErrCode.INVALID_ENVIRONMENT;
@@ -350,9 +354,10 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 				err=ErrCode.EMPTY_QUEEN;
 			else if(hiveInfo.isNoBiotope())
 				err=ErrCode.NO_BIOTOPE;
+			
 			return;
-		}else if(shouldWork) {
-			if(canBeginWork()) {
+		}else if(shouldWork&&err!=ErrCode.INVALID_ENVIRONMENT) {
+			if(canBeginWork(serverLevel)) {
 				beginingTicks=1;
 			}
 		}else if(err==ErrCode.OK) {
@@ -360,7 +365,13 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 		}
 		hiveInfo.tickNotWorking(serverLevel);
 	}
-
+	/**
+	 * @param params  
+	 * @param time 
+	 */
+	protected void tickExtraWorking(BeeHiveParameterSet params,int time) {
+		
+	}
 	/**
 	 * 标记数据已变更，需要保存到磁盘。
 	 */
