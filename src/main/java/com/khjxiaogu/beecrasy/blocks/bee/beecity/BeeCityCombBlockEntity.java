@@ -21,26 +21,34 @@ package com.khjxiaogu.beecrasy.blocks.bee.beecity;
 
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.beehive.HiveSlot;
 import com.khjxiaogu.beecrasy.beehive.slot.ResourceStackHiveSlot;
 import com.khjxiaogu.beecrasy.blocks.BeecrasyBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
+import com.khjxiaogu.beecrasy.menu.BeeCityCombMenu;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
-public class BeeCityCombBlockEntity extends BeecrasyBlockEntity {
+public class BeeCityCombBlockEntity extends BeecrasyBlockEntity implements MenuProvider{
 	public final ItemStacksResourceHandler container=new ItemStacksResourceHandler(2);
 	public final List<ResourceStackHiveSlot> resources=List.of(new ResourceStackHiveSlot(container,0),new ResourceStackHiveSlot(container,1));
 	public BlockPos corePos;
 	public BeeCityCombBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-		super(Blocks.BEE_CITY_CORE_BLOCKENTITY.get(), pWorldPosition, pBlockState);
+		super(Blocks.BEE_CITY_COMB_BLOCKENTITY.get(), pWorldPosition, pBlockState);
 	}
 	public HiveSlotProvider slots=new HiveSlotProvider() {
 
@@ -116,6 +124,16 @@ public class BeeCityCombBlockEntity extends BeecrasyBlockEntity {
 				this.level.setBlockAndUpdate(worldPosition, nextstate);
 			}
 		}
+	}
+
+	@Override
+	public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+		return new BeeCityCombMenu(containerId,inventory,this);
+	}
+
+	@Override
+	public Component getDisplayName() {
+		return Blocks.BEE_CITY_COMB.get().getName();
 	}
 
 }

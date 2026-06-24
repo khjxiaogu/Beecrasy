@@ -43,7 +43,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-public class SkepBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvider{
+public class SkepBlockEntity extends BeeHivePortableBlockEntity implements MenuProvider{
 	public static final BeeHiveBaseData EMPTY=new BeeHiveBaseData(1, 4, 4, DataRecord.EMPTY, Optional.empty(), WorkBehaviour.MAUNAL);
 	public static class SkepComponent extends BeeHiveBaseComponent{
 

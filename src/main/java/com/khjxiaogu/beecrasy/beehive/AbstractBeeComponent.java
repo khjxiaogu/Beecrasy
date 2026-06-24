@@ -33,7 +33,9 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.transfer.DelegatingResourceHandler;
+import net.neoforged.neoforge.transfer.EmptyResourceHandler;
 import net.neoforged.neoforge.transfer.RangedResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -121,9 +123,9 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 	/** 内部物品栈资源句柄（所有槽位的底层存储）。 */
 	protected ItemStacksResourceHandler internInv;
 	/** 外部访问委托（用于管道/漏斗等自动化设备的外部输入验证）。 */
-	protected DelegatingResourceHandler<ItemResource> externInv;
+	protected ResourceHandler<ItemResource> externInv;
 	/** 产物输出委托（限制仅允许从巢脾槽位提取产物）。 */
-	protected DelegatingResourceHandler<ItemResource> productInv;
+	protected ResourceHandler<ItemResource> productInv;
 	/** 蜂后槽位列表。 */
 	protected List<HiveSlot> queenSlot;
 	/** 巢脾/产物槽位列表。 */
@@ -177,7 +179,10 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 			}
 			
 		};
-		productInv=new RangedResourceHandler<>(internInv,queen+drone,queen+drone+comb) {
+		if(comb==0)
+			productInv=EmptyResourceHandler.instance();
+		else
+			productInv=new RangedResourceHandler<>(internInv,queen+drone,queen+drone+comb) {
 
 			@Override
 			public ItemResource getResource(int index) {
@@ -375,7 +380,7 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 	 * 获取外部访问委托资源句柄（用于管道/漏斗等自动化设备）。
 	 * @return 外部访问委托
 	 */
-	public DelegatingResourceHandler<ItemResource> getExternInv() {
+	public ResourceHandler<ItemResource> getExternInv() {
 		return externInv;
 	}
 
@@ -383,7 +388,7 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 	 * 获取产物输出委托资源句柄（用于从巢脾提取产物）。
 	 * @return 产物输出委托
 	 */
-	public DelegatingResourceHandler<ItemResource> getProductInv() {
+	public ResourceHandler<ItemResource> getProductInv() {
 		return productInv;
 	}
 

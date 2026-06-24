@@ -19,20 +19,28 @@
 
 package com.khjxiaogu.beecrasy.blocks.bee.beecity;
 
+import org.jspecify.annotations.Nullable;
+
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.beehive.BeeCityComponent;
 import com.khjxiaogu.beecrasy.beehive.HiveSlot;
-import com.khjxiaogu.beecrasy.blocks.BeecrasyBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
+import com.khjxiaogu.beecrasy.blocks.bee.BeeHiveBaseBlockEntity;
+import com.khjxiaogu.beecrasy.menu.BeeCityQueenMenu;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-public class BeeCityQueenBlockEntity extends BeecrasyBlockEntity {
+public class BeeCityQueenBlockEntity extends BeeHiveBaseBlockEntity implements MenuProvider{
 	public final BeeCityComponent component;
 	public BlockPos corePos;
 	public HiveSlotProvider slots=new HiveSlotProvider() {
@@ -78,8 +86,8 @@ public class BeeCityQueenBlockEntity extends BeecrasyBlockEntity {
 		
 	};
 	public BeeCityQueenBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-		super(Blocks.BEE_CITY_CORE_BLOCKENTITY.get(), pWorldPosition, pBlockState);
-		this.component=new BeeCityComponent(1,0,0,1);
+		super(Blocks.BEE_CITY_QUEEN_BLOCKENTITY.get(), pWorldPosition, pBlockState,this.component=new BeeCityComponent(1,0,0,1));
+		;
 	}
 
 	@Override
@@ -113,5 +121,13 @@ public class BeeCityQueenBlockEntity extends BeecrasyBlockEntity {
 			}
 		}
 	}
+	@Override
+	public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+		return new BeeCityQueenMenu(containerId,inventory,this);
+	}
 
+	@Override
+	public Component getDisplayName() {
+		return Blocks.BEE_CITY_QUEEN.get().getName();
+	}
 }
