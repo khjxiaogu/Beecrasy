@@ -4,5 +4,23 @@
       "beecrasy:bee"
     ],
     "subtitle": "subtitles.beecrasy.beenote"
+  },
+  "beenote_fast": {
+    "sounds": [
+      "beecrasy:bee_fast"
+    ],
+    "subtitle": "subtitles.beecrasy.beenote"
+  },
+  "beenote_slow": {
+    "sounds": [
+      "beecrasy:bee_slow"
+    ],
+    "subtitle": "subtitles.beecrasy.beenote"
+  },
+  "beenote_extra_slow": {
+    "sounds": [
+      "beecrasy:bee_extra_slow"
+    ],
+    "subtitle": "subtitles.beecrasy.beenote"
   }
 }

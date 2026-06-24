@@ -57,7 +57,7 @@ public class BeediboxBlockEntity extends BeecrasyBlockEntity {
 			BeediDisk id=getResource(index).get(Components.BEEDI_RECORD);
 			if(level instanceof ServerLevel serverLevel)
 				if(id!=null) {
-					ServerBeediManager.playSong(serverLevel, worldPosition, id.name());
+					ServerBeediManager.playSong(serverLevel, worldPosition, id.name(),id.sound().orElse(null), id.offset(),id.speed());
 					ticks=id.ticks();
 					
 				}else {

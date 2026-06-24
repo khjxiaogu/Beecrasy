@@ -19,28 +19,36 @@
 
 package com.khjxiaogu.beecrasy.beedi;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
-
-import javax.sound.midi.InvalidMidiDataException;
+import java.util.Optional;
+import java.util.function.IntFunction;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Sounds;
+import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.fml.loading.FMLPaths;
 
 public class BeediManager implements ResourceManagerReloadListener{
 	public static final BeediManager INSTANCE=new BeediManager();
@@ -51,21 +59,91 @@ public class BeediManager implements ResourceManagerReloadListener{
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
 		loadedFiles=new HashMap<>();
-		resourceManager.listResources("beedi",e->e.getPath().endsWith(".mid")).keySet().forEach(rl->{
-			//remove models/ and .json
-			String name=rl.getPath().substring(0,rl.getPath().lastIndexOf(".")).substring(6);
-			Identifier id=rl.withPath(name);
-			try {
-				try(InputStream is=resourceManager.open(rl)){
-					MidiSheet ms = new MidiSheet(is,0,1);
+		Path local=FMLPaths.GAMEDIR.get().resolve("beedi");
+		local.toFile().mkdirs();
+		try {
+			Files.walk(local).filter(Files::isRegularFile).forEach(path-> {
+				Identifier rl=Beecrasy.rl(path.getFileName().toString());
+				String name=rl.getPath().substring(0,rl.getPath().lastIndexOf(".")).substring(6);
+				Identifier id=rl.withPath(name);
+				MidiSheet ms=null;
+				if(rl.getPath().endsWith(".mid")) {
+					try {
+						try(InputStream is=new FileInputStream(path.toFile())){
+							ms = new MidiSheet(is);
+						}
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						Beecrasy.LOGGER.error("failed to load midi file "+rl+", skipped.");
+					}	
+				}else if(rl.getPath().endsWith(".bmid")) {
+					try {
+						try(InputStream is=new FileInputStream(path.toFile())){
+							ms = MidiSheet.readFromBinaryFile(is);
+						}
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						Beecrasy.LOGGER.error("failed to load midi binary file "+rl+", skipped.");
+					}	
+				}else if(rl.getPath().endsWith(".json")) {
+					try {
+						try(FileReader is=new FileReader(path.toFile(),StandardCharsets.UTF_8)){
+							ms = MidiSheet.readFromJsonFile(is);
+						}
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						Beecrasy.LOGGER.error("failed to load midi json file "+rl+", skipped.");
+					}	
+				}
+				if(ms!=null) {
 					ms.bake();
 					loadedFiles.put(id, ms);
 					Beecrasy.LOGGER.info("midi "+id+" loaded.");
 				}
-			} catch (InvalidMidiDataException | IOException e1) {
-				e1.printStackTrace();
-				Beecrasy.LOGGER.error("failed to load midi file "+rl+", skipped.");
-			}	
+				
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+			Beecrasy.LOGGER.error("failed to load midi from local folder.");
+		}
+		resourceManager.listResources("beedi",_->true).keySet().forEach(rl->{
+			//remove models/ and .json
+			String name=rl.getPath().substring(0,rl.getPath().lastIndexOf(".")).substring(6);
+			Identifier id=rl.withPath(name);
+			MidiSheet ms=null;
+			if(rl.getPath().endsWith(".mid")) {
+				try {
+					try(InputStream is=resourceManager.open(rl)){
+						ms = new MidiSheet(is);
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					Beecrasy.LOGGER.error("failed to load midi file "+rl+", skipped.");
+				}	
+			}else if(rl.getPath().endsWith(".bmid")) {
+				try {
+					try(InputStream is=resourceManager.open(rl)){
+						ms = MidiSheet.readFromBinaryFile(is);
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					Beecrasy.LOGGER.error("failed to load midi binary file "+rl+", skipped.");
+				}	
+			}else if(rl.getPath().endsWith(".json")) {
+				try {
+					try(BufferedReader is=resourceManager.openAsReader(rl)){
+						ms = MidiSheet.readFromJsonFile(is);
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					Beecrasy.LOGGER.error("failed to load midi json file "+rl+", skipped.");
+				}	
+			}
+			if(ms!=null) {
+				ms.bake();
+				loadedFiles.put(id, ms);
+				Beecrasy.LOGGER.info("midi "+id+" loaded.");
+			}
 		});
 	}
 	public void resetClientLevel() {
@@ -73,22 +151,33 @@ public class BeediManager implements ResourceManagerReloadListener{
 	}
 	public void tick(ClientLevel level) {
 		for(Entry<BlockPos, TrackPlayer> ent:playingBeediSongs.entrySet()) {
-			Consumer<NoteInfo> player;
+			NotePlayer player;
 			if(level.isLoaded(ent.getKey())) {
-				player=t->{
-					level.playLocalSound(ent.getKey(), Sounds.BEE_NOTE.get(), SoundSource.RECORDS, t.volume(), t.pitch(), false);};
+				player=(e,p,v,l)->{
+					float pitch=BeecrasyMath.noteToPitch(p);
+					int len=(int) (l*pitch);
+					level.playLocalSound(ent.getKey(), e.apply(len), SoundSource.RECORDS, v/127f, pitch, false);};
 			}else
-				player=_->{};
+				player=(_,_,_,_)->{};
 			ent.getValue().tick(player);
 		}
 	}
-    public void playSong(ClientLevel level,Identifier song, BlockPos pos) {
+    public void playSong(ClientLevel level,Identifier song,Optional<Identifier> id, BlockPos pos,int offset,float speed) {
         this.stopSong(pos);
         MidiSheet file=loadedFiles.get(song);
         if(file!=null) {
-	        this.playingBeediSongs.put(pos, file.createPlayerBaked());
+	        this.playingBeediSongs.put(pos, file.createPlayerBaked(id.map(BuiltInRegistries.SOUND_EVENT::getValue).map(t->(IntFunction<SoundEvent>)_->t).orElse(this::getSound),speed,offset));
 	        notifyNearbyEntities(level, pos, true);
         }
+    }
+    private SoundEvent getSound(int len) {
+    	if(len<250)
+    		return Sounds.BEE_NOTE_FAST.get();
+    	if(len<750)
+    		return Sounds.BEE_NOTE.get();
+    	if(len<2000)
+    		return Sounds.BEE_NOTE_SLOW.get();
+		return Sounds.BEE_NOTE_EXTRA_SLOW.get();
     }
     public void stopSongAndNotifyNearby(ClientLevel level,BlockPos pos) {
         this.stopSong(pos);

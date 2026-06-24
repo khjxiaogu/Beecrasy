@@ -22,31 +22,13 @@ package com.khjxiaogu.beecrasy;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.data.loot.packs.VanillaArchaeologyLoot;
-import net.minecraft.data.loot.packs.VanillaBlockInteractLoot;
-import net.minecraft.data.loot.packs.VanillaBlockLoot;
-import net.minecraft.data.loot.packs.VanillaChargedCreeperExplosionLoot;
-import net.minecraft.data.loot.packs.VanillaChestLoot;
-import net.minecraft.data.loot.packs.VanillaEntityInteractLoot;
-import net.minecraft.data.loot.packs.VanillaEntityLoot;
-import net.minecraft.data.loot.packs.VanillaEquipmentLoot;
-import net.minecraft.data.loot.packs.VanillaFishingLoot;
-import net.minecraft.data.loot.packs.VanillaGiftLoot;
-import net.minecraft.data.loot.packs.VanillaPiglinBarterLoot;
-import net.minecraft.data.loot.packs.VanillaShearingLoot;
 import net.minecraft.data.registries.VanillaRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.util.Util;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -80,6 +62,7 @@ public class BeecrasyDataGenerator {
 		gen.addProvider(true,new BeecrasyModelProvider(gen.getPackOutput(), Beecrasy.MODID,event.getResourceManager(PackType.CLIENT_RESOURCES)));
 		gen.addProvider(true, new BeecrasyLangGenerator(gen.getPackOutput(), Beecrasy.MODID,"en_us"));
 		gen.addProvider(true, new BeecrasyParticleProvider(gen.getPackOutput()));
+		gen.addProvider(true, new BeecrasyMidiProcessor(gen.getPackOutput(),completablefuture));
 		
 	}
 }

@@ -61,6 +61,7 @@ import com.khjxiaogu.beecrasy.components.TintColorComponent;
 import com.khjxiaogu.beecrasy.data.loot.BeeFamilyPool;
 import com.khjxiaogu.beecrasy.data.loot.GenerateGenomesFunction;
 import com.khjxiaogu.beecrasy.data.recipe.GenomePresets;
+import com.khjxiaogu.beecrasy.data.recipe.PheromoneRecipe;
 import com.khjxiaogu.beecrasy.data.recipe.PressRecipe;
 import com.khjxiaogu.beecrasy.data.recipe.RoyalJellyRecipe;
 import com.khjxiaogu.beecrasy.entity.BeeSwarmEntity;
@@ -391,6 +392,7 @@ public class BeecrasyRegistries {
 		
 
 		public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RoyalJellyRecipe>> ROYAL_JELLY=createSerializer("royal_jelly",RoyalJellyRecipe.CODEC,RoyalJellyRecipe.STREAM_CODEC);
+		public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<PheromoneRecipe>> PHEROMONE=createSerializer("pheromone",PheromoneRecipe.CODEC,PheromoneRecipe.STREAM_CODEC);
 		static {
 			PressRecipe.recipe=new RecipeCache<>(PRESS_TYPE);
 		}
@@ -426,6 +428,10 @@ public class BeecrasyRegistries {
 		public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister
 			.create(Registries.SOUND_EVENT, Beecrasy.MODID);
 		public static final DeferredHolder<SoundEvent, SoundEvent> BEE_NOTE=SOUND_EVENTS.register("beenote", SoundEvent::createVariableRangeEvent);
+		public static final DeferredHolder<SoundEvent, SoundEvent> BEE_NOTE_FAST=SOUND_EVENTS.register("beenote_fast", SoundEvent::createVariableRangeEvent);
+		public static final DeferredHolder<SoundEvent, SoundEvent> BEE_NOTE_SLOW=SOUND_EVENTS.register("beenote_slow", SoundEvent::createVariableRangeEvent);
+		public static final DeferredHolder<SoundEvent, SoundEvent> BEE_NOTE_EXTRA_SLOW=SOUND_EVENTS.register("beenote_extra_slow", SoundEvent::createVariableRangeEvent);
+		
 	}
 	
     public static void register(IEventBus modEventBus) {

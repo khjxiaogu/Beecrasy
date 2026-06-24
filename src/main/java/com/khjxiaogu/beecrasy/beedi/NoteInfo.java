@@ -19,21 +19,37 @@
 
 package com.khjxiaogu.beecrasy.beedi;
 
-import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
-public record NoteInfo(long ticks,float pitch,float volume){
-
-	/**
-	 * Instantiates a new NoteInfo.<br>
-	 * 新建一个NoteInfo类<br>
-	 *
-	 * @param key the key<br>
-	 * @param tick the tick<br>
-	 * @param vol the vol<br>
-	 */
-	public NoteInfo(int key, long tick, int vol) {
-		this(tick,BeecrasyMath.noteToPitch(key),vol/127f);
+public record NoteInfo(long begin,int pitch,byte volume,long length){
+	public record NoteOn(long begin,int pitch,byte volume){
+		public NoteOn(int key, long begin, int vol) {
+			this(begin,key,(byte)vol);
+		}
+		public NoteInfo off(long end) {
+			return new NoteInfo(begin,pitch,volume,end-begin);
+		}
+	}
+	public static final StreamCodec<ByteBuf,NoteInfo> STREAM_CODEC=StreamCodec.composite(
+		ByteBufCodecs.VAR_LONG,NoteInfo::begin,
+		ByteBufCodecs.VAR_INT,NoteInfo::pitch,
+		ByteBufCodecs.BYTE,NoteInfo::volume,
+		ByteBufCodecs.VAR_LONG,NoteInfo::length,
+		NoteInfo::new
+		);
+	public static final Codec<NoteInfo> CODEC=RecordCodecBuilder.create(t->t.group(
+		Codec.LONG.fieldOf("begin").forGetter(NoteInfo::begin),
+		Codec.INT.fieldOf("pitch").forGetter(NoteInfo::pitch),
+		Codec.BYTE.fieldOf("volume").forGetter(NoteInfo::volume),
+		Codec.LONG.fieldOf("length").forGetter(NoteInfo::length)
+		).apply(t,NoteInfo::new));
+	public NoteInfo(int key, long begin, int vol,long length) {
+		this(begin,key,(byte)vol,length);
 	}
 
 }

@@ -21,6 +21,8 @@ package com.khjxiaogu.beecrasy.beedi;
 
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 import com.khjxiaogu.beecrasy.network.BeediPlayStatusMessage;
 
 import net.minecraft.core.BlockPos;
@@ -29,12 +31,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class ServerBeediManager {
-	public static void playSong(ServerLevel l,BlockPos pos,Identifier song) {
-		PacketDistributor.sendToPlayersNear(l, null, pos.getX(), pos.getY(), pos.getZ(), 64, new BeediPlayStatusMessage(Optional.of(song),pos));
+	public static void playSong(ServerLevel l,BlockPos pos,Identifier song,@Nullable Identifier sound,int offset,float speed) {
+		PacketDistributor.sendToPlayersNear(l, null, pos.getX(), pos.getY(), pos.getZ(), 64, new BeediPlayStatusMessage(Optional.of(song),Optional.ofNullable(sound),pos,offset,speed));
 		
 	}
 	public static void stopSong(ServerLevel l,BlockPos pos) {
-		PacketDistributor.sendToPlayersInDimension(l, new BeediPlayStatusMessage(Optional.empty(),pos));
+		PacketDistributor.sendToPlayersInDimension(l, new BeediPlayStatusMessage(pos));
 		
 	}
 }

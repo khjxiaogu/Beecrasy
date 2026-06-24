@@ -21,32 +21,16 @@ package com.khjxiaogu.beecrasy;
 
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.UnaryOperator;
-
-import com.google.common.collect.ImmutableSet;
-import static com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks.*;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Tags;
-import com.khjxiaogu.beecrasy.blocks.bee.BeeNestBlock;
 import com.khjxiaogu.beecrasy.data.BeecrasyTagGenerator;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.TagAppender;
-import net.minecraft.data.tags.TagsProvider;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
 
 @SuppressWarnings("unused")
 public class BeecrasyItemTagGenerator extends BeecrasyTagGenerator<Item> {

@@ -32,12 +32,18 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record BeediPlayStatusMessage(Optional<Identifier> music,BlockPos pos)  implements CustomPacketPayload{
+public record BeediPlayStatusMessage(Optional<Identifier> music,Optional<Identifier> sound,BlockPos pos,int offset,float speed)  implements CustomPacketPayload{
 	public static final Type<BeediPlayStatusMessage> TYPE=new Type<>(Beecrasy.rl("midi_status"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, BeediPlayStatusMessage> CODEC=StreamCodec.composite(
 		ByteBufCodecs.optional(Identifier.STREAM_CODEC),BeediPlayStatusMessage::music,
+		ByteBufCodecs.optional(Identifier.STREAM_CODEC),BeediPlayStatusMessage::sound,
 		BlockPos.STREAM_CODEC, BeediPlayStatusMessage::pos,
+		ByteBufCodecs.VAR_INT,BeediPlayStatusMessage::offset,
+		ByteBufCodecs.FLOAT,BeediPlayStatusMessage::speed,
 		BeediPlayStatusMessage::new);
+	public BeediPlayStatusMessage(BlockPos pos) {
+		this(Optional.empty(),Optional.empty(),pos,0,0);
+	}
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
 		return TYPE;
@@ -46,7 +52,7 @@ public record BeediPlayStatusMessage(Optional<Identifier> music,BlockPos pos)  i
 		context.enqueueWork(()->{
 			if(context.player().level() instanceof ClientLevel level) {
 				if(music.isPresent())
-					BeediManager.INSTANCE.playSong(level, music.get(), pos);
+					BeediManager.INSTANCE.playSong(level, music.get(),sound, pos,offset,speed);
 				else
 					BeediManager.INSTANCE.stopSongAndNotifyNearby(level,pos);
 			}

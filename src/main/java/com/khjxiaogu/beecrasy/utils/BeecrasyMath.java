@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 import net.minecraft.util.Mth;
@@ -194,6 +193,8 @@ public final class BeecrasyMath {
 		return values;
 	});
 	public static float noteToPitch(int note) {
-		return notes[Objects.checkIndex(note,256)];
+		if(note>=0&&note<256)
+			return notes[note];
+		return (float) Math.pow(2, ((note-60)/12f));
 	}
 }

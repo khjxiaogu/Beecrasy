@@ -27,6 +27,7 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Attachments;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Entities;
+import com.khjxiaogu.beecrasy.beedi.ServerBeediManager;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.components.WorldCalendar;
 import com.khjxiaogu.beecrasy.entity.BeeSwarmEntity;
@@ -41,9 +42,14 @@ import com.khjxiaogu.beecrasy.genome.gene.Temperature;
 import com.khjxiaogu.beecrasy.mail.PlayerPostalOffice;
 import com.khjxiaogu.beecrasy.mail.PostalOffice;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -169,7 +175,36 @@ public class CommonListeners {
 					calendar.get(Calendar.MINUTE),calendar.get(Calendar.SECOND))));
 			return Command.SINGLE_SUCCESS;
 		});
-		event.getDispatcher().register(Commands.literal("beecrasy").then(inspect).then(calend));
+		var midi=Commands.literal("midi").then(
+			Commands.argument("midi", IdentifierArgument.id())
+			.then(
+			Commands.argument("pos", BlockPosArgument.blockPos()).executes((ctx)->{
+				ServerBeediManager.playSong(ctx.getSource().getLevel(),BlockPosArgument.getBlockPos(ctx, "pos"),
+					IdentifierArgument.getId(ctx, "midi"),
+					null, 0, 0);
+				return Command.SINGLE_SUCCESS;
+            }).then(Commands.argument("speed", FloatArgumentType.floatArg())
+            	.suggests((_,builder)->builder.suggest(1).buildFuture())
+            	.executes((ctx)->{
+    				ServerBeediManager.playSong(ctx.getSource().getLevel(),BlockPosArgument.getBlockPos(ctx, "pos"),
+    					IdentifierArgument.getId(ctx, "midi"), null, 0, FloatArgumentType.getFloat(ctx, "speed"));
+    				return Command.SINGLE_SUCCESS;
+                }).then(Commands.argument("pitch", IntegerArgumentType.integer())
+                	.suggests((_,builder)->builder.suggest(0).buildFuture())
+                	.executes((ctx)->{
+    				ServerBeediManager.playSong(ctx.getSource().getLevel(),BlockPosArgument.getBlockPos(ctx, "pos"),
+    					IdentifierArgument.getId(ctx, "midi"), null, IntegerArgumentType.getInteger(ctx, "pitch"), FloatArgumentType.getFloat(ctx, "speed"));
+    				return Command.SINGLE_SUCCESS;
+                }).then(Commands.argument("sound", IdentifierArgument.id())
+            .suggests(SuggestionProviders.cast(SuggestionProviders.AVAILABLE_SOUNDS))
+            .executes((ctx)->{
+    				ServerBeediManager.playSong(ctx.getSource().getLevel(),BlockPosArgument.getBlockPos(ctx, "pos"),
+    					IdentifierArgument.getId(ctx, "midi"), IdentifierArgument.getId(ctx, "sound"),IntegerArgumentType.getInteger(ctx, "pitch"), FloatArgumentType.getFloat(ctx, "speed"));
+    				return Command.SINGLE_SUCCESS;
+                }))
+            	))
+			));
+		event.getDispatcher().register(Commands.literal("beecrasy").then(inspect).then(calend).then(midi));
 	}
 	@SuppressWarnings("resource")
 	@SubscribeEvent
