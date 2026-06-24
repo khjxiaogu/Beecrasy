@@ -163,11 +163,11 @@ public class BeecrasyRecipeProvider extends RecipeProvider {
 	}
 
 	protected Item item(Identifier rl) {
-		return BuiltInRegistries.ITEM.getValue(rl);
+		return registries.getOrThrow(ResourceKey.create(Registries.ITEM, rl)).value();
 	}
 
-	protected static Fluid fluid(Identifier rl) {
-		return BuiltInRegistries.FLUID.getValue(rl);
+	protected Fluid fluid(Identifier rl) {
+		return registries.getOrThrow(ResourceKey.create(Registries.FLUID, rl)).value();
 	}
 
 	protected static Identifier modrl(String s) {

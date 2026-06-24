@@ -40,13 +40,10 @@ public class BeecrasyDataGenerator {
 	public static void gatherData(GatherDataEvent.Server event) {
 		System.out.println("Gather server data");
 		DataGenerator gen = event.getGenerator();
-
-		
-		CompletableFuture<HolderLookup.Provider> completablefuture = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
 		gen.addProvider(true,new BeecrasyBlockTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
 		gen.addProvider(true,new BeecrasyFluidTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
 		gen.addProvider(true,new BeecrasyItemTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
-		gen.addProvider(true, new BeecrasyRecipeProvider.Runner(gen.getPackOutput(), completablefuture));
+		gen.addProvider(true, new BeecrasyRecipeProvider.Runner(gen.getPackOutput(), event.getLookupProvider()));
 		gen.addProvider(true, new LootTableProvider(gen.getPackOutput(),Set.of(),
             List.of(
                 new LootTableProvider.SubProviderEntry(BeecrasyLootProvider::new, LootContextParamSets.BLOCK)
@@ -57,12 +54,11 @@ public class BeecrasyDataGenerator {
 	public static void gatherData(GatherDataEvent.Client event) {
 		System.out.println("Gather client data");
 		DataGenerator gen = event.getGenerator();
-		@SuppressWarnings("unused")
-		CompletableFuture<HolderLookup.Provider> completablefuture = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
+		
 		gen.addProvider(true,new BeecrasyModelProvider(gen.getPackOutput(), Beecrasy.MODID,event.getResourceManager(PackType.CLIENT_RESOURCES)));
 		gen.addProvider(true, new BeecrasyLangGenerator(gen.getPackOutput(), Beecrasy.MODID,"en_us"));
 		gen.addProvider(true, new BeecrasyParticleProvider(gen.getPackOutput()));
-		gen.addProvider(true, new BeecrasyMidiProcessor(gen.getPackOutput(),completablefuture));
+		gen.addProvider(true, new BeecrasyMidiProcessor(gen.getPackOutput(),event.getLookupProvider()));
 		
 	}
 }
