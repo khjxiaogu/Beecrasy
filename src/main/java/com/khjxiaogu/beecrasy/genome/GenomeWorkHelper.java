@@ -266,7 +266,6 @@ public class GenomeWorkHelper {
 						updated=true;
 					}else{
 						mutable=mutable.setY(y);
-						System.out.println(mutable);
 						BlockPos placing=mutable.immutable();
 						BlockState bsabove=chunk.getBlockState(placing.above());
 						if(bsabove.canBeReplaced()) {
