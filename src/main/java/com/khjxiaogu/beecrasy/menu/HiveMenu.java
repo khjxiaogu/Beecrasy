@@ -59,9 +59,9 @@ public class HiveMenu extends BeeHiveBaseMenu {
 		this.addSlot(new CombSlot(slots,slotModifier,11,76,74));
 		this.addSlot(new CombSlot(slots,slotModifier,14,97,69));
 		
-		this.addSlot(new ArgumentationSlot(slots,slotModifier,14,14,29));
-		this.addSlot(new ArgumentationSlot(slots,slotModifier,15,14,47));
-		this.addSlot(new ArgumentationSlot(slots,slotModifier,16,14,65));
+		this.addSlot(new ArgumentationSlot(slots,slotModifier,15,14,29));
+		this.addSlot(new ArgumentationSlot(slots,slotModifier,16,14,47));
+		this.addSlot(new ArgumentationSlot(slots,slotModifier,17,14,65));
 		this.addPlayerInventory(8, 103, 161);
 	}
 
