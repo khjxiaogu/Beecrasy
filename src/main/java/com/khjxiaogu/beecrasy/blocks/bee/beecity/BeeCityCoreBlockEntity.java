@@ -23,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.beehive.BeeCityComponent;
+import com.khjxiaogu.beecrasy.beehive.WorkBehaviour;
 import com.khjxiaogu.beecrasy.blocks.bee.BeeHiveBaseBlockEntity;
 import com.khjxiaogu.beecrasy.menu.BeeCityCoreMenu;
 
@@ -46,7 +47,8 @@ public class BeeCityCoreBlockEntity extends BeeHiveBaseBlockEntity implements Me
 	@Override
 	public void tick() {
 		if(level instanceof ServerLevel serverLevel) {
-			component.tick(serverLevel, worldPosition, 1, level.hasNeighborSignal(worldPosition));
+			component.work=WorkBehaviour.AUTO;
+			component.tick(serverLevel, worldPosition, 1, true);
 			if(component.isChanged()) {
 				setChanged();
 				component.setChanged(false);
