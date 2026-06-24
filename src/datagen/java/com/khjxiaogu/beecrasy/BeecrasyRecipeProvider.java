@@ -94,7 +94,7 @@ public class BeecrasyRecipeProvider extends RecipeProvider {
 				.addOutput(BeecrasyRegistries.Items.HONEY_DROP.get(),1,.8f)
 				.setTime(200).create());
 		out.accept("royal_jelly", RoyalJellyRecipe.createDefault(true, CraftingBookCategory.MISC, ""));
-		out.accept("pheromone_set_type", PheromoneRecipe.createDefault(true, CraftingBookCategory.MISC, ""));
+		out.accept("pheromone_set_type", PheromoneRecipe.createDefault(false, CraftingBookCategory.MISC, ""));
 		try(BuilderContext<GenomePresets.Builder> builder=presetBuilder()){
 			builder.create("genome/base", new GenomePresets.Builder(Constants.BASE_ID))
 			.group("yield")

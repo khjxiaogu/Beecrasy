@@ -43,9 +43,11 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 
@@ -57,6 +59,16 @@ public class PheromoneRecipe extends ShapelessRecipe {
 	public static final StreamCodec<RegistryFriendlyByteBuf, PheromoneRecipe> STREAM_CODEC = StreamCodec.composite(
 			Recipe.CommonInfo.STREAM_CODEC, o -> o.commonInfo, CraftingRecipe.CraftingBookInfo.STREAM_CODEC,
 			o -> o.bookInfo, PheromoneRecipe::new);
+
+	@Override
+	protected PlacementInfo createPlacementInfo() {
+		return PlacementInfo.create(Ingredient.of(Items.PHEROMONO));
+	}
+
+	@Override
+	public List<RecipeDisplay> display() {
+		return List.of();
+	}
 
 	public PheromoneRecipe(CommonInfo commonInfo, CraftingBookInfo bookInfo) {
 		super(commonInfo, bookInfo, new ItemStackTemplate(Items.PHEROMONO),

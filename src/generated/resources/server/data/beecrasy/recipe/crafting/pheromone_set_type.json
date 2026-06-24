@@ -1,4 +1,5 @@
 {
   "type": "beecrasy:pheromone",
-  "category": "misc"
+  "category": "misc",
+  "show_notification": false
 }
