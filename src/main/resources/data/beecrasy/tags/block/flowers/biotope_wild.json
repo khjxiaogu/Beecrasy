@@ -1,6 +1,8 @@
 {
 	"values": [
 		"#minecraft:flowers",
-		"#beecrasy:flowers/from_apiculture"
+		"#beecrasy:flowers/from_apiculture",
+		"#beecrasy:flowers/biotope_craft",
+		"#beecrasy:flowers/biotope_smelt"
 	]
 }
