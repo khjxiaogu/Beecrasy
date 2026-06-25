@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		" P ",
+		"PFP",
+		"PFP"
+	],
+	"key": {
+		"P": "#minecraft:planks",
+		"F": "beecrasy:comb_foundation"
+	},
+	"result": {
+		"count": 1,
+		"id": "beecrasy:hive"
+	}
+}

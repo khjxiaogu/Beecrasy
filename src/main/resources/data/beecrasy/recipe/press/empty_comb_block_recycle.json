@@ -1,0 +1,16 @@
+{
+	"type": "beecrasy:press",
+	"input": {
+		"count": 1,
+		"ingredient": "beecrasy:empty_comb_block"
+	},
+	"outputs": [
+		{
+			"chance": 2.0,
+			"stack": {
+				"id": "beecrasy:beeswax"
+			}
+		}
+	],
+	"time": 50
+}

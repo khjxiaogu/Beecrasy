@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"minecraft:paper",
+		"beecrasy:beeswax"
+	],
+	"result": {
+		"count": 1,
+		"id": "beecrasy:mail"
+	}
+}
