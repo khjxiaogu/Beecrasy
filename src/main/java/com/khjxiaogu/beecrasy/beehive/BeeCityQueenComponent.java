@@ -22,6 +22,7 @@ package com.khjxiaogu.beecrasy.beehive;
 import java.util.ArrayList;
 import java.util.Set;
 
+import com.google.common.collect.Iterators;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet.BeehiveSlotProvider;
@@ -59,7 +60,6 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  * 实现了 {@link ValueIOSerializable} 用于持久化。
  */
 public class BeeCityQueenComponent extends AbstractBeeComponent{
-	public ServerLevel level;
 	public BlockPos corePos;
 	/**
 	 * 创建指定容量的蜂巢基础组件。
@@ -119,10 +119,15 @@ public class BeeCityQueenComponent extends AbstractBeeComponent{
 	}
 	@Override
 	public BeehiveSlotProvider createHiveInfo(ServerLevel serverLevel, BlockPos worldPosition) {
-		Iterable<? extends HiveSlot> comb=()-> new BeeCityIterator(droneSlot.iterator(), serverLevel, worldPosition,getConnected(serverLevel).iterator(), HiveSlotType.COMB);
+		if(corePos!=null) {
+			Iterable<? extends HiveSlot> comb=()-> new BeeCityIterator(Iterators.concat(droneSlot.iterator(),combSlot.iterator()), serverLevel, corePos,getConnected(serverLevel).iterator(), HiveSlotType.COMB);
 		return BeehiveSlotProvider.createBasic(comb,
 				comb,
 				queenSlot).validOnly();
+		}
+		return BeehiveSlotProvider.createBasic(combSlot,
+				droneSlot,
+				queenSlot);
 	}
 	/**
 	 * 验证额外槽位是否允许放入指定物品。
@@ -179,7 +184,7 @@ public class BeeCityQueenComponent extends AbstractBeeComponent{
 	protected boolean beginGrowth(ServerLevel serverLevel, BlockPos worldPosition) {
 		Genome[] queen=null;
 		BeeHiveParameterSet params=null;
-		BeeCityComponent coreComp=getConnectedComponent(level);
+		BeeCityComponent coreComp=getConnectedComponent(serverLevel);
 		try(Transaction trans=Transaction.openRoot()){
 			int qn=queenSlot.size();
 			for(int i=0;i<qn;i++) {
@@ -211,6 +216,10 @@ public class BeeCityQueenComponent extends AbstractBeeComponent{
 		}
 		hiveInfo.prepareWork(params, queen, coreComp.hiveInfo.droneGenomes);
 		return true;
+	}
+	@Override
+	public int tickHive(BeeHiveParameterSet params,int speed) {
+		return hiveInfo.tickFertilityOnly(params, speed);
 	}
 	/**
 	 * 从 NBT 读取数据（支持客户端/服务端区分）。

@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 import com.google.common.collect.Iterables;
@@ -86,6 +87,7 @@ public class BeeCityComponent extends AbstractBeeComponent{
 	protected Set<Biotope> biotopes;
 	protected int[] byBiotopes=new int[Alleles.BIOTOPE.size()+1];
 	protected Set<Biotope> currentBiotopes;
+	private static final Codec<List<Pair<BlockPos,BitSet>>> POS_CODEC=Codec.list(Codec.mapPair(BlockPos.CODEC.fieldOf("pos"), ExtraCodecs.BIT_SET.fieldOf("biotope")).codec());
 	/**
 	 * 创建指定容量的蜂巢基础组件。
 	 * 初始化所有内部槽位和资源句柄，设置各区域（蜂后/雄蜂/巢脾/额外）的验证规则。
@@ -119,6 +121,7 @@ public class BeeCityComponent extends AbstractBeeComponent{
 	public void appendHiveCity(BlockPos pos) {
 		if(!this.pos.containsKey(pos))
 			this.pos.put(pos,this.createBitSet());
+		this.setChanged();
 	}
 
 	@Override
@@ -298,10 +301,11 @@ public class BeeCityComponent extends AbstractBeeComponent{
 				}
 			}
 			Arrays.fill(byBiotopes, 0);
-			Map<BlockPos, BitSet> map=nbt.read("positions", Codec.unboundedMap(BlockPos.CODEC, ExtraCodecs.BIT_SET)).orElse(Map.of());
+			
+			List<Pair<BlockPos, BitSet>> map=nbt.read("connected", POS_CODEC).orElse(List.of());
 			if(!Iterables.elementsEqual(bt, Alleles.BIOTOPE)) {
-				for(Entry<BlockPos, BitSet> ent:map.entrySet()) {
-					BitSet bs=ent.getValue();
+				for(Pair<BlockPos, BitSet> ent:map) {
+					BitSet bs=ent.getSecond();
 					BitSet nbs=this.createBitSet();
 					for(int i=0;i<il.size();i++) {
 						int idx=il.getInt(i);
@@ -311,12 +315,12 @@ public class BeeCityComponent extends AbstractBeeComponent{
 					}
 					nbs.set(nbs.size()-1,bs.get(bs.size()-1));
 					this.computeBits(nbs,1);
-					pos.put(ent.getKey(), nbs);
+					pos.put(ent.getFirst(), nbs);
 				}
 			}else {
-				pos.putAll(map);
-				for(BitSet bs:map.values()) {
-					this.computeBits(bs, 1);
+				for(Pair<BlockPos, BitSet> ent:map) {
+					pos.put(ent.getFirst(),ent.getSecond());
+					this.computeBits(ent.getSecond(), 1);
 				}
 			}
 			biotopes=nbt.read("currentBiotope", Codec.list(Alleles.BIOTOPE.CODEC)).map(t->new HashSet<>(t)).orElse(null);
@@ -345,9 +349,9 @@ public class BeeCityComponent extends AbstractBeeComponent{
 				bt.add(bts);
 			}
 			nbt.store("biotopes", Codec.list(Alleles.BIOTOPE.CODEC), bt);
-			nbt.store("positions", Codec.unboundedMap(BlockPos.CODEC, ExtraCodecs.BIT_SET), pos);
+			nbt.store("connected", POS_CODEC, pos.sequencedEntrySet().stream().map(o->Pair.of(o.getKey(), o.getValue())).toList());
 			if(biotopes!=null)
-			nbt.store("currentBiotope", Codec.list(Alleles.BIOTOPE.CODEC),new ArrayList<>(biotopes));
+				nbt.store("currentBiotope", Codec.list(Alleles.BIOTOPE.CODEC),new ArrayList<>(biotopes));
 		}
 	}
 	@Override
@@ -373,6 +377,7 @@ public class BeeCityComponent extends AbstractBeeComponent{
 			bt=null;
 		}
 		currentBiotopes=bt;
+		this.setChanged();
 	}
 	@Override
 	protected void tickBeforeWorking(BeeHiveParameterSet params) {
@@ -383,6 +388,7 @@ public class BeeCityComponent extends AbstractBeeComponent{
 			BlockPos checkPos;
 			if(index==0) {
 				biotopes=updateBiotopes(params);
+				computeBiotope();
 				return ;
 			}else
 				checkPos=Iterators.get(pos.keySet().iterator(), index-1);

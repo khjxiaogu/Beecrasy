@@ -76,6 +76,8 @@ public class BeeCityIterator implements Iterator<HiveSlot> {
 				iterator=IntStream.range(0, slots.getSlots(type)).mapToObj(t->slots.getSlot(type,t)).iterator();
 				return;
 			}
+			new Exception().printStackTrace();
+			System.out.println("removed "+item+":"+slots+"-"+corePos);
 			pos.remove();
 		}
 		iterator = null;

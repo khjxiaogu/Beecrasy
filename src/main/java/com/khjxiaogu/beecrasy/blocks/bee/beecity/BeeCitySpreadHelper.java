@@ -22,6 +22,7 @@ package com.khjxiaogu.beecrasy.blocks.bee.beecity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Capability;
@@ -39,10 +40,10 @@ public class BeeCitySpreadHelper {
 		Collections.shuffle(dirs);
 		for(Direction dir:dirs) {
 			BlockPos cur=current.relative(dir);
-			if(!poss.contains(cur)) {
+			if(!poss.contains(cur)&&!Objects.equals(core, cur)) {
 				BlockState bs=level.getBlockState(cur);
 				if(bs.is(Tags.BEECITY_SPREADABLE)||(level.getCapability(Capability.BEE_CITY_BLOCK,cur) instanceof HiveSlotProvider provider&&provider.isBindable(core))) {
-					for(Direction dir2:Direction.values()) {
+					for(Direction dir2:dirs) {
 						BlockPos cur2=cur.relative(dir2);
 						BlockState bs2=level.getBlockState(cur2);
 						if(bs2.canBeReplaced()||bs2.isEmpty()||!bs2.isCollisionShapeFullBlock(level, current)) {
@@ -54,7 +55,7 @@ public class BeeCitySpreadHelper {
 					cur=current.relative(dir,2);
 					BlockState bs3=level.getBlockState(cur);
 					if(bs3.is(Tags.BEECITY_SPREADABLE)||(level.getCapability(Capability.BEE_CITY_BLOCK,cur) instanceof HiveSlotProvider provider&&provider.isBindable(core))) {
-						for(Direction dir2:Direction.values()) {
+						for(Direction dir2:dirs) {
 							BlockPos cur2=cur.relative(dir2);
 							BlockState bs2=level.getBlockState(cur2);
 							if(bs2.canBeReplaced()||bs2.isEmpty()||!bs2.isCollisionShapeFullBlock(level, current)) {

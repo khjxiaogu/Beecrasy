@@ -313,7 +313,9 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 			
 		};
 	}
-
+	public int tickHive(BeeHiveParameterSet params,int speed) {
+		return hiveInfo.tick(params,speed);
+	}
 	/**
 	 * 主 tick 方法，驱动蜂巢的完整工作逻辑。
 	 * 根据工作模式设置 shouldWork 标志，管理冷却计时，调用 {@link BeeHiveHandler#tick} 推进工作，
@@ -347,7 +349,7 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 			err=ErrCode.OK;
 			BeeHiveParameterSet params=buildParams(serverLevel, worldPosition).build();
 			tickBeforeWorking(params);
-			int ticks=hiveInfo.tick(params,speed);
+			int ticks=tickHive(params,speed);
 			if(ticks!=0)
 				tickExtraWorking(params,ticks);
 			setChanged();

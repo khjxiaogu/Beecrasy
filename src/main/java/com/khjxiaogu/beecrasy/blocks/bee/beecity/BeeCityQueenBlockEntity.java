@@ -102,7 +102,6 @@ public class BeeCityQueenBlockEntity extends BeeHiveBaseBlockEntity implements M
 	@Override
 	public void tick() {
 		if(level instanceof ServerLevel serverLevel) {
-			component.level=serverLevel;
 			component.tick(serverLevel, worldPosition, 1, level.hasNeighborSignal(worldPosition));
 			if(component.isChanged()) {
 				setChanged();

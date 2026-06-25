@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
@@ -46,6 +47,7 @@ import com.khjxiaogu.beecrasy.utils.Utils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -287,7 +289,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @param speed  工作速度倍率
 	 */
 	@SuppressWarnings("resource")
-	public void tickFertilityOnly(BeeHiveParameterSet params,int speed) {
+	public int tickFertilityOnly(BeeHiveParameterSet params,int speed) {
 		blocked=false;
 		badEnvironment=false;
 		noFlower=false;
@@ -309,9 +311,11 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 						if(!fillLarva(params,secs))
 							fillDrone(params);
 					}
+					return ltick-ctick;
 				}
 			}
 		}
+		return 0;
 	}
 	/**
 	 * 主 tick 方法，驱动蜂巢的工作周期。
@@ -418,11 +422,18 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 
 		updateQueenLifespan(params,secs);
 		float yieldMod=params.getParamValue(BeeHiveParameters.YIELD);
+		Set<HiveSlot> computed=new ReferenceOpenHashSet<>();
 		for(HiveSlot hi:params.slots().combSlot()) {
-			increaseProduction(params,hi,secs,yieldMod);
+			if(computed.add(hi))
+				increaseProduction(params,hi,secs,yieldMod);
 		}
 		for(HiveSlot hi:params.slots().queenSlot()) {
-			increaseProduction(params,hi,secs,yieldMod);
+			if(computed.add(hi))
+				increaseProduction(params,hi,secs,yieldMod);
+		}
+		for(HiveSlot hi:params.slots().droneSlot()) {
+			if(computed.add(hi))
+				increaseProduction(params,hi,secs,yieldMod);
 		}
 	}
 	/**
