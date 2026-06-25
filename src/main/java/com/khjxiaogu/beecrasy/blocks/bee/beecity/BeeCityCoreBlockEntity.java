@@ -48,7 +48,6 @@ public class BeeCityCoreBlockEntity extends BeeHiveBaseBlockEntity implements Me
 	public void tick() {
 		if(level instanceof ServerLevel serverLevel) {
 			component.work=WorkBehaviour.AUTO;
-			component.level=serverLevel;
 			component.tick(serverLevel, worldPosition, 1, true);
 			if(component.isChanged()) {
 				setChanged();

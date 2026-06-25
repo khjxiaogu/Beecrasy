@@ -26,7 +26,6 @@ import java.util.Set;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Capability;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Tags;
-import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
 import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.core.BlockPos;

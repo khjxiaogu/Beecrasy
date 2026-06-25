@@ -20,39 +20,51 @@
 package com.khjxiaogu.beecrasy.beehive;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
+import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Capability;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet.BeehiveSlotProvider;
 import com.khjxiaogu.beecrasy.beehive.slot.BeeCityCoreCombSlot;
 import com.khjxiaogu.beecrasy.beehive.slot.ResourceStackHiveSlot;
-import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
-import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider.HiveSlotType;
 import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCitySpreadHelper;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.HiveSlotProvider;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.HiveSlotProvider.HiveSlotType;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation.Builder;
 import com.khjxiaogu.beecrasy.components.BeehiveArgumenter;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
+import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
+import com.khjxiaogu.beecrasy.genome.gene.Biotope;
 import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.RootCommitJournal;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
@@ -70,8 +82,10 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
  */
 public class BeeCityComponent extends AbstractBeeComponent{
 
-	protected LinkedHashSet<BlockPos> pos=new LinkedHashSet<>();
-	public ServerLevel level;
+	protected LinkedHashMap<BlockPos,BitSet> pos=new LinkedHashMap<>();
+	protected Set<Biotope> biotopes;
+	protected int[] byBiotopes=new int[Alleles.BIOTOPE.size()+1];
+	protected Set<Biotope> currentBiotopes;
 	/**
 	 * 创建指定容量的蜂巢基础组件。
 	 * 初始化所有内部槽位和资源句柄，设置各区域（蜂后/雄蜂/巢脾/额外）的验证规则。
@@ -82,14 +96,6 @@ public class BeeCityComponent extends AbstractBeeComponent{
 	 */
 	public BeeCityComponent(int queen,int drone,int comb,int extra) {
 		super(queen,drone,comb,extra);
-
-
-	}
-	public void appendHiveCity(BlockPos pos) {
-		this.pos.add(pos);
-	}
-	@Override
-	public BeeHiveHandler createHiveInfo(int queen,int drone,int comb,int extra) {
 		queenSlot=new ArrayList<>(queen);
 		for(int i=0;i<queen;i++) {
 			queenSlot.add(new ResourceStackHiveSlot(getInternInv(),i));
@@ -108,10 +114,20 @@ public class BeeCityComponent extends AbstractBeeComponent{
 		for(int i=0;i<extra;i++) {
 			extraSlot.add(new ResourceStackHiveSlot(getInternInv(),i+queen+drone+comb));
 		}
-		return new BeeHiveHandler(
-			()-> new BeeCityIterator(queenSlot.iterator(),level,pos.iterator(),HiveSlotType.QUEEN),
-			()-> new BeeCityIterator(droneSlot.iterator(),level,pos.iterator(),HiveSlotType.COMB),
-			()-> new BeeCityIterator(combSlot.iterator(),level,pos.iterator(),HiveSlotType.COMB));
+
+	}
+	public void appendHiveCity(BlockPos pos) {
+		if(!this.pos.containsKey(pos))
+			this.pos.put(pos,this.createBitSet());
+	}
+
+	@Override
+	public BeehiveSlotProvider createHiveInfo(ServerLevel serverLevel, BlockPos worldPosition) {
+		Iterable<? extends HiveSlot> comb=()-> new BeeCityIterator(droneSlot.iterator(), serverLevel, worldPosition,pos.keySet().iterator(), HiveSlotType.COMB);
+		return BeehiveSlotProvider.createBasic(
+				comb, 
+				comb, 
+				()-> new BeeCityIterator(queenSlot.iterator(), serverLevel, worldPosition,pos.keySet().iterator(), HiveSlotType.QUEEN)).validOnly();
 	}
 	/**
 	 * 验证额外槽位是否允许放入指定物品。
@@ -135,7 +151,8 @@ public class BeeCityComponent extends AbstractBeeComponent{
 		builder.addParam(BeeHiveParameters.FERTILITY,pos.size()*0.1f);
 		return builder;
 	}
-	protected boolean canBeginWork(ServerLevel level) {
+
+	protected boolean canBeginWork(ServerLevel level, BlockPos worldPosition) {
 		int queenCount=0;
 		for(HiveSlot slot:queenSlot) {
 			if(!slot.isEmpty()) {
@@ -155,7 +172,7 @@ public class BeeCityComponent extends AbstractBeeComponent{
 			return false;
 		}
 		int droneCount=0;
-		for(HiveSlot slot:(Iterable<HiveSlot>)(()-> new BeeCityIterator(Iterators.concat(droneSlot.iterator(), combSlot.iterator()),level,pos.iterator(),HiveSlotType.COMB))) {
+		for(HiveSlot slot:(Iterable<HiveSlot>)(()-> new BeeCityIterator(Iterators.concat(droneSlot.iterator(), combSlot.iterator()),level,worldPosition,pos.keySet().iterator(),HiveSlotType.COMB))) {
 			if(!slot.isEmpty()) {
 				if(slot.is(Items.DRONE)) {
 					droneCount++;
@@ -173,14 +190,15 @@ public class BeeCityComponent extends AbstractBeeComponent{
 	protected void tickExtraWorking(BeeHiveParameterSet params, int time) {
 		super.tickExtraWorking(params, time);
 		for(int i=0;i<time;i++) {
-			Set<BlockPos> cps=new HashSet<>(pos);
+			Set<BlockPos> cps=new HashSet<>(pos.keySet());
 			for(int j=0;j<2;j++) {
 				int index=params.level().getRandom().nextInt(pos.size()+1);
 				BlockPos checkPos;
 				if(index==0)
 					checkPos=params.position();
 				else
-					checkPos=Iterators.get(pos.iterator(), index-1);
+					checkPos=Iterators.get(pos.keySet().iterator(), index-1);
+				GenomeWorkHelper.transformFlowers(params.level(), checkPos, Math.round(BeecrasyConfig.SERVER.FLOWER_RADIUS.getAsInt()*params.getParamValue(BeeHiveParameters.RADIUS)), (float)BeecrasyConfig.SERVER.FLOWER_RATE.getAsDouble());
 				Pair<BlockPos, Direction> result=BeeCitySpreadHelper.findFirstValid(params.level(), params.position(), checkPos, cps);
 				if(result!=null) {
 					if(params.level().getCapability(Capability.BEE_CITY_BLOCK,result.getFirst()) instanceof HiveSlotProvider provider&&provider.isBindable(params.position())) {
@@ -237,7 +255,7 @@ public class BeeCityComponent extends AbstractBeeComponent{
 					}
 				}
 			}
-			for(HiveSlot slot:(Iterable<HiveSlot>)(()-> new BeeCityIterator(Collections.emptyIterator(),serverLevel,pos.iterator(),HiveSlotType.COMB))) {
+			for(HiveSlot slot:(Iterable<HiveSlot>)(()-> new BeeCityIterator(Collections.emptyIterator(),serverLevel,worldPosition,pos.keySet().iterator(),HiveSlotType.COMB))) {
 				if(slot.is(Items.DRONE)) {
 					ItemStack stack=slot.getItem();
 					GenomeComponent comp=stack.get(Components.GENOME);
@@ -256,6 +274,9 @@ public class BeeCityComponent extends AbstractBeeComponent{
 		hiveInfo.prepareWork(params, queen, drones);
 		return true;
 	}
+	private BitSet createBitSet() {
+		return new BitSet(Alleles.BIOTOPE.size()+1);
+	}
 	/**
 	 * 从 NBT 读取数据（支持客户端/服务端区分）。
 	 * 服务端读取完整数据（库存、蜂巢处理器、参数增强项），客户端只读取界面相关数据。
@@ -267,10 +288,47 @@ public class BeeCityComponent extends AbstractBeeComponent{
 		super.readCustomNBT(nbt, isClient);
 		if(!isClient) {
 			pos.clear();
-			nbt.read("positions", BlockPos.CODEC.listOf()).ifPresent(pos::addAll);
+			List<Biotope> bt=nbt.read("biotopes", Codec.list(Alleles.BIOTOPE.CODEC.orElse(null))).orElse(List.of());
+			IntList il=new IntArrayList();
+			for(Biotope bts:bt) {
+				if(bts!=null) {
+					il.add(Alleles.BIOTOPE.getIntId(bts));
+				}else {
+					il.add(-1);
+				}
+			}
+			Arrays.fill(byBiotopes, 0);
+			Map<BlockPos, BitSet> map=nbt.read("positions", Codec.unboundedMap(BlockPos.CODEC, ExtraCodecs.BIT_SET)).orElse(Map.of());
+			if(!Iterables.elementsEqual(bt, Alleles.BIOTOPE)) {
+				for(Entry<BlockPos, BitSet> ent:map.entrySet()) {
+					BitSet bs=ent.getValue();
+					BitSet nbs=this.createBitSet();
+					for(int i=0;i<il.size();i++) {
+						int idx=il.getInt(i);
+						if(idx>=0) {
+							nbs.set(idx, bs.get(i));
+						}
+					}
+					nbs.set(nbs.size()-1,bs.get(bs.size()-1));
+					this.computeBits(nbs,1);
+					pos.put(ent.getKey(), nbs);
+				}
+			}else {
+				pos.putAll(map);
+				for(BitSet bs:map.values()) {
+					this.computeBits(bs, 1);
+				}
+			}
+			biotopes=nbt.read("currentBiotope", Codec.list(Alleles.BIOTOPE.CODEC)).map(t->new HashSet<>(t)).orElse(null);
+			computeBiotope();
 		}
 	}
-
+	public void computeBits(BitSet bs,int sign) {
+		for(int i=0;i<byBiotopes.length;i++) {
+			if(bs.get(i))
+				byBiotopes[i]+=sign;
+		}
+	}
 	/**
 	 * 将数据写入 NBT（支持客户端/服务端区分）。
 	 * 服务端写入完整数据，客户端只写入界面相关数据。
@@ -281,8 +339,66 @@ public class BeeCityComponent extends AbstractBeeComponent{
 	public void writeCustomNBT(ValueOutput nbt, boolean isClient) {
 		super.writeCustomNBT(nbt, isClient);
 		if(!isClient) {
-			nbt.store("positions", BlockPos.CODEC.listOf(), new ArrayList<>(pos));
+			
+			List<Biotope> bt=new ArrayList<>(Alleles.BIOTOPE.size());
+			for(Biotope bts:Alleles.BIOTOPE) {
+				bt.add(bts);
+			}
+			nbt.store("biotopes", Codec.list(Alleles.BIOTOPE.CODEC), bt);
+			nbt.store("positions", Codec.unboundedMap(BlockPos.CODEC, ExtraCodecs.BIT_SET), pos);
+			if(biotopes!=null)
+			nbt.store("currentBiotope", Codec.list(Alleles.BIOTOPE.CODEC),new ArrayList<>(biotopes));
 		}
 	}
-
+	@Override
+	public BeeHiveParameterSet.Builder buildParams(ServerLevel serverLevel,
+			BlockPos worldPosition) {
+		BeeHiveParameterSet.Builder builder = super.buildParams(serverLevel, worldPosition);
+		if(currentBiotopes!=null) {
+			builder.addBiotopes(currentBiotopes);
+			builder.overrideHasFlower();
+		}
+		return builder;
+	}
+	public void computeBiotope() {
+		Set<Biotope> bt=new HashSet<>();
+		for(int i=0;i<byBiotopes.length-1;i++) {
+			if(byBiotopes[i]>0){
+				bt.add(Alleles.BIOTOPE.getByInt(i));
+			}
+		}
+		if(biotopes!=null)
+			bt.addAll(biotopes);
+		if(byBiotopes[byBiotopes.length-1]<=0&&bt.isEmpty()&&biotopes==null) {
+			bt=null;
+		}
+		currentBiotopes=bt;
+	}
+	@Override
+	protected void tickBeforeWorking(BeeHiveParameterSet params) {
+		super.tickBeforeWorking(params);
+		float tickChance=pos.size()/100f;
+		if(tickChance>=params.level().getRandom().nextInt(1000)/1000f) {
+			int index=params.level().getRandom().nextInt(pos.size()+1);
+			BlockPos checkPos;
+			if(index==0) {
+				biotopes=updateBiotopes(params);
+				return ;
+			}else
+				checkPos=Iterators.get(pos.keySet().iterator(), index-1);
+			Set<Biotope> bt=GenomeWorkHelper.findBiotope(params.level(), checkPos, (int)(BeecrasyConfig.SERVER.RADIUS.getAsInt()*params.getParamValue(BeeHiveParameters.RADIUS)));
+			BitSet bs=pos.get(checkPos);
+			if(bs!=null)
+				this.computeBits(bs, -1);
+			bs=this.createBitSet();
+			if(bt!=null) {
+				for(Biotope bts:bt)
+					bs.set(Alleles.BIOTOPE.getIntId(bts),true);
+				bs.set(bs.length()-1,true);
+			}
+			this.computeBits(bs, 1);
+			pos.put(checkPos, bs);
+			computeBiotope();
+		}
+	}
 }

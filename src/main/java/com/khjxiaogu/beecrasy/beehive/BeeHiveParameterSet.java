@@ -20,6 +20,7 @@
 package com.khjxiaogu.beecrasy.beehive;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,6 +30,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import com.khjxiaogu.beecrasy.beehive.BeeHiveHandler.HiveSlotIterable;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterRegistry.BeehiveParameterType;
 import com.khjxiaogu.beecrasy.genome.gene.Biotope;
 
@@ -57,7 +59,49 @@ import net.neoforged.neoforge.common.util.ValueIOSerializable;
  * @param params          工作参数值映射（参数类型 → 值）
  * @param activeBiotopes  当前活跃的生境集合
  */
-public record BeeHiveParameterSet(ServerLevel level,BlockPos position,Holder<Biome> biome,Holder<DimensionType> type,@Nullable BlockState state,Set<Identifier> disabledMutation,Map<BeehiveParameterType<?>,Object> params,Set<Biotope> activeBiotopes) {
+public record BeeHiveParameterSet(ServerLevel level,BlockPos position,BeehiveSlotProvider slots,Holder<Biome> biome,Holder<DimensionType> type,@Nullable BlockState state,Set<Identifier> disabledMutation,Map<BeehiveParameterType<?>,Object> params,Set<Biotope> activeBiotopes,boolean hasFlower) {
+	public static interface BeehiveSlotProvider{
+		/** 巢脾槽位列表（存放幼虫和产物）。 */
+		Iterable<? extends HiveSlot> combSlot();
+		/** 雄蜂槽位列表。 */
+		Iterable<? extends HiveSlot> droneSlot();
+		/** 蜂后槽位列表（存放蜂后/王台）。 */
+		Iterable<? extends HiveSlot> queenSlot();
+		public static record BasicBeehiveSlotProvider(Iterable<? extends HiveSlot> combSlot,
+				Iterable<? extends HiveSlot> droneSlot,
+				Iterable<? extends HiveSlot> queenSlot) implements BeehiveSlotProvider{
+			
+		}
+		public static BeehiveSlotProvider createBasic(Iterable<? extends HiveSlot> combSlot,
+				Iterable<? extends HiveSlot> droneSlot,
+				Iterable<? extends HiveSlot> queenSlot) {
+			return new BasicBeehiveSlotProvider(combSlot,droneSlot,queenSlot);
+		}
+		public static final BeehiveSlotProvider EMPTY=createBasic(Collections.emptyList(),Collections.emptyList(),Collections.emptyList());
+		default BeehiveSlotProvider validOnly() {
+			Iterable<? extends HiveSlot> combSlot=combSlot();
+			final HiveSlotIterable<? extends HiveSlot> validCombSlot=combSlot instanceof HiveSlotIterable?(HiveSlotIterable<? extends HiveSlot>) combSlot:new HiveSlotIterable<>(combSlot);
+			Iterable<? extends HiveSlot> droneSlot=droneSlot();
+			final HiveSlotIterable<? extends HiveSlot> validDroneSlot=droneSlot instanceof HiveSlotIterable?(HiveSlotIterable<? extends HiveSlot>) droneSlot:new HiveSlotIterable<>(droneSlot);
+			Iterable<? extends HiveSlot> queenSlot=queenSlot();
+			final HiveSlotIterable<? extends HiveSlot> validQueenSlot=queenSlot instanceof HiveSlotIterable?(HiveSlotIterable<? extends HiveSlot>) queenSlot:new HiveSlotIterable<>(queenSlot);
+			return new BeehiveSlotProvider(){
+				@Override
+				public Iterable<? extends HiveSlot> combSlot() {
+					return validCombSlot;
+				}
+				@Override
+				public Iterable<? extends HiveSlot> droneSlot() {
+					return validDroneSlot;
+				}
+				@Override
+				public Iterable<? extends HiveSlot> queenSlot() {
+					return validQueenSlot;
+				}
+			};
+		}
+	}
+	
 	/**
 	 * 蜂巢工作参数（可持久化版本）。
 	 * 实现了 {@link ValueIOSerializable}，可以将参数映射序列化到 NBT 中，
@@ -102,18 +146,21 @@ public record BeeHiveParameterSet(ServerLevel level,BlockPos position,Holder<Bio
 		Holder<Biome> biome;
 		Holder<DimensionType> type;
 		BlockState state;
+		BeehiveSlotProvider slots;
+		boolean hasFlower;
 		/**
 		 * 创建一个构建器，自动从世界中获取当前位置的生物群系、维度和方块状态。
 		 * @param level    服务端世界实例
 		 * @param position 蜂巢方块坐标
 		 */
-		public Builder(ServerLevel level, BlockPos position) {
+		public Builder(ServerLevel level, BlockPos position, BeehiveSlotProvider slots) {
 			super();
 			this.level = level;
 			this.position = position;
 			biome=level.getBiomeManager().getNoiseBiomeAtPosition(position);
 			type=level.dimensionTypeRegistration();
 			state=level.getBlockState(position);
+			this.slots=slots;
 		}
 		/**
 		 * 禁用指定的突变。
@@ -150,6 +197,10 @@ public record BeeHiveParameterSet(ServerLevel level,BlockPos position,Holder<Bio
 		 */
 		public Builder addBiotopes(Collection<Biotope> biotopes) {
 			activeBiotopes.addAll(biotopes);
+			return this;
+		}
+		public Builder overrideHasFlower() {
+			hasFlower=true;
 			return this;
 		}
 		/**
@@ -209,7 +260,7 @@ public record BeeHiveParameterSet(ServerLevel level,BlockPos position,Holder<Bio
 			for(Entry<BeehiveParameterType<?>, Object> ent:params.entrySet()) {
 				ent.setValue(((BeehiveParameterType)ent.getKey()).mergeToDefault(ent.getValue()));
 			}
-			return new BeeHiveParameterSet(level,position,biome,type,state,Set.copyOf(disabledMutation),Map.copyOf(params),activeBiotopes);
+			return new BeeHiveParameterSet(level,position,slots,biome,type,state,Set.copyOf(disabledMutation),Map.copyOf(params),activeBiotopes,hasFlower);
 		}
 	}
 	/**

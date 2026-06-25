@@ -70,6 +70,7 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 		addArgumenter(BeeHiveParameters.HUMIDITY);
 		addArgumenter(BeeHiveParameters.FERTILITY);
 		addMultilineArgumenter(BeeHiveParameters.MUTATION_DIRECTOR);
+		addArgumenter(BeeHiveParameters.RADIUS);
 		sequencerTab("basic");
 		sequencerTab("products");
 		for(DeferredHolder<Block, ? extends Block> blk:Blocks.BLOCKS.getEntries()) {

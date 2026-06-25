@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet.BeehiveSlotProvider;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
@@ -71,7 +72,7 @@ public class BeeFamilyPool extends LootPoolSingletonContainer {
 	@Override
 	protected void createItemStack(Consumer<ItemStack> output, LootContext context) {
         BeeHiveParameterSet params=new BeeHiveParameterSet.Builder(context.getLevel(), 
-        	BlockPos.containing(context.getParameter(LootContextParams.ORIGIN)))
+        	BlockPos.containing(context.getParameter(LootContextParams.ORIGIN)),BeehiveSlotProvider.EMPTY)
         	.build();
         GenomeComponent data=func.apply(params, GenomeComponent.HAPLOID_EMPTY);
 		ItemStack drone = Items.DRONE.toStack(droneCount.getInt(context));

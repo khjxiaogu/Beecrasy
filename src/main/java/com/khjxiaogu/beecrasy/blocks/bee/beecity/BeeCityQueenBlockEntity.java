@@ -22,10 +22,8 @@ package com.khjxiaogu.beecrasy.blocks.bee.beecity;
 import org.jspecify.annotations.Nullable;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
-import com.khjxiaogu.beecrasy.beehive.BeeCityComponent;
 import com.khjxiaogu.beecrasy.beehive.BeeCityQueenComponent;
 import com.khjxiaogu.beecrasy.beehive.HiveSlot;
-import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
 import com.khjxiaogu.beecrasy.blocks.bee.BeeHiveBaseBlockEntity;
 import com.khjxiaogu.beecrasy.menu.BeeCityQueenMenu;
 

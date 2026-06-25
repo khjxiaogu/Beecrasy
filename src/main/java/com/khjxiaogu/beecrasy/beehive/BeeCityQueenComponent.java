@@ -21,12 +21,14 @@ package com.khjxiaogu.beecrasy.beehive;
 
 import java.util.ArrayList;
 import java.util.Set;
+
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet.BeehiveSlotProvider;
 import com.khjxiaogu.beecrasy.beehive.slot.BeeCityCoreCombSlot;
 import com.khjxiaogu.beecrasy.beehive.slot.ResourceStackHiveSlot;
-import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider.HiveSlotType;
 import com.khjxiaogu.beecrasy.blocks.bee.beecity.BeeCityCoreBlockEntity;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.HiveSlotProvider.HiveSlotType;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation.Builder;
 import com.khjxiaogu.beecrasy.components.BeehiveArgumenter;
@@ -34,6 +36,7 @@ import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
 import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.ValueInput;
@@ -68,26 +71,6 @@ public class BeeCityQueenComponent extends AbstractBeeComponent{
 	 */
 	public BeeCityQueenComponent(int queen,int drone,int comb,int extra) {
 		super(queen,drone,comb,extra);
-
-
-	}
-	public Set<BlockPos> getConnected(ServerLevel level){
-		BeeCityComponent comp=getConnectedComponent(level);
-		if(comp!=null) {
-			return comp.pos;
-		}
-		return Set.of();
-	}
-	public BeeCityComponent getConnectedComponent(ServerLevel level){
-		if(corePos!=null&&level.isLoaded(corePos)) {
-			if(level.getBlockEntity(corePos) instanceof BeeCityCoreBlockEntity be) {
-				return be.component;
-			}
-		}
-		return null;
-	}
-	@Override
-	public BeeHiveHandler createHiveInfo(int queen,int drone,int comb,int extra) {
 		queenSlot=new ArrayList<>(queen);
 		for(int i=0;i<queen;i++) {
 			queenSlot.add(new ResourceStackHiveSlot(getInternInv(),i));
@@ -106,10 +89,40 @@ public class BeeCityQueenComponent extends AbstractBeeComponent{
 		for(int i=0;i<extra;i++) {
 			extraSlot.add(new ResourceStackHiveSlot(getInternInv(),i+queen+drone+comb));
 		}
-		return new BeeHiveHandler(
-			()-> new BeeCityIterator(queenSlot.iterator(),level,getConnected(level).iterator(),HiveSlotType.QUEEN),
-			()-> new BeeCityIterator(droneSlot.iterator(),level,getConnected(level).iterator(),HiveSlotType.COMB),
-			()-> new BeeCityIterator(combSlot.iterator(),level,getConnected(level).iterator(),HiveSlotType.COMB));
+
+	}
+	public Set<BlockPos> getConnected(ServerLevel level){
+		BeeCityComponent comp=getConnectedComponent(level);
+		if(comp!=null) {
+			return comp.pos.keySet();
+		}
+		return Set.of();
+	}
+	public BeeCityComponent getConnectedComponent(ServerLevel level){
+		if(corePos!=null&&level.isLoaded(corePos)) {
+			if(level.getBlockEntity(corePos) instanceof BeeCityCoreBlockEntity be) {
+				return be.component;
+			}
+		}
+		return null;
+	}
+	@Override
+	public BeeHiveParameterSet.Builder buildParams(ServerLevel serverLevel,
+			BlockPos worldPosition) {
+		BeeHiveParameterSet.Builder builder= super.buildParams(serverLevel, worldPosition);
+		BeeCityComponent bc=getConnectedComponent(serverLevel);
+		if(bc!=null&&bc.currentBiotopes!=null) {
+			builder.addBiotopes(bc.currentBiotopes);
+			builder.overrideHasFlower();
+		}
+		return builder;
+	}
+	@Override
+	public BeehiveSlotProvider createHiveInfo(ServerLevel serverLevel, BlockPos worldPosition) {
+		Iterable<? extends HiveSlot> comb=()-> new BeeCityIterator(droneSlot.iterator(), serverLevel, worldPosition,getConnected(serverLevel).iterator(), HiveSlotType.COMB);
+		return BeehiveSlotProvider.createBasic(comb,
+				comb,
+				queenSlot).validOnly();
 	}
 	/**
 	 * 验证额外槽位是否允许放入指定物品。
@@ -122,6 +135,7 @@ public class BeeCityQueenComponent extends AbstractBeeComponent{
 	public boolean isValidForExtra(int index, ItemResource resource) {
 		return ItemValidateHelper.isArgument(resource.toStack());
 	}
+	@Override
 	public Builder buildArgumentation(ServerLevel level, BlockPos worldPosition, TransactionContext root) {
 		
 		Builder builder= super.buildArgumentation(level, worldPosition, root);
@@ -133,7 +147,8 @@ public class BeeCityQueenComponent extends AbstractBeeComponent{
 		builder.addParam(BeeHiveParameters.FERTILITY,getConnected(level).size()*0.1f);
 		return builder;
 	}
-	protected boolean canBeginWork(ServerLevel level) {
+	@Override
+	protected boolean canBeginWork(ServerLevel level,BlockPos worldPosition) {
 		BeeCityComponent coreComp=getConnectedComponent(level);
 		if(coreComp==null||!coreComp.hiveInfo.isWorking()) {
 			err=ErrCode.MANUAL_HALT;
@@ -160,6 +175,7 @@ public class BeeCityQueenComponent extends AbstractBeeComponent{
 		err=ErrCode.OK;
 		return true;
 	}
+	@Override
 	protected boolean beginGrowth(ServerLevel serverLevel, BlockPos worldPosition) {
 		Genome[] queen=null;
 		BeeHiveParameterSet params=null;
@@ -220,5 +236,6 @@ public class BeeCityQueenComponent extends AbstractBeeComponent{
 		nbt.storeNullable("corePos", BlockPos.CODEC, corePos);
 		
 	}
+
 
 }

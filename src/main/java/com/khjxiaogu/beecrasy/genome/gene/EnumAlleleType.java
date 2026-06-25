@@ -199,6 +199,10 @@ public class EnumAlleleType<T extends Allele> implements Iterable<T>{
 	}
 	@Override
 	public Iterator<T> iterator() {
-		return alleleType.values().iterator();
+		makeIndex();
+		return typelist.stream().map(alleleType::get).iterator();
+	}
+	public int size() {
+		return alleleType.size();
 	}
 }

@@ -24,8 +24,8 @@ import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Capability;
-import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider;
-import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider.HiveSlotType;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.HiveSlotProvider;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.HiveSlotProvider.HiveSlotType;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -37,14 +37,16 @@ public class BeeCityIterator implements Iterator<HiveSlot> {
 	private HiveSlot nextItem;
 	private final ServerLevel level;
 	private final Iterator<BlockPos> pos;
+	private final BlockPos corePos;
 	private final HiveSlotType type;
 
-	public BeeCityIterator(Iterator<? extends HiveSlot> iterator, ServerLevel level, Iterator<BlockPos> pos, HiveSlotType type) {
+	public BeeCityIterator(Iterator<? extends HiveSlot> iterator, ServerLevel level,BlockPos corePos, Iterator<BlockPos> pos, HiveSlotType type) {
 		super();
 		this.iterator = iterator;
 		this.level = level;
 		this.pos = pos;
 		this.type = type;
+		this.corePos = corePos;
 		advance();
 	}
 	/**
@@ -69,7 +71,8 @@ public class BeeCityIterator implements Iterator<HiveSlot> {
 			if(!level.isLoaded(item))
 				continue;
 			HiveSlotProvider slots=level.getCapability(Capability.BEE_CITY_BLOCK, item);
-			if (slots!=null) {
+			if (slots!=null&&slots.isBindable(corePos)) {
+				slots.bind(corePos);
 				iterator=IntStream.range(0, slots.getSlots(type)).mapToObj(t->slots.getSlot(type,t)).iterator();
 				return;
 			}

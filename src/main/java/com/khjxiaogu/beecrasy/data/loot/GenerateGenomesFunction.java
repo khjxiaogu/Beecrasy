@@ -27,6 +27,7 @@ import java.util.function.UnaryOperator;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet.BeehiveSlotProvider;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
 import com.khjxiaogu.beecrasy.genome.Genome;
@@ -153,7 +154,7 @@ public class GenerateGenomesFunction extends LootItemConditionalFunction {
     public ItemStack run(ItemStack itemStack, LootContext context) {
         GenomeComponent data=itemStack.get(Components.GENOME);
         BeeHiveParameterSet params=new BeeHiveParameterSet.Builder(context.getLevel(), 
-        	BlockPos.containing(context.getParameter(LootContextParams.ORIGIN)))
+        	BlockPos.containing(context.getParameter(LootContextParams.ORIGIN)),BeehiveSlotProvider.EMPTY)
         	.build();
         itemStack.set(Components.GENOME,apply(params,data));
         return itemStack;

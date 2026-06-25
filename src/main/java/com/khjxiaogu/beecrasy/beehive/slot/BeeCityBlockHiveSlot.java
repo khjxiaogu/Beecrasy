@@ -21,7 +21,7 @@ package com.khjxiaogu.beecrasy.beehive.slot;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Capability;
 import com.khjxiaogu.beecrasy.beehive.HiveSlot;
-import com.khjxiaogu.beecrasy.blocks.HiveSlotProvider.HiveSlotType;
+import com.khjxiaogu.beecrasy.blocks.bee.beecity.HiveSlotProvider.HiveSlotType;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;

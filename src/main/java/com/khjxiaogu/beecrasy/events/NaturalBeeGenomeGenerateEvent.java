@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet.BeehiveSlotProvider;
 import com.khjxiaogu.beecrasy.data.recipe.GenomePresets;
 import com.khjxiaogu.beecrasy.genome.PartialGenome;
 
@@ -39,7 +40,7 @@ public class NaturalBeeGenomeGenerateEvent extends Event{
 	private final Set<Identifier> sets=new HashSet<>();
 	public NaturalBeeGenomeGenerateEvent(ServerLevel level, BlockPos pos, PartialGenome.Builder genome) {
 		super();
-		this.params=new BeeHiveParameterSet.Builder(level,pos).build();
+		this.params=new BeeHiveParameterSet.Builder(level,pos,BeehiveSlotProvider.EMPTY).build();
 		this.genome = genome;
 	}
 	

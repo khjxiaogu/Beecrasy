@@ -20,18 +20,16 @@
 package com.khjxiaogu.beecrasy.beehive;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.PriorityQueue;
-import java.util.Set;
 
 import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet.BeehiveSlotProvider;
 import com.khjxiaogu.beecrasy.components.LarvaProductivity;
 import com.khjxiaogu.beecrasy.components.WorldCalendar;
 import com.khjxiaogu.beecrasy.genome.DiploidGenome;
@@ -41,7 +39,6 @@ import com.khjxiaogu.beecrasy.genome.GenomeDataHelper;
 import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
 import com.khjxiaogu.beecrasy.genome.MutationRegistry;
 import com.khjxiaogu.beecrasy.genome.RecombinationHelper;
-import com.khjxiaogu.beecrasy.genome.gene.Biotope;
 import com.khjxiaogu.beecrasy.item.LarvaItem;
 import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
 import com.khjxiaogu.beecrasy.utils.SerializableRandomSource;
@@ -49,6 +46,7 @@ import com.khjxiaogu.beecrasy.utils.Utils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -133,12 +131,6 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		}
 
 	}
-	
-	/**
-	 * 用于优先级队列的槽位优先级记录。
-	 * 在蜂后选举中根据基因组相似度排序。
-	 */
-	private static record HiveSlotPriority(HiveSlot slot,long priority){}
 	/**
 	 * 数据快照记录，用于网络同步和持久化。
 	 * 包含了蜂巢工作状态的所有必要数据：随机数种子、蜂后基因组、雄蜂基因组列表、
@@ -171,12 +163,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				DataRecord::new
 				);
 	}
-	/** 巢脾槽位列表（存放幼虫和产物）。 */
-	HiveSlotIterable<? extends HiveSlot> combSlot;
-	/** 雄蜂槽位列表。 */
-	HiveSlotIterable<? extends HiveSlot> droneSlot;
-	/** 蜂后槽位列表（存放蜂后/王台）。 */
-	HiveSlotIterable<? extends HiveSlot> queenSlot;
+
 	
 	/** 可序列化的随机数源，用于保证工作周期中所有随机操作的一致性。 */
 	SerializableRandomSource rs;
@@ -210,10 +197,6 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	/** 冷却计时器，用于重试阻塞操作。 */
 	transient int cooldown;
 	
-	transient int biotopeCooldown;
-	
-	transient Set<Biotope> biotopes;
-	
 	/**
 	 * 创建一个蜂巢处理器，绑定到指定的槽位列表。
 	 * 从游戏配置中读取工作间隔和寿命相关参数。
@@ -221,25 +204,15 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * @param droneSlot 雄蜂槽位列表
 	 * @param combSlot  巢脾/产物槽位列表
 	 */
-	public BeeHiveHandler(Iterable<? extends HiveSlot> queenSlot, Iterable<? extends HiveSlot> droneSlot, Iterable<? extends HiveSlot> combSlot) {
+	public BeeHiveHandler() {
 		super();
-		this.queenSlot = new HiveSlotIterable<>(queenSlot);
+		/*this.queenSlot = new HiveSlotIterable<>(queenSlot);
 		this.droneSlot = new HiveSlotIterable<>(droneSlot);
-		this.combSlot = new HiveSlotIterable<>(combSlot);
+		this.combSlot = new HiveSlotIterable<>(combSlot);*/
 		this.interval=BeecrasyConfig.SERVER.INTERVAL.getAsInt();
 		this.lsAgainstInterval=BeecrasyConfig.SERVER.LIFESPAN.getAsInt()*.5f/BeecrasyConfig.SERVER.INTERVAL.getAsInt();
 	}
-	/**
-	 * 更新当前环境中的生境信息。
-	 * 在指定位置周围搜索匹配的花和生境，用于后续的产物生成和环境判定。
-	 * @param params 当前环境参数
-	 * @return 找到的生境集合，如果没有花则返回 null
-	 */
-	@SuppressWarnings("resource")
-	public Set<Biotope> updateBiotopes(BeeHiveParameterSet params) {
-		return GenomeWorkHelper.findBiotope(params.level(), params.position(), BeecrasyConfig.SERVER.RADIUS.getAsInt());
 
-	}
 	/**
 	 * 重置蜂巢的所有工作状态。
 	 * 清空幼虫/雄蜂计数、工作进度和随机源，移除蜂后基因组。
@@ -248,7 +221,6 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		larvaCount=0;
 		droneCount=0;
 		process=processMax=0;
-		biotopeCooldown=0;
 		cooldown=0;
 		rs=null;
 		droneGenomes=null;
@@ -265,8 +237,8 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * 更新所有蜂后槽位中幼虫的过期时间。
 	 * @param secs 世界当前时间（秒）
 	 */
-	public void updateQueenLifespan(long secs) {
-		for(HiveSlot slot:queenSlot) {
+	public void updateQueenLifespan(BeeHiveParameterSet params,long secs) {
+		for(HiveSlot slot:params.slots().queenSlot()) {
 			updateLifespan(slot, secs);
 		}
 	}
@@ -281,8 +253,8 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	 * 更新所有巢脾槽位中幼虫的过期时间。
 	 * @param secs 世界当前时间（秒）
 	 */
-	public void updateCombLifespan(long secs) {
-		for(HiveSlot slot:combSlot) {
+	public void updateCombLifespan(BeeHiveParameterSet params,long secs) {
+		for(HiveSlot slot:params.slots().combSlot()) {
 			updateLifespan(slot, secs);
 		}
 	}
@@ -295,13 +267,50 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		}
 	}
 	@SuppressWarnings("resource")
-	public void tickNotWorking(ServerLevel level) {
+	public void tickNotWorking(ServerLevel level, BlockPos worldPosition, BeehiveSlotProvider slots) {
 		long secs=WorldCalendar.getCalendar(level).getSeconds();
-		for(HiveSlot slot:combSlot) {
+		for(HiveSlot slot:slots.combSlot()) {
 			checkCombLifespan(slot, secs, level.getRandom());
 		}
-		for(HiveSlot slot:queenSlot) {
+		for(HiveSlot slot:slots.queenSlot()) {
 			checkCombLifespan(slot, secs, level.getRandom());
+		}
+	}
+	/**
+	 * 主 tick 方法，驱动蜂巢的工作周期。
+	 * 根据当前进度执行以下逻辑：
+	 * <ul>
+	 *   <li>如果 {@code process > 0}：持续进行当前工作，按速度减少进度，在整间隔点触发产卵/产物生成</li>
+	 *   <li>如果 {@code process <= 0} 且 {@code processMax > 0}：工作结束，尝试产出最终产物</li>
+	 * </ul>
+	 * @param params 当前环境参数集
+	 * @param speed  工作速度倍率
+	 */
+	@SuppressWarnings("resource")
+	public void tickFertilityOnly(BeeHiveParameterSet params,int speed) {
+		blocked=false;
+		badEnvironment=false;
+		noFlower=false;
+		long secs=WorldCalendar.getCalendar(params.level()).getSeconds();
+		if(process>0) {
+
+			if(!GenomeWorkHelper.isValidEnvironment(params, queenGenome[0])) {
+				badEnvironment=true;
+			}
+			if(!badEnvironment&&!noFlower) {
+				int lprocess=process;
+				process-=BeecrasyMath.getRandomRate(params.getParamValue(BeeHiveParameters.SPEED)*speed, rs);
+				if(process<0)
+					process=0;
+				int ltick=lprocess/interval;
+				int ctick=process/interval;
+				if(ltick>ctick) {
+					for(int i=ctick;i<ltick;i++) {
+						if(!fillLarva(params,secs))
+							fillDrone(params);
+					}
+				}
+			}
 		}
 	}
 	/**
@@ -321,21 +330,11 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		noFlower=false;
 		long secs=WorldCalendar.getCalendar(params.level()).getSeconds();
 		if(process>0) {
-			if(biotopeCooldown<=0) {
-				biotopeCooldown=0;
-				biotopes=updateBiotopes(params);
-				biotopeCooldown=60;
-			}else {
-				biotopeCooldown--;
-			}
-			if(biotopes==null) {
-				noFlower=true;
-			}
 			if(!GenomeWorkHelper.isValidEnvironment(params, queenGenome[0])) {
 				badEnvironment=true;
 			}
 			if(!badEnvironment&&!noFlower) {
-				params.addBiotopes(biotopes);
+				
 				int lprocess=process;
 				process-=BeecrasyMath.getRandomRate(params.getParamValue(BeeHiveParameters.SPEED)*speed, rs);
 				if(process<0)
@@ -344,14 +343,10 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				int ctick=process/interval;
 				if(ltick>ctick) {
 					for(int i=ctick;i<ltick;i++) {
-						GenomeWorkHelper.transformFlowers(params.level(), params.position(), BeecrasyConfig.SERVER.FLOWER_RADIUS.getAsInt(), (float)BeecrasyConfig.SERVER.FLOWER_RATE.getAsDouble());
 						if(fillLarva(params,secs)||fillDrone(params)) {
-							updateCombLifespan(secs);
-							updateQueenLifespan(secs);
+							updateCombLifespan(params,secs);
+							updateQueenLifespan(params,secs);
 						}else {
-							int elecInterval=(processMax/2/4);
-							if(lprocess/elecInterval!=process/elecInterval)
-								elecQueen();
 							increaseProduction(params);
 						}
 					}
@@ -374,7 +369,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 					cooldown--;
 				}
 			}
-			for(HiveSlot slot:combSlot) {
+			for(HiveSlot slot:params.slots().combSlot()) {
 				ItemStack itemStack=slot.getItem();
 				if(LarvaItem.isExpired(itemStack,secs)) {
 					ItemStack ret=LarvaItem.getProduct(itemStack, itemStack.count(), params.level().getRandom());
@@ -421,12 +416,12 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		long secs=WorldCalendar.getCalendar(params.level()).getSeconds();
 		
 
-		updateQueenLifespan(secs);
+		updateQueenLifespan(params,secs);
 		float yieldMod=params.getParamValue(BeeHiveParameters.YIELD);
-		for(HiveSlot hi:combSlot) {
+		for(HiveSlot hi:params.slots().combSlot()) {
 			increaseProduction(params,hi,secs,yieldMod);
 		}
-		for(HiveSlot hi:queenSlot) {
+		for(HiveSlot hi:params.slots().queenSlot()) {
 			increaseProduction(params,hi,secs,yieldMod);
 		}
 	}
@@ -492,17 +487,48 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	private boolean fillLarva(BeeHiveParameterSet params,long secs) {
 		if(larvaCount<=0)
 			return false;
-		for(HiveSlot hi:combSlot) {
+		HiveSlot fillable=null;
+		for(HiveSlot hi:params.slots().queenSlot()) {
 			if(hi.isEmpty()) {
-				ItemStack larvaStack=Items.LARVA.toStack();
-				GenomeDataHelper.setDiploidGenome(larvaStack, makeLarva(params));
-				larvaStack.set(Components.LARVA_EXPIRES, secs);
-				hi.setItem(larvaStack);
-				larvaCount--;
-				return true;
+				fillable=hi;
+				break;
 			}
 		}
-		return false;
+		if(fillable==null)
+			for(HiveSlot hi:params.slots().combSlot()) {
+				if(hi.isEmpty()) {
+					fillable=hi;
+					break;
+				}
+			}
+		if(fillable!=null) {
+			ItemStack larvaStack=Items.LARVA.toStack();
+			GenomeDataHelper.setDiploidGenome(larvaStack, makeLarva(params));
+			larvaStack.set(Components.LARVA_EXPIRES, secs);
+			long curSimPoint=GenomeWorkHelper.checkSimilarityPoint(queenGenome, GenomeDataHelper.getAsDiploid(larvaStack));
+			for(HiveSlot hi:params.slots().queenSlot()) {
+				if(hi.isEmpty()) {
+					hi.setItem(larvaStack);
+					larvaStack=ItemStack.EMPTY;
+				}else if(hi.is(Items.LARVA)){
+					ItemStack cur=hi.getItem();
+					long slotSimPoint=GenomeWorkHelper.checkSimilarityPoint(queenGenome, GenomeDataHelper.getAsDiploid(cur));
+					if(curSimPoint>slotSimPoint) {
+						curSimPoint=slotSimPoint;
+						hi.setItem(larvaStack);
+						larvaStack=cur;
+					}
+				}
+				if(larvaStack.isEmpty())
+					break;
+			}
+			if(!larvaStack.isEmpty())
+				fillable.setItem(larvaStack);
+			larvaCount--;
+		}
+		
+		
+		return true;
 	}
 	/**
 	 * 完成产物生成，处理工作周期结束时的逻辑。
@@ -515,7 +541,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		boolean hasQueen=queenCount==0;
 		long secs=WorldCalendar.getCalendar(params.level()).getSeconds();
 		if(!hasQueen) {
-			for(HiveSlot hi:queenSlot) {
+			for(HiveSlot hi:params.slots().queenSlot()) {
 				if(hi.isEmpty())
 					continue;
 				ItemStack item=hi.getItem();
@@ -530,7 +556,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		}
 		if(!hasQueen) {
 			boolean hasLarva=false;
-			for(HiveSlot hi:combSlot) {
+			for(HiveSlot hi:params.slots().combSlot()) {
 				if(!hi.isEmpty()) {
 					ItemStack stack=hi.getItem();
 					if(stack.is(Items.LARVA)) {
@@ -547,7 +573,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			}
 		}
 		if(queenCount>0) {
-			for(HiveSlot hi:queenSlot) {
+			for(HiveSlot hi:params.slots().queenSlot()) {
 				if(!hi.isEmpty())
 					continue;
 				hi.setItem(Items.ROYAL_JELLY.toStack());
@@ -557,7 +583,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			}
 		}
 		queenCount=0;
-		for(HiveSlot hi:combSlot) {
+		for(HiveSlot hi:params.slots().combSlot()) {
 			if(!hi.isEmpty()) {
 				ItemStack item=hi.getItem();
 				if(!item.is(Items.LARVA))
@@ -566,7 +592,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 				hi.setItem(ret);
 			}
 		}
-		for(HiveSlot hi:queenSlot) {
+		for(HiveSlot hi:params.slots().queenSlot()) {
 			if(!hi.isEmpty()) {
 				ItemStack item=hi.getItem();
 				if(!item.is(Items.LARVA))
@@ -578,33 +604,6 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 		return true;
 	}
 	/**
-	 * 执行蜂后选举——将巢脾中与已故蜂后基因组相似度最高的幼虫提升为新的蜂后。
-	 * 使用优先级队列按相似度降序排列。
-	 */
-	public void elecQueen() {
-		for(HiveSlot hi:queenSlot) {
-			if(hi.is(Items.LARVA)) {
-				return;
-			}
-		}
-		PriorityQueue<HiveSlotPriority> queens=new PriorityQueue<>(Comparator.comparingLong(HiveSlotPriority::priority).reversed());
-		for(HiveSlot hi:combSlot) {
-			if(!hi.isEmpty()) {
-				queens.add(new HiveSlotPriority(hi,GenomeWorkHelper.checkSimilarityPoint(queenGenome, GenomeDataHelper.getAsDiploid(hi.getItem()))));
-			}
-		}
-		for(HiveSlot hi:queenSlot) {
-			if(queens.isEmpty())
-				break;
-			if(hi.isEmpty()) {
-				HiveSlotPriority queen=queens.poll();
-				hi.setItem(queen.slot().getItem());
-				queen.slot().setItem(ItemStack.EMPTY);
-				break;
-			}
-		}
-	}
-	/**
 	 * 尝试将一只新的雄蜂填充到雄蜂槽位中。
 	 * 如果存在空槽位，则创建一个雄蜂物品栈并赋予由蜂后基因组重组的单倍体基因组。
 	 * @param params 当前环境参数
@@ -613,7 +612,7 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 	private boolean fillDrone(BeeHiveParameterSet params) {
 		if(droneCount<=0)
 			return false;
-		for(HiveSlot hi:droneSlot) {
+		for(HiveSlot hi:params.slots().droneSlot()) {
 			if(hi.isEmpty()) {
 				ItemStack droneStack=Items.DRONE.toStack();
 				GenomeDataHelper.setHaploidGenome(droneStack, makeDrone(params).build());

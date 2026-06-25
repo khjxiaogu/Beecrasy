@@ -20,9 +20,14 @@
 package com.khjxiaogu.beecrasy.beehive;
 
 import java.util.List;
+import java.util.Set;
 
+import com.khjxiaogu.beecrasy.BeecrasyConfig;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet.BeehiveSlotProvider;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation.Builder;
+import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
+import com.khjxiaogu.beecrasy.genome.gene.Biotope;
 import com.khjxiaogu.beecrasy.utils.ItemValidateHelper;
 
 import net.minecraft.core.BlockPos;
@@ -42,6 +47,36 @@ import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 public abstract class AbstractBeeComponent implements ValueIOSerializable{
 
+	/** 内部物品栈资源句柄（所有槽位的底层存储）。 */
+	protected ItemStacksResourceHandler internInv;
+	/** 外部访问委托（用于管道/漏斗等自动化设备的外部输入验证）。 */
+	protected ResourceHandler<ItemResource> externInv;
+	/** 产物输出委托（限制仅允许从巢脾槽位提取产物）。 */
+	protected ResourceHandler<ItemResource> productInv;
+	/** 蜂后槽位列表。 */
+	protected List<HiveSlot> queenSlot;
+	/** 巢脾/产物槽位列表。 */
+	protected List<HiveSlot> combSlot;
+	/** 雄蜂槽位列表。 */
+	protected List<HiveSlot> droneSlot;
+	/** 额外槽位列表（用于模组扩展）。 */
+	protected List<HiveSlot> extraSlot;
+	/** 蜂巢工作周期处理器。 */
+	public final BeeHiveHandler hiveInfo;
+	/** 参数增强项（由物品如信息素提供的临时参数加成）。 */
+	protected BeeHiveArgumentation arguments;
+	/** 是否应开始工作（由工作模式和内容变更触发）。 */
+	protected boolean shouldWork;
+	/** 数据是否已变更（需要保存到磁盘）。 */
+	protected boolean changed;
+	/** 工作开始前的冷却 tick 计数。 */
+	protected int beginingTicks = 0;
+	/** 当前工作模式（默认为手动）。 */
+	public WorkBehaviour work = WorkBehaviour.MAUNAL;
+	/** 当前错误/状态码。 */
+	public ErrCode err = ErrCode.OK;
+	/** 冷却总时长（tick 数）。 */
+	public static final int COOLDOWN_TIME = 100;
 
 	/**
 	 * 将数据写入 NBT（支持客户端/服务端区分）。
@@ -120,37 +155,6 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 	 */
 	public abstract boolean isValidForExtra(int index, ItemResource resource);
 
-	/** 内部物品栈资源句柄（所有槽位的底层存储）。 */
-	protected ItemStacksResourceHandler internInv;
-	/** 外部访问委托（用于管道/漏斗等自动化设备的外部输入验证）。 */
-	protected ResourceHandler<ItemResource> externInv;
-	/** 产物输出委托（限制仅允许从巢脾槽位提取产物）。 */
-	protected ResourceHandler<ItemResource> productInv;
-	/** 蜂后槽位列表。 */
-	protected List<HiveSlot> queenSlot;
-	/** 巢脾/产物槽位列表。 */
-	protected List<HiveSlot> combSlot;
-	/** 雄蜂槽位列表。 */
-	protected List<HiveSlot> droneSlot;
-	/** 额外槽位列表（用于模组扩展）。 */
-	protected List<HiveSlot> extraSlot;
-	/** 蜂巢工作周期处理器。 */
-	public final BeeHiveHandler hiveInfo;
-	/** 参数增强项（由物品如信息素提供的临时参数加成）。 */
-	protected BeeHiveArgumentation arguments;
-	/** 是否应开始工作（由工作模式和内容变更触发）。 */
-	protected boolean shouldWork;
-	/** 数据是否已变更（需要保存到磁盘）。 */
-	protected boolean changed;
-	/** 工作开始前的冷却 tick 计数。 */
-	protected int beginingTicks = 0;
-	/** 当前工作模式（默认为手动）。 */
-	public WorkBehaviour work = WorkBehaviour.MAUNAL;
-	/** 当前错误/状态码。 */
-	public ErrCode err = ErrCode.OK;
-	/** 冷却总时长（tick 数）。 */
-	public static final int COOLDOWN_TIME = 100;
-
 	public AbstractBeeComponent(int queen,int drone,int comb,int extra) {
 		super();
 		internInv = new ItemStacksResourceHandler(queen+drone+comb+extra) {
@@ -215,9 +219,9 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 				return 0;
 			}
 		};
-		this.hiveInfo = createHiveInfo(queen,drone,comb,extra);
+		this.hiveInfo = new BeeHiveHandler();
 	}
-	public abstract BeeHiveHandler createHiveInfo(int queen,int drone,int comb,int extra);
+	public abstract BeehiveSlotProvider createHiveInfo(ServerLevel serverLevel, BlockPos worldPosition);
 	public void setShouldWork(boolean shouldWork) {
 		this.shouldWork = shouldWork;
 	}
@@ -230,7 +234,7 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 	 * @return 参数集构建器
 	 */
 	public BeeHiveParameterSet.Builder buildParams(ServerLevel serverLevel, BlockPos worldPosition) {
-		BeeHiveParameterSet.Builder builder= new BeeHiveParameterSet.Builder(serverLevel,worldPosition);
+		BeeHiveParameterSet.Builder builder= new BeeHiveParameterSet.Builder(serverLevel,worldPosition,createHiveInfo(serverLevel,worldPosition));
 		if(arguments!=null)
 			builder.setParams(arguments.params());
 		return builder;
@@ -257,7 +261,7 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 	 * @param level TODO
 	 * @return 如果可以开始工作则返回 true
 	 */
-	protected abstract boolean canBeginWork(ServerLevel level);
+	protected abstract boolean canBeginWork(ServerLevel level, BlockPos worldPosition);
 
 	/**
 	 * 开始一个繁殖/工作周期。
@@ -331,7 +335,7 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 			beginingTicks+=speed;
 			if(beginingTicks>=COOLDOWN_TIME) {
 				beginingTicks=0;
-				if(canBeginWork(serverLevel)) {
+				if(canBeginWork(serverLevel, worldPosition)) {
 					shouldWork=false;
 					if(beginGrowth(serverLevel, worldPosition)) {
 						setChanged();
@@ -342,6 +346,7 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 		}else if(hiveInfo.isWorking()) {
 			err=ErrCode.OK;
 			BeeHiveParameterSet params=buildParams(serverLevel, worldPosition).build();
+			tickBeforeWorking(params);
 			int ticks=hiveInfo.tick(params,speed);
 			if(ticks!=0)
 				tickExtraWorking(params,ticks);
@@ -357,19 +362,22 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 			
 			return;
 		}else if(shouldWork&&err!=ErrCode.INVALID_ENVIRONMENT) {
-			if(canBeginWork(serverLevel)) {
+			if(canBeginWork(serverLevel, worldPosition)) {
 				beginingTicks=1;
 			}
 		}else if(err==ErrCode.OK) {
 			err=ErrCode.MANUAL_HALT;
 		}
-		hiveInfo.tickNotWorking(serverLevel);
+		hiveInfo.tickNotWorking(serverLevel, worldPosition,createHiveInfo(serverLevel,worldPosition));
 	}
 	/**
 	 * @param params  
 	 * @param time 
 	 */
 	protected void tickExtraWorking(BeeHiveParameterSet params,int time) {
+		
+	}
+	protected void tickBeforeWorking(BeeHiveParameterSet params) {
 		
 	}
 	/**
@@ -434,5 +442,14 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 	public List<HiveSlot> getExtraSlot() {
 		return extraSlot;
 	}
-
+	/**
+	 * 更新当前环境中的生境信息。
+	 * 在指定位置周围搜索匹配的花和生境，用于后续的产物生成和环境判定。
+	 * @param params 当前环境参数
+	 * @return 找到的生境集合，如果没有花则返回 null
+	 */
+	@SuppressWarnings("resource")
+	public static Set<Biotope> updateBiotopes(BeeHiveParameterSet params) {
+		return GenomeWorkHelper.findBiotope(params.level(), params.position(), (int)(BeecrasyConfig.SERVER.RADIUS.getAsInt()*params.getParamValue(BeeHiveParameters.RADIUS)));
+	}
 }

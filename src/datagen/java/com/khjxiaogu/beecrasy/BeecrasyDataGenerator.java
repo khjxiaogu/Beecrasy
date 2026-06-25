@@ -21,14 +21,9 @@ package com.khjxiaogu.beecrasy;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-
-import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.util.Util;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

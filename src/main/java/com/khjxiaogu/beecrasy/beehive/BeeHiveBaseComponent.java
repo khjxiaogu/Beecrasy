@@ -23,9 +23,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
+import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet.BeehiveSlotProvider;
+import com.khjxiaogu.beecrasy.beehive.BeeHiveParameterSet.Builder;
 import com.khjxiaogu.beecrasy.beehive.slot.ResourceStackHiveSlot;
 import com.khjxiaogu.beecrasy.beehive.slot.StacksHiveSlot;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
@@ -33,6 +37,7 @@ import com.khjxiaogu.beecrasy.components.BeehiveArgumenter;
 import com.khjxiaogu.beecrasy.components.GenomeComponent;
 import com.khjxiaogu.beecrasy.genome.Genome;
 import com.khjxiaogu.beecrasy.genome.GenomeWorkHelper;
+import com.khjxiaogu.beecrasy.genome.gene.Biotope;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -187,7 +192,9 @@ public class BeeHiveBaseComponent extends AbstractBeeComponent{
 		}
 		
 	}
-
+	BeehiveSlotProvider slots;
+	transient int biotopeCooldown;
+	transient Set<Biotope> biotopes;
 	/**
 	 * 从数据记录创建蜂巢基础组件。
 	 * @param data 包含初始状态的数据记录
@@ -206,9 +213,6 @@ public class BeeHiveBaseComponent extends AbstractBeeComponent{
 	 */
 	public BeeHiveBaseComponent(int queen,int drone,int comb,int extra) {
 		super(queen,drone,comb,extra);
-	}
-	@Override
-	public BeeHiveHandler createHiveInfo(int queen,int drone,int comb,int extra) {
 		queenSlot=new ArrayList<>(queen);
 		for(int i=0;i<queen;i++) {
 			queenSlot.add(new ResourceStackHiveSlot(getInternInv(),i));
@@ -225,7 +229,11 @@ public class BeeHiveBaseComponent extends AbstractBeeComponent{
 		for(int i=0;i<extra;i++) {
 			extraSlot.add(new ResourceStackHiveSlot(getInternInv(),i+queen+drone+comb));
 		}
-		return new BeeHiveHandler(queenSlot,droneSlot,combSlot);
+		slots=BeehiveSlotProvider.createBasic(combSlot, droneSlot, queenSlot).validOnly();
+	}
+	@Override
+	public BeehiveSlotProvider createHiveInfo(ServerLevel serverLevel, BlockPos worldPosition) {
+		return slots;
 	}
 	@Override
 	public boolean isValidForExtra(int index, ItemResource resource) {
@@ -244,7 +252,7 @@ public class BeeHiveBaseComponent extends AbstractBeeComponent{
 		return BeehiveArgumenter.extractArgumentation(serverLevel, internInv, slot, root);
 	}
 	@Override
-	protected boolean canBeginWork(ServerLevel level) {
+	protected boolean canBeginWork(ServerLevel level, BlockPos worldPosition) {
 
 		if(work==WorkBehaviour.MAUNAL&&!shouldWork) {
 			err=ErrCode.MANUAL_HALT;
@@ -367,5 +375,33 @@ public class BeeHiveBaseComponent extends AbstractBeeComponent{
 	public BeeHiveBaseData save() {
 		return new BeeHiveBaseData(this);
 	}
+	@Override
+	protected void tickExtraWorking(BeeHiveParameterSet params, int time) {
+		super.tickExtraWorking(params, time);
+		GenomeWorkHelper.transformFlowers(params.level(), params.position(), Math.round(BeecrasyConfig.SERVER.FLOWER_RADIUS.getAsInt()*params.getParamValue(BeeHiveParameters.RADIUS)), (float)BeecrasyConfig.SERVER.FLOWER_RATE.getAsDouble());
+		
+	}
+	@Override
+	public Builder buildParams(ServerLevel serverLevel, BlockPos worldPosition) {
+		Builder b= super.buildParams(serverLevel, worldPosition);
+		if(biotopes!=null){
+			b.overrideHasFlower();
+			b.addBiotopes(biotopes);
+		}
+		
+		return b;
+	}
+	@Override
+	protected void tickBeforeWorking(BeeHiveParameterSet params) {
+		super.tickBeforeWorking(params);
+		if(biotopeCooldown<=0) {
+			biotopeCooldown=0;
+			biotopes=updateBiotopes(params);
+			biotopeCooldown=60;
+		}else {
+			biotopeCooldown--;
+		}
+	}
+
 
 }
