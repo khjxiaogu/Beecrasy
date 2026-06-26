@@ -162,6 +162,10 @@ public class StringComponentParser {
 					sb.appendCodePoint(cch);
 				}
 				String content = sb.toString();
+				if(!current.isEmpty()) {
+					mc.append(Component.literal(current.toString()).withStyle(style));
+					current=new StringBuilder();
+				}
 				mc.append(Component.translatable(content).withStyle(style));
 				break;
 				default:
@@ -178,8 +182,8 @@ public class StringComponentParser {
 			mc.append(Component.literal(current.toString()).withStyle(style));
 		}
 		return mc;
-	}/*
+	}
 	public static void main(String[] args) {
-		System.out.println(parse("砧木&b&l&测试&r得到&#aaa测试&&123\\\\2333"));
-	}*/
+		System.out.println(parse("砧木&b&l&测试&r得到&#aaa测试&&123\\\\2333{item.beecrasy.test}"));
+	}
 }
