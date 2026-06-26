@@ -142,6 +142,7 @@ public class BeediManager implements ResourceManagerReloadListener{
 			}
 			if(ms!=null) {
 				ms.bake();
+				id=id.withPath(id.getPath().substring(0,id.getPath().lastIndexOf(".")));
 				loadedFiles.put(id, ms);
 				Beecrasy.LOGGER.info("midi "+id+" loaded.");
 			}

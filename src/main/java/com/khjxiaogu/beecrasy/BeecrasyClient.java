@@ -137,9 +137,11 @@ public class BeecrasyClient {
 	@SubscribeEvent
 	public static void registerModels(ModelEvent.RegisterStandalone ev)
 	{
-		Utils.listResource(Minecraft.getInstance().getResourceManager(),Beecrasy.MODID, "models/block/dynamic",
-			".json", (location,id,_)->{
-				ev.register(ModelReference.createKey(id).name(),SimpleUnbakedStandaloneModel.quadCollection(location));	
+		Minecraft.getInstance().getResourceManager().listResources("models/block/dynamic",e->e.getPath().endsWith(".json")&&Beecrasy.MODID.equals(e.getNamespace())).keySet().forEach(rl->{
+			//remove models/ and .json
+			String name=rl.getPath().substring(7,rl.getPath().lastIndexOf("."));
+			Identifier id=Beecrasy.rl(name);
+			ev.register(ModelReference.createKey(id).name(),SimpleUnbakedStandaloneModel.quadCollection(id));	
 		});
 	}
 	@SubscribeEvent

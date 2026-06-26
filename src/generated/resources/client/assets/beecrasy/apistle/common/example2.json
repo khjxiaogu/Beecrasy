@@ -1,0 +1,47 @@
+{
+  "icon": {
+    "id": "beecrasy:apite"
+  },
+  "lines": [
+    {
+      "type": "text",
+      "text": "2"
+    },
+    {
+      "type": "hr"
+    },
+    {
+      "type": "image",
+      "height": 100,
+      "image": "minecraft:example",
+      "width": 100
+    },
+    {
+      "type": "item",
+      "items": "beecrasy:queen_bee"
+    },
+    {
+      "type": "item",
+      "items": [
+        {
+          "id": "beecrasy:beeswax"
+        },
+        {
+          "id": "beecrasy:product_comb"
+        }
+      ]
+    },
+    {
+      "type": "space",
+      "height": 200
+    },
+    {
+      "type": "text",
+      "centered": true,
+      "scale": 2.0,
+      "text": "123"
+    }
+  ],
+  "order": 100,
+  "title": "Example page1"
+}

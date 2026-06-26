@@ -45,10 +45,12 @@ public abstract class ApistleGenerator extends JsonCodecProvider<Page> {
     	builders.put(name,pb);
     	return pb;
     }
-    public PageBuilder add(String name,String title) {
-    	return add(Identifier.fromNamespaceAndPath(super.modid, name),title);
+    public PageBuilder add(String name,String lang,String title) {
+    	return add(Identifier.fromNamespaceAndPath(super.modid,lang+"/"+ name),title);
     }
-    
+    public PageBuilder addCommon(String name,String title) {
+    	return add(name,"common",title);
+    }
 	@Override
 	protected final void gather() {
 		try {

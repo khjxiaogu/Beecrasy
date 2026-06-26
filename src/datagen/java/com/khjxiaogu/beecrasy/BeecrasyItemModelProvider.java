@@ -96,6 +96,7 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 		this.texture(Items.ROYAL_JELLY);
 		this.texture(Items.HONEY_BUCKET);
 		this.texture(Items.MAILBOX);
+		this.texture(Items.APISTLE);
 
 		this.itemModelOutput.register(MailBoxMenu.MAILBOX_ACTIVE, new ClientItem(ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM
 			.create(MailBoxMenu.MAILBOX_ACTIVE.withPrefix("item/"), TextureMapping.layer0(new Material(MailBoxMenu.MAILBOX_ACTIVE.withPrefix("item/"))), this.modelOutput)),ClientItem.Properties.DEFAULT));

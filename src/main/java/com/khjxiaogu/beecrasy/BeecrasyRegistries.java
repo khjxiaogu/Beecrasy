@@ -185,6 +185,7 @@ public class BeecrasyRegistries {
 	    
 	    public static final DeferredItem<Item> MAIL=ITEMS.registerItem("mail",MailItem::new,t->t.component(Components.CONTAINER, ItemContainerContents.EMPTY).component(Components.MAIL, MailComponent.EMPTY));
 	    public static final DeferredItem<Item> MAILBOX=ITEMS.registerItem("handheld_mailbox",MailBoxItem::new,t->t.stacksTo(1));
+	    public static final DeferredItem<Item> APISTLE=ITEMS.registerSimpleItem("apistle",t->t.stacksTo(1).component(Components.APISTLE, Beecrasy.MODID));
 	    
 	    //光盘
 	    public static final DeferredItem<Item> MUSIC_FLIGHT_OF_THE_BUMBLE_BEE=ITEMS.registerSimpleItem("flight_of_the_bumble_bee",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(1260,Beecrasy.rl("flight_of_the_bumble_bee"),1)));

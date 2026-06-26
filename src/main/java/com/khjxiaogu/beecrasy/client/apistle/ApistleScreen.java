@@ -33,13 +33,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 public class ApistleScreen extends Screen {
-	public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Beecrasy.MODID, "textures/gui/sequencer.png");
+	public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Beecrasy.MODID, "textures/gui/apistle_backlay.png");
+
+	public static final Identifier TEXTURE_BUTTON = Identifier.fromNamespaceAndPath(Beecrasy.MODID, "textures/gui/apistle_buttons.png");
+	
     protected int imageWidth;
     protected int imageHeight;
     protected int leftPos;
     protected int topPos;
     public final int TABS_PER_PAGE=5;
-    public final int PAGE_WIDTH=100;
+    public final int PAGE_WIDTH=340-38-10;
+    public final int PAGE_HEIGHT=225-11-11;
 	/** 当前页面中最大的标签索引 */
 	int maxIndex=0;
 	/** 当前页面的起始标签索引 */
@@ -51,6 +55,8 @@ public class ApistleScreen extends Screen {
 	public ApistleScreen(String modid,Component title) {
 		super(title);
 		pages=List.copyOf(PageRegistry.INSTANCE.getPages(modid));
+		imageWidth=340;
+		imageHeight=225;
 	}
 
 
@@ -62,6 +68,9 @@ public class ApistleScreen extends Screen {
         this.leftPos = (this.width - this.imageWidth) / 2;
         this.topPos = (this.height - this.imageHeight) / 2;
 		this.clearWidgets();
+		if(!pages.isEmpty()) {
+			currentPage=pages.get(0).bake(PAGE_WIDTH);
+		}
 	}
 
 	@Override
@@ -71,7 +80,7 @@ public class ApistleScreen extends Screen {
 		for(int i=0;i<TABS_PER_PAGE;i++) {
 			int dy=13+i*18;
 			boolean over=this.isMouseIn(mouseX, mouseY, 11, dy, 23, 15);
-			graphics.blit(RenderPipelines.GUI_TEXTURED, SequencerScreen.TEXTURE, leftPos+15, topPos+dy, 176+(over  ?23:0)   , 15, 18, 15,256,256);
+			graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE_BUTTON, leftPos+15, topPos+dy, (over  ?23:0)   , 15, 18, 15,64,64);
 			
 			int idx=i+minIndex;
 			if(minIndex>0) {
@@ -87,12 +96,13 @@ public class ApistleScreen extends Screen {
 			}
 			UnbakedPage tab=pages.get(idx);
 			boolean select=idx==selected;
-			graphics.blit(RenderPipelines.GUI_TEXTURED, SequencerScreen.TEXTURE, leftPos+33, topPos+dy, 176+(select?23:0)+18, 15,  5, 15,256,256);
+			graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE_BUTTON, leftPos+33, topPos+dy, (select?23:0)+18, 15,  5, 15,64,64);
 			tab.extractIcon(graphics, leftPos+15, topPos+dy, 15, 15, mouseX, mouseY, adder);
 		}
-		int dx=leftPos+40;
-		int dy=topPos+13;
-		currentPage.extractRenderState(graphics, dx, dy, 92, 100, dx, 100, mouseX, mouseY, adder);
+		int dx=leftPos+38;
+		int dy=topPos+11;
+		if(currentPage!=null)
+			currentPage.extractRenderState(graphics, dx, dy, PAGE_WIDTH, PAGE_HEIGHT, (int) viewY, PAGE_HEIGHT, mouseX, mouseY, adder);
 		super.extractRenderState(graphics, mouseX, mouseY, partial);
 		graphics.text(this.font, this.title, 8, 6, -12566464, false);
 		if (!tooltip.isEmpty()) {
@@ -100,13 +110,39 @@ public class ApistleScreen extends Screen {
 		}
 
 	}
+	float viewY;
 
+	@Override
+	public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
+		if(currentPage!=null&&currentPage.height()>PAGE_HEIGHT) {
+			if(isMouseIn((int)x,(int)y, leftPos+38, topPos+11, PAGE_WIDTH, PAGE_HEIGHT)) {
+				viewY+=scrollY;
+				viewY=Math.max(0, viewY);
+				viewY=Math.min(viewY, currentPage.height()- PAGE_HEIGHT);
+				return true;
+			}
+		}
+		return super.mouseScrolled(x, y, scrollX, scrollY);
+	}
 
 	@Override
 	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
 		super.extractBackground(graphics, mouseX, mouseY, a);
-		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight,256,256);
-		currentPage.extractBackground(graphics, leftPos+40, topPos+13, 92, 100, 0, 0, mouseX, mouseY);
+			int exW=imageWidth-48-27;
+			int exH=imageHeight-20-24;
+    		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,leftPos+      0,topPos+      0,   0,   0, 48, 24, 145, 127);
+    		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,leftPos+      0,topPos+ 24+exH,   0, 100, 48, 27, 145, 127);
+    		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,leftPos+ 48+exW,topPos+      0, 125,   0, 20, 24, 145, 127);
+    		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,leftPos+ 48+exW,topPos+ 24+exH, 125, 100, 20, 27, 145, 127);
+
+    		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,leftPos+     48,topPos+      0,  48,   0, exW,  24, 76, 24, 145, 127);//top
+    		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,leftPos+      0,topPos+     24,   0,  24,  48, exH, 48, 77, 145, 127);//left
+    		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,leftPos+     48,topPos+ 24+exH,  48, 100, exW,  27, 76, 27, 145, 127);//bottom
+    		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,leftPos+ 48+exW,topPos+     24, 125,  24,  20, exH, 20, 77, 145, 127);//right
+
+    		graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE,leftPos+ 48,topPos+ 24, 48,  24,  exW, exH, 77, 76, 145, 127);
+		if(currentPage!=null)
+			currentPage.extractBackground(graphics, leftPos+40, topPos+13, 92, 48, (int) viewY, PAGE_HEIGHT, mouseX, mouseY);
 	}
 
 	public boolean isMouseIn(int mouseX, int mouseY, int x, int y, int w, int h) {
@@ -136,6 +172,7 @@ public class ApistleScreen extends Screen {
 				if(idx<TABS_PER_PAGE&&idx>=idxOff) {
 					selected=idx+minIndex-idxOff;
 					currentPage=pages.get(selected).bake(PAGE_WIDTH);
+					viewY=0;
 				}
 			}
 		}
