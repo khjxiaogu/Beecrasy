@@ -42,6 +42,8 @@ import com.khjxiaogu.beecrasy.genome.gene.Humidity;
 import com.khjxiaogu.beecrasy.genome.gene.Temperature;
 import com.khjxiaogu.beecrasy.mail.PlayerPostalOffice;
 import com.khjxiaogu.beecrasy.mail.PostalOffice;
+import com.khjxiaogu.beecrasy.network.OpenApistleMessage;
+import com.khjxiaogu.beecrasy.network.PacketHandler;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -55,6 +57,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
@@ -66,6 +69,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 @EventBusSubscriber(modid = Beecrasy.MODID)
@@ -162,6 +166,19 @@ public class CommonListeners {
 				}
 			}
 		}
+	}
+	@SubscribeEvent
+	public static void onItemClick(RightClickItem ev) {
+	
+		String apistle=ev.getItemStack().get(Components.APISTLE);
+		if(apistle!=null) {
+			if(ev.getEntity() instanceof ServerPlayer player) {
+				PacketHandler.sendToPlayer(player, new OpenApistleMessage(apistle,ev.getItemStack().getDisplayName()));
+			}
+			ev.setCanceled(true);
+			ev.setCancellationResult(InteractionResult.SUCCESS);
+		}
+			
 	}
 	@SuppressWarnings("resource")
 	@SubscribeEvent

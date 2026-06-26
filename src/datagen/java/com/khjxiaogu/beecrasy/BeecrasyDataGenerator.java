@@ -38,6 +38,8 @@ public class BeecrasyDataGenerator {
 		gen.addProvider(true,new BeecrasyBlockTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
 		gen.addProvider(true,new BeecrasyFluidTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
 		gen.addProvider(true,new BeecrasyItemTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
+		
+		
 		gen.addProvider(true, new BeecrasyRecipeProvider.Runner(gen.getPackOutput(), event.getLookupProvider()));
 		gen.addProvider(true, new LootTableProvider(gen.getPackOutput(),Set.of(),
             List.of(
@@ -54,6 +56,7 @@ public class BeecrasyDataGenerator {
 		gen.addProvider(true, new BeecrasyLangGenerator(gen.getPackOutput(), Beecrasy.MODID,"en_us"));
 		gen.addProvider(true, new BeecrasyParticleProvider(gen.getPackOutput()));
 		gen.addProvider(true, new BeecrasyMidiProcessor(gen.getPackOutput(),event.getLookupProvider()));
+		gen.addProvider(true,new BeecrasyApistleGenerator(gen.getPackOutput(),event.getLookupProvider()));
 		
 	}
 }

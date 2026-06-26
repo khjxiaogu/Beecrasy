@@ -32,6 +32,7 @@ public record SpaceLine(int height) implements Line, UnbakedLine {
 	public static final MapCodec<SpaceLine> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
 			Codec.INT.optionalFieldOf("height",8).forGetter(SpaceLine::height)
 			).apply(t, SpaceLine::new));
+	public static final SpaceLine DEFAULT=new SpaceLine(8);
 	@Override
 	public Line bake(int width) {
 		return this;

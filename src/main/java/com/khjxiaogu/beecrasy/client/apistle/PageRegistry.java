@@ -20,11 +20,14 @@
 package com.khjxiaogu.beecrasy.client.apistle;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import com.khjxiaogu.beecrasy.events.ApistlePageRegistryEvent;
 import com.mojang.serialization.JsonOps;
 
 import net.minecraft.client.Minecraft;
@@ -33,24 +36,34 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.neoforged.neoforge.common.NeoForge;
 
 public class PageRegistry implements ResourceManagerReloadListener{
 	public static final PageRegistry INSTANCE=new PageRegistry();
-	List<Page> pages;
+	Map<String,List<UnbakedPage>> pages;
 	@Override
 	public void onResourceManagerReload(ResourceManager resourceManager) {
-		pages=new ArrayList<>();
-		Map<Identifier,Page> allpages=new HashMap<>();
+		Map<String,List<UnbakedPage>> pages=new HashMap<>();
+		Map<Identifier,Page> langpages=new HashMap<>();
 		FileToIdConverter convLocal=new FileToIdConverter("apistle/"+Minecraft.getInstance().getLanguageManager().getSelected(),".json");
-		SimpleJsonResourceReloadListener.scanDirectory(resourceManager, convLocal, JsonOps.INSTANCE, Page.CODEC, allpages);
-
+		SimpleJsonResourceReloadListener.scanDirectory(resourceManager, convLocal, JsonOps.INSTANCE, Page.CODEC, langpages);
+		Map<Identifier,Page> commonpages=new HashMap<>();
 		FileToIdConverter conv=new FileToIdConverter("apistle/common",".json");
-		SimpleJsonResourceReloadListener.scanDirectory(resourceManager, conv, JsonOps.INSTANCE, Page.CODEC, allpages);
-		pages.addAll(allpages.values());
-		pages.sort(Comparator.comparingInt(Page::order));
+		SimpleJsonResourceReloadListener.scanDirectory(resourceManager, conv, JsonOps.INSTANCE, Page.CODEC, commonpages);
+		commonpages.putAll(langpages);
+		for(Entry<Identifier, Page> ent:commonpages.entrySet()) {
+			pages.computeIfAbsent(ent.getKey().getNamespace(), _->new ArrayList<>()).add(ent.getValue());
+		}
+		NeoForge.EVENT_BUS.post(new ApistlePageRegistryEvent(pages));
+
+		pages.replaceAll((_,v)->{
+			v.sort(Comparator.comparingInt(UnbakedPage::order));
+			return Collections.unmodifiableList(v);
+		});
+		this.pages=Collections.unmodifiableMap(pages);
 	}
-	public List<Page> getPages() {
-		return pages;
+	public List<UnbakedPage> getPages(String val) {
+		return pages.getOrDefault(val,List.of());
 	}
 
 }

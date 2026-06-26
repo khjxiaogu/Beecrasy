@@ -38,8 +38,8 @@ import net.minecraft.util.Mth;
 public record Text(List<String> lines,float scale,boolean centered) implements UnbakedLine{
 	public static final MapCodec<Text> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
 			ExtraCodecs.compactListCodec(Codec.STRING).fieldOf("text").forGetter(Text::lines),
-			Codec.FLOAT.fieldOf("scale").forGetter(Text::scale),
-			Codec.BOOL.fieldOf("centered").forGetter(Text::centered)
+			Codec.FLOAT.optionalFieldOf("scale",1f).forGetter(Text::scale),
+			Codec.BOOL.optionalFieldOf("centered",false).forGetter(Text::centered)
 			).apply(t, Text::new));
 
 	@Override

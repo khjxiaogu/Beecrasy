@@ -355,6 +355,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SEQUENCER_TAB=COMPONENTS.registerComponentType("sequencer_tab", t->t.cacheEncoding().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT).ignoreSwapAnimation());
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<MailComponent>> MAIL=COMPONENTS.registerComponentType("mail", t->t.cacheEncoding().persistent(MailComponent.CODEC).networkSynchronized(MailComponent.STREAM_CODEC).ignoreSwapAnimation());
 	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BeediDisk>> BEEDI_RECORD=COMPONENTS.registerComponentType("midi", t->t.cacheEncoding().persistent(BeediDisk.CODEC).networkSynchronized(BeediDisk.STREAM_CODEC));
+	    public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> APISTLE=COMPONENTS.registerComponentType("apistle", t->t.cacheEncoding().persistent(Codec.STRING).networkSynchronized(ByteBufCodecs.STRING_UTF8));
 	    
 	    
 	}

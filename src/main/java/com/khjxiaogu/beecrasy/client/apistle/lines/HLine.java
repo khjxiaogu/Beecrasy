@@ -31,8 +31,15 @@ import net.minecraft.util.ARGB;
 
 public record HLine(TextColor color) implements Line, UnbakedLine {
 	public static final MapCodec<HLine> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
-		TextColor.CODEC.optionalFieldOf("color",TextColor.parseColor("#81cfff").getOrThrow()).forGetter(HLine::color)
+		TextColor.CODEC.optionalFieldOf("color",TextColor.fromRgb(0x81cfff)).forGetter(HLine::color)
 			).apply(t, HLine::new));
+	public static final HLine DEFAULT=new HLine(TextColor.fromRgb(0x81cfff));
+	public HLine(int color) {
+		this(TextColor.fromRgb(color));
+	}
+	public HLine(String color) {
+		this(TextColor.parseColor(color).getOrThrow());
+	}
 	@Override
 	public Line bake(int width) {
 		return this;

@@ -45,6 +45,7 @@ public class PacketHandler {
 		registry.playToServer(MailEditMessage.TYPE, MailEditMessage.CODEC,MailEditMessage::handle);
 		registry.playToClient(ClientMailReceivedMessage.TYPE, ClientMailReceivedMessage.CODEC,ClientMailReceivedMessage::handle);
 		registry.playToClient(BeediPlayStatusMessage.TYPE, BeediPlayStatusMessage.CODEC,BeediPlayStatusMessage::handle);
+		registry.playToClient(OpenApistleMessage.TYPE, OpenApistleMessage.CODEC,OpenApistleMessage::handle);
 		registry.versioned("1");
 	}
 }

@@ -26,6 +26,7 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.blocks.BeecrasyEntityBlock;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 
+import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -140,6 +141,7 @@ public class HiveBlock extends Block  implements BeecrasyEntityBlock<HiveBlockEn
 					Vec3 mpos=pos.getCenter().add(dir.getUnitVec3().scale(0.5f)).add(dx, dy, dz);
 						level.addParticle(BeecrasyParticles.BEE.get().random(), mpos.x(), mpos.y(),mpos.z(), speedvec.x(),
 								0.0D, speedvec.z());
+					CraftingScreen scrn ;
 				}
 			}
 		}
