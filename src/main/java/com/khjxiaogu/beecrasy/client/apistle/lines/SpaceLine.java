@@ -30,7 +30,7 @@ import net.minecraft.network.chat.Component;
 
 public record SpaceLine(int height) implements Line, UnbakedLine {
 	public static final MapCodec<SpaceLine> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
-			Codec.INT.fieldOf("height").forGetter(SpaceLine::height)
+			Codec.INT.optionalFieldOf("height",8).forGetter(SpaceLine::height)
 			).apply(t, SpaceLine::new));
 	@Override
 	public Line bake(int width) {

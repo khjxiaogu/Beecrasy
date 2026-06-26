@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
@@ -49,8 +50,12 @@ import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.RegistryOps.HolderLookupAdapter;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
@@ -337,5 +342,22 @@ public final class Utils {
 				return RegistryOps.create(parent, EMPTY);
 			}
 		};
+	}
+	public static interface ResourceListConsumer{
+		public void accept(Identifier location,Identifier id,Resource file);
+	}
+	public static void listResource(ResourceManager resourceManager,String prefix,String suffix,ResourceListConsumer byId) {
+		FileToIdConverter ftic=new FileToIdConverter(prefix,suffix);
+		ftic.listMatchingResources(resourceManager).forEach((rl,resource)->{
+			Identifier id=ftic.fileToId(rl);
+			byId.accept(rl, id, resource);
+		});
+	}
+	public static void listResource(ResourceManager resourceManager,String modid,String prefix,String suffix,ResourceListConsumer byId) {
+		FileToIdConverter ftic=new FileToIdConverter(prefix,suffix);
+		ftic.listMatchingResourcesFromNamespace(resourceManager, modid).forEach((rl,resource)->{
+			Identifier id=ftic.fileToId(rl);
+			byId.accept(rl, id, resource);
+		});
 	}
 }

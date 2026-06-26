@@ -33,7 +33,7 @@ import net.minecraft.resources.Identifier;
 public record Image(Identifier image,int width,int height) implements UnbakedLine,Line{
 	public static final MapCodec<Image> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
 
-			Identifier.CODEC.fieldOf("color").forGetter(Image::image),
+			Identifier.CODEC.fieldOf("image").forGetter(Image::image),
 			Codec.INT.fieldOf("width").forGetter(Image::width),
 			Codec.INT.fieldOf("height").forGetter(Image::height)
 			).apply(t, Image::new));

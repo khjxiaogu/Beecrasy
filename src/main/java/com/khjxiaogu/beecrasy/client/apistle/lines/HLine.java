@@ -21,16 +21,17 @@ package com.khjxiaogu.beecrasy.client.apistle.lines;
 
 import java.util.function.Consumer;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.util.ARGB;
 
-public record HLine(int color) implements Line, UnbakedLine {
+public record HLine(TextColor color) implements Line, UnbakedLine {
 	public static final MapCodec<HLine> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
-			Codec.INT.fieldOf("color").forGetter(HLine::color)
+		TextColor.CODEC.optionalFieldOf("color",TextColor.parseColor("#81cfff").getOrThrow()).forGetter(HLine::color)
 			).apply(t, HLine::new));
 	@Override
 	public Line bake(int width) {
@@ -40,7 +41,7 @@ public record HLine(int color) implements Line, UnbakedLine {
 	@Override
 	public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY,
 			Consumer<Component> tooltips) {
-		graphics.fill(x, y+1, x+w-4, y+2, color);
+		graphics.fill(x, y+1, x+w-4, y+2, ARGB.color(1f, color.getValue()));
 		return 3;
 	}
 

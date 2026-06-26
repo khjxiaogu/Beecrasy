@@ -27,6 +27,7 @@ import com.khjxiaogu.beecrasy.beedi.BeediManager;
 import com.khjxiaogu.beecrasy.client.BeeTint;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.client.ModelReference;
+import com.khjxiaogu.beecrasy.client.apistle.PageRegistry;
 import com.khjxiaogu.beecrasy.client.model.GuiOnlySpecialModelWrapper;
 import com.khjxiaogu.beecrasy.client.model.MailModel;
 import com.khjxiaogu.beecrasy.client.particles.BeeParticle;
@@ -44,6 +45,7 @@ import com.khjxiaogu.beecrasy.client.screens.SequenceBlockScreen;
 import com.khjxiaogu.beecrasy.client.screens.SequenceHandHeldScreen;
 import com.khjxiaogu.beecrasy.client.screens.SkepScreen;
 import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTabs;
+import com.khjxiaogu.beecrasy.utils.Utils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -128,17 +130,16 @@ public class BeecrasyClient {
 	public static void onReload(AddClientReloadListenersEvent ev)
 	{
 		ev.addListener(Beecrasy.rl("midi"),BeediManager.INSTANCE);
+		ev.addListener(Beecrasy.rl("apistle"), PageRegistry.INSTANCE);
 		
 	}
 	@SuppressWarnings("resource")
 	@SubscribeEvent
 	public static void registerModels(ModelEvent.RegisterStandalone ev)
 	{
-		Minecraft.getInstance().getResourceManager().listResources("models/block/dynamic",e->e.getPath().endsWith(".json")&&Beecrasy.MODID.equals(e.getNamespace())).keySet().forEach(rl->{
-			//remove models/ and .json
-			String name=rl.getPath().substring(0,rl.getPath().lastIndexOf(".")).substring(7);
-			Identifier id=Beecrasy.rl(name);
-			ev.register(ModelReference.createKey(id).name(),SimpleUnbakedStandaloneModel.quadCollection(id));	
+		Utils.listResource(Minecraft.getInstance().getResourceManager(),Beecrasy.MODID, "models/block/dynamic",
+			".json", (location,id,_)->{
+				ev.register(ModelReference.createKey(id).name(),SimpleUnbakedStandaloneModel.quadCollection(location));	
 		});
 	}
 	@SubscribeEvent

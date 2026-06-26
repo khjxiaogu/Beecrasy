@@ -22,6 +22,7 @@ package com.khjxiaogu.beecrasy.client.apistle.lines;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -32,18 +33,19 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.Ingredient;
 
-public record ItemSpotLine(List<ItemStackTemplate> items,float scale) implements UnbakedLine{
+public record ItemSpotLine(Either<Ingredient,List<ItemStackTemplate>> items,float scale) implements UnbakedLine{
 	public static final MapCodec<ItemSpotLine> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
-			ExtraCodecs.compactListCodec(ItemStackTemplate.CODEC).fieldOf("items").forGetter(ItemSpotLine::items),
-			Codec.FLOAT.fieldOf("scale").forGetter(ItemSpotLine::scale)
+		Codec.either(Ingredient.CODEC,ExtraCodecs.nonEmptyList(ExtraCodecs.compactListCodec(ItemStackTemplate.CODEC))).fieldOf("items").forGetter(ItemSpotLine::items),
+			Codec.FLOAT.optionalFieldOf("scale",1f).forGetter(ItemSpotLine::scale)
 			).apply(t, ItemSpotLine::new));
 
 
 	@Override
 	public Line bake(int width) {
 		int size=Mth.ceil(scale*16);
-		List<ItemStack> item=items.stream().map(ItemStackTemplate::create).toList();
+		List<ItemStack> item=items.map(t->t.getValues().stream().map(ItemStack::new), t->t.stream().map(ItemStackTemplate::create)).toList();
 		return new Line() {
 			@Override
 			public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY,

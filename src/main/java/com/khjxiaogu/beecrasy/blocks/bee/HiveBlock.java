@@ -144,9 +144,4 @@ public class HiveBlock extends Block  implements BeecrasyEntityBlock<HiveBlockEn
 			}
 		}
 	}
-	@Override
-	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData,
-			Player player) {
-		return (level.getBlockEntity(pos) instanceof HiveBlockEntity blockEntity) ? blockEntity.getItem() : super.getCloneItemStack(level, pos, state, includeData,player);
-	}
 }

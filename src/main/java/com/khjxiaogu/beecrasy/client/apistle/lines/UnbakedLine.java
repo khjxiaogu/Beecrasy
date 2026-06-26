@@ -25,8 +25,18 @@ import java.util.Map;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
+import net.minecraft.util.Util;
+
 public interface UnbakedLine {
-	public static final Map<String,MapCodec<UnbakedLine>> codecs=new HashMap<>();
+	public static final Map<String,MapCodec<? extends UnbakedLine>> codecs=Util.make(()->{
+		Map<String,MapCodec<? extends UnbakedLine>> map=new HashMap<>();
+		map.put("hr", HLine.CODEC);
+		map.put("image", Image.CODEC);
+		map.put("item", ItemSpotLine.CODEC);
+		map.put("space", SpaceLine.CODEC);
+		map.put("text", Text.CODEC);
+		return map;
+	});
 	public static final Codec<UnbakedLine> CODEC=Codec.STRING.fieldOf("type").dispatch(UnbakedLine::type, codecs::get);
 
 	Line bake(int width);

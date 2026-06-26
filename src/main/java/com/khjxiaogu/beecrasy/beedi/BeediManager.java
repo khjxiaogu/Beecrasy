@@ -36,6 +36,7 @@ import java.util.function.IntFunction;
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Sounds;
 import com.khjxiaogu.beecrasy.utils.BeecrasyMath;
+import com.khjxiaogu.beecrasy.utils.Utils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -109,37 +110,34 @@ public class BeediManager implements ResourceManagerReloadListener{
 			e.printStackTrace();
 			Beecrasy.LOGGER.error("failed to load midi from local folder.");
 		}
-		resourceManager.listResources("beedi",_->true).keySet().forEach(rl->{
-			//remove models/ and .json
-			String name=rl.getPath().substring(0,rl.getPath().lastIndexOf(".")).substring(6);
-			Identifier id=rl.withPath(name);
+		Utils.listResource(resourceManager, "beedi", "", (location,id,resource)->{
 			MidiSheet ms=null;
-			if(rl.getPath().endsWith(".mid")) {
+			if(location.getPath().endsWith(".mid")) {
 				try {
-					try(InputStream is=resourceManager.open(rl)){
+					try(InputStream is=resource.open()){
 						ms = new MidiSheet(is);
 					}
 				} catch (Exception e1) {
 					e1.printStackTrace();
-					Beecrasy.LOGGER.error("failed to load midi file "+rl+", skipped.");
+					Beecrasy.LOGGER.error("failed to load midi file "+location+", skipped.");
 				}	
-			}else if(rl.getPath().endsWith(".bmid")) {
+			}else if(location.getPath().endsWith(".bmid")) {
 				try {
-					try(InputStream is=resourceManager.open(rl)){
+					try(InputStream is=resource.open()){
 						ms = MidiSheet.readFromBinaryFile(is);
 					}
 				} catch (Exception e1) {
 					e1.printStackTrace();
-					Beecrasy.LOGGER.error("failed to load midi binary file "+rl+", skipped.");
+					Beecrasy.LOGGER.error("failed to load midi binary file "+location+", skipped.");
 				}	
-			}else if(rl.getPath().endsWith(".json")) {
+			}else if(location.getPath().endsWith(".json")) {
 				try {
-					try(BufferedReader is=resourceManager.openAsReader(rl)){
+					try(BufferedReader is=resource.openAsReader()){
 						ms = MidiSheet.readFromJsonFile(is);
 					}
 				} catch (Exception e1) {
 					e1.printStackTrace();
-					Beecrasy.LOGGER.error("failed to load midi json file "+rl+", skipped.");
+					Beecrasy.LOGGER.error("failed to load midi json file "+location+", skipped.");
 				}	
 			}
 			if(ms!=null) {

@@ -159,9 +159,4 @@ public class SkepBlock extends Block  implements BeecrasyEntityBlock<SkepBlockEn
 			}
 		}
 	}
-	@Override
-	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData,
-			Player player) {
-		return (level.getBlockEntity(pos) instanceof SkepBlockEntity blockEntity) ? blockEntity.getItem() : super.getCloneItemStack(level, pos, state, includeData,player);
-	}
 }
