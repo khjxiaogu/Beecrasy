@@ -5,7 +5,12 @@
   "lines": [
     {
       "type": "text",
-      "text": "1"
+      "text": [
+      	"██哒哒哒哒哒哒",
+      	"███啦啦啦啦啦啦啦",
+      	"████呜呜呜呜呜"
+      ],
+      "scale":2.5
     },
     {
       "type": "hr"
@@ -42,6 +47,6 @@
       "text": "123"
     }
   ],
-  "order": 100,
-  "title": "Example page1"
+  "order": 1,
+  "title": "Example pageex"
 }

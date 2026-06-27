@@ -20,6 +20,7 @@
 package com.khjxiaogu.beecrasy.client.apistle.lines;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.khjxiaogu.beecrasy.utils.StringComponentParser;
@@ -35,18 +36,22 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 
-public record Text(List<String> lines,float scale,boolean centered) implements UnbakedLine{
+public record Text(List<String> lines,float scale,boolean centered,Optional<Float> lineHeight) implements UnbakedLine{
 	public static final MapCodec<Text> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
 			ExtraCodecs.compactListCodec(Codec.STRING).fieldOf("text").forGetter(Text::lines),
 			Codec.FLOAT.optionalFieldOf("scale",1f).forGetter(Text::scale),
-			Codec.BOOL.optionalFieldOf("centered",false).forGetter(Text::centered)
+			Codec.BOOL.optionalFieldOf("centered",false).forGetter(Text::centered),
+			Codec.FLOAT.optionalFieldOf("lineHeight").forGetter(Text::lineHeight)
 			).apply(t, Text::new));
-
+	public Text(List<String> lines,float scale,boolean centered) {
+		this(lines,scale,centered,Optional.empty());
+	}
 	@Override
 	public Line bake(int width) {
 		Font font=Minecraft.getInstance().font;
 		List<FormattedCharSequence> lines=this.lines.stream().flatMap(t->font.split(StringComponentParser.parse(t),(int)(width/scale)).stream()).toList();
-		int height=Mth.ceil(scale*8*lines.size());
+		float lineHeight=this.lineHeight.orElse(scale*8+1);
+		int height=Mth.ceil(lineHeight*lines.size());
 		return new Line() {
 			@Override
 			public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY,
@@ -54,25 +59,23 @@ public record Text(List<String> lines,float scale,boolean centered) implements U
 				int initX=x;
 				int initY=y;
 				int initW=w;
+				graphics.pose().pushMatrix();
 				if(scale!=1) {
-					graphics.pose().pushMatrix();
+					
 					graphics.pose().translate(x, y);
 					graphics.pose().scale(scale);
 					initX=0;
 					initY=0;
 					initW=(int)(width/scale);
 				}
-				int curY=0;
 				for(FormattedCharSequence mc:lines) {
 					if(centered)
-						graphics.text(font, mc, initX+(initW-font.width(mc))/2, initY+curY, 0xff81cfff, false);
+						graphics.text(font, mc, initX+(initW-font.width(mc))/2, initY, 0xff81cfff, false);
 					else
-						graphics.text(font, mc, initX, initY+curY, 0xff81cfff, false);
-					curY+=8;
+						graphics.text(font, mc, initX, initY, 0xff81cfff, false);
+					graphics.pose().translate(0, lineHeight/scale);
 				}
-				if(scale!=1) {
-					graphics.pose().popMatrix();
-				}
+				graphics.pose().popMatrix();
 				return height;
 			}
 
