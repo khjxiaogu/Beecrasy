@@ -23,38 +23,26 @@ package com.khjxiaogu.beecrasy.network;
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.menu.MailMenu;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record MailEditMessage(int containerId,byte field,String text) implements CustomPacketPayload{
+public record MailSetIconMessage(int containerId,ItemStack stack) implements CustomPacketPayload{
 
-	public static final Type<MailEditMessage> TYPE=new Type<>(Beecrasy.rl("mail_text"));
-	public static final StreamCodec<ByteBuf, MailEditMessage> CODEC=StreamCodec.composite(
-		ByteBufCodecs.VAR_INT,MailEditMessage::containerId,
-		ByteBufCodecs.BYTE,MailEditMessage::field,
-		ByteBufCodecs.STRING_UTF8, MailEditMessage::text,
-		MailEditMessage::new);
-	public MailEditMessage(int containerId, int i, String text) {
-		this(containerId,(byte)i,text);
-	}
-	public static MailEditMessage ofReceiver(int containerId,String receiver) {
-		return new MailEditMessage(containerId,0,receiver);
-	}
-	public static MailEditMessage ofLine1(int containerId,String line1) {
-		return new MailEditMessage(containerId,1,line1);
-	}
-	public static MailEditMessage ofLine2(int containerId,String line2) {
-		return new MailEditMessage(containerId,2,line2);
-	}
+	public static final Type<MailSetIconMessage> TYPE=new Type<>(Beecrasy.rl("mail_icon"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, MailSetIconMessage> CODEC=StreamCodec.composite(
+		ByteBufCodecs.VAR_INT,MailSetIconMessage::containerId,
+		ItemStack.STREAM_CODEC,MailSetIconMessage::stack,
+		MailSetIconMessage::new);
 	void handle(IPayloadContext context) {
 		context.enqueueWork(()->{
 			AbstractContainerMenu openedMenu=context.player().containerMenu;
 			if (openedMenu.containerId==containerId&&openedMenu instanceof MailMenu opm) {
-				opm.setLetterText(field,text);
+				opm.setIcon(stack);
 			}
 		});
 	}

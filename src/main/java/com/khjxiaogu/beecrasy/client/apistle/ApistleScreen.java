@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
-import com.khjxiaogu.beecrasy.client.screens.SequencerScreen;
+
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -191,7 +191,7 @@ public class ApistleScreen extends Screen {
 	}
 	@Override
     public boolean isPauseScreen() {
-        return true;
+        return false;
     }
     @Override
     public boolean isInGameUi() {

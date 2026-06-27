@@ -26,30 +26,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
+import com.google.gson.JsonElement;
 import com.khjxiaogu.beecrasy.events.ApistlePageRegistryEvent;
 import com.mojang.serialization.JsonOps;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.neoforged.neoforge.common.NeoForge;
 
-public class PageRegistry implements ResourceManagerReloadListener{
+public class PageRegistry{
 	public static final PageRegistry INSTANCE=new PageRegistry();
 	Map<String,List<UnbakedPage>> pages;
-	@Override
-	public void onResourceManagerReload(ResourceManager resourceManager) {
-		Map<String,List<UnbakedPage>> pages=new HashMap<>();
+	public void onResourceManagerReload(ResourceManager resourceManager, HolderLookup.Provider registryAccess) {
+		Map<String,List<UnbakedPage>> pages=new TreeMap<>();
 		Map<Identifier,Page> langpages=new HashMap<>();
 		FileToIdConverter convLocal=new FileToIdConverter("apistle/"+Minecraft.getInstance().getLanguageManager().getSelected(),".json");
-		SimpleJsonResourceReloadListener.scanDirectory(resourceManager, convLocal, JsonOps.INSTANCE, Page.CODEC, langpages);
+		RegistryOps<JsonElement> registry=RegistryOps.create(JsonOps.INSTANCE, registryAccess);
+		SimpleJsonResourceReloadListener.scanDirectory(resourceManager, convLocal, registry, Page.CODEC, langpages);
 		Map<Identifier,Page> commonpages=new HashMap<>();
 		FileToIdConverter conv=new FileToIdConverter("apistle/common",".json");
-		SimpleJsonResourceReloadListener.scanDirectory(resourceManager, conv, JsonOps.INSTANCE, Page.CODEC, commonpages);
+		SimpleJsonResourceReloadListener.scanDirectory(resourceManager, conv, registry, Page.CODEC, commonpages);
 		commonpages.putAll(langpages);
 		for(Entry<Identifier, Page> ent:commonpages.entrySet()) {
 			pages.computeIfAbsent(ent.getKey().getNamespace(), _->new ArrayList<>()).add(ent.getValue());

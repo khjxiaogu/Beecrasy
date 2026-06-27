@@ -35,6 +35,7 @@ public interface UnbakedLine {
 		map.put("item", ItemSpotLine.CODEC);
 		map.put("space", SpaceLine.CODEC);
 		map.put("text", Text.CODEC);
+		map.put("table", Table.CODEC);
 		return map;
 	});
 	public static final Codec<UnbakedLine> CODEC=Codec.STRING.fieldOf("type").dispatch(UnbakedLine::type, codecs::get);

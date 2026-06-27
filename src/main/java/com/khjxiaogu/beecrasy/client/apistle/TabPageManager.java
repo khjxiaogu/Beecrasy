@@ -128,17 +128,6 @@ public class TabPageManager {
     public boolean hasPrev() {
         return totalTabs > visibleCount && currentStart > 0;
     }
-
-    private int getDisplayedTabCount() {
-        if (totalTabs <= visibleCount) {
-            return totalTabs;
-        }
-        int maxTabs = visibleCount - (currentStart > 0 ? 1 : 0);
-        if (currentStart + maxTabs >= totalTabs) {
-            return totalTabs - currentStart;
-        }
-		return maxTabs - 1;
-    }
     private int getPageSize() {
         return (totalTabs > visibleCount) ? visibleCount - 1 : totalTabs;
     }

@@ -27,6 +27,17 @@ import net.minecraft.network.chat.Component;
 public interface BakedPage {
 	void extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int h,int viewY,int viewHeight, int mouseX, int mouseY, Consumer<Component> tooltips);
 	int height();
+	/**
+	 * @param graphics  
+	 * @param x 
+	 * @param y 
+	 * @param w 
+	 * @param h 
+	 * @param viewY 
+	 * @param viewHeight 
+	 * @param mouseX 
+	 * @param mouseY 
+	 */
 	default void extractBackground(GuiGraphicsExtractor graphics, int x, int y, int w, int h,int viewY,int viewHeight, int mouseX, int mouseY) {};
 	
 }

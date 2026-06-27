@@ -26,16 +26,22 @@ import java.util.Optional;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.client.screens.MailScreen;
 import com.khjxiaogu.beecrasy.client.screens.PressScreen;
 import com.khjxiaogu.beecrasy.compat.category.PressCategory;
 import com.khjxiaogu.beecrasy.data.recipe.PressRecipe;
+import com.khjxiaogu.beecrasy.network.MailSetIconMessage;
+import com.khjxiaogu.beecrasy.network.PacketHandler;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IClickableIngredientFactory;
+import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.gui.handlers.IGuiClickableArea;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IModIngredientRegistration;
@@ -45,7 +51,9 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IJeiRuntime;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
 @JeiPlugin
@@ -83,6 +91,36 @@ public class JEICompat implements IModPlugin {
 
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registry) {
+		registry.addGhostIngredientHandler(MailScreen.class, new IGhostIngredientHandler<>() {
+
+			@Override
+			public void onComplete() {
+			}
+
+			@Override
+			public <I> List<Target<I>> getTargetsTyped(MailScreen gui, ITypedIngredient<I> ingredient,
+					boolean doStart) {
+				if(ingredient.getIngredient(VanillaTypes.ITEM_STACK).isPresent()) {
+					return List.of(new Target<>() {
+
+						@Override
+						public Rect2i getArea() {
+							return new Rect2i(gui.getLeftPos()+143,gui.getTopPos() +28,16,16);
+						}
+
+						@Override
+						public void accept(I ingredient) {
+							if(ingredient instanceof ItemStack is) {
+								PacketHandler.sendToServer(new MailSetIconMessage(gui.getMenu().containerId,is));
+							}
+						}
+						
+					});
+				}
+				return List.of();
+			}
+			
+		});
 		registry.addGenericGuiContainerHandler(PressScreen.class, new IGuiContainerHandler<PressScreen>() {
 			@Override
 			public Collection<IGuiClickableArea> getGuiClickableAreas(PressScreen containerScreen, double mouseX, double mouseY) {

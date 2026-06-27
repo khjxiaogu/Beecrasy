@@ -32,6 +32,7 @@ import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 public class BeeCityCombMenu extends BeecrasyContainerMenu {
 	
+	@SuppressWarnings("unused")
 	public BeeCityCombMenu(int containerId,Inventory inventory, RegistryFriendlyByteBuf bytebuf) {
 		super(Menus.BEE_CITY_COMB.get(), containerId,inventory,2);
 		ItemStacksResourceHandler container=new ItemStacksResourceHandler(2);

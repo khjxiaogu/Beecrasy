@@ -268,6 +268,9 @@ public class BeeHiveHandler implements ValueIOSerializable,ContainerData{
 			}
 		}
 	}
+	/**
+	 * @param worldPosition  
+	 */
 	@SuppressWarnings("resource")
 	public void tickNotWorking(ServerLevel level, BlockPos worldPosition, BeehiveSlotProvider slots) {
 		long secs=WorldCalendar.getCalendar(level).getSeconds();

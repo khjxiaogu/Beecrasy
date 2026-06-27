@@ -28,42 +28,61 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.core.HolderSet;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.Item.TooltipContext;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.Ingredient;
 
-public record ItemSpotLine(Either<Ingredient,List<ItemStackTemplate>> items,float scale) implements UnbakedLine{
+public record ItemSpotLine(List<Either<HolderSet<Item>,List<ItemStackTemplate>>> items,float scale) implements UnbakedLine{
+	private static final Codec<Either<HolderSet<Item>,List<ItemStackTemplate>>> ICON_CODEC=Codec.either(Ingredient.NON_AIR_HOLDER_SET_CODEC,ExtraCodecs.nonEmptyList(ExtraCodecs.compactListCodec(ItemStackTemplate.CODEC)));
 	public static final MapCodec<ItemSpotLine> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
-		Codec.either(Ingredient.CODEC,ExtraCodecs.nonEmptyList(ExtraCodecs.compactListCodec(ItemStackTemplate.CODEC))).fieldOf("items").forGetter(ItemSpotLine::items),
+			Codec.mapEither(ICON_CODEC.fieldOf("items"), Codec.list(ICON_CODEC).fieldOf("items_list")).xmap(o->o.map(List::of,b->b),o->o.size()==1?Either.left(o.get(0)):Either.right(o)).forGetter(ItemSpotLine::items),
 			Codec.FLOAT.optionalFieldOf("scale",1f).forGetter(ItemSpotLine::scale)
 			).apply(t, ItemSpotLine::new));
 
 
 	@Override
 	public Line bake(int width) {
-		int size=Mth.ceil(scale*16);
-		List<ItemStack> item=items.map(t->t.getValues().stream().map(ItemStack::new), t->t.stream().map(ItemStackTemplate::create)).toList();
+		
+		List<List<ItemStack>> items=this.items.stream().map(o->o.map(t->t.stream().map(ItemStack::new), t->t.stream().map(ItemStackTemplate::create)).toList()).toList();
+		float sizef=scale*16;
+		float widthf=sizef*items.size();
+		int height=Mth.ceil(sizef);
 		return new Line() {
 			@Override
 			public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY,
 					Consumer<Component> tooltips) {
 			
 				graphics.pose().pushMatrix();
-				graphics.pose().translate(x+(w-size)/2, y);
+				graphics.pose().translate(x+(w-widthf)/2, y);
 				graphics.pose().scale(scale);
-				graphics.item(item.get((int) ((System.currentTimeMillis()/500)%item.size())), 0, 0);
+				float simMouseX=x+(w-widthf)/2;
+				boolean isYrange=mouseY>=y&&mouseY<=y+height;
+				float space=1/scale;
+				for(List<ItemStack> item:items) {
+					ItemStack touse=item.get((int) ((System.currentTimeMillis()/500)%item.size()));
+					if(isYrange&&mouseX>simMouseX&&mouseX<simMouseX+sizef) {
+						touse.getTooltipLines(TooltipContext.EMPTY, null, TooltipFlag.NORMAL).forEach(tooltips);
+					}
+					simMouseX+=sizef+1;
+					graphics.item(touse, 0, 0);
+					graphics.pose().translate(16+space,0);
+				}
 				graphics.pose().popMatrix();
 				
 				
-				return size;
+				return height;
 			}
 
 			@Override
 			public int precalculateHeight() {
-				return size;
+				return height;
 			}
 		};
 	}

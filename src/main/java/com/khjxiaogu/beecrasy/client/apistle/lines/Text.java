@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import com.khjxiaogu.beecrasy.client.apistle.Constants;
 import com.khjxiaogu.beecrasy.utils.StringComponentParser;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -45,6 +46,9 @@ public record Text(List<String> lines,float scale,boolean centered,Optional<Floa
 			).apply(t, Text::new));
 	public Text(List<String> lines,float scale,boolean centered) {
 		this(lines,scale,centered,Optional.empty());
+	}
+	public Text(List<String> lines) {
+		this(lines,1f,false,Optional.empty());
 	}
 	@Override
 	public Line bake(int width) {
@@ -70,9 +74,9 @@ public record Text(List<String> lines,float scale,boolean centered,Optional<Floa
 				}
 				for(FormattedCharSequence mc:lines) {
 					if(centered)
-						graphics.text(font, mc, initX+(initW-font.width(mc))/2, initY, 0xff81cfff, false);
+						graphics.text(font, mc, initX+(initW-font.width(mc))/2, initY, Constants.TEXT_COLOR, false);
 					else
-						graphics.text(font, mc, initX, initY, 0xff81cfff, false);
+						graphics.text(font, mc, initX, initY, Constants.TEXT_COLOR, false);
 					graphics.pose().translate(0, lineHeight/scale);
 				}
 				graphics.pose().popMatrix();

@@ -379,6 +379,9 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 	protected void tickExtraWorking(BeeHiveParameterSet params,int time) {
 		
 	}
+	/**
+	 * @param params  
+	 */
 	protected void tickBeforeWorking(BeeHiveParameterSet params) {
 		
 	}

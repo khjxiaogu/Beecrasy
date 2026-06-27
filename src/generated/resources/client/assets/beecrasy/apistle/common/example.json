@@ -6,24 +6,34 @@
     {
       "type": "text",
       "text": [
-      	"██哒哒哒哒哒哒",
-      	"███啦啦啦啦啦啦啦",
-      	"████呜呜呜呜呜"
-      ],
-      "scale":2.5
+        "██哒哒哒哒哒哒",
+        "███啦啦啦啦啦啦啦",
+        "████呜呜呜呜呜"
+      ]
     },
     {
       "type": "hr"
     },
     {
       "type": "image",
-      "height": 100,
-      "image": "minecraft:example",
-      "width": 100
+      "height": 60,
+      "image": "beecrasy:textures/gui/mailbox.png",
+      "width": 60
     },
     {
       "type": "item",
-      "items": "beecrasy:queen_bee"
+      "items_list": [
+        {
+          "id": "beecrasy:queen_bee"
+        },
+        {
+          "id": "beecrasy:drone"
+        },
+        {
+          "id": "beecrasy:larva"
+        }
+      ],
+      "scale": 1.5
     },
     {
       "type": "item",
@@ -37,8 +47,24 @@
       ]
     },
     {
-      "type": "space",
-      "height": 200
+      "type": "table",
+      "cells": [
+        [
+          "beecrasy:butterfly_net",
+          "'BUTTERFLY",
+          "'20"
+        ],
+        [
+          "beecrasy:bumblebee_jasper",
+          "'BUMBLEBEE",
+          "'15"
+        ]
+      ],
+      "columns": [
+        16,
+        100,
+        20
+      ]
     },
     {
       "type": "text",
@@ -47,6 +73,5 @@
       "text": "123"
     }
   ],
-  "order": 1,
-  "title": "Example pageex"
+  "title": "Example page1"
 }

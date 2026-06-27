@@ -26,9 +26,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Set;
 
 import com.google.common.collect.Iterables;
@@ -120,7 +117,7 @@ public class BeeCityComponent extends AbstractBeeComponent{
 	}
 	public void appendHiveCity(BlockPos pos) {
 		if(!this.pos.containsKey(pos))
-			this.pos.put(pos,this.createBitSet());
+			this.pos.put(pos,BeeCityComponent.createBitSet());
 		this.setChanged();
 	}
 
@@ -277,7 +274,7 @@ public class BeeCityComponent extends AbstractBeeComponent{
 		hiveInfo.prepareWork(params, queen, drones);
 		return true;
 	}
-	private BitSet createBitSet() {
+	private static BitSet createBitSet() {
 		return new BitSet(Alleles.BIOTOPE.size()+1);
 	}
 	/**
@@ -306,7 +303,7 @@ public class BeeCityComponent extends AbstractBeeComponent{
 			if(!Iterables.elementsEqual(bt, Alleles.BIOTOPE)) {
 				for(Pair<BlockPos, BitSet> ent:map) {
 					BitSet bs=ent.getSecond();
-					BitSet nbs=this.createBitSet();
+					BitSet nbs=BeeCityComponent.createBitSet();
 					for(int i=0;i<il.size();i++) {
 						int idx=il.getInt(i);
 						if(idx>=0) {
@@ -390,13 +387,13 @@ public class BeeCityComponent extends AbstractBeeComponent{
 				biotopes=updateBiotopes(params);
 				computeBiotope();
 				return ;
-			}else
-				checkPos=Iterators.get(pos.keySet().iterator(), index-1);
+			}
+			checkPos=Iterators.get(pos.keySet().iterator(), index-1);
 			Set<Biotope> bt=GenomeWorkHelper.findBiotope(params.level(), checkPos, (int)(BeecrasyConfig.SERVER.RADIUS.getAsInt()*params.getParamValue(BeeHiveParameters.RADIUS)));
 			BitSet bs=pos.get(checkPos);
 			if(bs!=null)
 				this.computeBits(bs, -1);
-			bs=this.createBitSet();
+			bs=BeeCityComponent.createBitSet();
 			if(bt!=null) {
 				for(Biotope bts:bt)
 					bs.set(Alleles.BIOTOPE.getIntId(bts),true);

@@ -27,12 +27,18 @@ import com.khjxiaogu.beecrasy.client.apistle.lines.HLine;
 import com.khjxiaogu.beecrasy.client.apistle.lines.Image;
 import com.khjxiaogu.beecrasy.client.apistle.lines.ItemSpotLine;
 import com.khjxiaogu.beecrasy.client.apistle.lines.SpaceLine;
+import com.khjxiaogu.beecrasy.client.apistle.lines.Table;
+import com.khjxiaogu.beecrasy.client.apistle.lines.Table.Border;
+import com.khjxiaogu.beecrasy.client.apistle.lines.Table.Cell;
 import com.khjxiaogu.beecrasy.client.apistle.lines.Text;
 import com.khjxiaogu.beecrasy.client.apistle.lines.UnbakedLine;
 import com.mojang.datafixers.util.Either;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -40,6 +46,123 @@ import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public class PageBuilder {
+	public class ComplexItemBuilder{
+		float scale;
+		List<Either<HolderSet<Item>,List<ItemStackTemplate>>> items=new ArrayList<>();
+		public ComplexItemBuilder item(Ingredient item) {
+			items.add(Either.left(item.getValues()));
+			return this;
+		}
+		public ComplexItemBuilder item(List<ItemStackTemplate> item) {
+			items.add(Either.right(item));
+			return this;
+		}
+
+		public ComplexItemBuilder item(ItemStackTemplate item) {
+			return item(List.of(item));
+		}
+		public ComplexItemBuilder item(Item item) {
+			return item(new ItemStackTemplate(item));
+		}
+		public ComplexItemBuilder item(Holder<Item> item) {
+			return item(new ItemStackTemplate(item));
+		}
+		public ComplexItemBuilder item(Item... item) {
+			return item(List.of(item).stream().map(ItemStackTemplate::new).toList());
+		}
+		@SafeVarargs
+		public final ComplexItemBuilder item(Holder<Item>... item) {
+			return item(List.of(item).stream().map(ItemStackTemplate::new).toList());
+		}
+		public PageBuilder end() {
+			
+			return PageBuilder.this.addLine(new ItemSpotLine(items,scale));
+		}
+		ComplexItemBuilder(float scale) {
+			super();
+			this.scale = scale;
+		}
+	}
+	public class TableBuilder{
+		public class ColumnBuilder {
+			List<Cell> colCells=new ArrayList<>();
+			public ColumnBuilder cell(Ingredient item,Border border) {
+				colCells.add(new Cell(Either.left(item.getValues()),border));
+				return this;
+			}
+			public ColumnBuilder cell(String text,Border border) {
+				colCells.add(new Cell(Either.right(text),border));
+				return this;
+			}
+			public ColumnBuilder cell(String text) {
+				return cell(text, Border.DEFAULT);
+			}
+			public ColumnBuilder cell(Item item,Border border) {
+				return cell(Ingredient.of(item),border);
+			}
+			public ColumnBuilder cell(Holder<Item> item,Border border) {
+				return cell(Ingredient.of(item.value()),border);
+			}
+			public ColumnBuilder cell(TagKey<Item> item,Border border) {
+				return cell(Ingredient.of(registries.get(item).get()),border);
+			}
+			public ColumnBuilder cell(Ingredient item) {
+			    return cell(item, Border.DEFAULT);
+			}
+
+			public ColumnBuilder cell(Item item) {
+			    return cell(item, Border.DEFAULT);
+			}
+
+			public ColumnBuilder cell(Holder<Item> item) {
+			    return cell(item, Border.DEFAULT);
+			}
+
+			public ColumnBuilder cell(TagKey<Item> item) {
+			    return cell(item, Border.DEFAULT);
+			}
+			public ColumnBuilder column(int width) {
+				addColumn(colCells);
+				return TableBuilder.this.column(width);
+			}
+			public PageBuilder end() {
+				addColumn(colCells);
+				return PageBuilder.this.addLine(new Table(columns,cells));
+			}
+		}
+		IntList columns=new IntArrayList();
+		List<List<Cell>> cells=new ArrayList<>();
+		public ColumnBuilder column(int width) {
+			columns.add(width);
+			return new ColumnBuilder();
+		}
+		private void addColumn(List<Cell> column) {
+		    int index=columns.size()-1;
+		    int targetRows = Math.max(cells.size(), column.size());
+		    for (int i = 0; i < targetRows; i++) {
+		        // 获取或创建当前行
+		        List<Cell> row;
+		        if (i < cells.size()) {
+		            row = cells.get(i);
+		        } else {
+		            row = new ArrayList<>();
+		            cells.add(row);
+		        }
+		        // 保证行长度至少为 index（即索引前有足够位置）
+		        while (row.size() < index) {
+		            row.add(null);
+		        }
+		        // 取出列值（若列长度不足则 null）
+		        Cell value = (i < column.size()) ? column.get(i) : null;
+		        // 在 index 位置插入（原有元素右移）
+		        row.add(index, value);
+		    }
+		}
+		public PageBuilder end() {
+			return PageBuilder.this.addLine(new Table(columns,cells));
+		}
+		
+	}
 	List<UnbakedLine> lines=new ArrayList<>();
 	Optional<Either<Identifier,ItemStackTemplate>> icon=Optional.empty();
 	String title;
@@ -77,7 +200,9 @@ public class PageBuilder {
 		this.lines.add(line);
 		return this;
 	}
-	
+	public TableBuilder table() {
+		return new TableBuilder();
+	}
 	public PageBuilder space() {
 		return addLine(SpaceLine.DEFAULT);
 	}
@@ -90,14 +215,21 @@ public class PageBuilder {
 	public PageBuilder hr(int color) {
 		return addLine(new HLine(color));
 	}
+	
 	public PageBuilder image(Identifier image,int width,int height) {
 		return addLine(new Image(image,width,height));
 	}
 	public PageBuilder item(Ingredient item,float scale) {
-		return addLine(new ItemSpotLine(Either.left(item),scale));
+		return addLine(new ItemSpotLine(List.of(Either.left(item.getValues())),scale));
+	}
+	public ComplexItemBuilder item(float scale) {
+		return new ComplexItemBuilder(scale);
+	}
+	public ComplexItemBuilder item() {
+		return item(1f);
 	}
 	public PageBuilder item(List<ItemStackTemplate> item,float scale) {
-		return addLine(new ItemSpotLine(Either.right(item),scale));
+		return addLine(new ItemSpotLine(List.of(Either.right(item)),scale));
 	}
 	public PageBuilder item(ItemStackTemplate item,float scale) {
 		return item(List.of(item),scale);
@@ -111,7 +243,6 @@ public class PageBuilder {
 	public PageBuilder item(float scale,Item... item) {
 		return item(List.of(item).stream().map(ItemStackTemplate::new).toList(),scale);
 	}
-	@SuppressWarnings("unchecked")
 	@SafeVarargs
 	public final PageBuilder item(float scale,Holder<Item>... item) {
 		return item(List.of(item).stream().map(ItemStackTemplate::new).toList(),scale);
@@ -147,7 +278,6 @@ public class PageBuilder {
 	}
 
 	@SafeVarargs
-	@SuppressWarnings("unchecked")
 	public final PageBuilder item(Holder<Item>... item) {
 	    return item(1.0f, item);
 	}

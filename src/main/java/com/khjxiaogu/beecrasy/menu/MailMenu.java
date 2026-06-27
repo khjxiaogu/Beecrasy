@@ -22,7 +22,6 @@ package com.khjxiaogu.beecrasy.menu;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
@@ -218,6 +217,11 @@ public class MailMenu extends BeecrasyContainerMenu{
 				
 			}
 		}
+		sender=mc.sender();
+		receiver=mc.receiver();
+		line1=mc.line1();
+		line2=mc.line2();
+		readOnly=mc.readOnly();
 		checkStatus();
 	}
 	public MailMenu(int containerId, Inventory inventory) {
@@ -226,8 +230,12 @@ public class MailMenu extends BeecrasyContainerMenu{
 	}
 	public void addSlots(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier) {
 		resources=handler;
-		for(int i=0;i<8;i++)
-			this.addSlot(new ResourceHandlerSlot(handler,slotModifier,i,25+i*17,52));
+		if(readOnly)
+			for(int i=0;i<8;i++)
+				this.addSlot(new OutputSlot(handler,slotModifier,i,25+i*17,52));
+		else
+			for(int i=0;i<8;i++)
+				this.addSlot(new ResourceHandlerSlot(handler,slotModifier,i,25+i*17,52));
 
 		this.addSlot(new ResourceHandlerSlot(handler,slotModifier,8,143,7));
 
@@ -261,28 +269,31 @@ public class MailMenu extends BeecrasyContainerMenu{
 	public void receiveOperation(short opCode, int opData) {
 		
 	}
+	public void setIcon(ItemStack stack) {
+		iconContainer.setItem(0, stack);
+		if(this.iaccess!=null)
+			try (Transaction trans=Transaction.openRoot()){
+				ItemResource in=this.iaccess.getResource();
+				MailComponent mc=in.get(Components.MAIL);
+				if(mc==null)
+					mc=MailComponent.EMPTY;
+				if(stack.isEmpty()) {
+					if(this.iaccess.exchange(in.with(Components.MAIL, mc.removeIcon()), 1, trans)==1) {
+						trans.commit();
+					}
+				}else if(this.iaccess.exchange(in.with(Components.MAIL, mc.withIcon(ItemStackTemplate.fromNonEmptyStack(stack))), 1, trans)==1) {
+					trans.commit();
+				}
+			}
+	}
 	@Override
 	public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
 		if(slotIndex==9) {
 			if(buttonNum==0) {
 				ItemStack carStack=this.getCarried().copyWithCount(1);
-				iconContainer.setItem(0, carStack);
-				if(this.iaccess!=null)
-					try (Transaction trans=Transaction.openRoot()){
-						ItemResource in=this.iaccess.getResource();
-						MailComponent mc=in.get(Components.MAIL);
-						if(mc==null)
-							mc=MailComponent.EMPTY;
-						if(carStack.isEmpty()) {
-							if(this.iaccess.exchange(in.with(Components.MAIL, mc.removeIcon()), 1, trans)==1) {
-								trans.commit();
-							}
-						}else if(this.iaccess.exchange(in.with(Components.MAIL, mc.withIcon(ItemStackTemplate.fromNonEmptyStack(carStack))), 1, trans)==1) {
-							trans.commit();
-						}
-					}
+				setIcon(carStack);
 			}else {
-				iconContainer.setItem(0, ItemStack.EMPTY);
+				setIcon(ItemStack.EMPTY);
 			}
 			return;
 		}
@@ -296,13 +307,19 @@ public class MailMenu extends BeecrasyContainerMenu{
 	public void setStatus(LetterStatus status) {
 		this.status.set(0, status.ordinal());
 	}
-	public void setLetterText(Optional<String> receiver, Optional<String> line1, Optional<String> line2) {
+	public void setLetterText(byte field, String text) {
 		try (Transaction trans=Transaction.openRoot()){
 			ItemResource in=this.iaccess.getResource();
 			MailComponent mc=in.get(Components.MAIL);
 			if(mc==null)
 				mc=MailComponent.EMPTY;
-			if(this.iaccess.exchange(in.with(Components.MAIL, mc.withLines(receiver.orElse(mc.receiver()), line1.orElse(mc.line1()), line2.orElse(mc.line2()))), 1, trans)==1) {
+			mc=switch(field) {
+			case 0->mc.withReceiver(text);
+			case 1->mc.withLine1(text);
+			case 2->mc.withLine2(text);
+			default->mc;
+			};
+			if(this.iaccess.exchange(in.with(Components.MAIL, mc), 1, trans)==1) {
 				trans.commit();
 			}
 		}

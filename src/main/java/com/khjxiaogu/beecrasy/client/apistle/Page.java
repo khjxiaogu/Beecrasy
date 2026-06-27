@@ -44,7 +44,12 @@ public record Page(List<UnbakedLine> lines,Optional<Either<Identifier,ItemStackT
 			).apply(t, Page::new));
 	public Baked bake(int width) {
 		List<HeightedLine> line= lines.stream().map(t->new HeightedLine(t.bake(width))).toList();
-		int height=line.stream().mapToInt(Line::precalculateHeight).sum();
+		int height=0;
+		int curHeight=0;
+		for(HeightedLine l:line) {
+			curHeight+=l.precalculateHeight();
+			height=Math.max(height, curHeight);
+		}
 		return new Baked(line,height);
 	}
 	private static class HeightedLine implements Line{
@@ -70,7 +75,6 @@ public record Page(List<UnbakedLine> lines,Optional<Either<Identifier,ItemStackT
 		@Override
 		public void extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int h, int viewY, int viewHeight, int mouseX, int mouseY, Consumer<Component> tooltips) {
 			int curY=0;
-			int idx=1;
 			for(Line l:lines) {
 				int preCurY=curY;
 				curY+=l.precalculateHeight();
@@ -78,7 +82,6 @@ public record Page(List<UnbakedLine> lines,Optional<Either<Identifier,ItemStackT
 				if(curY>=viewY&&preCurY<=viewY+viewHeight) {
 					l.extractRenderState(graphics, x, preCurY+y-viewY, w, mouseX, mouseY, tooltips);
 				}
-				idx++;
 				
 			}
 		}

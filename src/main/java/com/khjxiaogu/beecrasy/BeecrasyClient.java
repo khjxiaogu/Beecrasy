@@ -45,8 +45,6 @@ import com.khjxiaogu.beecrasy.client.screens.SequenceBlockScreen;
 import com.khjxiaogu.beecrasy.client.screens.SequenceHandHeldScreen;
 import com.khjxiaogu.beecrasy.client.screens.SkepScreen;
 import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTabs;
-import com.khjxiaogu.beecrasy.utils.Utils;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.FluidModel;
@@ -70,6 +68,8 @@ import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.model.standalone.SimpleUnbakedStandaloneModel;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent.UpdateCause;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
@@ -112,12 +112,20 @@ public class BeecrasyClient {
 		ev.register(Beecrasy.rl("bee_product"), BeeTint.MAP_CODEC);
 		
 	}
+
 	
 	@SubscribeEvent
 	public static void onWorldUnload(LevelEvent.Unload ev)
 	{
 		if(ev.getLevel() instanceof ClientLevel)
 			BeediManager.INSTANCE.resetClientLevel();
+		
+	}
+	@SubscribeEvent
+	public static void onTagsReceived(TagsUpdatedEvent ev)
+	{
+		if(ev.getUpdateCause()==UpdateCause.CLIENT_PACKET_RECEIVED)
+			PageRegistry.INSTANCE.onResourceManagerReload(Minecraft.getInstance().getResourceManager(),ev.getLookupProvider());
 		
 	}
 	@SubscribeEvent
@@ -130,7 +138,7 @@ public class BeecrasyClient {
 	public static void onReload(AddClientReloadListenersEvent ev)
 	{
 		ev.addListener(Beecrasy.rl("midi"),BeediManager.INSTANCE);
-		ev.addListener(Beecrasy.rl("apistle"), PageRegistry.INSTANCE);
+		//ev.addListener(Beecrasy.rl("apistle"), PageRegistry.INSTANCE);
 		
 	}
 	@SuppressWarnings("resource")
