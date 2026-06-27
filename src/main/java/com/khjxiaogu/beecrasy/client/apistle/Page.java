@@ -99,7 +99,7 @@ public record Page(List<UnbakedLine> lines,Optional<Either<Identifier,ItemStackT
 				graphics.disableScissor();
 			}
 		}
-		if(mouseX>x&&mouseX<x+w&&mouseY>y&&mouseY<y+h) {
+		if(over) {
 			tooltips.accept(Component.literal(title));
 		}
 	}
