@@ -21,8 +21,7 @@ package com.khjxiaogu.beecrasy.network;
 
 
 import com.khjxiaogu.beecrasy.Beecrasy;
-import com.khjxiaogu.beecrasy.client.apistle.ApistleScreen;
-import net.minecraft.client.Minecraft;
+import com.khjxiaogu.beecrasy.client.apistle.ApistleManager;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -40,7 +39,7 @@ public record OpenApistleMessage(String id,Component title) implements CustomPac
 		OpenApistleMessage::new);
 	void handle(IPayloadContext context) {
 		context.enqueueWork(()->{
-			Minecraft.getInstance().setScreen(new ApistleScreen(id,title));
+			ApistleManager.handlePackage(this);
 		});
 	}
 	@Override
