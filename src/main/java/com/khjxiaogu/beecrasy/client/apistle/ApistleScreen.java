@@ -209,7 +209,7 @@ public class ApistleScreen extends Screen {
 		if(isMouseIn(mouseX,mouseY,10,13,18,imageHeight-13)) {
 			int pos=mouseY-topPos-11;
 			int idx=pos/18;
-			if(idx>=0&&idx<buttons.size()) {
+			if(pos%18<=15&&idx>=0&&idx<buttons.size()) {
 				buttons.get(idx).onClick.run();
 			}
 			
