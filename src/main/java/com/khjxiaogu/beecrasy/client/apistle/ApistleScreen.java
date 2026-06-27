@@ -161,7 +161,7 @@ public class ApistleScreen extends Screen {
 	public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
 		if(currentPage!=null&&currentPage.height()>PAGE_HEIGHT) {
 			if(isMouseIn((int)x,(int)y, 38, 11, PAGE_WIDTH, PAGE_HEIGHT)) {
-				viewY-=scrollY*7;
+				viewY-=scrollY*16;
 				viewY=Math.max(0, viewY);
 				viewY=Math.min(viewY, currentPage.height()- PAGE_HEIGHT);
 				return true;
@@ -209,7 +209,6 @@ public class ApistleScreen extends Screen {
 		if(isMouseIn(mouseX,mouseY,10,13,18,imageHeight-13)) {
 			int pos=mouseY-topPos-11;
 			int idx=pos/18;
-			System.out.println(idx);
 			if(idx>=0&&idx<buttons.size()) {
 				buttons.get(idx).onClick.run();
 			}
