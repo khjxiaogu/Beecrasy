@@ -173,7 +173,7 @@ public class CommonListeners {
 		String apistle=ev.getItemStack().get(Components.APISTLE);
 		if(apistle!=null) {
 			if(ev.getEntity() instanceof ServerPlayer player) {
-				PacketHandler.sendToPlayer(player, new OpenApistleMessage(apistle,ev.getItemStack().getDisplayName()));
+				PacketHandler.sendToPlayer(player, new OpenApistleMessage(apistle,ev.getItemStack().getHoverName()));
 			}
 			ev.setCanceled(true);
 			ev.setCancellationResult(InteractionResult.SUCCESS);

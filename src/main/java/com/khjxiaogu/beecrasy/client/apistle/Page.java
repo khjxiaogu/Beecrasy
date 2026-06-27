@@ -70,23 +70,33 @@ public record Page(List<UnbakedLine> lines,Optional<Either<Identifier,ItemStackT
 		@Override
 		public void extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int h, int viewY, int viewHeight, int mouseX, int mouseY, Consumer<Component> tooltips) {
 			int curY=0;
+			int idx=1;
 			for(Line l:lines) {
 				int preCurY=curY;
 				curY+=l.precalculateHeight();
+				//graphics.fill(x, preCurY+y, x+1*idx, curY+y, 0xffff0000);
 				if(curY>=viewY&&preCurY<=viewY+viewHeight) {
-					l.extractRenderState(graphics, x, curY, w, mouseX, mouseY, tooltips);
+					l.extractRenderState(graphics, x, preCurY+y-viewY, w, mouseX, mouseY, tooltips);
 				}
+				idx++;
+				
 			}
 		}
 
 	}
 	@Override
-	public void extractIcon(GuiGraphicsExtractor graphics, int x, int y, int w, int h, int mouseX, int mouseY, Consumer<Component> tooltips) {
+	public void extractIcon(GuiGraphicsExtractor graphics, int x, int y, int w, int h, int mouseX, int mouseY, Consumer<Component> tooltips, boolean over, boolean active) {
 		if(icon.isPresent()) {
 			if(icon.get().left().isPresent()) {
 				graphics.blit(RenderPipelines.GUI_TEXTURED, icon.get().left().get(), x, y, 0, 0, w, h, w, h);
 			}else {
-				graphics.item(icon.get().right().get().create(), x, y);
+				graphics.pose().pushMatrix();
+				graphics.pose().translate(x, y);
+				graphics.enableScissor(0, 0, w, h);
+				graphics.pose().scale(w/16f,h/16f);
+				graphics.item(icon.get().right().get().create(), 0, 0);
+				graphics.pose().popMatrix();
+				graphics.disableScissor();
 			}
 		}
 		if(mouseX>x&&mouseX<x+w&&mouseY>y&&mouseY<y+h) {

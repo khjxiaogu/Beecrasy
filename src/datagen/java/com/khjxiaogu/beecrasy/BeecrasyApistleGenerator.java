@@ -21,6 +21,7 @@ package com.khjxiaogu.beecrasy;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.data.ApistleGenerator;
 
@@ -134,6 +135,50 @@ public class BeecrasyApistleGenerator extends ApistleGenerator {
 		.text("123",2,true)
 		.setOrder(100)
 		.setIcon(Items.APITE)
+		;
+		this.addCommon("example10", "Example page1")
+		.text("10")
+		.hr()
+		.image(Identifier.withDefaultNamespace("example"), 100, 100)
+		.item(Items.QUEEN_BEE)
+		.item(Items.BEESWAX,Items.PRODUCT_COMB)
+		.space(200)
+		.text("123",2,true)
+		.setOrder(100)
+		.setIcon(Items.PRODUCT_COMB)
+		;
+		this.addCommon("example11", "Example page1")
+		.text("11")
+		.hr()
+		.image(Identifier.withDefaultNamespace("example"), 100, 100)
+		.item(Items.QUEEN_BEE)
+		.item(Items.BEESWAX,Items.PRODUCT_COMB)
+		.space(200)
+		.text("123",2,true)
+		.setOrder(100)
+		.setIcon(Blocks.HONEY_PRESS.asItem())
+		;
+		this.addCommon("example12", "Example page1")
+		.text("12")
+		.hr()
+		.image(Identifier.withDefaultNamespace("example"), 100, 100)
+		.item(Items.QUEEN_BEE)
+		.item(Items.BEESWAX,Items.PRODUCT_COMB)
+		.space(200)
+		.text("123",2,true)
+		.setOrder(100)
+		.setIcon(Items.SEQUENCER.asItem())
+		;
+		this.addCommon("example13", "Example page1")
+		.text("13")
+		.hr()
+		.image(Identifier.withDefaultNamespace("example"), 100, 100)
+		.item(Items.QUEEN_BEE)
+		.item(Items.BEESWAX,Items.PRODUCT_COMB)
+		.space(200)
+		.text("123",2,true)
+		.setOrder(100)
+		.setIcon(Blocks.SKEP.asItem())
 		;
 	}
 

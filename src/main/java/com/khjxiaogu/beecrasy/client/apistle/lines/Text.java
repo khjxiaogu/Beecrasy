@@ -46,7 +46,7 @@ public record Text(List<String> lines,float scale,boolean centered) implements U
 	public Line bake(int width) {
 		Font font=Minecraft.getInstance().font;
 		List<FormattedCharSequence> lines=this.lines.stream().flatMap(t->font.split(StringComponentParser.parse(t),(int)(width/scale)).stream()).toList();
-		int height=Mth.ceil(scale*7*lines.size());
+		int height=Mth.ceil(scale*8*lines.size());
 		return new Line() {
 			@Override
 			public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY,
@@ -68,7 +68,7 @@ public record Text(List<String> lines,float scale,boolean centered) implements U
 						graphics.text(font, mc, initX+(initW-font.width(mc))/2, initY+curY, 0xff81cfff, false);
 					else
 						graphics.text(font, mc, initX, initY+curY, 0xff81cfff, false);
-					curY+=7;
+					curY+=8;
 				}
 				if(scale!=1) {
 					graphics.pose().popMatrix();

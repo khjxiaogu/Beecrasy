@@ -148,14 +148,14 @@ public class SequencerScreen<T extends SequencerMenu> extends AbstractContainerS
 		if(isMouseIn(mouseX,mouseY,11,13,23,103)) {
 			int pos=mouseY-topPos-13;
 			int idx=pos/18;
-			if(idx%18<=15) {
-				if(idx<maxIndex&&idx>=0) {
-					if(menu.getTab()!=idx) {
-						menu.setTab(idx);
-					}
-					selected=idx;
+			
+			if(idx<maxIndex&&idx>=0) {
+				if(menu.getTab()!=idx) {
+					menu.setTab(idx);
 				}
+				selected=idx;
 			}
+			
 		}
 		return super.mouseClicked(event, doubleClick);
 	}

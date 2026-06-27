@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "beecrasy:item/apistle"
+    "layer0": "beecrasy:item/handheld_mailbox"
   }
 }

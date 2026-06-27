@@ -41,6 +41,8 @@ public abstract class ApistleGenerator extends JsonCodecProvider<Page> {
 	}
 	Map<Identifier,PageBuilder> builders=new HashMap<>();
     public PageBuilder add(Identifier name,String title) {
+    	if(builders.containsKey(name))
+    		throw new IllegalArgumentException(name+" Already Exists");
     	PageBuilder pb=new PageBuilder(provider,title);
     	builders.put(name,pb);
     	return pb;
