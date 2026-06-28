@@ -37,6 +37,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.TooltipFlag;
+
 import net.minecraft.world.item.crafting.Ingredient;
 
 public record ItemSpotLine(List<Either<HolderSet<Item>,List<ItemStackTemplate>>> items,float scale) implements UnbakedLine{

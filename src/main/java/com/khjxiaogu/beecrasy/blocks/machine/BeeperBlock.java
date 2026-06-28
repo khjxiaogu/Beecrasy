@@ -105,7 +105,7 @@ public class BeeperBlock extends Block {
     protected boolean triggerEvent(BlockState state, Level level, BlockPos pos, int b0, int b1) {
 
         int note = state.getValue(BlockStateProperties.NOTE);
-        float pitch = BeecrasyMath.noteToPitch(note-12+60);
+        float pitch = BeecrasyMath.noteToPitch(note-12+60+2);
         level.addParticle(ParticleTypes.NOTE, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, note / 24.0, 0.0, 0.0);
 
 

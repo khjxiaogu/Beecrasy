@@ -68,7 +68,7 @@ public class BeediManager implements ResourceManagerReloadListener{
 		try {
 			Files.walk(local).filter(Files::isRegularFile).forEach(path-> {
 				Identifier rl=Beecrasy.rl(path.getFileName().toString());
-				String name=rl.getPath().substring(0,rl.getPath().lastIndexOf(".")).substring(6);
+				String name=rl.getPath().substring(0,rl.getPath().lastIndexOf("."));
 				Identifier id=rl.withPath(name);
 				MidiSheet ms=null;
 				if(rl.getPath().endsWith(".mid")) {
@@ -170,7 +170,7 @@ public class BeediManager implements ResourceManagerReloadListener{
         this.stopSong(pos);
         MidiSheet file=loadedFiles.get(song);
         if(file!=null) {
-	        this.playingBeediSongs.put(pos, file.createPlayerBaked(id.map(BuiltInRegistries.SOUND_EVENT::getValue).map(t->(IntFunction<SoundEvent>)_->t).orElse(this::getSound),speed,offset));
+	        this.playingBeediSongs.put(pos, file.createPlayerBaked(id.map(BuiltInRegistries.SOUND_EVENT::getValue).map(t->(IntFunction<SoundEvent>)_->t).orElse(this::getSound),speed,id.isEmpty()?offset+2:offset));
 	        Minecraft.getInstance().gui.setNowPlaying(Component.translatable(song.toLanguageKey("record", "title")));
 	        notifyNearbyEntities(level, pos, true);
         }
