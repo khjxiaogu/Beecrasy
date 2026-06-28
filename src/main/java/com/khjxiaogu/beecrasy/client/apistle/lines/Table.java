@@ -125,10 +125,14 @@ public record Table(IntList columns,List<List<Cell>> cells) implements UnbakedLi
 						int nextX=curX+curW+3;
 						BakedCell curCell=row[j];
 						if(curCell!=null) {
-							graphics.fill(curX-1, curY-1, nextX, curY, curCell.border().up());
-							graphics.fill(curX-1, curY-1, curX, nextY, curCell.border().left());
-							graphics.fill(nextX-1, curY-1, nextX, nextY, curCell.border().up());
-							graphics.fill(curX-1, nextY-1, nextX, nextY, curCell.border().up());
+							if(curCell.border().up()!=0)
+								graphics.fill(curX-1, curY-1, nextX, curY, curCell.border().up());
+							if(curCell.border().left()!=0)
+								graphics.fill(curX-1, curY-1, curX, nextY, curCell.border().left());
+							if(curCell.border().down()!=0)
+								graphics.fill(nextX-1, curY-1, nextX, nextY, curCell.border().down());
+							if(curCell.border().right()!=0)
+								graphics.fill(curX-1, nextY-1, nextX, nextY, curCell.border().right());
 							curCell.content().extractRenderState(graphics, curX+1, curY+1, curW, mouseX, mouseY, tooltips);
 						}
 						curX=nextX;

@@ -51,18 +51,26 @@
       "cells": [
         [
           "beecrasy:butterfly_net",
-          "'BUTTERFLY",
+          "'BUTTERFLY_NET",
           "'20"
         ],
         [
           "beecrasy:bumblebee_jasper",
-          "'BUMBLEBEE",
+          {
+            "border": {
+              "down": 0,
+              "left": -65536,
+              "right": -16711936,
+              "up": 0
+            },
+            "content": "'BUMBLEBEE"
+          },
           "'15"
         ]
       ],
       "columns": [
         16,
-        100,
+        30,
         20
       ]
     },

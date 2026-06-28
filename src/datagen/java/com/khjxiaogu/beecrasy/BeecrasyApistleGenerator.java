@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.client.apistle.lines.Table.Border;
 import com.khjxiaogu.beecrasy.data.ApistleGenerator;
 
 import net.minecraft.core.HolderLookup.Provider;
@@ -47,7 +48,7 @@ public class BeecrasyApistleGenerator extends ApistleGenerator {
 		.column(16)
 		.cell(Items.BUTTERFLY_NET).cell(Items.BUMBLEBEE_JASPER)
 		.column(100)
-		.cell("BUTTERFLY").cell("BUMBLEBEE")
+		.cell("BUTTERFLY").cell("BUMBLEBEE",Border.DEFAULT.withoutUp().withoutDown().withLeft(0xffff0000).withRight(0xff00ff00))
 		.column(20)
 		.cell("20").cell("15")
 		.end()
