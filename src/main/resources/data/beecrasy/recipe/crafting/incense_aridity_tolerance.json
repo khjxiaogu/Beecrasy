@@ -1,0 +1,13 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		"beecrasy:beeswax",
+		"minecraft:lily_pad",
+		"minecraft:blue_orchid"
+	],
+	"result": {
+		"count": 1,
+		"id": "beecrasy:incense_aridity_tolerance"
+	}
+}
