@@ -127,7 +127,7 @@ public class PageBuilder {
 			}
 			public PageBuilder end() {
 				addColumn(colCells);
-				return PageBuilder.this.addLine(new Table(columns,cells));
+				return PageBuilder.this.addLine(new Table(Optional.of(columns),cells));
 			}
 		}
 		IntList columns=new IntArrayList();
@@ -159,7 +159,81 @@ public class PageBuilder {
 		    }
 		}
 		public PageBuilder end() {
-			return PageBuilder.this.addLine(new Table(columns,cells));
+			return PageBuilder.this.addLine(new Table(Optional.of(columns),cells));
+		}
+		
+	}
+	public class AutoTableBuilder{
+		public class AutoColumnBuilder {
+			List<Cell> colCells=new ArrayList<>();
+			public AutoColumnBuilder cell(Ingredient item,Border border) {
+				colCells.add(new Cell(Either.left(item.getValues()),border));
+				return this;
+			}
+			public AutoColumnBuilder cell(String text,Border border) {
+				colCells.add(new Cell(Either.right(text),border));
+				return this;
+			}
+			public AutoColumnBuilder cell(String text) {
+				return cell(text, Border.DEFAULT);
+			}
+			public AutoColumnBuilder cell(Item item,Border border) {
+				return cell(Ingredient.of(item),border);
+			}
+			public AutoColumnBuilder cell(Holder<Item> item,Border border) {
+				return cell(Ingredient.of(item.value()),border);
+			}
+			public AutoColumnBuilder cell(TagKey<Item> item,Border border) {
+				return cell(Ingredient.of(registries.get(item).get()),border);
+			}
+			public AutoColumnBuilder cell(Ingredient item) {
+			    return cell(item, Border.DEFAULT);
+			}
+
+			public AutoColumnBuilder cell(Item item) {
+			    return cell(item, Border.DEFAULT);
+			}
+
+			public AutoColumnBuilder cell(Holder<Item> item) {
+			    return cell(item, Border.DEFAULT);
+			}
+
+			public AutoColumnBuilder cell(TagKey<Item> item) {
+			    return cell(item, Border.DEFAULT);
+			}
+			public AutoColumnBuilder column() {
+				addColumn(colCells);
+				return AutoTableBuilder.this.column();
+			}
+			public PageBuilder end() {
+				addColumn(colCells);
+				return PageBuilder.this.addLine(new Table(Optional.empty(),cells));
+			}
+		}
+		List<List<Cell>> cells=new ArrayList<>();
+		public AutoColumnBuilder column() {
+			return new AutoColumnBuilder();
+		}
+		private void addColumn(List<Cell> column) {
+		    int index = cells.size();
+		    int targetRows = Math.max(cells.size(), column.size());
+		    for (int i = 0; i < targetRows; i++) {
+		        List<Cell> row;
+		        if (i < cells.size()) {
+		            row = cells.get(i);
+		        } else {
+		            row = new ArrayList<>();
+		            cells.add(row);
+		        }
+		        while (row.size() < index) {
+		            row.add(null);
+		        }
+		        Cell value = (i < column.size()) ? column.get(i) : null;
+		        row.add(index, value);
+		    }
+		}
+		public PageBuilder end() {
+			return PageBuilder.this.addLine(new Table(Optional.empty(),cells));
 		}
 		
 	}
@@ -202,6 +276,9 @@ public class PageBuilder {
 	}
 	public TableBuilder table() {
 		return new TableBuilder();
+	}
+	public AutoTableBuilder autoTable() {
+		return new AutoTableBuilder();
 	}
 	public PageBuilder space() {
 		return addLine(SpaceLine.DEFAULT);

@@ -20,9 +20,12 @@
 package com.khjxiaogu.beecrasy.client.apistle.lines;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
+import com.khjxiaogu.beecrasy.client.apistle.ApistleScreen;
 import com.khjxiaogu.beecrasy.client.apistle.Constants;
+import com.khjxiaogu.beecrasy.utils.StringComponentParser;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -30,13 +33,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.HolderSet;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 
-public record Table(IntList columns,List<List<Cell>> cells) implements UnbakedLine {
+public record Table(Optional<IntList> columns,List<List<Cell>> cells) implements UnbakedLine {
 	public static record Border(int up,int down,int left,int right){
 		public static final Codec<Border> CODEC=RecordCodecBuilder.create(t->t.group(
 				Codec.INT.optionalFieldOf("up"   ,Constants.TEXT_COLOR).forGetter(Border::up   ),
@@ -93,31 +97,118 @@ public record Table(IntList columns,List<List<Cell>> cells) implements UnbakedLi
 		
 	}
 	public static final MapCodec<Table> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
-			Codec.INT.listOf().fieldOf("columns").forGetter(Table::columns),
+			Codec.INT.listOf().<IntList>xmap(IntArrayList::new, o->o).optionalFieldOf("columns").forGetter(Table::columns),
 			Cell.CODEC.orElse(Cell.DEFAULT).listOf().listOf().fieldOf("cells").forGetter(Table::cells)
 			).apply(t, Table::new)
 			
 			);
 	Table(List<Integer> columns,List<List<Cell>> cells) {
-		this(new IntArrayList(columns),cells);
+		this(Optional.of(new IntArrayList(columns)),cells);
+	}
+	Table(List<List<Cell>> cells) {
+		this(Optional.empty(),cells);
 	}
 	@Override
 	public Line bake(int width) {
-		BakedCell[][] cell=new BakedCell[cells.size()][columns.size()];
+		int[] columns;
+		if(this.columns().isPresent()) {
+			columns=this.columns().get().toIntArray();
+		}else {
+			int numCols=0;
+			for (List<Cell> row : cells) {
+				numCols = Math.max(numCols, row.size());
+			}
+			int[] maxContentW = new int[numCols];
+			for (List<Cell> row : cells) {
+				for (int j = 0; j < row.size(); j++) {
+					Cell plain = row.get(j);
+					int w = plain.content().map(_->16, t->Minecraft.getInstance().font.width(StringComponentParser.parse(t)));
+					if (w > maxContentW[j]) {
+						maxContentW[j] = w;
+					}
+				}
+			}
+			// Calculate available content width after accounting for borders
+			// Table.bake() computes total width as: 2 + sum(widths[j] + 2)
+			// Per-column overhead = 2, plus initial 2 for outer edges
+			int totalOverhead = 2 + 2 * numCols;
+			int availableContentWidth = ApistleScreen.PAGE_WIDTH - totalOverhead;
+
+			int totalContentWidth = 0;
+			for (int j = 0; j < numCols; j++) {
+				totalContentWidth += maxContentW[j];
+			}
+
+			columns = new int[numCols];
+			if (totalContentWidth > availableContentWidth && totalContentWidth > 0) {
+				// Scale proportionally to fit
+				double scale = (double) availableContentWidth / totalContentWidth;
+				int assigned = 0;
+				for (int j = 0; j < numCols; j++) {
+					columns[j] = Math.max(16, (int) (maxContentW[j] * scale));
+					assigned += columns[j];
+				}
+				int diff = availableContentWidth - assigned;
+				if (diff > 0) {
+					// Distribute surplus: add 1 to each column starting from the first
+					for (int j = 0; diff > 0 && j < numCols; j++) {
+						columns[j]++;
+						diff--;
+					}
+				} else if (diff < 0) {
+					// Deficit: proportionally reduce columns (>16)
+					int deficit = -diff;
+					// Calculate total reducible space
+					int reducibleTotal = 0;
+					for (int j = 0; j < numCols; j++) {
+						if (columns[j] > 16) {
+							reducibleTotal += (columns[j] - 16);
+						}
+					}
+					if (reducibleTotal > 0) {
+						int reduced = 0;
+						for (int j = 0; j < numCols; j++) {
+							if (columns[j] > 16) {
+								int reducible = columns[j] - 16;
+								int cut = (int) ((long) deficit * reducible / reducibleTotal);
+								columns[j] -= cut;
+								reduced += cut;
+							}
+						}
+						// Distribute rounding remainder from front to back
+						int remainder = deficit - reduced;
+						for (int j = 0; remainder > 0 && j < numCols; j++) {
+							if (columns[j] > 16) {
+								columns[j]--;
+								remainder--;
+							}
+						}
+					}
+					// If reducibleTotal == 0, all columns already at minimum 16,
+					// deficit cannot be eliminated — this is an extreme data case
+				}
+			} else {
+				for (int j = 0; j < numCols; j++) {
+					columns[j] = Math.max(16, maxContentW[j]);
+				}
+			}
+			
+		}
+		BakedCell[][] cell=new BakedCell[cells.size()][columns.length];
 		int[] rows=new int[cells.size()];
 		int totalHeight=2;
 		int colWidth=2;
-		for(int j=0;j<columns.size();j++) {
-			colWidth+=columns.getInt(j)+2;
+		for(int j=0;j<columns.length;j++) {
+			colWidth+=columns[j]+2;
 		}
 		for(int i=0;i<cells.size();i++) {
 			List<Cell> currentRow=cells.get(i);
 			int rowHeight=0;
-			for(int j=0;j<columns.size();j++) {
+			for(int j=0;j<columns.length;j++) {
 				if(j>=currentRow.size())
 					break;
 				Cell currentCell=currentRow.get(j);
-				Line content=currentCell.content().map(o->new ItemSpotLine(List.of(Either.left(o)),1f), o->new Text(List.of(o),1,true)).bake(columns.getInt(j));
+				Line content=currentCell.content().map(o->new ItemSpotLine(List.of(Either.left(o)),1f), o->new Text(List.of(o),1,true)).bake(columns[j]);
 				int height=content.precalculateHeight();
 
 				cell[i][j]=new BakedCell(content,height,currentCell.border());
@@ -140,7 +231,7 @@ public record Table(IntList columns,List<List<Cell>> cells) implements UnbakedLi
 					int nextY=curY+rows[i]+3;
 					BakedCell[] row=cell[i];
 					for(int j=0;j<row.length;j++) {
-						int curW=columns.getInt(j);
+						int curW=columns[j];
 						int nextX=curX+curW+3;
 						BakedCell curCell=row[j];
 						if(curCell!=null) {

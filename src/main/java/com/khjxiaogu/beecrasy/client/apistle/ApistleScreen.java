@@ -52,9 +52,9 @@ public class ApistleScreen extends Screen {
     protected int imageHeight;
     protected int leftPos;
     protected int topPos;
-    public final int TABS_PER_PAGE=11;
-    public final int PAGE_WIDTH=340-38-10-4;
-    public final int PAGE_HEIGHT=225-11-11+6;
+    public static final int TABS_PER_PAGE=11;
+    public static final int PAGE_WIDTH=340-38-10-4;
+    public static final int PAGE_HEIGHT=225-11-11+6;
 	/** 当前页面中最大的标签索引 */
 	int maxIndex=0;
 	/** 当前页面的起始标签索引 */
