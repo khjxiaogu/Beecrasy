@@ -33,7 +33,7 @@ import net.minecraft.world.item.ItemStackTemplate;
 public record PossibleOutput(ItemStackTemplate stack,float chance) {
 	public static final Codec<PossibleOutput> CODEC=RecordCodecBuilder.create(t->t
 		.group(ItemStackTemplate.CODEC.fieldOf("stack").forGetter(PossibleOutput::stack),
-			Codec.FLOAT.fieldOf("chance").forGetter(PossibleOutput::chance))
+			Codec.FLOAT.optionalFieldOf("chance",1f).forGetter(PossibleOutput::chance))
 		.apply(t, PossibleOutput::new)
 		);
 	public static final StreamCodec<RegistryFriendlyByteBuf,PossibleOutput> STREAM_CODEC=StreamCodec.composite(

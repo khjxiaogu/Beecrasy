@@ -221,7 +221,7 @@ public class CommonListeners {
 			Commands.argument("pos", BlockPosArgument.blockPos()).executes((ctx)->{
 				ServerBeediManager.playSong(ctx.getSource().getLevel(),BlockPosArgument.getBlockPos(ctx, "pos"),
 					IdentifierArgument.getId(ctx, "midi"),
-					null, 0, 0);
+					null, 0, 1);
 				return Command.SINGLE_SUCCESS;
             }).then(Commands.argument("speed", FloatArgumentType.floatArg())
             	.suggests((_,builder)->builder.suggest(1).buildFuture())

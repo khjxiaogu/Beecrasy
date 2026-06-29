@@ -194,7 +194,7 @@ public class MidiSheet {
 		tracks.get(0).sort(Comparator.comparingLong(NoteInfo::begin));
 		return true;
 	}
-	public TrackPlayer createPlayerBaked(IntFunction<SoundEvent> se,float speed,int offset) {
-		return new TrackPlayer(tracks.get(0).iterator(),speed,offset,se);
+	public TrackPlayer createPlayerBaked(IntFunction<SoundEvent> se,float speed,int offset,float noteLen) {
+		return new TrackPlayer(tracks.get(0).iterator(),speed,offset,noteLen, se);
 	}
 }

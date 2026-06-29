@@ -6,15 +6,15 @@
 	},
 	"outputs": [
 		{
-			"chance": 2.0,
 			"stack": {
-				"id": "beecrasy:beeswax"
+				"id": "beecrasy:beeswax",
+				"count": 2.0
 			}
 		},
 		{
-			"chance": 2.0,
 			"stack": {
-				"id": "beecrasy:honey_drop"
+				"id": "beecrasy:honey_drop",
+				"count": 2.0
 			}
 		}
 	],

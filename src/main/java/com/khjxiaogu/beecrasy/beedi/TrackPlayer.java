@@ -31,17 +31,19 @@ public class TrackPlayer {
 	private NoteInfo cache;
 	private long curticks = 0;
 	private float speed;
+	private float noteLen;
 	private int offset;
 	private IntFunction<SoundEvent> se;
 	public boolean isFinished() {
 		return !it.hasNext();
 	}
 
-	public TrackPlayer(Iterator<NoteInfo> it,float speed,int offset,IntFunction<SoundEvent> se) {
+	public TrackPlayer(Iterator<NoteInfo> it,float speed,int offset,float noteLen,IntFunction<SoundEvent> se) {
 		this.it = it;
 		this.speed=speed;
 		this.offset=offset;
 		this.se=se;
+		this.noteLen=noteLen;
 	}
 	public long millsToTick(NoteInfo millis) {
 		return Math.round(millis.begin()/50f/speed);
@@ -51,10 +53,10 @@ public class TrackPlayer {
 			return;
 		if(cache==null||curticks>=millsToTick(cache)) {
 			if(cache!=null)
-				player.play(se,cache.pitch()+offset, cache.volume(), Math.round(cache.length()/speed));
+				player.play(se,cache.pitch()+offset, cache.volume(), Math.round(cache.length()/speed*noteLen));
 			cache=null;
 			while (it.hasNext() && curticks>=millsToTick(cache=it.next())) {
-				player.play(se,cache.pitch()+offset, cache.volume(), Math.round(cache.length()/speed));
+				player.play(se,cache.pitch()+offset, cache.volume(), Math.round(cache.length()/speed*noteLen));
 			}
 		}
 		curticks++;

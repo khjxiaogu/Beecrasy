@@ -170,7 +170,7 @@ public class BeediManager implements ResourceManagerReloadListener{
         this.stopSong(pos);
         MidiSheet file=loadedFiles.get(song);
         if(file!=null) {
-	        this.playingBeediSongs.put(pos, file.createPlayerBaked(id.map(BuiltInRegistries.SOUND_EVENT::getValue).map(t->(IntFunction<SoundEvent>)_->t).orElse(this::getSound),speed,id.isEmpty()?offset+2:offset));
+	        this.playingBeediSongs.put(pos, file.createPlayerBaked(id.map(BuiltInRegistries.SOUND_EVENT::getValue).map(t->(IntFunction<SoundEvent>)_->t).orElse(this::getSound),speed,id.isEmpty()?offset+2:offset, id.isEmpty()?0.5f:1));
 	        Minecraft.getInstance().gui.setNowPlaying(Component.translatable(song.toLanguageKey("record", "title")));
 	        notifyNearbyEntities(level, pos, true);
         }

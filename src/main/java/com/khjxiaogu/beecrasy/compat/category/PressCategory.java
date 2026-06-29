@@ -91,8 +91,9 @@ public class PressCategory implements IRecipeCategory<RecipeHolder<PressRecipe>>
 	public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<PressRecipe> recipe, IFocusGroup focuses) {
 		PressRecipe recipev=recipe.value();
 		builder.addInputSlot(10, 42).addItemStacks(unpack(recipev.input()));
-		IRecipeSlotBuilder output=builder.addOutputSlot(41,6);
+		
 		if(recipev.fluid().isPresent()) {
+			IRecipeSlotBuilder output=builder.addOutputSlot(41,6);
 			FluidStackTemplate template=recipev.fluid().get();
 			output.add(template.fluid().value(),template.amount(),template.components())
 			.setFluidRenderer(Math.max(250, template.amount()), false, 16, 34);

@@ -6,9 +6,9 @@
 	},
 	"outputs": [
 		{
-			"chance": 2.0,
 			"stack": {
-				"id": "beecrasy:beeswax"
+				"id": "beecrasy:beeswax",
+				"count": 2.0
 			}
 		}
 	],
