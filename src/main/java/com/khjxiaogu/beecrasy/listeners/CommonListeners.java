@@ -19,6 +19,9 @@
 
 package com.khjxiaogu.beecrasy.listeners;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.ibm.icu.util.Calendar;
@@ -34,11 +37,16 @@ import com.khjxiaogu.beecrasy.components.WorldCalendar;
 import com.khjxiaogu.beecrasy.entity.BeeSwarmEntity;
 import com.khjxiaogu.beecrasy.events.BeeEnvironmentValidateEvent;
 import com.khjxiaogu.beecrasy.events.NaturalBeeGenomeGenerateEvent;
+import com.khjxiaogu.beecrasy.genome.Gene;
 import com.khjxiaogu.beecrasy.genome.GeneRegistry;
 import com.khjxiaogu.beecrasy.genome.Genes;
 import com.khjxiaogu.beecrasy.genome.Genes.Alleles;
 import com.khjxiaogu.beecrasy.genome.Genome;
+import com.khjxiaogu.beecrasy.genome.gene.Allele;
+import com.khjxiaogu.beecrasy.genome.gene.Biotope;
+import com.khjxiaogu.beecrasy.genome.gene.EnumAlleleType;
 import com.khjxiaogu.beecrasy.genome.gene.Humidity;
+import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 import com.khjxiaogu.beecrasy.genome.gene.Temperature;
 import com.khjxiaogu.beecrasy.mail.PlayerPostalOffice;
 import com.khjxiaogu.beecrasy.mail.PostalOffice;
@@ -47,19 +55,26 @@ import com.khjxiaogu.beecrasy.network.PacketHandler;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.serialization.DataResult;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
+import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.levelgen.RandomSupport;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -203,6 +218,301 @@ public class CommonListeners {
 			}
 			return Command.SINGLE_SUCCESS;
 		});
+		var editProduct = Commands.literal("product")
+			.then(Commands.literal("remove")
+				.then(Commands.argument("index", IntegerArgumentType.integer(0))
+					.then(Commands.argument("product", IntegerArgumentType.integer(0))
+						.executes((ctx)->{
+							int index=IntegerArgumentType.getInteger(ctx, "index");
+							int product=IntegerArgumentType.getInteger(ctx, "product");
+							ServerPlayer sp=ctx.getSource().getPlayerOrException();
+							ItemStack stack=sp.getMainHandItem();
+							GenomeComponent genome=stack.get(Components.GENOME);
+							Genome.Builder b=null;
+							List<ProductItem> list=new ArrayList<>();
+							if(genome!=null) {
+								if(genome.size()>index) {
+									b=genome.getGenome(index).createBuilder();
+									list.addAll(genome.getGenome(index).getAllele(Genes.PRODUCTS));
+								}
+							}else {
+								genome=GenomeComponent.HAPLOID_EMPTY;
+							}
+							if(b==null)
+								b=Genome.builder();
+							list.remove(product);
+							b.add(Genes.PRODUCTS, List.copyOf(list));
+							stack.set(Components.GENOME,genome.setGenome(index, b.build()));
+							return Command.SINGLE_SUCCESS;
+				})
+			)))
+			.then(Commands.literal("get")
+				.then(Commands.argument("index", IntegerArgumentType.integer(0))
+					.executes((ctx)->{
+						int index=IntegerArgumentType.getInteger(ctx, "index");
+						ServerPlayer sp=ctx.getSource().getPlayerOrException();
+						ItemStack stack=sp.getMainHandItem();
+						GenomeComponent genome=stack.get(Components.GENOME);
+						if(genome!=null) {
+							List<ProductItem> data=genome.getGenome(index).getAllele(Genes.PRODUCTS);
+							ctx.getSource().sendSuccess(()->NbtUtils.toPrettyComponent(ProductItem.CODEC.listOf().encodeStart(NbtOps.INSTANCE,data).getOrThrow()), false);
+						}
+						return Command.SINGLE_SUCCESS;
+					})
+					.then(Commands.argument("product", IntegerArgumentType.integer(0))
+						.executes((ctx)->{
+							int index=IntegerArgumentType.getInteger(ctx, "index");
+							int product=IntegerArgumentType.getInteger(ctx, "product");
+							ServerPlayer sp=ctx.getSource().getPlayerOrException();
+							ItemStack stack=sp.getMainHandItem();
+							GenomeComponent genome=stack.get(Components.GENOME);
+							if(genome!=null) {
+								List<ProductItem> data=genome.getGenome(index).getAllele(Genes.PRODUCTS);
+								if(data.size()>product) {
+									ctx.getSource().sendSuccess(()->NbtUtils.toPrettyComponent(ProductItem.CODEC.encodeStart(NbtOps.INSTANCE, data.get(product)).getOrThrow()), false);
+								}else {
+									ctx.getSource().sendFailure(Component.literal("EMPTY"));
+								}
+							}
+							return Command.SINGLE_SUCCESS;
+				})
+			)))
+			.then(Commands.literal("add")
+
+				.then(Commands.argument("index", IntegerArgumentType.integer(0))
+				.then(Commands.argument("item", ItemArgument.item(event.getBuildContext()))
+					.executes((ctx)->{
+						int index=IntegerArgumentType.getInteger(ctx, "index");
+						ItemInput item=ItemArgument.getItem(ctx,"item");
+						Biotope bt=null;
+						ServerPlayer sp=ctx.getSource().getPlayerOrException();
+						ItemStack stack=sp.getMainHandItem();
+						GenomeComponent genome=stack.get(Components.GENOME);
+						Genome.Builder b=null;
+						List<ProductItem> list=new ArrayList<>();
+						if(genome!=null) {
+							if(genome.size()>index) {
+								b=genome.getGenome(index).createBuilder();
+								list.addAll(genome.getGenome(index).getAllele(Genes.PRODUCTS));
+								bt=genome.getGenome(index).getAllele(Genes.BIOTOPE);
+							}
+						}else {
+							genome=GenomeComponent.HAPLOID_EMPTY;
+						}
+						if(b==null)
+							b=Genome.builder();
+						if(bt==null)
+							bt=Alleles.WILD;
+						list.add(new ProductItem(bt,Optional.empty(),ItemStackTemplate.fromNonEmptyStack(item.createItemStack(1))));
+						b.add(Genes.PRODUCTS, List.copyOf(list));
+						stack.set(Components.GENOME,genome.setGenome(index, b.build()));
+						return Command.SINGLE_SUCCESS;
+			})
+				.then(Commands.argument("biotope", StringArgumentType.string()).suggests((_,builder)->{
+					for(Biotope bt:Alleles.BIOTOPE) {
+						builder.suggest(Alleles.BIOTOPE.getId(bt),()->Alleles.BIOTOPE.getReadableText(bt).getString());
+					}
+					return builder.buildFuture();
+				}).executes((ctx)->{
+					int index=IntegerArgumentType.getInteger(ctx, "index");
+					ItemInput item=ItemArgument.getItem(ctx,"item");
+					Biotope bt=Alleles.BIOTOPE.getAlleleType(StringArgumentType.getString(ctx, "biotope")).getOrThrow();
+					ServerPlayer sp=ctx.getSource().getPlayerOrException();
+					ItemStack stack=sp.getMainHandItem();
+					GenomeComponent genome=stack.get(Components.GENOME);
+					Genome.Builder b=null;
+					List<ProductItem> list=new ArrayList<>();
+					if(genome!=null) {
+						if(genome.size()>index) {
+							b=genome.getGenome(index).createBuilder();
+							list.addAll(genome.getGenome(index).getAllele(Genes.PRODUCTS));
+						}
+					}else {
+						genome=GenomeComponent.HAPLOID_EMPTY;
+					}
+					if(b==null)
+						b=Genome.builder();
+					list.add(new ProductItem(bt,Optional.empty(),ItemStackTemplate.fromNonEmptyStack(item.createItemStack(1))));
+					b.add(Genes.PRODUCTS, List.copyOf(list));
+					stack.set(Components.GENOME,genome.setGenome(index, b.build()));
+					return Command.SINGLE_SUCCESS;
+		}).then(Commands.argument("recipe", IdentifierArgument.id()).executes((ctx)->{
+					int index=IntegerArgumentType.getInteger(ctx, "index");
+					ItemInput item=ItemArgument.getItem(ctx,"item");
+					Identifier recipe=IdentifierArgument.getId(ctx, "recipe");
+					Biotope bt=Alleles.BIOTOPE.getAlleleType(StringArgumentType.getString(ctx, "biotope")).getOrThrow();
+					ServerPlayer sp=ctx.getSource().getPlayerOrException();
+					ItemStack stack=sp.getMainHandItem();
+					GenomeComponent genome=stack.get(Components.GENOME);
+					Genome.Builder b=null;
+					List<ProductItem> list=new ArrayList<>();
+					if(genome!=null) {
+						if(genome.size()>index) {
+							b=genome.getGenome(index).createBuilder();
+							list.addAll(genome.getGenome(index).getAllele(Genes.PRODUCTS));
+						}
+					}else {
+						genome=GenomeComponent.HAPLOID_EMPTY;
+					}
+					if(b==null)
+						b=Genome.builder();
+					list.add(new ProductItem(bt,Optional.of(recipe),ItemStackTemplate.fromNonEmptyStack(item.createItemStack(1))));
+					b.add(Genes.PRODUCTS, List.copyOf(list));
+					stack.set(Components.GENOME,genome.setGenome(index, b.build()));
+					return Command.SINGLE_SUCCESS;
+		})))))).then(Commands.literal("set")
+			.then(Commands.argument("index", IntegerArgumentType.integer(0))
+				.then(Commands.argument("product", IntegerArgumentType.integer(0))
+			.then(Commands.argument("item", ItemArgument.item(event.getBuildContext()))
+				.executes((ctx)->{
+					int index=IntegerArgumentType.getInteger(ctx, "index");
+
+					int product=IntegerArgumentType.getInteger(ctx, "product");
+					ItemInput item=ItemArgument.getItem(ctx,"item");
+					Biotope bt=null;
+					ServerPlayer sp=ctx.getSource().getPlayerOrException();
+					ItemStack stack=sp.getMainHandItem();
+					GenomeComponent genome=stack.get(Components.GENOME);
+					Genome.Builder b=null;
+					List<ProductItem> list=new ArrayList<>();
+					if(genome!=null) {
+						if(genome.size()>index) {
+							b=genome.getGenome(index).createBuilder();
+							list.addAll(genome.getGenome(index).getAllele(Genes.PRODUCTS));
+							bt=genome.getGenome(index).getAllele(Genes.BIOTOPE);
+						}
+					}else {
+						genome=GenomeComponent.HAPLOID_EMPTY;
+					}
+					if(b==null)
+						b=Genome.builder();
+					if(bt==null)
+						bt=Alleles.WILD;
+					if(list.size()>product)
+						list.set(product,new ProductItem(bt,Optional.empty(),ItemStackTemplate.fromNonEmptyStack(item.createItemStack(1))));
+					else
+						list.add(product,new ProductItem(bt,Optional.empty(),ItemStackTemplate.fromNonEmptyStack(item.createItemStack(1))));
+					b.add(Genes.PRODUCTS, List.copyOf(list));
+					stack.set(Components.GENOME,genome.setGenome(index, b.build()));
+					return Command.SINGLE_SUCCESS;
+		})
+			.then(Commands.argument("biotope", StringArgumentType.string()).suggests((_,builder)->{
+				for(Biotope bt:Alleles.BIOTOPE) {
+					builder.suggest(Alleles.BIOTOPE.getId(bt),()->Alleles.BIOTOPE.getReadableText(bt).getString());
+				}
+				return builder.buildFuture();
+			}).executes((ctx)->{
+				int index=IntegerArgumentType.getInteger(ctx, "index");
+				int product=IntegerArgumentType.getInteger(ctx, "product");
+				ItemInput item=ItemArgument.getItem(ctx,"item");
+				Biotope bt=Alleles.BIOTOPE.getAlleleType(StringArgumentType.getString(ctx, "biotope")).getOrThrow();
+				ServerPlayer sp=ctx.getSource().getPlayerOrException();
+				ItemStack stack=sp.getMainHandItem();
+				GenomeComponent genome=stack.get(Components.GENOME);
+				Genome.Builder b=null;
+				List<ProductItem> list=new ArrayList<>();
+				if(genome!=null) {
+					if(genome.size()>index) {
+						b=genome.getGenome(index).createBuilder();
+						list.addAll(genome.getGenome(index).getAllele(Genes.PRODUCTS));
+					}
+				}else {
+					genome=GenomeComponent.HAPLOID_EMPTY;
+				}
+				if(b==null)
+					b=Genome.builder();
+				if(list.size()>product)
+					list.set(product,new ProductItem(bt,Optional.empty(),ItemStackTemplate.fromNonEmptyStack(item.createItemStack(1))));
+				else
+					list.add(product,new ProductItem(bt,Optional.empty(),ItemStackTemplate.fromNonEmptyStack(item.createItemStack(1))));
+				b.add(Genes.PRODUCTS, List.copyOf(list));
+				stack.set(Components.GENOME,genome.setGenome(index, b.build()));
+				return Command.SINGLE_SUCCESS;
+	}).then(Commands.argument("recipe", IdentifierArgument.id()).executes((ctx)->{
+				int index=IntegerArgumentType.getInteger(ctx, "index");
+				int product=IntegerArgumentType.getInteger(ctx, "product");
+				ItemInput item=ItemArgument.getItem(ctx,"item");
+				Identifier recipe=IdentifierArgument.getId(ctx, "recipe");
+				Biotope bt=Alleles.BIOTOPE.getAlleleType(StringArgumentType.getString(ctx, "biotope")).getOrThrow();
+				ServerPlayer sp=ctx.getSource().getPlayerOrException();
+				ItemStack stack=sp.getMainHandItem();
+				GenomeComponent genome=stack.get(Components.GENOME);
+				Genome.Builder b=null;
+				List<ProductItem> list=new ArrayList<>();
+				if(genome!=null) {
+					if(genome.size()>index) {
+						b=genome.getGenome(index).createBuilder();
+						list.addAll(genome.getGenome(index).getAllele(Genes.PRODUCTS));
+					}
+				}else {
+					genome=GenomeComponent.HAPLOID_EMPTY;
+				}
+				if(b==null)
+					b=Genome.builder();
+				if(list.size()>product)
+					list.set(product,new ProductItem(bt,Optional.of(recipe),ItemStackTemplate.fromNonEmptyStack(item.createItemStack(1))));
+				else
+					list.add(product,new ProductItem(bt,Optional.of(recipe),ItemStackTemplate.fromNonEmptyStack(item.createItemStack(1))));
+				b.add(Genes.PRODUCTS, List.copyOf(list));
+				stack.set(Components.GENOME,genome.setGenome(index, b.build()));
+				return Command.SINGLE_SUCCESS;
+	})))))));
+		
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		var editGenome = Commands.literal("genome").then(
+			Commands.argument("index", IntegerArgumentType.integer(0)).then(
+				Commands.argument("genome", IdentifierArgument.id())
+				.suggests((_,builder)->{
+					for(Identifier id:GeneRegistry.getEnumTypes().keySet()) {
+						builder.suggest(id.toString(),()->GeneRegistry.get(id).getReadableText().getString());
+					}
+					return builder.buildFuture();
+				}).executes((ctx)->{
+					int index=IntegerArgumentType.getInteger(ctx, "index");
+					Identifier type=IdentifierArgument.getId(ctx, "genome");
+					ServerPlayer sp=ctx.getSource().getPlayerOrException();
+					ItemStack stack=sp.getMainHandItem();
+					GenomeComponent genome=stack.get(Components.GENOME);
+					if(genome!=null) {
+						if(genome.size()>index) {
+							ctx.getSource().sendSuccess(()->GeneRegistry.get(type).getReadableText(genome.getGenome(index)), false);
+							return Command.SINGLE_SUCCESS;
+						}
+					}
+					ctx.getSource().sendFailure(Component.literal("EMPTY"));
+					return Command.SINGLE_SUCCESS;
+				}).then(Commands.argument("value", StringArgumentType.string()).suggests((ctx,builder)->{
+					Identifier id=IdentifierArgument.getId(ctx, "genome");
+					@SuppressWarnings({"rawtypes"})
+					EnumAlleleType alleles=GeneRegistry.getEnumTypes().get(id);
+					if(alleles!=null)
+						for(Object allele:alleles) {
+							builder.suggest(alleles.getId((Allele) allele),()->alleles.getReadableText((Allele) allele).getString());
+						}
+					return builder.buildFuture();
+				}).executes((ctx)->{
+					int index=IntegerArgumentType.getInteger(ctx, "index");
+					Identifier type=IdentifierArgument.getId(ctx, "genome");
+					DataResult<?> obj=GeneRegistry.getEnumTypes().get(type).getAlleleType(StringArgumentType.getString(ctx, "value"));
+					ServerPlayer sp=ctx.getSource().getPlayerOrException();
+					ItemStack stack=sp.getMainHandItem();
+					GenomeComponent genome=stack.get(Components.GENOME);
+					Genome.Builder b=null;
+					if(genome!=null) {
+						if(genome.size()>index) {
+							b=genome.getGenome(index).createBuilder();
+						}
+					}else {
+						genome=GenomeComponent.HAPLOID_EMPTY;
+					}
+					if(b==null)
+						b=Genome.builder();
+					b.<Object>add((Gene)GeneRegistry.get(type), obj.getOrThrow());
+					stack.set(Components.GENOME,genome.setGenome(index, b.build()));
+					return Command.SINGLE_SUCCESS;
+				}))
+				)
+			);
 		var calend=Commands.literal("calendar").executes((ctx)->{
 			WorldCalendar secs=ctx.getSource().getServer().getDataStorage().computeIfAbsent(WorldCalendar.TYPE);
 			Calendar calendar=Calendar.getInstance();
@@ -244,7 +554,7 @@ public class CommonListeners {
                 }))
             	))
 			));
-		event.getDispatcher().register(Commands.literal("beecrasy").then(inspect).then(calend).then(midi));
+		event.getDispatcher().register(Commands.literal("beecrasy").then(inspect).then(calend).then(midi).then(editGenome).then(editProduct));
 	}
 	@SuppressWarnings("resource")
 	@SubscribeEvent

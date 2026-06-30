@@ -102,7 +102,20 @@ public class GenomeComponent implements Iterable<Genome>{
 		return genomes.length;
 	}
 	public Genome getGenome(int index) {
+		if(index>=genomes.length)
+			return Genome.DEFAULT;
 		return genomes[index];
+	}
+	public GenomeComponent setGenome(int index,Genome genome) {
+		Genome[] genomes;
+		if(this.genomes.length<=index) {
+			genomes=Arrays.copyOf(this.genomes, index+1);
+			Arrays.fill(genomes,this.genomes.length, index+1, Genome.DEFAULT);
+		}else {
+			genomes=Arrays.copyOf(this.genomes, this.genomes.length);
+		}
+		genomes[index]=genome;
+		return new GenomeComponent(inspected,genomes);
 	}
 	public Genome[] toArray() {
 		return Arrays.copyOf(genomes, genomes.length);

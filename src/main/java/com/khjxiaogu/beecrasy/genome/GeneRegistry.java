@@ -25,6 +25,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -94,6 +96,8 @@ public class GeneRegistry {
 	}
 	/** 基因类型映射表（ID → GeneType）。 */
 	private static Map<Identifier,GeneType<?>> geneticsMap=new HashMap<>();
+
+	private static Map<Identifier,EnumAlleleType<?>> enumAllelesMap=new HashMap<>();
 	/** 按命名空间排序的基因ID列表。 */
 	private static List<Identifier> typelist=new ArrayList<>();
 	/** 按显示优先级排序的基因ID列表。 */
@@ -178,6 +182,7 @@ public class GeneRegistry {
 	 * @return 注册后的基因类型
 	 */
 	public static <T extends Allele> Gene<T> register(EnumAlleleType<T> type,Supplier<T> defaultValueSupplier,int priority) {
+		enumAllelesMap.put(type.getId(), type);
 		return register(type.getId(),type.CODEC,type.STREAM_CODEC,type::getReadableText,type::getShortReadableText,defaultValueSupplier,priority);
 	
 	}
@@ -258,6 +263,9 @@ public class GeneRegistry {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Collection<Gene<?>> getGeneTypesUnordered(){
 		return (Collection)geneticsMap.values();
+	}
+	public static Map<Identifier, EnumAlleleType<?>> getEnumTypes(){
+		return enumAllelesMap;
 	}
 	/**
 	 * 获取按显示优先级排序的基因类型ID列表。
