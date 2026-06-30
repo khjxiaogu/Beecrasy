@@ -93,6 +93,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
         this.setPathfindingMalus(PathType.WATER_BORDER, 16.0F);
         this.setPathfindingMalus(PathType.COCOA, -1.0F);
         this.setPathfindingMalus(PathType.FENCE, -1.0F);
+        this.setInvulnerable(true);
 	}
 
     @Override
@@ -496,10 +497,6 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
         return false;
     }
 
-	@Override
-	protected void actuallyHurt(ServerLevel level, DamageSource source, float dmg) {
-
-	}
 
 	@Override
 	public boolean canFallInLove() {
@@ -560,6 +557,7 @@ public class BeeSwarmEntity extends Animal implements FlyingAnimal {
 	public boolean canBeSeenByAnyone() {
 		return false;
 	}
+
 
 	@Override
 	public boolean canBeHitByProjectile() {
