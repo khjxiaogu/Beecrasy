@@ -40,12 +40,12 @@ import net.minecraft.world.item.TooltipFlag;
 
 import net.minecraft.world.item.crafting.Ingredient;
 
-public record ItemSpotLine(List<Either<HolderSet<Item>,List<ItemStackTemplate>>> items,float scale) implements UnbakedLine{
+public record ItemSpotlight(List<Either<HolderSet<Item>,List<ItemStackTemplate>>> items,float scale) implements UnbakedLine{
 	private static final Codec<Either<HolderSet<Item>,List<ItemStackTemplate>>> ICON_CODEC=Codec.either(Ingredient.NON_AIR_HOLDER_SET_CODEC,ExtraCodecs.nonEmptyList(ExtraCodecs.compactListCodec(ItemStackTemplate.CODEC)));
-	public static final MapCodec<ItemSpotLine> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
-			Codec.mapEither(ICON_CODEC.fieldOf("items"), Codec.list(ICON_CODEC).fieldOf("items_list")).xmap(o->o.map(List::of,b->b),o->o.size()==1?Either.left(o.get(0)):Either.right(o)).forGetter(ItemSpotLine::items),
-			Codec.FLOAT.optionalFieldOf("scale",1f).forGetter(ItemSpotLine::scale)
-			).apply(t, ItemSpotLine::new));
+	public static final MapCodec<ItemSpotlight> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
+			Codec.mapEither(ICON_CODEC.fieldOf("items"), Codec.list(ICON_CODEC).fieldOf("items_list")).xmap(o->o.map(List::of,b->b),o->o.size()==1?Either.left(o.get(0)):Either.right(o)).forGetter(ItemSpotlight::items),
+			Codec.FLOAT.optionalFieldOf("scale",1f).forGetter(ItemSpotlight::scale)
+			).apply(t, ItemSpotlight::new));
 
 
 	@Override

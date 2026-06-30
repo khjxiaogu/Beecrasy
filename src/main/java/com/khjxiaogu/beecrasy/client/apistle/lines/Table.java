@@ -208,7 +208,7 @@ public record Table(Optional<IntList> columns,List<List<Cell>> cells) implements
 				if(j>=currentRow.size())
 					break;
 				Cell currentCell=currentRow.get(j);
-				Line content=currentCell.content().map(o->new ItemSpotLine(List.of(Either.left(o)),1f), o->new Text(List.of(o),1,true)).bake(columns[j]);
+				Line content=currentCell.content().map(o->new ItemSpotlight(List.of(Either.left(o)),1f), o->new Text(List.of(o),1,true)).bake(columns[j]);
 				int height=content.precalculateHeight();
 
 				cell[i][j]=new BakedCell(content,height,currentCell.border());

@@ -21,18 +21,25 @@ package com.khjxiaogu.beecrasy.client.apistle.lines;
 
 import java.util.function.Consumer;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.util.ARGB;
 
-public record SpaceLine(int height) implements Line, UnbakedLine {
-	public static final MapCodec<SpaceLine> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
-			Codec.INT.optionalFieldOf("height",8).forGetter(SpaceLine::height)
-			).apply(t, SpaceLine::new));
-	public static final SpaceLine DEFAULT=new SpaceLine(8);
+public record Split(TextColor color) implements Line, UnbakedLine {
+	public static final MapCodec<Split> CODEC=RecordCodecBuilder.mapCodec(t->t.group(
+		TextColor.CODEC.optionalFieldOf("color",TextColor.fromRgb(0x81cfff)).forGetter(Split::color)
+			).apply(t, Split::new));
+	public static final Split DEFAULT=new Split(TextColor.fromRgb(0x81cfff));
+	public Split(int color) {
+		this(TextColor.fromRgb(color));
+	}
+	public Split(String color) {
+		this(TextColor.parseColor(color).getOrThrow());
+	}
 	@Override
 	public Line bake(int width) {
 		return this;
@@ -41,17 +48,18 @@ public record SpaceLine(int height) implements Line, UnbakedLine {
 	@Override
 	public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY,
 			Consumer<Component> tooltips) {
-		return height;
+		graphics.fill(x, y+1, x+w-4, y+2, ARGB.color(1f, color.getValue()));
+		return 3;
 	}
 
 	@Override
 	public int precalculateHeight() {
-		return height;
+		return 3;
 	}
 
 	@Override
 	public String type() {
-		return "space";
+		return "hr";
 	}
 
 }

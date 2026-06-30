@@ -19,17 +19,25 @@
 
 package com.khjxiaogu.beecrasy.client.apistle;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.khjxiaogu.beecrasy.client.apistle.lines.HLine;
+import com.khjxiaogu.beecrasy.client.apistle.PageBuilder.AutoTableBuilder;
 import com.khjxiaogu.beecrasy.client.apistle.lines.Image;
-import com.khjxiaogu.beecrasy.client.apistle.lines.SpaceLine;
+import com.khjxiaogu.beecrasy.client.apistle.lines.Space;
+import com.khjxiaogu.beecrasy.client.apistle.lines.Split;
 import com.khjxiaogu.beecrasy.client.apistle.lines.Text;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.Ingredient;
 
 /**
  * 一个零依赖的 Markdown 转 Page 解析器，将 Markdown 字符串通过流式 {@link PageBuilder} API 转换为 {@link Page}。
@@ -41,9 +49,13 @@ import net.minecraft.resources.Identifier;
  *   <li>无序列表（- / *）—— 以项目符号前缀</li>
  *   <li>有序列表（1. / 2. …）</li>
  *   <li>引用块（&gt;）—— 以两个空格前缀</li>
- *   <li>表格（| 列 | 列 |）—— 简单带边框表格</li>
+ *   <li>表格（| 列 | 列 |）—— 自动宽度，支持物品单元格</li>
  *   <li>围栏代码块（```）—— 以较小比例渲染</li>
  *   <li>图片（{@code ![alt](ns:path)} 或 {@code ![alt](ns:path WxH)}）</li>
+ *   <li>物品表达式（整行或表格单元格内）：
+ *       {@code [modid:item]} → 单个物品，
+ *       {@code [#modid:tag]} → 物品标签，
+ *       {@code [modid:a, modid:b]} → 多个物品</li>
  *   <li>段落合并 —— 连续的文本行以换行符连接</li>
  *   <li>内联 Markdown 格式转换为 &amp;-码：
  *       <b>粗体</b>（** → &amp;l），<i>斜体</i>（* → &amp;o），
@@ -55,10 +67,6 @@ import net.minecraft.resources.Identifier;
  */
 public final class MarkdownParser {
 
-	private static final Pattern BOLD = Pattern.compile("\\*\\*(.+?)\\*\\*");
-	private static final Pattern ITALIC = Pattern.compile("(?<!\\*)\\*(?!\\*)(.+?)(?<!\\*)\\*(?!\\*)");
-	private static final Pattern STRIKE = Pattern.compile("~~(.+?)~~");
-	private static final Pattern INLINE_CODE = Pattern.compile("`(.+?)`");
 	private static final Pattern IMAGE_LINE = Pattern.compile(
 			"!\\[.*?\\]\\(([a-z0-9_.-]+:[a-z0-9_./-]+)(?:\\s+(\\d+)x(\\d+))?\\)");
 
@@ -66,13 +74,16 @@ public final class MarkdownParser {
 	private static final int ASCII_CHAR_W = 6;
 	/** 非 ASCII（如中日韩）字符的估算像素宽度。 */
 	private static final int NON_ASCII_CHAR_W = 8;
-	/**
-	 * Table.bake() 为边框和内边距增加的每列开销。
-	 * 总宽度公式：2 + sum(widths[j] + 2)，因此每列增加 2。
-	 */
-	private static final int BORDER_OVERHEAD_PER_COL = 2;
 
-	private MarkdownParser() {
+	private final HolderLookup.Provider registries;
+
+	/**
+	 * 创建一个 Markdown 解析器。
+	 *
+	 * @param registries Holder 查找提供器
+	 */
+	public MarkdownParser(HolderLookup.Provider registries) {
+		this.registries = registries;
 	}
 
 	/**
@@ -84,6 +95,17 @@ public final class MarkdownParser {
 	 * @return 一个新的、待烘焙的 {@link Page}
 	 */
 	public static Page parse(HolderLookup.Provider registries, String title, String markdown) {
+		return new MarkdownParser(registries).parse(title, markdown);
+	}
+
+	/**
+	 * 将 Markdown 字符串解析为具有给定标题的 {@link Page}。
+	 *
+	 * @param title    页面标题
+	 * @param markdown 原始 Markdown 输入
+	 * @return 一个新的、待烘焙的 {@link Page}
+	 */
+	public Page parse(String title, String markdown) {
 		PageBuilder pb = new PageBuilder(registries, title);
 		parseInto(pb, markdown);
 		return pb.build();
@@ -95,12 +117,12 @@ public final class MarkdownParser {
 	 * @param pb       要填充的 PageBuilder
 	 * @param markdown 原始 Markdown 输入
 	 */
-	public static void parseInto(PageBuilder pb, String markdown) {
+	public void parseInto(PageBuilder pb, String markdown) {
 		if (markdown == null || markdown.isEmpty()) {
 			return;
 		}
 		String[] rawLines = markdown.split("\n", -1);
-		new ParserStateMachine(pb).process(rawLines);
+		new ParserStateMachine(pb, registries).process(rawLines);
 	}
 
 	/**
@@ -138,21 +160,159 @@ public final class MarkdownParser {
 	/**
 	 * 将 Markdown 内联格式转换为 {@link com.khjxiaogu.beecrasy.utils.StringComponentParser} 所能理解的 &amp;-码。
 	 *
+	 * <p>使用单遍扫描 + 格式栈，确保关闭格式（如 {@code &l}）后不会丢失外部格式：
+	 * 关闭时输出 {@code &r} 后接保存的外部格式前缀。</p>
+	 *
 	 * <ul>
-	 *   <li>{@code **粗体**} → {@code &l粗体&r}</li>
-	 *   <li>{@code *斜体*} → {@code &o斜体&r}</li>
-	 *   <li>{@code ~~删除线~~} → {@code &m删除线&r}</li>
-	 *   <li>{@code `代码`} → {@code 代码}（去除反引号，保留文本）</li>
+	 *   <li>{@code **粗体**} → {@code &l粗体&r外部格式}</li>
+	 *   <li>{@code *斜体*} → {@code &o斜体&r外部格式}</li>
+	 *   <li>{@code ~~删除线~~} → {@code &m删除线&r外部格式}</li>
+	 *   <li>{@code `代码`} → {@code 代码}（去除反引号）</li>
 	 * </ul>
 	 *
-	 * <p>输入中已有的 &amp;-码保持不变，直接传递给下游渲染器。</p>
+	 * <p>输入中已有的 &amp;-码保持不变，同时更新内部状态以追踪活跃格式。</p>
 	 */
 	static String convertInlineFormatting(String text) {
-		text = BOLD.matcher(text).replaceAll("&l$1&r");
-		text = ITALIC.matcher(text).replaceAll("&o$1&r");
-		text = STRIKE.matcher(text).replaceAll("&m$1&r");
-		text = INLINE_CODE.matcher(text).replaceAll("$1");
-		return text;
+		StringBuilder out = new StringBuilder();
+		StringBuilder effPrefix = new StringBuilder();
+		Deque<FmtEntry> stack = new ArrayDeque<>();
+
+		int i = 0;
+		while (i < text.length()) {
+			// 1) 尝试闭合栈顶格式（内层优先关闭）
+			if (!stack.isEmpty()) {
+				FmtEntry top = stack.peek();
+				if (text.startsWith(top.closeDelim, i)) {
+					stack.pop();
+					out.append("&r");
+					out.append(top.savedPrefix);
+					effPrefix.setLength(0);
+					effPrefix.append(top.savedPrefix);
+					i += top.closeDelim.length();
+					continue;
+				}
+			}
+
+			// 2) 尝试开启新格式
+			// **bold**
+			if (text.startsWith("**", i)) {
+				int end = text.indexOf("**", i + 2);
+				if (end >= 0) {
+					stack.push(new FmtEntry("**", "&l", effPrefix.toString()));
+					out.append("&l");
+					effPrefix.append("&l");
+					i += 2;
+					continue;
+				}
+			}
+			// *italic* (不是 ** 的一部分)
+			if (text.charAt(i) == '*' && !text.startsWith("**", i)) {
+				int end = text.indexOf('*', i + 1);
+				if (end >= 0 && !text.startsWith("**", end)) {
+					stack.push(new FmtEntry("*", "&o", effPrefix.toString()));
+					out.append("&o");
+					effPrefix.append("&o");
+					i += 1;
+					continue;
+				}
+			}
+			// ~~strikethrough~~
+			if (text.startsWith("~~", i)) {
+				int end = text.indexOf("~~", i + 2);
+				if (end >= 0) {
+					stack.push(new FmtEntry("~~", "&m", effPrefix.toString()));
+					out.append("&m");
+					effPrefix.append("&m");
+					i += 2;
+					continue;
+				}
+			}
+
+			// 3) 原生 & 格式码
+			if (text.charAt(i) == '&' && i + 1 < text.length()) {
+				char next = text.charAt(i + 1);
+				if (next == '#' && i + 2 < text.length()) {
+					// &#rrggbb 或 &#rgb
+					int hexEnd = i + 2;
+					while (hexEnd < text.length()) {
+						char hc = text.charAt(hexEnd);
+						if ((hc >= '0' && hc <= '9') || (hc >= 'a' && hc <= 'f')
+								|| (hc >= 'A' && hc <= 'F')) {
+							hexEnd++;
+						} else {
+							break;
+						}
+					}
+					int hexLen = hexEnd - (i + 2);
+					if (hexLen == 6 || hexLen == 3) {
+						String colorCode = text.substring(i, hexEnd);
+						// effPrefix 中移除旧颜色码，追加新颜色码
+						removeColorFromPrefix(effPrefix);
+						effPrefix.append(colorCode);
+						out.append(colorCode);
+						i = hexEnd;
+						continue;
+					}
+				} else if ("lmno".indexOf(next) >= 0) {
+					// 装饰格式码 &l &m &n &o
+					effPrefix.append('&').append(next);
+					out.append('&').append(next);
+					i += 2;
+					continue;
+				} else if (next == 'r') {
+					effPrefix.setLength(0);
+					out.append("&r");
+					i += 2;
+					continue;
+				}
+			}
+
+			// 4) 内联代码 `code` — 剥离反引号
+			if (text.charAt(i) == '`') {
+				int end = text.indexOf('`', i + 1);
+				if (end >= 0) {
+					out.append(text, i + 1, end);
+					i = end + 1;
+					continue;
+				}
+			}
+
+			// 5) 普通字符
+			out.append(text.charAt(i));
+			i++;
+		}
+
+		// 末尾补关未闭合格式
+		while (!stack.isEmpty()) {
+			FmtEntry top = stack.pop();
+			out.append("&r");
+			out.append(top.savedPrefix);
+		}
+
+		return out.toString();
+	}
+
+	/** 记录 markdown 格式开关的记录。 */
+	private record FmtEntry(String closeDelim, String openCode, String savedPrefix) {
+	}
+
+	/** 从格式前缀中移除已有的颜色码（&#rrggbb 或 &#rgb）。 */
+	private static void removeColorFromPrefix(StringBuilder prefix) {
+		for (int j = 0; j < prefix.length(); j++) {
+			if (prefix.charAt(j) == '&' && j + 1 < prefix.length() && prefix.charAt(j + 1) == '#') {
+				int end = j + 2;
+				while (end < prefix.length()) {
+					char c = prefix.charAt(end);
+					if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
+						end++;
+					} else {
+						break;
+					}
+				}
+				prefix.delete(j, end);
+				return;
+			}
+		}
 	}
 
 	/**
@@ -346,20 +506,69 @@ public final class MarkdownParser {
 	record ImageInfo(Identifier id, int width, int height) {
 	}
 
+	/**
+	 * 尝试将文本解析为物品表达式 {@code [modid:item]}、{@code [#modid:tag]}、
+	 * 或 {@code [modid:a, modid:b, ...]}。
+	 *
+	 * @param text      待解析文本
+	 * @param registries Holder 查找提供器
+	 * @return 若匹配则返回对应 Ingredient，否则返回 null
+	 */
+	static Ingredient parseItemExpression(String text, HolderLookup.Provider registries) {
+		String trimmed = text.trim();
+		if (!trimmed.startsWith("[") || !trimmed.endsWith("]")) {
+			return null;
+		}
+		String inner = trimmed.substring(1, trimmed.length() - 1).trim();
+		if (inner.isEmpty()) {
+			return null;
+		}
+
+		try {
+			// 标签: [#modid:path]
+			if (inner.startsWith("#")) {
+				Identifier id = Identifier.parse(inner.substring(1));
+				TagKey<Item> tag = TagKey.create(Registries.ITEM, id);
+				return Ingredient.of(registries.getOrThrow(tag));
+			}
+
+			// 逗号分隔的多物品
+			String[] parts = inner.split(",");
+			if (parts.length == 1) {
+				Identifier id = Identifier.parse(parts[0].trim());
+				Item item = registries.lookupOrThrow(Registries.ITEM)
+						.getOrThrow(ResourceKey.create(Registries.ITEM, id)).value();
+				return Ingredient.of(item);
+			}
+
+			Item[] items = new Item[parts.length];
+			for (int j = 0; j < parts.length; j++) {
+				Identifier id = Identifier.parse(parts[j].trim());
+				items[j] = registries.lookupOrThrow(Registries.ITEM)
+						.getOrThrow(ResourceKey.create(Registries.ITEM, id)).value();
+			}
+			return Ingredient.of(items);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	// ---------------------------------------------------------------
 	// 内部解析器状态机
 	// ---------------------------------------------------------------
 
 	private static final class ParserStateMachine {
 		private final PageBuilder pb;
+		private final HolderLookup.Provider registries;
 		private final List<String> paragraphBuffer = new ArrayList<>();
 		private boolean inCodeBlock = false;
 		private final List<String> codeBlockLines = new ArrayList<>();
 		private boolean inTable = false;
 		private final List<List<String>> tableRows = new ArrayList<>();
 
-		ParserStateMachine(PageBuilder pb) {
+		ParserStateMachine(PageBuilder pb, HolderLookup.Provider registries) {
 			this.pb = pb;
+			this.registries = registries;
 		}
 
 		void process(String[] lines) {
@@ -388,7 +597,7 @@ public final class MarkdownParser {
 		private void handleNormalLine(String line) {
 			if (line.trim().isEmpty()) {
 				flushParagraph();
-				pb.addLine(SpaceLine.DEFAULT);
+				pb.addLine(Space.DEFAULT);
 				return;
 			}
 
@@ -408,7 +617,7 @@ public final class MarkdownParser {
 
 			if (isHr(line)) {
 				flushParagraph();
-				pb.addLine(HLine.DEFAULT);
+				pb.addLine(Split.DEFAULT);
 				return;
 			}
 
@@ -452,6 +661,14 @@ public final class MarkdownParser {
 				return;
 			}
 
+			// 物品表达式行: [modid:item] 或 [#modid:tag] 或 [modid:a, modid:b]
+			Ingredient itemExpr = parseItemExpression(line.trim(), registries);
+			if (itemExpr != null) {
+				flushParagraph();
+				pb.item(itemExpr);
+				return;
+			}
+
 			paragraphBuffer.add(line);
 		}
 
@@ -470,7 +687,7 @@ public final class MarkdownParser {
 		private void handleTableLine(String line) {
 			if (line.trim().isEmpty()) {
 				flushTable();
-				pb.addLine(SpaceLine.DEFAULT);
+				pb.addLine(Space.DEFAULT);
 				return;
 			}
 			if (isTableRow(line)) {
@@ -507,98 +724,25 @@ public final class MarkdownParser {
 				return;
 			}
 
-			int[] maxContentW = new int[numCols];
-			for (List<String> row : tableRows) {
-				for (int j = 0; j < Math.min(row.size(), numCols); j++) {
-					String plain = stripFormatCodes(convertInlineFormatting(row.get(j)));
-					int w = estimateTextWidth(plain);
-					if (w > maxContentW[j]) {
-						maxContentW[j] = w;
-					}
-				}
-			}
 
-			int totalOverhead = 2 + BORDER_OVERHEAD_PER_COL * numCols;
-			int availableContentWidth = ApistleScreen.PAGE_WIDTH - totalOverhead;
-
-			int totalContentWidth = 0;
+			AutoTableBuilder tb = pb.autoTable();
+			AutoTableBuilder.ColumnBuilder cb = tb.column();
 			for (int j = 0; j < numCols; j++) {
-				totalContentWidth += maxContentW[j];
-			}
-
-			int[] widths = new int[numCols];
-			if (totalContentWidth > availableContentWidth && totalContentWidth > 0) {
-				double scale = (double) availableContentWidth / totalContentWidth;
-				int assigned = 0;
-				for (int j = 0; j < numCols; j++) {
-					widths[j] = Math.max(16, (int) (maxContentW[j] * scale));
-					assigned += widths[j];
+				if (j > 0) {
+					cb = cb.column();
 				}
-				int diff = availableContentWidth - assigned;
-				if (diff > 0) {
-					// Distribute surplus: add 1 to each column starting from the first
-					for (int j = 0; diff > 0 && j < numCols; j++) {
-						widths[j]++;
-						diff--;
-					}
-				} else if (diff < 0) {
-					// Deficit: proportionally reduce columns (>16)
-					int deficit = -diff;
-					// Calculate total reducible space
-					int reducibleTotal = 0;
-					for (int j = 0; j < numCols; j++) {
-						if (widths[j] > 16) {
-							reducibleTotal += (widths[j] - 16);
-						}
-					}
-					if (reducibleTotal > 0) {
-						int reduced = 0;
-						for (int j = 0; j < numCols; j++) {
-							if (widths[j] > 16) {
-								int reducible = widths[j] - 16;
-								int cut = (int) ((long) deficit * reducible / reducibleTotal);
-								widths[j] -= cut;
-								reduced += cut;
-							}
-						}
-						// Distribute rounding remainder from front to back
-						int remainder = deficit - reduced;
-						for (int j = 0; remainder > 0 && j < numCols; j++) {
-							if (widths[j] > 16) {
-								widths[j]--;
-								remainder--;
-							}
-						}
-					}
-					// If reducibleTotal == 0, all columns already at minimum 16,
-					// deficit cannot be eliminated — this is an extreme data case
-				}
-			} else {
-				for (int j = 0; j < numCols; j++) {
-					widths[j] = Math.max(16, maxContentW[j]);
-				}
-			}
-
-			List<List<String>> columns = new ArrayList<>();
-			for (int j = 0; j < numCols; j++) {
-				List<String> col = new ArrayList<>();
 				for (List<String> row : tableRows) {
-					if (j < row.size()) {
-						col.add(convertInlineFormatting(row.get(j)));
+					String cellText = (j < row.size()) ? row.get(j) : "";
+					if (cellText.isEmpty()) {
+						cb.cell("");
+						continue;
 					}
-				}
-				columns.add(col);
-			}
-
-			PageBuilder.TableBuilder tb = pb.table();
-			PageBuilder.TableBuilder.ColumnBuilder cb = tb.column(widths[0]);
-			for (int i = 0; i < columns.get(0).size(); i++) {
-				cb.cell(columns.get(0).get(i));
-			}
-			for (int j = 1; j < numCols; j++) {
-				cb = cb.column(widths[j]);
-				for (int i = 0; i < columns.get(j).size(); i++) {
-					cb.cell(columns.get(j).get(i));
+					Ingredient itemExpr = parseItemExpression(cellText, registries);
+					if (itemExpr != null) {
+						cb.cell(itemExpr);
+					} else {
+						cb.cell(convertInlineFormatting(cellText));
+					}
 				}
 			}
 			cb.end();

@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.khjxiaogu.beecrasy.client.apistle.lines.HLine;
 import com.khjxiaogu.beecrasy.client.apistle.lines.Image;
-import com.khjxiaogu.beecrasy.client.apistle.lines.ItemSpotLine;
-import com.khjxiaogu.beecrasy.client.apistle.lines.SpaceLine;
+import com.khjxiaogu.beecrasy.client.apistle.lines.ItemSpotlight;
+import com.khjxiaogu.beecrasy.client.apistle.lines.Space;
+import com.khjxiaogu.beecrasy.client.apistle.lines.Split;
 import com.khjxiaogu.beecrasy.client.apistle.lines.Table;
 import com.khjxiaogu.beecrasy.client.apistle.lines.Table.Border;
 import com.khjxiaogu.beecrasy.client.apistle.lines.Table.Cell;
@@ -76,7 +76,7 @@ public class PageBuilder {
 		}
 		public PageBuilder end() {
 			
-			return PageBuilder.this.addLine(new ItemSpotLine(items,scale));
+			return PageBuilder.this.addLine(new ItemSpotlight(items,scale));
 		}
 		ComplexItemBuilder(float scale) {
 			super();
@@ -164,44 +164,44 @@ public class PageBuilder {
 		
 	}
 	public class AutoTableBuilder{
-		public class AutoColumnBuilder {
+		public class ColumnBuilder {
 			List<Cell> colCells=new ArrayList<>();
-			public AutoColumnBuilder cell(Ingredient item,Border border) {
+			public ColumnBuilder cell(Ingredient item,Border border) {
 				colCells.add(new Cell(Either.left(item.getValues()),border));
 				return this;
 			}
-			public AutoColumnBuilder cell(String text,Border border) {
+			public ColumnBuilder cell(String text,Border border) {
 				colCells.add(new Cell(Either.right(text),border));
 				return this;
 			}
-			public AutoColumnBuilder cell(String text) {
+			public ColumnBuilder cell(String text) {
 				return cell(text, Border.DEFAULT);
 			}
-			public AutoColumnBuilder cell(Item item,Border border) {
+			public ColumnBuilder cell(Item item,Border border) {
 				return cell(Ingredient.of(item),border);
 			}
-			public AutoColumnBuilder cell(Holder<Item> item,Border border) {
+			public ColumnBuilder cell(Holder<Item> item,Border border) {
 				return cell(Ingredient.of(item.value()),border);
 			}
-			public AutoColumnBuilder cell(TagKey<Item> item,Border border) {
+			public ColumnBuilder cell(TagKey<Item> item,Border border) {
 				return cell(Ingredient.of(registries.get(item).get()),border);
 			}
-			public AutoColumnBuilder cell(Ingredient item) {
+			public ColumnBuilder cell(Ingredient item) {
 			    return cell(item, Border.DEFAULT);
 			}
 
-			public AutoColumnBuilder cell(Item item) {
+			public ColumnBuilder cell(Item item) {
 			    return cell(item, Border.DEFAULT);
 			}
 
-			public AutoColumnBuilder cell(Holder<Item> item) {
+			public ColumnBuilder cell(Holder<Item> item) {
 			    return cell(item, Border.DEFAULT);
 			}
 
-			public AutoColumnBuilder cell(TagKey<Item> item) {
+			public ColumnBuilder cell(TagKey<Item> item) {
 			    return cell(item, Border.DEFAULT);
 			}
-			public AutoColumnBuilder column() {
+			public ColumnBuilder column() {
 				addColumn(colCells);
 				return AutoTableBuilder.this.column();
 			}
@@ -211,8 +211,8 @@ public class PageBuilder {
 			}
 		}
 		List<List<Cell>> cells=new ArrayList<>();
-		public AutoColumnBuilder column() {
-			return new AutoColumnBuilder();
+		public ColumnBuilder column() {
+			return new ColumnBuilder();
 		}
 		private void addColumn(List<Cell> column) {
 		    int index = cells.size();
@@ -281,23 +281,23 @@ public class PageBuilder {
 		return new AutoTableBuilder();
 	}
 	public PageBuilder space() {
-		return addLine(SpaceLine.DEFAULT);
+		return addLine(Space.DEFAULT);
 	}
 	public PageBuilder space(int height) {
-		return addLine(new SpaceLine(height));
+		return addLine(new Space(height));
 	}
 	public PageBuilder hr() {
-		return addLine(HLine.DEFAULT);
+		return addLine(Split.DEFAULT);
 	}
 	public PageBuilder hr(int color) {
-		return addLine(new HLine(color));
+		return addLine(new Split(color));
 	}
 	
 	public PageBuilder image(Identifier image,int width,int height) {
 		return addLine(new Image(image,width,height));
 	}
 	public PageBuilder item(Ingredient item,float scale) {
-		return addLine(new ItemSpotLine(List.of(Either.left(item.getValues())),scale));
+		return addLine(new ItemSpotlight(List.of(Either.left(item.getValues())),scale));
 	}
 	public ComplexItemBuilder item(float scale) {
 		return new ComplexItemBuilder(scale);
@@ -306,7 +306,7 @@ public class PageBuilder {
 		return item(1f);
 	}
 	public PageBuilder item(List<ItemStackTemplate> item,float scale) {
-		return addLine(new ItemSpotLine(List.of(Either.right(item)),scale));
+		return addLine(new ItemSpotlight(List.of(Either.right(item)),scale));
 	}
 	public PageBuilder item(ItemStackTemplate item,float scale) {
 		return item(List.of(item),scale);

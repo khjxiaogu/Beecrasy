@@ -30,10 +30,10 @@ import net.minecraft.util.Util;
 public interface UnbakedLine {
 	public static final Map<String,MapCodec<? extends UnbakedLine>> codecs=Util.make(()->{
 		Map<String,MapCodec<? extends UnbakedLine>> map=new HashMap<>();
-		map.put("hr", HLine.CODEC);
+		map.put("hr", ItemSpotlight.CODEC);
 		map.put("image", Image.CODEC);
-		map.put("item", ItemSpotLine.CODEC);
-		map.put("space", SpaceLine.CODEC);
+		map.put("item", ItemSpotlight.CODEC);
+		map.put("space", Space.CODEC);
 		map.put("text", Text.CODEC);
 		map.put("table", Table.CODEC);
 		return map;
