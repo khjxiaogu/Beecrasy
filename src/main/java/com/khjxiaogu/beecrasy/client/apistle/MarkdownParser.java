@@ -25,11 +25,17 @@ import java.util.Deque;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.khjxiaogu.beecrasy.client.apistle.PageBuilder.AutoTableBuilder;
 import com.khjxiaogu.beecrasy.client.apistle.lines.Image;
 import com.khjxiaogu.beecrasy.client.apistle.lines.Space;
 import com.khjxiaogu.beecrasy.client.apistle.lines.Split;
 import com.khjxiaogu.beecrasy.client.apistle.lines.Text;
+import com.khjxiaogu.beecrasy.client.apistle.lines.UnbakedLine;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -97,7 +103,9 @@ public final class MarkdownParser {
 	public static Page parse(HolderLookup.Provider registries, String title, String markdown) {
 		return new MarkdownParser(registries).parse(title, markdown);
 	}
-
+	public static Page parse(HolderLookup.Provider registries, Page page, String markdown) {
+		return new MarkdownParser(registries).parse(page, markdown);
+	}
 	/**
 	 * 将 Markdown 字符串解析为具有给定标题的 {@link Page}。
 	 *
@@ -110,7 +118,11 @@ public final class MarkdownParser {
 		parseInto(pb, markdown);
 		return pb.build();
 	}
-
+	public Page parse(Page page, String markdown) {
+		PageBuilder pb = new PageBuilder(registries, page);
+		parseInto(pb, markdown);
+		return pb.build();
+	}
 	/**
 	 * 将 Markdown 字符串输入到已有的 {@link PageBuilder} 中，追加从 Markdown 解析出的行。
 	 *
@@ -403,6 +415,19 @@ public final class MarkdownParser {
 	}
 
 	/**
+	 * 提取围栏代码块的语言标签（例如 ```lang 中的 "lang"）。
+	 * 若非围栏标记则返回 null。
+	 */
+	static String fenceLanguage(String line) {
+		String trimmed = line.trim();
+		if (!trimmed.startsWith("```")) {
+			return null;
+		}
+		String after = trimmed.substring(3).trim();
+		return after.isEmpty() ? null : after;
+	}
+
+	/**
 	 * 去除列表标记（-、* 或数字.）及随后的空格后返回内容。
 	 * 若非列表项则返回 null。
 	 */
@@ -565,6 +590,8 @@ public final class MarkdownParser {
 		private final List<String> codeBlockLines = new ArrayList<>();
 		private boolean inTable = false;
 		private final List<List<String>> tableRows = new ArrayList<>();
+		private boolean inUnbakedLine = false;
+		private final List<String> unbakedLineJson = new ArrayList<>();
 
 		ParserStateMachine(PageBuilder pb, HolderLookup.Provider registries) {
 			this.pb = pb;
@@ -573,7 +600,9 @@ public final class MarkdownParser {
 
 		void process(String[] lines) {
 			for (String line : lines) {
-				if (inCodeBlock) {
+				if (inUnbakedLine) {
+					handleUnbakedLine(line);
+				} else if (inCodeBlock) {
 					handleCodeBlockLine(line);
 				} else if (inTable) {
 					handleTableLine(line);
@@ -588,6 +617,20 @@ public final class MarkdownParser {
 					codeBlockLines.clear();
 				}
 				inCodeBlock = false;
+			}
+			if (inUnbakedLine) {
+				if (!unbakedLineJson.isEmpty()) {
+					try {
+						String jsonStr = String.join("\n", unbakedLineJson);
+						JsonElement jsonElement = JsonParser.parseString(jsonStr);
+						DataResult<Pair<UnbakedLine, JsonElement>> result = UnbakedLine.CODEC.decode(JsonOps.INSTANCE, jsonElement);
+						UnbakedLine line = result.map(Pair::getFirst).getOrThrow();
+						pb.addLine(line);
+					} catch (Exception ignored) {
+					}
+					unbakedLineJson.clear();
+				}
+				inUnbakedLine = false;
 			}
 			if (inTable) {
 				flushTable();
@@ -610,6 +653,12 @@ public final class MarkdownParser {
 
 			if (isFence(line)) {
 				flushParagraph();
+				String lang = fenceLanguage(line);
+				if (lang != null && lang.equalsIgnoreCase("raw")) {
+					inUnbakedLine = true;
+					unbakedLineJson.clear();
+					return;
+				}
 				inCodeBlock = true;
 				codeBlockLines.clear();
 				return;
@@ -682,6 +731,30 @@ public final class MarkdownParser {
 				return;
 			}
 			codeBlockLines.add(line);
+		}
+
+		/**
+		 * 处理 ```unbakedline ... ``` 围栏内的 JSON 行。
+		 * 闭合围栏时，将收集的 JSON 解析并添加为 {@link UnbakedLine}。
+		 */
+		private void handleUnbakedLine(String line) {
+			if (isFence(line)) {
+				inUnbakedLine = false;
+				if (!unbakedLineJson.isEmpty()) {
+					String jsonStr = String.join("\n", unbakedLineJson);
+					unbakedLineJson.clear();
+					try {
+						JsonElement jsonElement = JsonParser.parseString(jsonStr);
+						DataResult<Pair<UnbakedLine, JsonElement>> result = UnbakedLine.CODEC.decode(JsonOps.INSTANCE, jsonElement);
+						UnbakedLine uline = result.map(Pair::getFirst).getOrThrow();
+						pb.addLine(uline);
+					} catch (Exception ignored) {
+						// 解析或反序列化失败时静默忽略
+					}
+				}
+				return;
+			}
+			unbakedLineJson.add(line);
 		}
 
 		private void handleTableLine(String line) {

@@ -19,6 +19,8 @@
 
 package com.khjxiaogu.beecrasy.client.apistle;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.io.IOUtils;
+
 import java.util.TreeMap;
 
 import com.google.gson.JsonElement;
@@ -45,25 +50,44 @@ public class PageRegistry{
 	public static final PageRegistry INSTANCE=new PageRegistry();
 	Map<String,List<UnbakedPage>> pages;
 	public void onResourceManagerReload(ResourceManager resourceManager, HolderLookup.Provider registryAccess) {
-		Map<String,List<UnbakedPage>> pages=new TreeMap<>();
-		Map<Identifier,Page> langpages=new HashMap<>();
-		FileToIdConverter convLocal=new FileToIdConverter("apistle/"+Minecraft.getInstance().getLanguageManager().getSelected(),".json");
-		RegistryOps<JsonElement> registry=RegistryOps.create(JsonOps.INSTANCE, registryAccess);
-		SimpleJsonResourceReloadListener.scanDirectory(resourceManager, convLocal, registry, Page.CODEC, langpages);
-		Map<Identifier,Page> commonpages=new HashMap<>();
-		FileToIdConverter conv=new FileToIdConverter("apistle/common",".json");
-		SimpleJsonResourceReloadListener.scanDirectory(resourceManager, conv, registry, Page.CODEC, commonpages);
-		commonpages.putAll(langpages);
-		for(Entry<Identifier, Page> ent:commonpages.entrySet()) {
-			pages.computeIfAbsent(ent.getKey().getNamespace(), _->new ArrayList<>()).add(ent.getValue());
+		Map<String,Map<Identifier,UnbakedPage>> pages=new TreeMap<>();
+		
+		for(Entry<Identifier, Page> ent:readPages(Minecraft.getInstance().getLanguageManager().getSelected(),resourceManager,registryAccess).entrySet()) {
+			pages.computeIfAbsent(ent.getKey().getNamespace(), _->new HashMap<>()).put(ent.getKey(),ent.getValue());
+			
+		}
+		for(Entry<Identifier, Page> ent:readPages("common",resourceManager,registryAccess).entrySet()) {
+			pages.computeIfAbsent(ent.getKey().getNamespace(), _->new HashMap<>()).put(ent.getKey(),ent.getValue());
 		}
 		NeoForge.EVENT_BUS.post(new ApistlePageRegistryEvent(pages));
+		Map<String,List<UnbakedPage>> result=new HashMap<>();
+		for(Entry<String, Map<Identifier, UnbakedPage>> ent:pages.entrySet()) {
+			List<UnbakedPage> pagelist=new ArrayList<>(ent.getValue().values());
+			pagelist.sort(Comparator.comparingInt(UnbakedPage::order));
+			result.put(ent.getKey(), pagelist);
+		}
+		this.pages=Collections.unmodifiableMap(result);
+	}
+	public Map<Identifier,Page> readPages(String lang, ResourceManager resourceManager, HolderLookup.Provider registryAccess){
+		Map<Identifier,Page> langpages=new HashMap<>();
+		FileToIdConverter convLocal=new FileToIdConverter("apistle/"+lang,".json");
 
-		pages.replaceAll((_,v)->{
-			v.sort(Comparator.comparingInt(UnbakedPage::order));
-			return Collections.unmodifiableList(v);
+		FileToIdConverter convMdLocal=new FileToIdConverter("apistle/"+lang,".md");
+		RegistryOps<JsonElement> registry=RegistryOps.create(JsonOps.INSTANCE, registryAccess);
+		SimpleJsonResourceReloadListener.scanDirectory(resourceManager, convLocal, registry, Page.CODEC, langpages);
+		convMdLocal.listMatchingResources(resourceManager).forEach((id,resc)->{
+			Page page=langpages.get(id);
+			 try {
+				if(page!=null)
+					page=MarkdownParser.parse(registryAccess, page,IOUtils.toString(resc.open(), StandardCharsets.UTF_8));
+				else
+					page=MarkdownParser.parse(registryAccess, "",IOUtils.toString(resc.open(), StandardCharsets.UTF_8));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			langpages.put(id, page);
 		});
-		this.pages=Collections.unmodifiableMap(pages);
+		return langpages;
 	}
 	public List<UnbakedPage> getPages(String val) {
 		return pages.getOrDefault(val,List.of());

@@ -247,6 +247,14 @@ public class PageBuilder {
 		this.title = title;
 		this.registries = registries;
 	}
+	public PageBuilder(HolderLookup.Provider registries,Page page) {
+		super();
+		this.title = page.title();
+		this.order = page.order();
+		this.icon = page.icon();
+		this.lines.addAll(page.lines());
+		this.registries = registries;
+	}
 	public PageBuilder setIcon(Optional<Either<Identifier, ItemStackTemplate>> icon) {
 		this.icon=icon;
 		return this;
