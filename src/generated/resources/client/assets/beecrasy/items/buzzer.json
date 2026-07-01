@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "minecraft:block/note_block"
+    "model": "beecrasy:block/buzzer"
   }
 }

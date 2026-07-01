@@ -24,15 +24,17 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
+import com.khjxiaogu.beecrasy.menu.ApistleMenu;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Inventory;
 
-public class ApistleScreen extends Screen {
+public class ApistleScreen extends AbstractContainerScreen<ApistleMenu> {
 	public static class PageButton{
 		int index;
 		Runnable onClick;
@@ -47,11 +49,7 @@ public class ApistleScreen extends Screen {
 	public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Beecrasy.MODID, "textures/gui/apistle_backlay.png");
 
 	public static final Identifier TEXTURE_BUTTON = Identifier.fromNamespaceAndPath(Beecrasy.MODID, "textures/gui/apistle_buttons.png");
-	
-    protected int imageWidth;
-    protected int imageHeight;
-    protected int leftPos;
-    protected int topPos;
+
     public static final int TABS_PER_PAGE=11;
     public static final int PAGE_WIDTH=340-38-10-4;
     public static final int PAGE_HEIGHT=225-11-11+6;
@@ -66,13 +64,7 @@ public class ApistleScreen extends Screen {
 	List<PageButton> buttons=new ArrayList<>(TABS_PER_PAGE);
 	TabPageManager tm;
 	String modid;
-	public ApistleScreen(String modid,Component title) {
-		super(title);
-		imageWidth=340;
-		imageHeight=225;
-		this.modid=modid;
 
-	}
 
 
 	private ArrayList<Component> tooltip = new ArrayList<>(2);
@@ -80,8 +72,6 @@ public class ApistleScreen extends Screen {
 	@Override
 	public void init() {
 		super.init();
-        this.leftPos = (this.width - this.imageWidth) / 2;
-        this.topPos = (this.height - this.imageHeight) / 2;
 		this.clearWidgets();
 		pages=List.copyOf(PageRegistry.INSTANCE.getPages(modid));
 		if(!pages.isEmpty()) {
@@ -117,8 +107,13 @@ public class ApistleScreen extends Screen {
 		}
 	}
 	@Override
+	protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
+		//super.extractLabels(graphics, xm, ym);
+	}
+	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 		tooltip.clear();
+		super.extractRenderState(graphics, mouseX, mouseY, partial);
 		Consumer<Component> adder=tooltip::add;
 		for(int i=0;i<buttons.size();i++) {
 			
@@ -189,14 +184,6 @@ public class ApistleScreen extends Screen {
 		if(currentPage!=null)
 			currentPage.extractBackground(graphics, leftPos+40, topPos+13, PAGE_WIDTH, PAGE_HEIGHT, (int) viewY, PAGE_HEIGHT, mouseX, mouseY);
 	}
-	@Override
-    public boolean isPauseScreen() {
-        return false;
-    }
-    @Override
-    public boolean isInGameUi() {
-        return true;
-    }
 
 
 	public boolean isMouseIn(int mouseX, int mouseY, int x, int y, int w, int h) {
@@ -215,5 +202,9 @@ public class ApistleScreen extends Screen {
 			
 		}
 		return super.mouseClicked(event, doubleClick);
+	}
+	public ApistleScreen(ApistleMenu menu, Inventory inventory, Component title) {
+		super(menu, inventory, title,340,225);
+		this.modid=menu.getModid();
 	}
 }

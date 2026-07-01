@@ -39,9 +39,12 @@ import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.item.ItemModel.Unbaked;
+import net.minecraft.client.renderer.item.SelectItemModel;
+import net.minecraft.client.renderer.item.properties.select.MainHand;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -96,13 +99,15 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 		this.texture(Items.ROYAL_JELLY);
 		this.texture(Items.HONEY_BUCKET);
 		this.texture(Items.MAILBOX);
-		this.texture(Items.APISTLE.get(),"handheld_mailbox");
-
+		this.texture(Items.APISTLE);
 		this.itemModelOutput.register(MailBoxMenu.MAILBOX_ACTIVE, new ClientItem(ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM
 			.create(MailBoxMenu.MAILBOX_ACTIVE.withPrefix("item/"), TextureMapping.layer0(new Material(MailBoxMenu.MAILBOX_ACTIVE.withPrefix("item/"))), this.modelOutput)),ClientItem.Properties.DEFAULT));
 		this.itemModelOutput.accept(  Items.MAIL.get()      ,               ItemModelUtils.composite(plain("letter" ),new GuiOnlySpecialModelWrapper.Unbaked(Beecrasy.rl("item/letter" ), new MailModel.Unbaked(7/16f,1-9/16f,.25f))));
 		this.itemModelOutput.register(Beecrasy.rl("package"),new ClientItem(ItemModelUtils.composite(plain("package"),new GuiOnlySpecialModelWrapper.Unbaked(Beecrasy.rl("item/package"), new MailModel.Unbaked(4/16f,1-10/16f,.5f))),ClientItem.Properties.DEFAULT));
-
+		this.itemModelOutput.register(Beecrasy.rl("apistle_active"), new ClientItem(ItemModelUtils.plainModel(ModelTemplates.FLAT_ITEM
+				.create(Beecrasy.rl("item/"+"apistle_active"), TextureMapping.layer0(new Material(
+					Beecrasy.rl("item/"+"apistle_active"))), this.modelOutput)),ClientItem.Properties.DEFAULT));
+		
 		this.texture(Items.MUSIC_SEIKILOS_EPITAPH);
 		this.texture(Items.MUSIC_FLIGHT_OF_THE_BUMBLE_BEE);
 		this.texture(Items.MUSIC_FLIGHT_OF_THE_BUMBLE_BEE_BITS);

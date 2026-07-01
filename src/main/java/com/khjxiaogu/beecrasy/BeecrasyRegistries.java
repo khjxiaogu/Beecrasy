@@ -74,6 +74,7 @@ import com.khjxiaogu.beecrasy.item.QueenBeeItem;
 import com.khjxiaogu.beecrasy.item.SequencerHandHeld;
 import com.khjxiaogu.beecrasy.mail.MailComponent;
 import com.khjxiaogu.beecrasy.mail.PlayerPostalOffice;
+import com.khjxiaogu.beecrasy.menu.ApistleMenu;
 import com.khjxiaogu.beecrasy.menu.BeeCityCombMenu;
 import com.khjxiaogu.beecrasy.menu.BeeCityCoreMenu;
 import com.khjxiaogu.beecrasy.menu.BeeCityQueenMenu;
@@ -428,6 +429,8 @@ public class BeecrasyRegistries {
 		public static final DeferredHolder<MenuType<?>, MenuType<BeeCityCoreMenu>> BEE_CITY_CORE=MENU_TYPES.register("bee_city_core", () -> IMenuTypeExtension.create(BeeCityCoreMenu::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<BeeCityCombMenu>> BEE_CITY_COMB=MENU_TYPES.register("bee_city_comb", () -> IMenuTypeExtension.create(BeeCityCombMenu::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<BeeCityQueenMenu>> BEE_CITY_QUEEN=MENU_TYPES.register("bee_city_queen", () -> IMenuTypeExtension.create(BeeCityQueenMenu::new));
+		
+		public static final DeferredHolder<MenuType<?>, MenuType<ApistleMenu>> APISTLE=MENU_TYPES.register("apistle", () -> IMenuTypeExtension.create(ApistleMenu::new));
 		
 	}
 	public static class Loots{

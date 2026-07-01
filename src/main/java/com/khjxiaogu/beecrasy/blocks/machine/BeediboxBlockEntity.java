@@ -95,7 +95,11 @@ public class BeediboxBlockEntity extends BeecrasyBlockEntity {
 
 	@Override
 	public void tick() {
-		ticks--;
+		if(isPlaying()) {
+			ticks--;
+			if(ticks==0)
+		        this.level.updateNeighborsAt(this.getBlockPos(), this.getBlockState().getBlock());
+		}
 	}
 	public boolean isPlaying() {
 		return ticks>0;

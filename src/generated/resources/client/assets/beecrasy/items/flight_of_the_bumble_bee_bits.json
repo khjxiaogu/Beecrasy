@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "minecraft:item/music_disc_13"
+    "model": "beecrasy:item/flight_of_the_bumble_bee_bits"
   }
 }

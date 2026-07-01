@@ -27,6 +27,7 @@ import com.khjxiaogu.beecrasy.beedi.BeediManager;
 import com.khjxiaogu.beecrasy.client.BeeTint;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.client.ModelReference;
+import com.khjxiaogu.beecrasy.client.apistle.ApistleScreen;
 import com.khjxiaogu.beecrasy.client.apistle.PageRegistry;
 import com.khjxiaogu.beecrasy.client.model.GuiOnlySpecialModelWrapper;
 import com.khjxiaogu.beecrasy.client.model.MailModel;
@@ -104,6 +105,8 @@ public class BeecrasyClient {
 		event.register(Menus.BEE_CITY_COMB.get(), BeeCityCombScreen::new);
 		event.register(Menus.BEE_CITY_QUEEN.get(), BeeCityQueenScreen::new);
 		
+
+		event.register(Menus.APISTLE.get(), ApistleScreen::new);
 		
 		SequencerTabs.init();
 	}

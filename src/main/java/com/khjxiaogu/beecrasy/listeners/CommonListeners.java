@@ -50,7 +50,7 @@ import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 import com.khjxiaogu.beecrasy.genome.gene.Temperature;
 import com.khjxiaogu.beecrasy.mail.PlayerPostalOffice;
 import com.khjxiaogu.beecrasy.mail.PostalOffice;
-import com.khjxiaogu.beecrasy.network.OpenApistleMessage;
+import com.khjxiaogu.beecrasy.menu.ApistleMenu;
 import com.khjxiaogu.beecrasy.network.PacketHandler;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.FloatArgumentType;
@@ -72,6 +72,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -86,6 +87,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
 
 @EventBusSubscriber(modid = Beecrasy.MODID)
 public class CommonListeners {
@@ -188,7 +190,10 @@ public class CommonListeners {
 		String apistle=ev.getItemStack().get(Components.APISTLE);
 		if(apistle!=null) {
 			if(ev.getEntity() instanceof ServerPlayer player) {
-				PacketHandler.sendToPlayer(player, new OpenApistleMessage(apistle,ev.getItemStack().getHoverName()));
+				ApistleMenu.openMenu(player, apistle, ItemAccess.forPlayerSlot(player, switch (ev.getHand()) {
+                case MAIN_HAND -> player.getInventory().getSelectedSlot();
+                case OFF_HAND -> Inventory.SLOT_OFFHAND;
+            }));
 			}
 			ev.setCanceled(true);
 			ev.setCancellationResult(InteractionResult.SUCCESS);
