@@ -90,7 +90,7 @@ public class BeecrasyLootProvider extends BlockLootSubProvider {
 		this.dropOther(Blocks.BEE_CITY_COMB.get(),Blocks.EMPTY_COMB_BLOCK.asItem());
 		this.dropOther(Blocks.BEE_CITY_QUEEN.get(),Blocks.EMPTY_COMB_BLOCK.asItem());
 		
-		this.dropSelf(Blocks.BEEPER.get());
+		this.dropSelf(Blocks.BUZZER.get());
 		this.dropSelf(Blocks.BEEDIBOX.get());
 		this.add(Blocks.NATURAL_HIVE.get(),BlockLootSubProvider.noDrop());
 		

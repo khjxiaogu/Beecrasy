@@ -103,9 +103,9 @@ public class BeecrasyItemModelProvider extends ItemModelGenerators {
 		this.itemModelOutput.accept(  Items.MAIL.get()      ,               ItemModelUtils.composite(plain("letter" ),new GuiOnlySpecialModelWrapper.Unbaked(Beecrasy.rl("item/letter" ), new MailModel.Unbaked(7/16f,1-9/16f,.25f))));
 		this.itemModelOutput.register(Beecrasy.rl("package"),new ClientItem(ItemModelUtils.composite(plain("package"),new GuiOnlySpecialModelWrapper.Unbaked(Beecrasy.rl("item/package"), new MailModel.Unbaked(4/16f,1-10/16f,.5f))),ClientItem.Properties.DEFAULT));
 
-		this.itemModelOutput.accept(Items.MUSIC_SEIKILOS_EPITAPH.get(),ItemModelUtils.plainModel(Identifier.withDefaultNamespace("item/music_disc_13")));
-		this.itemModelOutput.accept(Items.MUSIC_FLIGHT_OF_THE_BUMBLE_BEE.get(),ItemModelUtils.plainModel(Identifier.withDefaultNamespace("item/music_disc_13")));
-		this.itemModelOutput.accept(Items.MUSIC_FLIGHT_OF_THE_BUMBLE_BEE_BITS.get(),ItemModelUtils.plainModel(Identifier.withDefaultNamespace("item/music_disc_13")));
+		this.texture(Items.MUSIC_SEIKILOS_EPITAPH);
+		this.texture(Items.MUSIC_FLIGHT_OF_THE_BUMBLE_BEE);
+		this.texture(Items.MUSIC_FLIGHT_OF_THE_BUMBLE_BEE_BITS);
 		
 	}
     public void generateBeeTint(ItemLike item) {
