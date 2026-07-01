@@ -1,0 +1,12 @@
+{
+	"parent": "minecraft:block/cube",
+	"textures": {
+		"down": "beecrasy:block/buzzer_bottom",
+		"up": "beecrasy:block/buzzer_top",
+		"east": "beecrasy:block/buzzer_side",
+		"north": "beecrasy:block/buzzer_side",
+		"south": "beecrasy:block/buzzer_side",
+		"west": "beecrasy:block/buzzer_side",
+		"particle": "beecrasy:block/buzzer_side"
+	}
+}
