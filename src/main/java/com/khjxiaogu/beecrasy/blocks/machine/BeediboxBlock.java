@@ -34,6 +34,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -51,7 +52,7 @@ public class BeediboxBlock extends Block implements BeecrasyEntityBlock<Beedibox
 
 	public BeediboxBlock(Properties properties) {
 		super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(BlockStateProperties.HAS_RECORD, false));
+        this.registerDefaultState(this.stateDefinition.any().setValue(BlockStateProperties.HAS_RECORD, false).setValue(BlockStateProperties.HORIZONTAL_FACING,Direction.NORTH));
 	}
 
 	@Override
@@ -67,7 +68,11 @@ public class BeediboxBlock extends Block implements BeecrasyEntityBlock<Beedibox
             level.setBlock(pos, state.setValue(BlockStateProperties.HAS_RECORD, true), 2);
         }
     }
-
+	@Override
+	public BlockState getStateForPlacement(BlockPlaceContext context) {
+		return this.defaultBlockState()
+			.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
+	}
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (state.getValue(BlockStateProperties.HAS_RECORD) && level.getBlockEntity(pos) instanceof BeediboxBlockEntity jukebox) {
@@ -135,5 +140,6 @@ public class BeediboxBlock extends Block implements BeecrasyEntityBlock<Beedibox
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BlockStateProperties.HAS_RECORD);
+        builder.add(BlockStateProperties.HORIZONTAL_FACING);
     }
 }

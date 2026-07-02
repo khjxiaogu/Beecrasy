@@ -1,5 +1,5 @@
-// 26.1.2	2026-07-02T02:21:31.4083377	Model Definitions - beecrasy
-6cb8297f174f17491c397c09ba4b9fe213aeca3d assets/beecrasy/blockstates/beedibox.json
+// 26.1.2	2026-07-03T01:04:48.9446826	Model Definitions - beecrasy
+1cf5823f416099f900c9eb832a07f001723252b2 assets/beecrasy/blockstates/beedibox.json
 dac4306f0432186d4a9af9fdc4328aea740acb73 assets/beecrasy/blockstates/bee_city_comb.json
 8bbcba3bf0bc0c88d414a125277b141b1ee0f6f8 assets/beecrasy/blockstates/bee_city_core.json
 3e9521dfb3281d264d91ab85b6f7f2bed09215db assets/beecrasy/blockstates/bee_city_queen.json
@@ -19,7 +19,7 @@ dc65ea3b54a56b0949ba41536f862b4aeb4143eb assets/beecrasy/items/apistle.json
 13d93f0c84ce2735dfc499dcf8d317fa8b1cf1fd assets/beecrasy/items/apistle_active.json
 7bb29d5e7184ee156bdf67a3fea4183dd53592cc assets/beecrasy/items/apite.json
 c61b4b82f4072097ed9b7aa0bf9d62b4a1f37bca assets/beecrasy/items/asphodel.json
-7ae4e00f9c4ed463dfb25b81770493ba5d610b72 assets/beecrasy/items/beedibox.json
+b373b6cc20dff34c354517a37be39df67710b66e assets/beecrasy/items/beedibox.json
 5bc948201b4d7c12fedc6ff4dc09679a4c4f1904 assets/beecrasy/items/beeswax.json
 351c1f6f1cdfe56c445f4714394933737720ca2d assets/beecrasy/items/bee_city_comb.json
 f3789e180aabdd3fa07473a6837bf3e12c9811eb assets/beecrasy/items/bee_city_core.json

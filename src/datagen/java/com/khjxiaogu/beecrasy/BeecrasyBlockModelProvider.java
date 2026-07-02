@@ -98,8 +98,7 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 		this.blockItemModel(Blocks.SEQUENCER);
 		this.blockStateOutput.accept(
 			this.getVariantBuilder(Blocks.SEQUENCER.get()).with(PropertyDispatch.initial(BlockStateProperties.LIT)
-				.select(false, bmf("sequencer"))
-				.select(true, bmf("sequencer_active")))
+				.generate(t->t?bmf("sequencer_active"): bmf("sequencer")))
 			.with(ROTATION_HORIZONTAL_FACING)
 			);
 		this.blockItemModel(Blocks.HIVE);
@@ -109,7 +108,10 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 			);
 		this.simpleBlockItem(Blocks.BEE_CITY_CORE.get());
 		this.simpleBlockItem(Blocks.BUZZER.get(), Beecrasy.rl("buzzer"));
-		this.simpleBlockItem(Blocks.BEEDIBOX.get(), Identifier.withDefaultNamespace("jukebox"));
+		this.blockStateOutput.accept(this.getVariantBuilder(Blocks.BEEDIBOX.get()).with(PropertyDispatch.initial(BlockStateProperties.HAS_RECORD)
+				.generate(t->t?bmf("beedibox_active"): bmf("beedibox"))
+				
+				).with(ROTATION_HORIZONTAL_FACING));
 		
 		this.blockItemModel(Blocks.BEE_CITY_COMB.get(),Beecrasy.rl("bee_city_empty_comb"));
 		this.blockStateOutput.accept(this.getVariantBuilder(Blocks.BEE_CITY_COMB.get())

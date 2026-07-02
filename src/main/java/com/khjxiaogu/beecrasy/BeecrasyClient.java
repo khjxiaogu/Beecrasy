@@ -19,11 +19,14 @@
 
 package com.khjxiaogu.beecrasy;
 
+import java.util.List;
+
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Entities;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Fluids;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
 import com.khjxiaogu.beecrasy.beedi.BeediManager;
+import com.khjxiaogu.beecrasy.blocks.machine.BeediboxBlockEntity;
 import com.khjxiaogu.beecrasy.client.BeeTint;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 import com.khjxiaogu.beecrasy.client.ModelReference;
@@ -47,10 +50,14 @@ import com.khjxiaogu.beecrasy.client.screens.SequenceHandHeldScreen;
 import com.khjxiaogu.beecrasy.client.screens.SkepScreen;
 import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTabs;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -115,7 +122,32 @@ public class BeecrasyClient {
 		ev.register(Beecrasy.rl("bee_product"), BeeTint.MAP_CODEC);
 		
 	}
+	@SubscribeEvent
+	public static void registerBlockTint(RegisterColorHandlersEvent.BlockTintSources ev) {
+		ev.register(List.of(new BlockTintSource() {
 
+			@Override
+			public int color(BlockState state) {
+				return 0;
+			}
+
+			@Override
+			public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
+				if(level.getBlockEntity(pos) instanceof BeediboxBlockEntity be)
+					return be.getTintColor();
+				return BlockTintSource.super.colorInWorld(state, level, pos);
+			}
+
+			@Override
+			public int colorAsTerrainParticle(BlockState state, BlockAndTintGetter level, BlockPos pos) {
+				if(level.getBlockEntity(pos) instanceof BeediboxBlockEntity be)
+					return be.getTintColor();
+				return BlockTintSource.super.colorAsTerrainParticle(state, level, pos);
+			}
+			
+		
+		}), Blocks.BEEDIBOX.get());
+	}
 	
 	@SubscribeEvent
 	public static void onWorldUnload(LevelEvent.Unload ev)

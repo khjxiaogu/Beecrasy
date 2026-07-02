@@ -25,11 +25,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
-public record BeediDisk(long ticks,Identifier name,Optional<Identifier> sound,int comparatorOutput,int offset,float speed) {
+public record BeediDisk(long ticks,Identifier name,Optional<Identifier> sound,int comparatorOutput,int offset,float speed,TextColor color) {
 
 	public static final Codec<BeediDisk> CODEC=RecordCodecBuilder.create(t->t.group(
 			Codec.LONG.fieldOf("ticks").forGetter(BeediDisk::ticks),
@@ -37,7 +38,8 @@ public record BeediDisk(long ticks,Identifier name,Optional<Identifier> sound,in
 			Identifier.CODEC.optionalFieldOf("sound").forGetter(BeediDisk::sound),
 			Codec.INT.optionalFieldOf("comparator",0).forGetter(BeediDisk::comparatorOutput),
 			Codec.INT.optionalFieldOf("offset",0).forGetter(BeediDisk::offset),
-			Codec.FLOAT.optionalFieldOf("speed",1f).forGetter(BeediDisk::speed)
+			Codec.FLOAT.optionalFieldOf("speed",1f).forGetter(BeediDisk::speed),
+			TextColor.CODEC.optionalFieldOf("color",TextColor.fromRgb(0)).forGetter(BeediDisk::color)
 			).apply(t, BeediDisk::new));
 	public static final StreamCodec<ByteBuf,BeediDisk> STREAM_CODEC=StreamCodec.composite(
 			ByteBufCodecs.VAR_LONG,BeediDisk::ticks,
@@ -46,9 +48,10 @@ public record BeediDisk(long ticks,Identifier name,Optional<Identifier> sound,in
 			ByteBufCodecs.VAR_INT,BeediDisk::comparatorOutput,
 			ByteBufCodecs.VAR_INT,BeediDisk::offset,
 			ByteBufCodecs.FLOAT,BeediDisk::speed,
+			ByteBufCodecs.INT.map(TextColor::fromRgb, TextColor::getValue),t->t.color(),
 			BeediDisk::new
 			);
-	public BeediDisk(long ticks,Identifier name,int comparatorOutput) {
-		this(ticks,name,Optional.empty(),comparatorOutput,0,1);
+	public BeediDisk(long ticks,Identifier name,int comparatorOutput,TextColor color) {
+		this(ticks,name,Optional.empty(),comparatorOutput,0,1,color);
 	}
 }

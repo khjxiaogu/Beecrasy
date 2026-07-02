@@ -59,10 +59,11 @@ public class BeediboxBlockEntity extends BeecrasyBlockEntity {
 				if(id!=null) {
 					ServerBeediManager.playSong(serverLevel, worldPosition, id.name(),id.sound().orElse(null), id.offset(),id.speed());
 					ticks=id.ticks();
-					
+					tintColor=id.color().getValue();
 				}else {
 					ServerBeediManager.stopSong(serverLevel, worldPosition);
 					ticks=0;
+					tintColor=0;
 				}
 			if(!isRemoving) {
 				level.setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockStateProperties.HAS_RECORD, !getResource(index).isEmpty()));
@@ -73,6 +74,11 @@ public class BeediboxBlockEntity extends BeecrasyBlockEntity {
 	};
 	
 	long ticks;
+	int tintColor;
+	public int getTintColor() {
+		return tintColor;
+	}
+
 	public BeediboxBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
 		super(Blocks.BEEDIBOX_BLOCKENTITY.get(), pWorldPosition, pBlockState);
 	}

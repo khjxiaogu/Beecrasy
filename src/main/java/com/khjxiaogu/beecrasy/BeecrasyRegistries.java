@@ -89,12 +89,14 @@ import com.khjxiaogu.beecrasy.utils.RecipeCache;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
@@ -189,11 +191,11 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> APISTLE=ITEMS.registerSimpleItem("apistle",t->t.stacksTo(1).component(Components.APISTLE, Beecrasy.MODID));
 	    
 	    //光盘
-	    public static final DeferredItem<Item> MUSIC_FLIGHT_OF_THE_BUMBLE_BEE=ITEMS.registerSimpleItem("flight_of_the_bumble_bee",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(1260,Beecrasy.rl("flight_of_the_bumble_bee"),1)));
-	    public static final DeferredItem<Item> MUSIC_FLIGHT_OF_THE_BUMBLE_BEE_BITS=ITEMS.registerSimpleItem("flight_of_the_bumble_bee_bits",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(1260,Beecrasy.rl("flight_of_the_bumble_bee"),Optional.of(Identifier.withDefaultNamespace("block.note_block.bit")),1,0,1f)));
+	    public static final DeferredItem<Item> MUSIC_FLIGHT_OF_THE_BUMBLE_BEE=ITEMS.registerSimpleItem("flight_of_the_bumble_bee",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(1260,Beecrasy.rl("flight_of_the_bumble_bee"),1,TextColor.fromLegacyFormat(ChatFormatting.YELLOW))));
+	    public static final DeferredItem<Item> MUSIC_FLIGHT_OF_THE_BUMBLE_BEE_BITS=ITEMS.registerSimpleItem("flight_of_the_bumble_bee_bits",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(1260,Beecrasy.rl("flight_of_the_bumble_bee"),Optional.of(Identifier.withDefaultNamespace("block.note_block.bit")),1,0,1f,TextColor.fromLegacyFormat(ChatFormatting.YELLOW))));
 	    
 	    
-	    public static final DeferredItem<Item> MUSIC_SEIKILOS_EPITAPH=ITEMS.registerSimpleItem("seikilos_epitaph",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(500,Beecrasy.rl("seikilos_epitaph"),2)));
+	    public static final DeferredItem<Item> MUSIC_SEIKILOS_EPITAPH=ITEMS.registerSimpleItem("seikilos_epitaph",t->t.stacksTo(1).component(Components.BEEDI_RECORD, new BeediDisk(500,Beecrasy.rl("seikilos_epitaph"),2,TextColor.fromLegacyFormat(ChatFormatting.AQUA))));
 	    
 	    
 	    
