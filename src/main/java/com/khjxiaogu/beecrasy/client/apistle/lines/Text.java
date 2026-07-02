@@ -21,9 +21,9 @@ package com.khjxiaogu.beecrasy.client.apistle.lines;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import com.khjxiaogu.beecrasy.client.apistle.Constants;
+import com.khjxiaogu.beecrasy.client.apistle.GuiInfoCollector;
 import com.khjxiaogu.beecrasy.utils.StringComponentParser;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -32,7 +32,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -59,7 +58,7 @@ public record Text(List<String> lines,float scale,boolean centered,Optional<Floa
 		return new Line() {
 			@Override
 			public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY,
-					Consumer<Component> tooltips) {
+					GuiInfoCollector tooltips) {
 				int initX=x;
 				int initY=y;
 				int initW=w;

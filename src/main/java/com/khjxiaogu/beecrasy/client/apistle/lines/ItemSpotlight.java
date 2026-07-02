@@ -20,8 +20,8 @@
 package com.khjxiaogu.beecrasy.client.apistle.lines;
 
 import java.util.List;
-import java.util.function.Consumer;
 
+import com.khjxiaogu.beecrasy.client.apistle.GuiInfoCollector;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -29,15 +29,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.HolderSet;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.TooltipFlag;
-
 import net.minecraft.world.item.crafting.Ingredient;
 
 public record ItemSpotlight(List<Either<HolderSet<Item>,List<ItemStackTemplate>>> items,float scale) implements UnbakedLine{
@@ -58,7 +54,7 @@ public record ItemSpotlight(List<Either<HolderSet<Item>,List<ItemStackTemplate>>
 		return new Line() {
 			@Override
 			public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY,
-					Consumer<Component> tooltips) {
+					GuiInfoCollector tooltips) {
 			
 				graphics.pose().pushMatrix();
 				graphics.pose().translate(x+(w-widthf)/2, y);
@@ -69,7 +65,7 @@ public record ItemSpotlight(List<Either<HolderSet<Item>,List<ItemStackTemplate>>
 				for(List<ItemStack> item:items) {
 					ItemStack touse=item.get((int) ((System.currentTimeMillis()/500)%item.size()));
 					if(isYrange&&mouseX>simMouseX&&mouseX<simMouseX+sizef) {
-						touse.getTooltipLines(TooltipContext.EMPTY, null, TooltipFlag.NORMAL).forEach(tooltips);
+						tooltips.accept(touse,Mth.floor(simMouseX),y,Mth.ceil(sizef),Mth.ceil(sizef));
 					}
 					simMouseX+=sizef+1;
 					graphics.item(touse, 0, 0);

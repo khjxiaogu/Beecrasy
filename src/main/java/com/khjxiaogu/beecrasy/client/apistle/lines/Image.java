@@ -19,15 +19,13 @@
 
 package com.khjxiaogu.beecrasy.client.apistle.lines;
 
-import java.util.function.Consumer;
-
+import com.khjxiaogu.beecrasy.client.apistle.GuiInfoCollector;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 public record Image(Identifier image,int width,int height) implements UnbakedLine,Line{
@@ -45,7 +43,7 @@ public record Image(Identifier image,int width,int height) implements UnbakedLin
 
 	@Override
 	public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY,
-			Consumer<Component> tooltips) {
+			GuiInfoCollector tooltips) {
 		graphics.blit(RenderPipelines.GUI_TEXTURED, image, x+(w-width)/2, y, 0, 0, width, height, width, height);
 		return height;
 	}

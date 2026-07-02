@@ -33,6 +33,10 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item.TooltipContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class ApistleScreen extends AbstractContainerScreen<ApistleMenu> {
 	public static class PageButton{
@@ -46,6 +50,7 @@ public class ApistleScreen extends AbstractContainerScreen<ApistleMenu> {
 			this.page = page;
 		}
 	}
+	public static record ItemAndArea(ItemStack stack,int x,int y,int w,int h) {};
 	public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(Beecrasy.MODID, "textures/gui/apistle_backlay.png");
 
 	public static final Identifier TEXTURE_BUTTON = Identifier.fromNamespaceAndPath(Beecrasy.MODID, "textures/gui/apistle_buttons.png");
@@ -67,8 +72,12 @@ public class ApistleScreen extends AbstractContainerScreen<ApistleMenu> {
 
 
 
-	private ArrayList<Component> tooltip = new ArrayList<>(2);
+	private ArrayList<Component> tooltip = new ArrayList<>(10);
+	private ArrayList<ItemAndArea> pointedItem = new ArrayList<>(4);
 
+	public ArrayList<ItemAndArea> getPointedItem() {
+		return pointedItem;
+	}
 	@Override
 	public void init() {
 		super.init();
@@ -113,6 +122,7 @@ public class ApistleScreen extends AbstractContainerScreen<ApistleMenu> {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 		tooltip.clear();
+		pointedItem.clear();
 		super.extractRenderState(graphics, mouseX, mouseY, partial);
 		Consumer<Component> adder=tooltip::add;
 		for(int i=0;i<buttons.size();i++) {
@@ -138,10 +148,16 @@ public class ApistleScreen extends AbstractContainerScreen<ApistleMenu> {
 		}
 		int dx=leftPos+38;
 		int dy=topPos+11;
+		GuiInfoCollector collectors=new GuiInfoCollector();
 		if(currentPage!=null) {
 			graphics.enableScissor(dx, dy, PAGE_WIDTH+dx, PAGE_HEIGHT+dy);
-			currentPage.extractRenderState(graphics, dx, dy, PAGE_WIDTH, PAGE_HEIGHT, (int) viewY, PAGE_HEIGHT, mouseX, mouseY, adder);
+			currentPage.extractRenderState(graphics, dx, dy, PAGE_WIDTH, PAGE_HEIGHT, (int) viewY, PAGE_HEIGHT, mouseX, mouseY, collectors);
 			graphics.disableScissor();
+		}
+		tooltip.addAll(collectors.tooltips);
+		for(ItemAndArea stack:collectors.stacks) {
+			tooltip.addAll(stack.stack().getTooltipLines(TooltipContext.of(this.minecraft.level, this.minecraft.player), this.minecraft.player, TooltipFlag.NORMAL));
+			pointedItem.add(stack);
 		}
 		//super.extractRenderState(graphics, mouseX, mouseY, partial);
 		//graphics.text(this.font, this.title, 8, 6, -12566464, false);

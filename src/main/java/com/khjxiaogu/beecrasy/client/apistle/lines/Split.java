@@ -19,13 +19,11 @@
 
 package com.khjxiaogu.beecrasy.client.apistle.lines;
 
-import java.util.function.Consumer;
-
+import com.khjxiaogu.beecrasy.client.apistle.GuiInfoCollector;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.ARGB;
 
@@ -47,7 +45,7 @@ public record Split(TextColor color) implements Line, UnbakedLine {
 
 	@Override
 	public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY,
-			Consumer<Component> tooltips) {
+			GuiInfoCollector tooltips) {
 		graphics.fill(x, y+1, x+w-4, y+2, ARGB.color(1f, color.getValue()));
 		return 3;
 	}

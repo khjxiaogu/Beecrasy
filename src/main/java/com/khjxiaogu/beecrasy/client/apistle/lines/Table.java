@@ -21,10 +21,10 @@ package com.khjxiaogu.beecrasy.client.apistle.lines;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import com.khjxiaogu.beecrasy.client.apistle.ApistleScreen;
 import com.khjxiaogu.beecrasy.client.apistle.Constants;
+import com.khjxiaogu.beecrasy.client.apistle.GuiInfoCollector;
 import com.khjxiaogu.beecrasy.utils.StringComponentParser;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -36,7 +36,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.HolderSet;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -223,7 +222,7 @@ public record Table(Optional<IntList> columns,List<List<Cell>> cells) implements
 
 			@Override
 			public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY,
-					Consumer<Component> tooltips) {
+					GuiInfoCollector tooltips) {
 				int initX=(w-colWidthf)/2+x+1;
 				int curY=y+1;
 				for(int i=0;i<cell.length;i++) {

@@ -61,7 +61,7 @@ public record Page(List<UnbakedLine> lines,Optional<Either<Identifier,ItemStackT
 			height=line.precalculateHeight();
 		}
 		@Override
-		public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY, Consumer<Component> tooltips) {
+		public int extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int mouseX, int mouseY, GuiInfoCollector tooltips) {
 			height=line.extractRenderState(graphics, x, y, w, mouseX, mouseY, tooltips);
 			return height;
 		}
@@ -73,7 +73,7 @@ public record Page(List<UnbakedLine> lines,Optional<Either<Identifier,ItemStackT
 	public static record Baked(List<HeightedLine> lines,int height) implements BakedPage{
 
 		@Override
-		public void extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int h, int viewY, int viewHeight, int mouseX, int mouseY, Consumer<Component> tooltips) {
+		public void extractRenderState(GuiGraphicsExtractor graphics, int x, int y, int w, int h, int viewY, int viewHeight, int mouseX, int mouseY, GuiInfoCollector tooltips) {
 			int curY=0;
 			for(Line l:lines) {
 				int preCurY=curY;

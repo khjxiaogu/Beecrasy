@@ -26,6 +26,8 @@ import java.util.Optional;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.client.apistle.ApistleScreen;
+import com.khjxiaogu.beecrasy.client.apistle.ApistleScreen.ItemAndArea;
 import com.khjxiaogu.beecrasy.client.screens.MailScreen;
 import com.khjxiaogu.beecrasy.client.screens.PressScreen;
 import com.khjxiaogu.beecrasy.compat.category.PressCategory;
@@ -132,6 +134,18 @@ public class JEICompat implements IModPlugin {
 			public Optional<? extends IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory builder, PressScreen containerScreen, double mouseX, double mouseY) {
 				if(containerScreen.isMouseIn((int)mouseX, (int)mouseY,91,9, 17, 34)) {
 					return builder.createBuilder(NeoForgeTypes.FLUID_STACK, FluidUtil.getStack(containerScreen.getMenu(), 0)).buildWithArea(91,9, 17, 34);
+				}
+				return IGuiContainerHandler.super.getClickableIngredientUnderMouse(builder, containerScreen, mouseX, mouseY);
+			}
+			
+		});
+		registry.addGenericGuiContainerHandler(ApistleScreen.class, new IGuiContainerHandler<ApistleScreen>() {
+			@Override
+			public Optional<? extends IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory builder, ApistleScreen containerScreen, double mouseX, double mouseY) {
+				if(!containerScreen.getPointedItem().isEmpty()) {
+					ItemAndArea iaa=containerScreen.getPointedItem().get(0);
+					return builder.createBuilder(iaa.stack())
+							.buildWithArea(iaa.x(), iaa.y(), iaa.w(), iaa.h());
 				}
 				return IGuiContainerHandler.super.getClickableIngredientUnderMouse(builder, containerScreen, mouseX, mouseY);
 			}
