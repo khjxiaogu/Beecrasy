@@ -26,12 +26,19 @@ import java.util.Optional;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
 import com.khjxiaogu.beecrasy.client.apistle.ApistleScreen;
-import com.khjxiaogu.beecrasy.client.apistle.ApistleScreen.ItemAndArea;
 import com.khjxiaogu.beecrasy.client.screens.MailScreen;
 import com.khjxiaogu.beecrasy.client.screens.PressScreen;
 import com.khjxiaogu.beecrasy.compat.category.PressCategory;
+import com.khjxiaogu.beecrasy.compat.category.PheromoneRecipeExtension;
+import com.khjxiaogu.beecrasy.compat.category.RoyalJellyRecipeExtension;
+import com.khjxiaogu.beecrasy.data.recipe.PheromoneRecipe;
 import com.khjxiaogu.beecrasy.data.recipe.PressRecipe;
+import com.khjxiaogu.beecrasy.data.recipe.RoyalJellyRecipe;
+import com.khjxiaogu.beecrasy.menu.PressMenu;
 import com.khjxiaogu.beecrasy.network.MailSetIconMessage;
 import com.khjxiaogu.beecrasy.network.PacketHandler;
 
@@ -50,12 +57,16 @@ import mezz.jei.api.registration.IModIngredientRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
+import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
 @JeiPlugin
@@ -64,6 +75,21 @@ public class JEICompat implements IModPlugin {
 	@Override
 	public Identifier getPluginUid() {
 		return Identifier.fromNamespaceAndPath(Beecrasy.MODID, "jei_plugin");
+	}
+
+	@Override
+	public void registerItemSubtypes(ISubtypeRegistration registration) {
+	    for(DeferredItem<Item> i:Items.INCENSE_LIST)
+	    	registration.registerFromDataComponentTypes(i.get(), Components.ARGUMENTATION.get());
+	    /*for(DeferredItem<Item> i:List.of(Items.DRONE,Items.LARVA,Items.PRODUCT_COMB,Items.QUEEN_BEE))
+	    	registration.registerFromDataComponentTypes(i.get(), Components.GENOME.get());*/
+	    //registration.registerFromDataComponentTypes(Items.PRODUCT_COMB.get(), Components.COMB_PRODUCT.get());
+	    
+	}
+
+	@Override
+	public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
+		registration.addRecipeTransferHandler(PressMenu.class, Menus.PRESS_MENU.get(), PressCategory.TYPE, 0, 1, 0, 1);
 	}
 
 	@Override
@@ -89,6 +115,8 @@ public class JEICompat implements IModPlugin {
 
 	@Override
 	public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
+		registration.getCraftingCategory().addExtension(PheromoneRecipe.class, new PheromoneRecipeExtension());
+		registration.getCraftingCategory().addExtension(RoyalJellyRecipe.class, new RoyalJellyRecipeExtension());
 	}
 
 	@Override
@@ -142,12 +170,9 @@ public class JEICompat implements IModPlugin {
 		registry.addGenericGuiContainerHandler(ApistleScreen.class, new IGuiContainerHandler<ApistleScreen>() {
 			@Override
 			public Optional<? extends IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory builder, ApistleScreen containerScreen, double mouseX, double mouseY) {
-				if(!containerScreen.getPointedItem().isEmpty()) {
-					ItemAndArea iaa=containerScreen.getPointedItem().get(0);
-					return builder.createBuilder(iaa.stack())
-							.buildWithArea(iaa.x(), iaa.y(), iaa.w(), iaa.h());
-				}
-				return IGuiContainerHandler.super.getClickableIngredientUnderMouse(builder, containerScreen, mouseX, mouseY);
+	
+				return containerScreen.peekPointedItem().flatMap(iaa->builder.createBuilder(iaa.stack())
+						.buildWithArea(iaa.x(), iaa.y(), iaa.w(), iaa.h()));
 			}
 			
 		});

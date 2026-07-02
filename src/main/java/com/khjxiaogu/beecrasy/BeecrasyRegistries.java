@@ -174,7 +174,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredItem<Item> INCENSE_YIELD=ITEMS.registerSimpleItem("incense_higher_yield",p->pheromono(p,s->s.addParam(BeeHiveParameters.YIELD, .5f)));
 	    public static final DeferredItem<Item> INCENSE_LONG_LIFESPAN=ITEMS.registerSimpleItem("incense_longer_lifespan",p->pheromono(p,s->s.addParam(BeeHiveParameters.LIFESPAN, 1f)));
 	    public static final DeferredItem<Item> INCENSE_SHORT_LIFESPAN=ITEMS.registerSimpleItem("incense_shorter_lifespan",p->pheromono(p,s->s.addParam(BeeHiveParameters.LIFESPAN, -.5f)));
-	    
+	    public static final List<DeferredItem<Item>> INCENSE_LIST=List.of(PHEROMONO,INCENSE_ARIDITY,INCENSE_HUMIDITY,INCENSE_COLD,INCENSE_HEAT,INCENSE_YIELD,INCENSE_LONG_LIFESPAN,INCENSE_SHORT_LIFESPAN);
 	    //蜜蜂相关
 	    public static final DeferredItem<Item> DRONE=ITEMS.registerSimpleItem("drone",t->t.component(Components.GENOME, GenomeComponent.HAPLOID_EMPTY).stacksTo(1));
 	    public static final DeferredItem<Item> LARVA=ITEMS.registerItem("larva",LarvaItem::new,t->t.component(Components.GENOME, GenomeComponent.DIPLOID_EMPTY).stacksTo(1));

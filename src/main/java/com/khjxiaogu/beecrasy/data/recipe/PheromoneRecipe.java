@@ -22,8 +22,8 @@ package com.khjxiaogu.beecrasy.data.recipe;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
-import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Recipes;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
 import com.khjxiaogu.beecrasy.components.BeeHiveArgumentation;
@@ -39,6 +39,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -62,26 +63,22 @@ public class PheromoneRecipe extends ShapelessRecipe {
 
 	@Override
 	protected PlacementInfo createPlacementInfo() {
-		return PlacementInfo.create(Ingredient.of(Items.PHEROMONO));
+		return PlacementInfo.create(Ingredient.of(BeecrasyRegistries.Items.PHEROMONO));
 	}
 
-	@Override
-	public List<RecipeDisplay> display() {
-		return List.of();
-	}
 
 	public PheromoneRecipe(CommonInfo commonInfo, CraftingBookInfo bookInfo) {
-		super(commonInfo, bookInfo, new ItemStackTemplate(Items.PHEROMONO),
-				List.of(Ingredient.of(Items.PHEROMONO), new Ingredient(new ICustomIngredient() {
+		super(commonInfo, bookInfo, new ItemStackTemplate(BeecrasyRegistries.Items.PHEROMONO),
+				List.of(Ingredient.of(BeecrasyRegistries.Items.PHEROMONO), new Ingredient(new ICustomIngredient() {
 					@Override
 					public boolean test(ItemStack stack) {
-						return !stack.is(Items.PHEROMONO);
+						return !stack.is(BeecrasyRegistries.Items.PHEROMONO);
 					}
 
 					@SuppressWarnings("deprecation")
 					@Override
 					public Stream<Holder<Item>> items() {
-						return BuiltInRegistries.ITEM.listElements().filter(t->!Items.PHEROMONO.is(t)).map(t->t);
+						return BuiltInRegistries.ITEM.listElements().filter(t->!BeecrasyRegistries.Items.PHEROMONO.is(t)&&t.value()!=Items.AIR).map(t->t);
 					}
 
 					@Override
@@ -106,7 +103,7 @@ public class PheromoneRecipe extends ShapelessRecipe {
 		NonNullList<ItemStack> is= super.getRemainingItems(input);
 		for(int i=0;i<input.size();i++) {
 			ItemStack stack=input.getItem(i);
-			if(!stack.is(Items.PHEROMONO))
+			if(!stack.is(BeecrasyRegistries.Items.PHEROMONO))
 				is.set(i, stack);
 		}
 		return is;
@@ -117,7 +114,7 @@ public class PheromoneRecipe extends ShapelessRecipe {
 		ItemStack otherItem = null;
 		for (int i = 0; i < input.size(); i++) {
 			ItemStack cur = input.getItem(i);
-			if (!cur.isEmpty()&&!cur.is(Items.PHEROMONO)) {
+			if (!cur.isEmpty()&&!cur.is(BeecrasyRegistries.Items.PHEROMONO)) {
 				otherItem = cur;
 				break;
 			}

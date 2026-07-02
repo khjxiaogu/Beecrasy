@@ -258,7 +258,7 @@ public abstract class AbstractBeeComponent implements ValueIOSerializable{
 	 * 检查是否可以开始工作。
 	 * 验证条件包括：工作模式、蜂后数量、雄蜂数量、槽位内容格式等。
 	 * 同时设置错误码 {@link #err} 指示具体失败原因。
-	 * @param level TODO
+	 * @param level 所在区域
 	 * @return 如果可以开始工作则返回 true
 	 */
 	protected abstract boolean canBeginWork(ServerLevel level, BlockPos worldPosition);

@@ -21,6 +21,7 @@ package com.khjxiaogu.beecrasy.client.apistle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.khjxiaogu.beecrasy.Beecrasy;
@@ -36,7 +37,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 
 public class ApistleScreen extends AbstractContainerScreen<ApistleMenu> {
 	public static class PageButton{
@@ -75,8 +75,11 @@ public class ApistleScreen extends AbstractContainerScreen<ApistleMenu> {
 	private ArrayList<Component> tooltip = new ArrayList<>(10);
 	private ArrayList<ItemAndArea> pointedItem = new ArrayList<>(4);
 
-	public ArrayList<ItemAndArea> getPointedItem() {
+	public List<ItemAndArea> getPointedItem() {
 		return pointedItem;
+	}
+	public Optional<ItemAndArea> peekPointedItem() {
+		return pointedItem.isEmpty()?Optional.empty():Optional.of(pointedItem.getLast());
 	}
 	@Override
 	public void init() {

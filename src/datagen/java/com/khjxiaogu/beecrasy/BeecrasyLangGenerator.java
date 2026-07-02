@@ -137,7 +137,7 @@ public class BeecrasyLangGenerator extends LanguageProvider{
 	public void add(String name) {
 		String tname=name;
 		if(name.contains("."))
-			tname=name.substring(name.lastIndexOf("."));
+			tname=name.substring(name.lastIndexOf(".")+1);
 		this.add(name, capitalizeWordSnakeCase(tname));
 	}
 	public void addCd(String name) {
