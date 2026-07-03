@@ -115,7 +115,7 @@
 			"rotation": {"angle": -30, "axis": "x", "origin": [11, 16, 12]},
 			"faces": {
 				"south": {"uv": [8, 4, 10.5, 4.5], "texture": "#0"},
-				"up": {"uv": [0, 8, 10, 2], "texture": "#1"}
+				"up": {"uv": [0, 8, 10, 1], "texture": "#1"}
 			}
 		},
 		{
