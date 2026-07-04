@@ -1,6 +1,7 @@
 {
   "values": [
     "beecrasy:sequencer",
-    "beecrasy:honey_press"
+    "beecrasy:honey_press",
+    "beecrasy:beedibox"
   ]
 }

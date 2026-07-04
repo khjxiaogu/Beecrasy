@@ -1,0 +1,7 @@
+{
+  "parent": "beecrasy:block/flower_pot_double_cross",
+  "textures": {
+    "plant_bottom": "beecrasy:block/delphinium_blue_bottom",
+    "plant_top": "beecrasy:block/delphinium_blue_top"
+  }
+}

@@ -1,4 +1,4 @@
-// 26.1.2	2026-06-24T12:40:38.5580329	Loot Tables
+// 26.1.2	2026-07-04T10:22:21.8855838	Loot Tables
 7187d2dc86d9fbbba5cb2a5a7f4836e7085cdb78 data/beecrasy/loot_table/blocks/asphodel.json
 11a1a8d34e43f35b3045de456862ce8610ad88e6 data/beecrasy/loot_table/blocks/beedibox.json
 22e0dc3b1a873bd2b3c009538713bfca27f46859 data/beecrasy/loot_table/blocks/bee_city_comb.json
@@ -22,6 +22,17 @@ f3a9435a2b3c5ae0f7e33730e230b47e04307a86 data/beecrasy/loot_table/blocks/hollyho
 2e311ab00a0d4ddd929c25502d36962a40dccf5a data/beecrasy/loot_table/blocks/honey_comb_block.json
 83b56b21c65e3543811b808974389fbc5e60bbf8 data/beecrasy/loot_table/blocks/honey_press.json
 56807da30aabe80f8e76a00ac0acafa49b10d78b data/beecrasy/loot_table/blocks/natural_hive.json
+b60954507c90c92f8a3977e65a1b1a4a4bedc12c data/beecrasy/loot_table/blocks/potted_asphodel.json
+bdf27fbe68b132535d1cc7a1e585be74ebe279f8 data/beecrasy/loot_table/blocks/potted_delphinium_blue.json
+70396f4837b32b6da5c181daabe15e4570badaf4 data/beecrasy/loot_table/blocks/potted_delphinium_pink.json
+2646114f72644198a911fe45690b6317d4f15c85 data/beecrasy/loot_table/blocks/potted_delphinium_violet.json
+84cf3a0af4bd1dbe8acb933a710c54fda3ead28f data/beecrasy/loot_table/blocks/potted_foxtail_lily.json
+fa8d03df8d68f600eef80b8c3fcb997a45d6876e data/beecrasy/loot_table/blocks/potted_foxtail_lily_fiery.json
+84fff0f93638384d3048b340812676ccde5b2f12 data/beecrasy/loot_table/blocks/potted_hollyhock_pink.json
+bc78a64f8c3096bee52ed5c87b4ebd5e22ba1366 data/beecrasy/loot_table/blocks/potted_hollyhock_red.json
+16fb5e332d08112faad6237aa0623d00cbf55d48 data/beecrasy/loot_table/blocks/potted_hollyhock_white.json
+edafd23c97209846493eb4e0d68ec03bad20035e data/beecrasy/loot_table/blocks/potted_protea.json
+a6aaa599f85eaea1d8c246bbae6ec25be2d8a981 data/beecrasy/loot_table/blocks/potted_protea_artisan.json
 3d290f83a78e49c08c5131f6b5e0bbe5a32bada2 data/beecrasy/loot_table/blocks/protea.json
 aebbcfe1e6468e0ac10815689ec31df42aa2b177 data/beecrasy/loot_table/blocks/protea_artisan.json
 761dc90e99b868961382e7177f3d7afd8b3fbb4f data/beecrasy/loot_table/blocks/sequencer.json

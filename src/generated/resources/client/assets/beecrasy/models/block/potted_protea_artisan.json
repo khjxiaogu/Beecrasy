@@ -1,0 +1,7 @@
+{
+  "parent": "beecrasy:block/flower_pot_double_cross",
+  "textures": {
+    "plant_bottom": "beecrasy:block/protea_artisan_bottom",
+    "plant_top": "beecrasy:block/protea_artisan_top"
+  }
+}
