@@ -27,6 +27,7 @@ import com.khjxiaogu.beecrasy.blocks.BeecrasyBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
@@ -55,16 +56,21 @@ public class BeediboxBlockEntity extends BeecrasyBlockEntity {
 		protected void onContentsChanged(int index, ItemStack previousContents) {
 			super.onContentsChanged(index, previousContents);
 			BeediDisk id=getResource(index).get(Components.BEEDI_RECORD);
-			if(level instanceof ServerLevel serverLevel)
-				if(id!=null) {
+			
+			if(id!=null) {
+				ticks=id.ticks();
+				tintColor=id.color().getValue();
+				if(level instanceof ServerLevel serverLevel)
 					ServerBeediManager.playSong(serverLevel, worldPosition, id.name(),id.sound().orElse(null), id.offset(),id.speed());
-					ticks=id.ticks();
-					tintColor=id.color().getValue();
-				}else {
+				
+			}else {
+				ticks=0;
+				tintColor=0xffffff;
+				if(level instanceof ServerLevel serverLevel)
 					ServerBeediManager.stopSong(serverLevel, worldPosition);
-					ticks=0;
-					tintColor=0;
-				}
+				
+			}
+			sendUpdated();
 			if(!isRemoving) {
 				level.setBlockAndUpdate(worldPosition, getBlockState().setValue(BlockStateProperties.HAS_RECORD, !getResource(index).isEmpty()));
 				setChanged();
@@ -74,9 +80,9 @@ public class BeediboxBlockEntity extends BeecrasyBlockEntity {
 	};
 	
 	long ticks;
-	int tintColor;
+	int tintColor=0xffffff;
 	public int getTintColor() {
-		return tintColor;
+		return ARGB.color(1f, tintColor);
 	}
 
 	public BeediboxBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
@@ -89,6 +95,7 @@ public class BeediboxBlockEntity extends BeecrasyBlockEntity {
 			nbt.readChild("inv", disk);
 			ticks=nbt.getLongOr("ticks", 0);
 		}
+		tintColor=nbt.getIntOr("color", 0xffffff);
 	}
 
 	@Override
@@ -97,6 +104,7 @@ public class BeediboxBlockEntity extends BeecrasyBlockEntity {
 			nbt.putChild("inv", disk);
 			nbt.putLong("ticks", ticks);
 		}
+		nbt.putInt("color", tintColor);
 	}
 
 	@Override
