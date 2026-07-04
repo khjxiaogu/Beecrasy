@@ -32,6 +32,7 @@ import com.google.common.collect.ImmutableSet;
 import com.khjxiaogu.beecrasy.beedi.BeediDisk;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
+import com.khjxiaogu.beecrasy.blocks.BaseFlowerPotBlock;
 import com.khjxiaogu.beecrasy.blocks.bee.BeeNestBlock;
 import com.khjxiaogu.beecrasy.blocks.bee.HiveBlock;
 import com.khjxiaogu.beecrasy.blocks.bee.HiveBlockEntity;
@@ -105,6 +106,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
@@ -255,13 +257,18 @@ public class BeecrasyRegistries {
 	    public static final DeferredBlock<DoublePlantBlock> FLOWER_HOLLYHOCK_WHITE = register("hollyhock_white", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
 	    public static final DeferredBlock<DoublePlantBlock> FLOWER_PROTEA = register("protea", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
 	    public static final DeferredBlock<DoublePlantBlock> FLOWER_PROTEA_ARTISAN = register("protea_artisan", DoublePlantBlock::new, Blocks::flower, UnaryOperator.identity());
+	    public static final List<DeferredBlock<DoublePlantBlock>> FLOWERS=List.of(FLOWER_ASPHODEL,FLOWER_DELPHINIUM_BLUE,FLOWER_DELPHINIUM_PINK,FLOWER_DELPHINIUM_VIOLET,FLOWER_FOXTAIL_LILY,
+	    		FLOWER_FOXTAIL_LILY_FIERY,FLOWER_HOLLYHOCK_PINK,FLOWER_HOLLYHOCK_RED,FLOWER_HOLLYHOCK_WHITE,FLOWER_PROTEA,FLOWER_PROTEA_ARTISAN);
+	    public static final List<DeferredBlock<BaseFlowerPotBlock>> POTTED_FLOWERS=FLOWERS.stream().map(t->BLOCKS.registerBlock("potted_"+t.getId().getPath(),n->new BaseFlowerPotBlock(t,n),Blocks::flowerPot)).toList();
+	    
+	    
 	    
 	    public static final DeferredBlock<BeeCityCoreBlock> BEE_CITY_CORE=register("bee_city_core",BeeCityCoreBlock::new,Blocks::nestProps,UnaryOperator.identity());
 	    public static final DeferredBlock<BeeCityCombBlock> BEE_CITY_COMB=register("bee_city_comb",BeeCityCombBlock::new,Blocks::nestProps,UnaryOperator.identity());
 	    public static final DeferredBlock<BeeCityQueenBlock> BEE_CITY_QUEEN=register("bee_city_queen",BeeCityQueenBlock::new,Blocks::nestProps,UnaryOperator.identity());
 
 	    public static final DeferredBlock<BeeperBlock> BUZZER=register("buzzer",BeeperBlock::new,Blocks::woodProps,UnaryOperator.identity());
-	    public static final DeferredBlock<BeediboxBlock> BEEDIBOX=register("beedibox",BeediboxBlock::new,Blocks::woodProps,UnaryOperator.identity());
+	    public static final DeferredBlock<BeediboxBlock> BEEDIBOX=register("beedibox",BeediboxBlock::new,Blocks::machineProps,UnaryOperator.identity());
 	    
 	    
 	    
@@ -328,6 +335,9 @@ public class BeecrasyRegistries {
 					.noOcclusion()
 					.isRedstoneConductor(Blocks::notSolid).isSuffocating(Blocks::notSolid);
 		}
+	    static BlockBehaviour.Properties flowerPot() {
+	        return BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY);
+	    }
 		/**
 		 * @param state  
 		 * @param reader 

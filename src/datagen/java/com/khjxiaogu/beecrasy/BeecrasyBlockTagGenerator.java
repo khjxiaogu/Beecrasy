@@ -37,6 +37,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.registries.DeferredBlock;
 
 @SuppressWarnings("unused")
 public class BeecrasyBlockTagGenerator extends BeecrasyTagGenerator<Block> {
@@ -49,7 +50,7 @@ public class BeecrasyBlockTagGenerator extends BeecrasyTagGenerator<Block> {
 	@Override
 	protected void addTags(Provider pProvider) {
 		TagAppender<ResourceKey<Block>, Block> pickaxe = tag(BlockTags.MINEABLE_WITH_PICKAXE);
-		pickaxe.add(rk(SEQUENCER)).add(rk(HONEY_PRESS));
+		pickaxe.add(rk(SEQUENCER)).add(rk(HONEY_PRESS)).add(rk(BEEDIBOX));
 
 		TagAppender<ResourceKey<Block>, Block> net = tag(Tags.MINABLE_NET);
 		net.add(rk(BEE_NEST_SMALL)).add(rk(BEE_NEST_NASCENT)).add(rk(BEE_NEST_MEDIUM)).add(rk(BEE_NEST_BIG)).add(rk(NATURAL_HIVE));
@@ -58,5 +59,7 @@ public class BeecrasyBlockTagGenerator extends BeecrasyTagGenerator<Block> {
 		tag(Tags.TO_BE_FLOWER).add(rk(Blocks.SHORT_DRY_GRASS),rk(Blocks.SHORT_GRASS),rk(Blocks.TALL_DRY_GRASS),rk(Blocks.TALL_GRASS),rk(Blocks.LARGE_FERN),rk(Blocks.FERN));
 		tag(Tags.MAILBOX).add(rk(BEE_NEST_SMALL)).add(rk(BEE_NEST_NASCENT)).add(rk(BEE_NEST_MEDIUM)).add(rk(BEE_NEST_BIG)).add(rk(NATURAL_HIVE));
 		tag(Tags.BEECITY_SPREADABLE).add(rk(EMPTY_COMB_BLOCK)).add(rk(HONEY_COMB_BLOCK));
+		tag(BlockTags.FLOWER_POTS).addAll(POTTED_FLOWERS.stream().map(DeferredBlock::getKey).toList());
+		
 	}
 }

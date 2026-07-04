@@ -92,6 +92,7 @@ public class BeecrasyLootProvider extends BlockLootSubProvider {
 		
 		this.dropSelf(Blocks.BUZZER.get());
 		this.dropSelf(Blocks.BEEDIBOX.get());
+		Blocks.POTTED_FLOWERS.forEach(t->this.dropPottedContents(t.get()));
 		this.add(Blocks.NATURAL_HIVE.get(),BlockLootSubProvider.noDrop());
 		
 		this.add(Blocks.SKEP.get(),

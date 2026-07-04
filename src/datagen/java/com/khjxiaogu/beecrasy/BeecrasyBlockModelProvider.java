@@ -46,6 +46,7 @@ import net.minecraft.client.data.models.blockstates.PropertyDispatch;
 import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelInstance;
 import net.minecraft.client.data.models.model.ModelLocationUtils;
+import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
@@ -80,7 +81,14 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 		this.modid = modid;
 		this.input = input;
 	}
-
+	public static final TextureSlot PLANT_TOP=TextureSlot.create("plant_top");
+	public static final TextureSlot PLANT_BOTTOM=TextureSlot.create("plant_bottom");
+    public static final ModelTemplate FLOWER_POT_DOUBLE_CROSS = ModelTemplates.create(Beecrasy.rl("flower_pot_double_cross").toString(), PLANT_TOP, PLANT_BOTTOM);
+    public void createPlantPot(DeferredBlock<?> standAlone, Block potted) {
+        MultiVariant model = plainVariant(FLOWER_POT_DOUBLE_CROSS.create(potted, new TextureMapping().put(PLANT_TOP, new Material(standAlone.getId().withPrefix("block/").withSuffix("_top")))
+        		.put(PLANT_BOTTOM, new Material(standAlone.getId().withPrefix("block/").withSuffix("_bottom"))), this.modelOutput));
+        this.blockStateOutput.accept(createSimpleBlock(potted, model));
+    }
 	@Override
 	public void run() {
 		this.blockItemModel(Blocks.SKEP);
@@ -90,7 +98,9 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 				.generate(t->bmf("skep_"+t))
 			).with(ROTATION_HORIZONTAL_FACING)
 			);
-		
+		for(int i=0;i<Blocks.POTTED_FLOWERS.size();i++) {
+			createPlantPot(Blocks.FLOWERS.get(i),Blocks.POTTED_FLOWERS.get(i).get());
+		}
 		this.blockStateOutput.accept(this.getVariantBuilder(Blocks.EMPTY_COMB_BLOCK.get(),genBlock("empty_comb_block")));
 		this.blockItemModel(Blocks.EMPTY_COMB_BLOCK);
 		this.blockStateOutput.accept(this.getVariantBuilder(Blocks.HONEY_COMB_BLOCK.get(),genBlock("honey_comb_block")));
