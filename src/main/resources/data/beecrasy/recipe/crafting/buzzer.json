@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"PPP",
+		"PJP",
+		"PRP"
+	],
+	"key": {
+		"P": "#minecraft:planks",
+		"J": "beecrasy:bumblebee_jasper",
+		"R": "minecraft:redstone"
+	},
+	"result": {
+		"count": 1,
+		"id": "beecrasy:buzzer"
+	}
+}
