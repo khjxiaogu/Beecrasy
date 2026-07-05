@@ -2,17 +2,17 @@
 	"type": "minecraft:crafting_shaped",
 	"category": "misc",
 	"pattern": [
-		" L ",
-		"GSA"
+		"II",
+		"GB",
+		"II"
 	],
 	"key": {
+		"I": "minecraft:iron_ingot",
 		"G": "minecraft:tinted_glass",
-		"S": "beecrasy:handheld_sequencer",
-		"A": "beecrasy:apite",
-		"L": "minecraft:lodestone"
+		"B": "minecraft:book"
 	},
 	"result": {
 		"count": 1,
-		"id": "beecrasy:sequencer"
+		"id": "beecrasy:apistle"
 	}
 }
