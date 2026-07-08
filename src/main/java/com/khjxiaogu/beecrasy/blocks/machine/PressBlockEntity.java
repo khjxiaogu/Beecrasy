@@ -19,6 +19,8 @@
 
 package com.khjxiaogu.beecrasy.blocks.machine;
 
+import java.util.stream.Stream;
+
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Blocks;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Recipes;
@@ -127,13 +129,13 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 					if(tank.insert(FluidResource.of(stack), stack.amount(), trans)!=stack.amount())
 						return RecipeHandleStatus.BLOCKED;
 				}
+				Stream<ItemStack> toOutput=Stream.empty();
 				ItemStackTemplate ist=inrs.get(Components.COMB_PRODUCT);
 				if(ist!=null&&level.getRandom().nextFloat()<=0.33) {
-					if(getInternInv().insert(ItemResource.of(ist), 1, trans)!=1)
-						return RecipeHandleStatus.BLOCKED;
+					toOutput=Stream.of(ist.create());
 				}
-				
-				for(ItemStack is:recipe.value().getOutputs(input)) {
+				if(Stream.concat(recipe.value().getOutputs(input).stream(), toOutput)
+				.anyMatch(is->{
 					ItemResource resource=ItemResource.of(is);
 					int reminder=is.count();
 			        int size = getInternInv().size();
@@ -141,9 +143,9 @@ public class PressBlockEntity extends BeecrasyBlockEntity implements MenuProvide
 			        	reminder -= getInternInv().insert(index, resource, reminder, trans);
 			            if (reminder<=0) break;
 			        }
-			        if (reminder>0) 
-			        	return RecipeHandleStatus.BLOCKED;
-				}
+			        return reminder>0;
+				}))
+					return RecipeHandleStatus.BLOCKED;
 				trans.commit();
 				powerRemain=0;
 				return RecipeHandleStatus.SUCCEED;
