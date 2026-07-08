@@ -123,6 +123,9 @@ public class Genes {
 		public static final NumericAllele EXTENDED_LIFESPAN=LIFESPAN.registerAllele(new NumericAllele("extended",2));
 		/** 极长寿命（倍率4）。 */
 		public static final NumericAllele EXCEPTIONAL_LIFESPAN=LIFESPAN.registerAllele(new NumericAllele("exceptional",4));
+		public static void init() {
+			
+		}
 	}
 	/**
 	 * 突变类型注册。
@@ -140,7 +143,9 @@ public class Genes {
 		public static final Mutation MATERNAL_YIELD=MutationRegistry.register(Beecrasy.rl("maternal_yield"), new MutationIncreaseYield.Maternal());
 		/** 父系增加产量突变。 */
 		public static final Mutation PATERNAL_YIELD=MutationRegistry.register(Beecrasy.rl("paternal_yield"), new MutationIncreaseYield.Paternal());
-		
+		public static void init() {
+			
+		}
 		
 	}
 	/** 温度基因。 */
@@ -171,6 +176,7 @@ public class Genes {
 	 * 初始化方法，触发类加载以执行所有静态常量定义中的注册操作。
 	 */
 	public static void init() {
-		
+		Alleles.init();
+		Mutations.init();
 	}
 }
