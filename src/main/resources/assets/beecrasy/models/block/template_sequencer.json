@@ -2,8 +2,8 @@
 	"format_version": "1.21.11",
 	"credit": "Made with Blockbench",
 	"parent": "minecraft:block/block",
-	"texture_size": [64, 32],
 	"render_type": "cutout",
+	"texture_size": [64, 32],
 	"elements": [
 		{
 			"name": "base",
@@ -17,6 +17,21 @@
 				"west": {"uv": [0, 10, 4, 12], "texture": "#sequencer"},
 				"up": {"uv": [0, 0, 4, 8], "rotation": 180, "texture": "#sequencer"},
 				"down": {"uv": [12, 0, 16, 8], "rotation": 270, "texture": "#sequencer"}
+			}
+		},
+		{
+			"name": "baseGlow",
+			"from": [-0.01, -0.01, -0.01],
+			"to": [16.01, 2.01, 16.01],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
+			"color": 0,
+			"faces": {
+				"north": {"uv": [0, 15, 4, 16], "texture": "#missing"},
+				"east": {"uv": [0, 15, 4, 16], "texture": "#missing"},
+				"south": {"uv": [0, 15, 4, 16], "texture": "#missing"},
+				"west": {"uv": [0, 15, 4, 16], "texture": "#missing"},
+				"up": {"uv": [0, 0, 4, 8], "texture": "#missing"},
+				"down": {"uv": [0, 1.5, 4, 9.5], "texture": "#missing"}
 			}
 		},
 		{
@@ -57,6 +72,17 @@
 			}
 		},
 		{
+			"name": "screenOverlay",
+			"from": [1, 6, -0.01],
+			"to": [11, 14, -0.01],
+			"shade": false,
+			"light_emission": 15,
+			"rotation": {"angle": 20, "axis": "x", "origin": [6, 4, 0]},
+			"faces": {
+				"north": {"uv": [9.5, 5, 12, 9], "texture": "#sequencer"}
+			}
+		},
+		{
 			"name": "tubeBaseT",
 			"from": [11, 11, 10],
 			"to": [12, 15, 14],
@@ -81,6 +107,20 @@
 				"west": {"uv": [7.5, 2, 8.5, 4], "texture": "#sequencer"},
 				"up": {"uv": [8.5, 2, 9.5, 4], "rotation": 180, "texture": "#sequencer"},
 				"down": {"uv": [8.5, 2, 9.5, 4], "rotation": 180, "texture": "#sequencer"}
+			}
+		},
+		{
+			"name": "tubeRimGlowT",
+			"from": [11.99, 10.99, 9.99],
+			"to": [16.01, 15.01, 14.01],
+			"rotation": {"angle": 0, "axis": "y", "origin": [12, 13, 12]},
+			"faces": {
+				"north": {"uv": [8.5, 4, 9.5, 6], "texture": "#sequencer"},
+				"east": {"uv": [7.5, 4, 8.5, 6], "texture": "#sequencer"},
+				"south": {"uv": [8.5, 4, 9.5, 6], "rotation": 180, "texture": "#sequencer"},
+				"west": {"uv": [7.5, 4, 8.5, 6], "texture": "#sequencer"},
+				"up": {"uv": [8.5, 4, 9.5, 6], "rotation": 180, "texture": "#sequencer"},
+				"down": {"uv": [8.5, 4, 9.5, 6], "rotation": 180, "texture": "#sequencer"}
 			}
 		},
 		{
@@ -124,6 +164,20 @@
 			}
 		},
 		{
+			"name": "tubeRimGlowB",
+			"from": [11.99, 5.99, 9.99],
+			"to": [16.01, 10.01, 14.01],
+			"rotation": {"angle": 0, "axis": "y", "origin": [12, 8, 12]},
+			"faces": {
+				"north": {"uv": [8.5, 4, 9.5, 6], "texture": "#sequencer"},
+				"east": {"uv": [7.5, 4, 8.5, 6], "texture": "#sequencer"},
+				"south": {"uv": [8.5, 4, 9.5, 6], "rotation": 180, "texture": "#sequencer"},
+				"west": {"uv": [7.5, 4, 8.5, 6], "texture": "#sequencer"},
+				"up": {"uv": [8.5, 4, 9.5, 6], "rotation": 180, "texture": "#sequencer"},
+				"down": {"uv": [8.5, 4, 9.5, 6], "rotation": 180, "texture": "#sequencer"}
+			}
+		},
+		{
 			"name": "tubeNegativeB",
 			"from": [16, 10, 14],
 			"to": [12, 6, 10],
@@ -140,26 +194,27 @@
 	"groups": [
 		0,
 		1,
+		2,
 		{
 			"name": "Screen",
 			"origin": [14, 4, 8],
 			"scope": 0,
 			"color": 9,
-			"children": [2, 3]
+			"children": [3, 4, 5]
 		},
 		{
 			"name": "TubeT",
 			"origin": [11, 13, 12],
 			"scope": 0,
 			"color": 9,
-			"children": [4, 5, 6]
+			"children": [6, 7, 8, 9]
 		},
 		{
 			"name": "TubeB",
 			"origin": [11, 13, 12],
 			"scope": 0,
 			"color": 9,
-			"children": [7, 8, 9]
+			"children": [10, 11, 12, 13]
 		}
 	]
 }
