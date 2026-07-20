@@ -46,8 +46,8 @@ public class MutationSmelting implements Mutation {
 	public boolean mutate(BeeHiveParameterSet params, DiploidGenome genome, RandomSource rnd) {
 		
 		boolean succeed=false;
-		boolean flag1=genome.maternal().get(Genes.BIOTOPE)==Genes.Alleles.SMELT;
-		boolean flag2=genome.paternal().get(Genes.BIOTOPE)==Genes.Alleles.SMELT;
+		boolean flag1=genome.maternal().getAllele(Genes.BIOTOPE)==Genes.Alleles.SMELT;
+		boolean flag2=genome.paternal().getAllele(Genes.BIOTOPE)==Genes.Alleles.SMELT;
 		if(!flag1&&!flag2)return false;
 		
 		if(flag1&&flag2) {
@@ -98,8 +98,8 @@ public class MutationSmelting implements Mutation {
 	}
 	@Override
 	public boolean isApplicable(BeeHiveParameterSet params, DiploidGenome genome) {
-		boolean flag1=genome.maternal().get(Genes.BIOTOPE)==Genes.Alleles.SMELT;
-		boolean flag2=genome.paternal().get(Genes.BIOTOPE)==Genes.Alleles.SMELT;
+		boolean flag1=genome.maternal().getAllele(Genes.BIOTOPE)==Genes.Alleles.SMELT;
+		boolean flag2=genome.paternal().getAllele(Genes.BIOTOPE)==Genes.Alleles.SMELT;
 		return (flag1||flag2)&&params.hasBiotope(Genes.Alleles.SMELT);
 	}
 }

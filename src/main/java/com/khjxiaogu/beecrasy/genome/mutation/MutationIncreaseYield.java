@@ -62,7 +62,7 @@ public abstract class MutationIncreaseYield implements Mutation {
 	@Override
 	public boolean mutate(BeeHiveParameterSet params,DiploidGenome genome,RandomSource rnd) {
 
-		YieldModifier m1= MUTATIONS.get(getBuilder(genome).get(Genes.YIELD));
+		YieldModifier m1= MUTATIONS.get(getBuilder(genome).getAllele(Genes.YIELD));
 		if(m1!=null) {
 			genome.maternal().add(Genes.YIELD, m1.to());
 			return true;
@@ -72,7 +72,7 @@ public abstract class MutationIncreaseYield implements Mutation {
 
 	@Override
 	public float getChance(BeeHiveParameterSet params,DiploidGenome genome) {
-		YieldModifier m1= MUTATIONS.get(getBuilder(genome).get(Genes.YIELD));
+		YieldModifier m1= MUTATIONS.get(getBuilder(genome).getAllele(Genes.YIELD));
 		return m1==null?0:m1.chance();
 	}
 

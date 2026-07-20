@@ -65,8 +65,8 @@ public class RecombinationHelper {
 		for(Identifier i:GeneRegistry.getGeneTypes()) {
 			if(extractor.getAsBoolean()) {
 				Gene type=GeneRegistry.get(i);
-				Object palle=par.get(type);
-				Object malle=mat.get(type);
+				Object palle=par.getAllele(type);
+				Object malle=mat.getAllele(type);
 				mat.add(type, palle);
 				par.add(type, malle);
 			}

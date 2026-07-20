@@ -63,7 +63,7 @@ public class MutationAppendSequence implements Mutation {
 
 	@Override
 	public boolean isApplicable(BeeHiveParameterSet params, DiploidGenome genome) {
-		return genome.maternal().get(Genes.BIOTOPE)==genome.paternal().get(Genes.BIOTOPE);
+		return genome.maternal().getAllele(Genes.BIOTOPE)==genome.paternal().getAllele(Genes.BIOTOPE);
 	}
 
 }

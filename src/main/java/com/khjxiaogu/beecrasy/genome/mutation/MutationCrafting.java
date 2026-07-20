@@ -57,8 +57,8 @@ public class MutationCrafting implements Mutation{
 	@Override
 	public boolean mutate(BeeHiveParameterSet params,DiploidGenome genome, RandomSource rnd) {
 		boolean succeed=false;
-		boolean flag1=genome.maternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
-		boolean flag2=genome.paternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
+		boolean flag1=genome.maternal().getAllele(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
+		boolean flag2=genome.paternal().getAllele(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
 		Set<Item> si=new HashSet<>(params.getParamValue(BeeHiveParameters.MUTATION_DIRECTOR));
 		if(flag1&&flag2) {
 			int r=rnd.nextInt(8);
@@ -152,8 +152,8 @@ public class MutationCrafting implements Mutation{
 
 	@Override
 	public boolean isApplicable(BeeHiveParameterSet params, DiploidGenome genome) {
-		boolean flag1=genome.maternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
-		boolean flag2=genome.paternal().get(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
+		boolean flag1=genome.maternal().getAllele(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
+		boolean flag2=genome.paternal().getAllele(Genes.BIOTOPE)==Genes.Alleles.CRAFT;
 		return (flag1||flag2)&&params.hasBiotope(Genes.Alleles.CRAFT);
 	}
 }
