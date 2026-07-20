@@ -41,8 +41,8 @@ public class MutationAppendSequence implements Mutation {
 	@Override
 	public boolean mutate(BeeHiveParameterSet params,DiploidGenome genome,RandomSource rnd) {
 
-		List<ProductItem> matSeqOriginal=genome.maternal().get(Genes.PRODUCTS);
-		List<ProductItem> parSeqOriginal=genome.paternal().get(Genes.PRODUCTS);
+		List<ProductItem> matSeqOriginal=genome.maternal().getAllele(Genes.PRODUCTS);
+		List<ProductItem> parSeqOriginal=genome.paternal().getAllele(Genes.PRODUCTS);
 		List<ProductItem> matSeq=new ArrayList<>(matSeqOriginal);
 		List<ProductItem> parSeq=new ArrayList<>(parSeqOriginal);
 		parSeq.addAll(matSeqOriginal);

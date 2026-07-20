@@ -78,7 +78,7 @@ public abstract class MutationIncreaseYield implements Mutation {
 
 	@Override
 	public boolean isApplicable(BeeHiveParameterSet params, DiploidGenome genome) {
-		return MUTATIONS.containsKey(getBuilder(genome).get(Genes.YIELD));
+		return MUTATIONS.containsKey(getBuilder(genome).getAllele(Genes.YIELD));
 	}
 
 }

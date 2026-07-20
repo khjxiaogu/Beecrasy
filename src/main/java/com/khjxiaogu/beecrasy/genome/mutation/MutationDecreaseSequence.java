@@ -80,10 +80,10 @@ public class MutationDecreaseSequence implements Mutation {
 
 	@Override
 	public boolean isApplicable(BeeHiveParameterSet params, DiploidGenome genome) {
-		if (genome.maternal().get(Genes.BIOTOPE) != genome.paternal().get(Genes.BIOTOPE))
+		if (genome.maternal().getAllele(Genes.BIOTOPE) != genome.paternal().getAllele(Genes.BIOTOPE))
 			return false;
-		List<ProductItem> matSeqOriginal = genome.maternal().get(Genes.PRODUCTS);
-		List<ProductItem> parSeqOriginal = genome.paternal().get(Genes.PRODUCTS);
+		List<ProductItem> matSeqOriginal = genome.maternal().getAllele(Genes.PRODUCTS);
+		List<ProductItem> parSeqOriginal = genome.paternal().getAllele(Genes.PRODUCTS);
 		boolean flag1 = matSeqOriginal.size() > 1;
 		boolean flag2 = parSeqOriginal.size() > 1;
 		return flag1 || flag2;

@@ -86,7 +86,7 @@ public class MutationCrafting implements Mutation{
 	 * @return 如果成功合成了新物品则返回 {@code true}
 	 */
 	public static boolean handleCraft(Set<Item> si,Genome.Builder genome, RandomSource random) {
-		List<ProductItem> products=genome.get(Genes.PRODUCTS);
+		List<ProductItem> products=genome.getAllele(Genes.PRODUCTS);
 		List<ItemStack> pending=new ArrayList<>(products.size());
 		for(ProductItem product:products) {
 			pending.add(product.stack().create());

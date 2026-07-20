@@ -78,7 +78,7 @@ public class MutationSmelting implements Mutation {
 	 */
 	@SuppressWarnings("resource")
 	public static boolean handleCraft(BeeHiveParameterSet param,Genome.Builder genome, RandomSource random) {
-		List<ProductItem> products=genome.get(Genes.PRODUCTS);
+		List<ProductItem> products=genome.getAllele(Genes.PRODUCTS);
 		SingleRecipeInput sri=new SingleRecipeInput(products.get(products.size()-1).stack().create());
 		Optional<RecipeHolder<SmeltingRecipe>> recipe=param.level().recipeAccess().getRecipeFor(RecipeType.SMELTING, sri, param.level());
 		if(!recipe.isEmpty()) {
