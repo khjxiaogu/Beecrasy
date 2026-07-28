@@ -44,5 +44,6 @@ public class BeecrasyItemTagGenerator extends BeecrasyTagGenerator<Item> {
 	protected void addTags(Provider pProvider) {
 		tag(Tags.HONEY_DROP).add(rk(Items.HONEY_DROP));
 		tag(Tags.NET).add(rk(Items.BUTTERFLY_NET));
+		tag(Tags.NOT_FOR_MAIL).add(rk(Items.MAIL));
 	}
 }

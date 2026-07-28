@@ -27,6 +27,7 @@ import java.util.UUID;
 import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
+import com.khjxiaogu.beecrasy.BeecrasyRegistries.Tags;
 import com.khjxiaogu.beecrasy.components.ModifiableItemAccessHandler;
 import com.khjxiaogu.beecrasy.mail.LetterStatus;
 import com.khjxiaogu.beecrasy.mail.MailComponent;
@@ -79,7 +80,7 @@ public class MailMenu extends BeecrasyContainerMenu{
 			public boolean isValid(int index, ItemResource resource) {
 				if(index==8)
 					return ItemValidateHelper.isHoney(resource);
-				return super.isValid(index, resource);
+				return !resource.is(Tags.NOT_FOR_MAIL);
 			}
 		};
 		this.addSlots(slots,slots::set);
@@ -197,7 +198,7 @@ public class MailMenu extends BeecrasyContainerMenu{
 			public boolean isValid(int index, ItemResource resource) {
 				if(index==8)
 					return ItemValidateHelper.isHoney(resource);
-				return super.isValid(index, resource);
+				return !resource.is(Tags.NOT_FOR_MAIL);
 			}
 		};
 		MailComponent mc=access.getResource().get(Components.MAIL);

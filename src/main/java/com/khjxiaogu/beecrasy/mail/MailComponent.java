@@ -108,9 +108,11 @@ public record MailComponent(String sender,String receiver,Optional<ItemStackTemp
 	public void addToTooltip(TooltipContext context, Consumer<Component> consumer, TooltipFlag flag,
 			DataComponentGetter components) {
 		if(readOnly) {
-			consumer.accept(Component.translatable("tooltip.correspondence.sender",sender()));
+			if(sender!=null&&!sender.isEmpty())
+				consumer.accept(Component.translatable("tooltip.correspondence.sender",sender()));
 		}else {
-			consumer.accept(Component.translatable("tooltip.correspondence.receiver",receiver()));
+			if(receiver!=null&&!receiver.isEmpty())
+				consumer.accept(Component.translatable("tooltip.correspondence.receiver",receiver()));
 		}
 	}
 }

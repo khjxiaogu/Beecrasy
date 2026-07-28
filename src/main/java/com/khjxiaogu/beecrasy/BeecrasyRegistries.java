@@ -90,7 +90,6 @@ import com.khjxiaogu.beecrasy.utils.RecipeCache;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -106,7 +105,6 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.Util;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
@@ -399,6 +397,7 @@ public class BeecrasyRegistries {
 		public static final TagKey<Block> TO_BE_FLOWER=BlockTags.create(Beecrasy.rl("can_become_flower"));
 		public static final TagKey<Block> MAILBOX=BlockTags.create(Beecrasy.rl("mailbox"));
 		public static final TagKey<Block> BEECITY_SPREADABLE=BlockTags.create(Beecrasy.rl("beecity_spreadable"));
+		public static final TagKey<Item> NOT_FOR_MAIL=ItemTags.create(Beecrasy.rl("not_for_mail"));
 		
 	}
 	public static class Recipes{

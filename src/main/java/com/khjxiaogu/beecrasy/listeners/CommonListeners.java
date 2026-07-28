@@ -51,7 +51,6 @@ import com.khjxiaogu.beecrasy.genome.gene.Temperature;
 import com.khjxiaogu.beecrasy.mail.PlayerPostalOffice;
 import com.khjxiaogu.beecrasy.mail.PostalOffice;
 import com.khjxiaogu.beecrasy.menu.ApistleMenu;
-import com.khjxiaogu.beecrasy.network.PacketHandler;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
