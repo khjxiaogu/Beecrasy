@@ -19,6 +19,7 @@
 
 package com.khjxiaogu.beecrasy.genome.mutation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,14 +79,15 @@ public class MutationSmelting implements Mutation {
 	 */
 	@SuppressWarnings("resource")
 	public static boolean handleCraft(BeeHiveParameterSet param,Genome.Builder genome, RandomSource random) {
-		List<ProductItem> products=genome.getAllele(Genes.PRODUCTS);
-		SingleRecipeInput sri=new SingleRecipeInput(products.get(products.size()-1).stack().create());
+		ArrayList<ProductItem> products=new ArrayList<>(genome.getAllele(Genes.PRODUCTS));
+		SingleRecipeInput sri=new SingleRecipeInput(products.removeLast().stack().create());
 		Optional<RecipeHolder<SmeltingRecipe>> recipe=param.level().recipeAccess().getRecipeFor(RecipeType.SMELTING, sri, param.level());
 		if(!recipe.isEmpty()) {
 			RecipeHolder<SmeltingRecipe> selected=recipe.get();
 			ItemStack ist=selected.value().assemble(sri);
 			if(ist!=null&&!ist.isEmpty()) {
-				genome.add(Genes.PRODUCTS, List.of(new ProductItem(Genes.Alleles.CRAFT,Optional.of(selected.id().identifier()),new ItemStackTemplate(ist.getItem(),ist.getCount(),ist.getComponentsPatch()))));
+				products.add(new ProductItem(Genes.Alleles.SMELT,Optional.of(selected.id().identifier()),new ItemStackTemplate(ist.getItem(),ist.getCount(),ist.getComponentsPatch())));
+				genome.add(Genes.PRODUCTS, products);
 				return true;
 			}
 			
