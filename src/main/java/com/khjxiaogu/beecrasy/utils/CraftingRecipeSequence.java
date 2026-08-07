@@ -136,7 +136,7 @@ public class CraftingRecipeSequence {
 		 * @return 以排序Pair表示的笛卡尔积集合
 		 */
 	    public static Set<Pair<Item,Item>> cartesianProduct(List<Ingredient> sets) {
-	    	Set<Pair<Item,Item>> result = new HashSet<>(160000);
+	    	Set<Pair<Item,Item>> result = new HashSet<>(1600);
 	        for (Holder<Item> i1 : sets.get(0).getValues()) {
 	            for (Holder<Item> i2 : sets.get(1).getValues()) {
 	            	Item e1=i1.value();
@@ -149,7 +149,7 @@ public class CraftingRecipeSequence {
 	        }
 	        if(sets.size()>2) {
 
-	        	Set<Pair<Item,Item>> newResult = new HashSet<>(Math.max(result.size(), 160000));
+	        	Set<Pair<Item,Item>> newResult = new HashSet<>(Math.max(result.size(), 1600));
 	        	Set<Pair<Item,Item>> temp=null;
 		        for (Ingredient set : sets) {
 		            for (Pair<Item,Item> combination : result) {
@@ -176,7 +176,7 @@ public class CraftingRecipeSequence {
 		            newResult.clear();
 		        }
 	        }
-	        return result;
+	        return new HashSet<>(result);
 	    }
 
 		/**
