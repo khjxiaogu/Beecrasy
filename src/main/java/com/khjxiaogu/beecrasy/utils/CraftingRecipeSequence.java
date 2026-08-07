@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.khjxiaogu.beecrasy.utils.CraftingRecipeSequence.SequencedRecipe;
 import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.core.Holder;
@@ -307,5 +308,20 @@ public class CraftingRecipeSequence {
 		this();
 		insertAll(patterns);
 	}
-
+	/**
+	 * 将一批配方转换为 {@link SequencedRecipe} 并插入无序索引。
+	 * <p>
+	 * 插入后立即释放每个配方的笛卡尔积缓存以节省内存。
+	 *
+	 * @param param 配方列表
+	 * @return 空列表（仅用于CompletableFuture的返回类型一致）
+	 */
+	public Void createSequencedRecipe(List<RecipeHolder<CraftingRecipe>> param){
+		for(RecipeHolder<CraftingRecipe> recipe:param) {
+			SequencedRecipe seqr=new SequencedRecipe(recipe);
+			insert(seqr);
+			seqr.optimize();
+		}
+		return null;
+	}
 }

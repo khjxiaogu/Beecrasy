@@ -58,7 +58,7 @@ public class CraftingSequenceMatcher {
 	 * @param recipes 待处理的配方列表
 	 */
 	public static void bake(Collection<RecipeHolder<CraftingRecipe>> recipes,boolean await) {
-		unordered=new CraftingRecipeSequence();
+		CraftingRecipeSequence unordered=new CraftingRecipeSequence();
 		Beecrasy.LOGGER.info("Filtering Recipe From "+recipes.size()+" Recipes");
 		
 
@@ -100,7 +100,7 @@ public class CraftingSequenceMatcher {
 		List<CompletableFuture<Void>> futures=new ArrayList<>(ltasks.size());
 		for(List<RecipeHolder<CraftingRecipe>> task:ltasks) {
 			futures.add(CompletableFuture.completedFuture(task)
-				.thenApplyAsync(CraftingSequenceMatcher::createSequencedRecipe));
+				.thenApplyAsync(unordered::createSequencedRecipe));
 			
 		}
 		Beecrasy.LOGGER.info("Awaiting task completion.");
@@ -109,7 +109,7 @@ public class CraftingSequenceMatcher {
 			unordered.bake();
 			Beecrasy.LOGGER.info("Baked "+unordered.size()+" recipe.");
 			Beecrasy.LOGGER.info("Recipe Baking Complete.");
-			
+			CraftingSequenceMatcher.unordered=unordered;
 		});
 		if(await)
 			try {
@@ -124,22 +124,7 @@ public class CraftingSequenceMatcher {
 			}
 		
 	}
-	/**
-	 * 将一批配方转换为 {@link SequencedRecipe} 并插入无序索引。
-	 * <p>
-	 * 插入后立即释放每个配方的笛卡尔积缓存以节省内存。
-	 *
-	 * @param param 配方列表
-	 * @return 空列表（仅用于CompletableFuture的返回类型一致）
-	 */
-	public static Void createSequencedRecipe(List<RecipeHolder<CraftingRecipe>> param){
-		for(RecipeHolder<CraftingRecipe> recipe:param) {
-			SequencedRecipe seqr=new SequencedRecipe(recipe);
-			unordered.insert(seqr);
-			seqr.optimize();
-		}
-		return null;
-	}
+
 	/**
 	 * 判断原料是否为简单无NBT的原版原料。
 	 * <p>
