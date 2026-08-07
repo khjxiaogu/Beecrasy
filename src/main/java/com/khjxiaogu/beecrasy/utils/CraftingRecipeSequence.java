@@ -26,10 +26,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import com.khjxiaogu.beecrasy.utils.CraftingRecipeSequence.SequencedRecipe;
 import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.core.Holder;
@@ -193,7 +193,7 @@ public class CraftingRecipeSequence {
 	}
 	
 	/** 基于前两个物品（排序后）的笛卡尔积索引。 */
-	protected HashMap<Pair<Item,Item>, List<SequencedRecipe>> unorderedIndex=new HashMap<>(BuiltInRegistries.ITEM.size()*200);
+	protected HashMap<Pair<Item,Item>, ArrayList<SequencedRecipe>> unorderedIndex=new HashMap<>(BuiltInRegistries.ITEM.size()*200);
 	/** 原料数小于2的短配方列表。 */
 	protected ArrayList<SequencedRecipe> shortUnordered = new ArrayList<>(2000);
 
@@ -206,15 +206,17 @@ public class CraftingRecipeSequence {
         List<Ingredient> ingredients = pattern.recipeSequence;
         int len = ingredients.size();
         if (len < 2) {
-        	synchronized(shortUnordered) {
-        		shortUnordered.add(pattern);
-        	}
+        	shortUnordered.add(pattern);
             return;
         }
-        synchronized(unorderedIndex) {
-	        for (Pair<Item, Item> pair : pattern.cartesianProduct) {
-	            unorderedIndex.computeIfAbsent(pair, _ -> new ArrayList<>(10)).add(pattern);
-	        }
+        for (Pair<Item, Item> pair : pattern.cartesianProduct) {
+            unorderedIndex.computeIfAbsent(pair, _ -> new ArrayList<>(10)).add(pattern);
+        }
+    }
+	public void merge(CraftingRecipeSequence from) {
+        shortUnordered.addAll(from.shortUnordered);
+        for (Entry<Pair<Item, Item>, ArrayList<SequencedRecipe>> pair : from.unorderedIndex.entrySet()) {
+            unorderedIndex.computeIfAbsent(pair.getKey(), _ -> new ArrayList<>(10)).addAll(pair.getValue());
         }
     }
 	/**
@@ -260,21 +262,16 @@ public class CraftingRecipeSequence {
 	 * @param patterns 配方列表
 	 */
 	public void insertAll(List<? extends SequencedRecipe> patterns) {
-		synchronized(shortUnordered) {
-			synchronized(unorderedIndex) {
-				for (SequencedRecipe pattern : patterns) {
-			        List<Ingredient> ingredients = pattern.recipeSequence;
-			        int len = ingredients.size();
-			        if (len < 2) {
-			        	shortUnordered.add(pattern);
-		        	}
-			        for (Pair<Item, Item> pair : pattern.cartesianProduct) {
-			            unorderedIndex.computeIfAbsent(pair, _ -> new ArrayList<>(10)).add(pattern);
-			        }
 
-			        pattern.optimize();
-				}
-			}
+		for (SequencedRecipe pattern : patterns) {
+	        List<Ingredient> ingredients = pattern.recipeSequence;
+	        int len = ingredients.size();
+	        if (len < 2) {
+	        	shortUnordered.add(pattern);
+        	}
+	        for (Pair<Item, Item> pair : pattern.cartesianProduct) {
+	            unorderedIndex.computeIfAbsent(pair, _ -> new ArrayList<>(10)).add(pattern);
+	        }
 		}
 	}
 	/**
@@ -298,6 +295,9 @@ public class CraftingRecipeSequence {
 	public void bake() {
     	unorderedIndex=new HashMap<>(unorderedIndex);
     	shortUnordered.trimToSize();
+    	for(ArrayList<SequencedRecipe> value:unorderedIndex.values()) {
+    		value.trimToSize();
+    	}
     }
 
 	/**
@@ -314,14 +314,15 @@ public class CraftingRecipeSequence {
 	 * 插入后立即释放每个配方的笛卡尔积缓存以节省内存。
 	 *
 	 * @param param 配方列表
-	 * @return 空列表（仅用于CompletableFuture的返回类型一致）
+	 * @return CraftingRecipeSequence
 	 */
-	public Void createSequencedRecipe(List<RecipeHolder<CraftingRecipe>> param){
+	public static CraftingRecipeSequence createSequencedRecipe(List<RecipeHolder<CraftingRecipe>> param){
+		CraftingRecipeSequence out=new CraftingRecipeSequence();
 		for(RecipeHolder<CraftingRecipe> recipe:param) {
 			SequencedRecipe seqr=new SequencedRecipe(recipe);
-			insert(seqr);
+			out.insert(seqr);
 			seqr.optimize();
 		}
-		return null;
+		return out;
 	}
 }

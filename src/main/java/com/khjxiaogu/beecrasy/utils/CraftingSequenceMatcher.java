@@ -48,7 +48,7 @@ public class CraftingSequenceMatcher {
 	/** 已建立的全局无序配方索引。 */
 	public static CraftingRecipeSequence unordered;
 	/** 每个异步任务处理的配方数量建议值。 */
-	private static final float TASK_EFFORT=300;
+	private static final float TASK_EFFORT=200;
 	/**
 	 * 筛选并构建无序配方索引。
 	 * <p>
@@ -97,14 +97,17 @@ public class CraftingSequenceMatcher {
 		}
 		List<List<RecipeHolder<CraftingRecipe>>> ltasks=Utils.splitTasks(toindex,TASK_EFFORT);
 		Beecrasy.LOGGER.info("Filtered "+toindex.size()+" Recipes, creating "+ltasks.size()+" tasks.");
-		List<CompletableFuture<Void>> futures=new ArrayList<>(ltasks.size());
+		List<CompletableFuture<CraftingRecipeSequence>> futures=new ArrayList<>(ltasks.size());
 		for(List<RecipeHolder<CraftingRecipe>> task:ltasks) {
 			futures.add(CompletableFuture.completedFuture(task)
-				.thenApplyAsync(unordered::createSequencedRecipe));
+				.thenApplyAsync(CraftingRecipeSequence::createSequencedRecipe));
 			
 		}
 		Beecrasy.LOGGER.info("Awaiting task completion.");
-		CompletableFuture<Void> all=CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).thenRun(()->{
+		CompletableFuture<Void> all=CompletableFuture.runAsync(()->{
+			for(CompletableFuture<CraftingRecipeSequence> task:futures) {
+				unordered.merge(task.join());
+			}
 			Beecrasy.LOGGER.info("All Recipe proceded, begin optimizing.");
 			unordered.bake();
 			Beecrasy.LOGGER.info("Baked "+unordered.size()+" recipe.");
