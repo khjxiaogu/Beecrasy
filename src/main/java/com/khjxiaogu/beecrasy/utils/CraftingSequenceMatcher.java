@@ -57,7 +57,7 @@ public class CraftingSequenceMatcher {
 	 *
 	 * @param recipes 待处理的配方列表
 	 */
-	public static void bake(Collection<RecipeHolder<CraftingRecipe>> recipes) {
+	public static void bake(Collection<RecipeHolder<CraftingRecipe>> recipes,boolean await) {
 		unordered=new CraftingRecipeSequence();
 		Beecrasy.LOGGER.info("Filtering Recipe From "+recipes.size()+" Recipes");
 		
@@ -97,28 +97,32 @@ public class CraftingSequenceMatcher {
 		}
 		List<List<RecipeHolder<CraftingRecipe>>> ltasks=Utils.splitTasks(toindex,TASK_EFFORT);
 		Beecrasy.LOGGER.info("Filtered "+toindex.size()+" Recipes, creating "+ltasks.size()+" tasks.");
-		List<CompletableFuture<List<SequencedRecipe>>> futures=new ArrayList<>(ltasks.size());
+		List<CompletableFuture<Void>> futures=new ArrayList<>(ltasks.size());
 		for(List<RecipeHolder<CraftingRecipe>> task:ltasks) {
 			futures.add(CompletableFuture.completedFuture(task)
 				.thenApplyAsync(CraftingSequenceMatcher::createSequencedRecipe));
 			
 		}
 		Beecrasy.LOGGER.info("Awaiting task completion.");
-		try {
-			CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).get();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			Thread.currentThread().interrupt();
-			throw new RuntimeException("Interrupted when baking recipe",e);
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error when baking recipe",e);
-		}
-
-		Beecrasy.LOGGER.info("All Recipe proceded, begin optimizing.");
-		unordered.bake();
-		Beecrasy.LOGGER.info("Baked "+unordered.size()+" recipe.");
-		Beecrasy.LOGGER.info("Recipe Baking Complete.");
+		CompletableFuture<Void> all=CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).thenRun(()->{
+			Beecrasy.LOGGER.info("All Recipe proceded, begin optimizing.");
+			unordered.bake();
+			Beecrasy.LOGGER.info("Baked "+unordered.size()+" recipe.");
+			Beecrasy.LOGGER.info("Recipe Baking Complete.");
+			
+		});
+		if(await)
+			try {
+				all.get();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				Thread.currentThread().interrupt();
+				throw new RuntimeException("Interrupted when baking recipe",e);
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Error when baking recipe",e);
+			}
+		
 	}
 	/**
 	 * 将一批配方转换为 {@link SequencedRecipe} 并插入无序索引。
@@ -128,13 +132,13 @@ public class CraftingSequenceMatcher {
 	 * @param param 配方列表
 	 * @return 空列表（仅用于CompletableFuture的返回类型一致）
 	 */
-	public static List<SequencedRecipe> createSequencedRecipe(List<RecipeHolder<CraftingRecipe>> param){
+	public static Void createSequencedRecipe(List<RecipeHolder<CraftingRecipe>> param){
 		for(RecipeHolder<CraftingRecipe> recipe:param) {
 			SequencedRecipe seqr=new SequencedRecipe(recipe);
 			unordered.insert(seqr);
 			seqr.optimize();
 		}
-		return List.of();
+		return null;
 	}
 	/**
 	 * 判断原料是否为简单无NBT的原版原料。

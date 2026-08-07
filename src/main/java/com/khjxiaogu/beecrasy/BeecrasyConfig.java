@@ -22,6 +22,7 @@ package com.khjxiaogu.beecrasy;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig.Type;
 import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec.BooleanValue;
 import net.neoforged.neoforge.common.ModConfigSpec.DoubleValue;
 import net.neoforged.neoforge.common.ModConfigSpec.IntValue;
 
@@ -66,6 +67,8 @@ public class BeecrasyConfig {
 		public final IntValue SEQUENCER_HONEY;
 		public final IntValue SEQUENCER_ENERGY;
 		public final IntValue SEQUENCER_THROUGHPUT;
+
+		public final BooleanValue NO_BLOCK_RELOAD;
 		Server(ModConfigSpec.Builder builder) {
 			builder.push("beehive");
 			LIFESPAN=builder.comment("Lifespan for an average lifespan gene.")
@@ -92,6 +95,11 @@ public class BeecrasyConfig {
 				.defineInRange("energyCost", 5000, 0, Integer.MAX_VALUE);
 			SEQUENCER_THROUGHPUT=builder.comment("Energy input limit in FE.")
 					.defineInRange("energyLimit", 640, 0, Integer.MAX_VALUE);
+			builder.pop();
+			builder.push("misc");
+			
+			NO_BLOCK_RELOAD=builder.comment("Whether startup task should NOT block vanilla /reload command, may affect correctness. Set true only when you use reload frequently in-game or debug. DO NOT TOUCH UNLESS YOU UNDERSTAND WHAT YOU ARE DOING. ")
+				.define("dontBlockReload",false);
 			builder.pop();
 		}
 	}

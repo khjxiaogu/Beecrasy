@@ -259,8 +259,21 @@ public class CraftingRecipeSequence {
 	 * @param patterns 配方列表
 	 */
 	public void insertAll(List<? extends SequencedRecipe> patterns) {
-		for (SequencedRecipe pattern : patterns) {
-			insert(pattern);
+		synchronized(shortUnordered) {
+			synchronized(unorderedIndex) {
+				for (SequencedRecipe pattern : patterns) {
+			        List<Ingredient> ingredients = pattern.recipeSequence;
+			        int len = ingredients.size();
+			        if (len < 2) {
+			        	shortUnordered.add(pattern);
+		        	}
+			        for (Pair<Item, Item> pair : pattern.cartesianProduct) {
+			            unorderedIndex.computeIfAbsent(pair, _ -> new ArrayList<>(10)).add(pattern);
+			        }
+
+			        pattern.optimize();
+				}
+			}
 		}
 	}
 	/**

@@ -68,6 +68,7 @@
 	"beecrasy.configuration.section.beecrasy.common.toml.title": "Beecrasy Config",
 	"beecrasy.configuration.section.beecrasy.server.toml": "Beecrasy World Config",
 	"beecrasy.configuration.section.beecrasy.server.toml.title": "Beecrasy World Config",
+	"beecrasy.configuration.dontBlockReload": "Don't block /reload command",
 	"beecrasy.configuration.title": "Beecrasy Config",
 	"block.beecrasy.asphodel": "Asphodel",
 	"block.beecrasy.bee_city_comb": "Bee City Comb",
