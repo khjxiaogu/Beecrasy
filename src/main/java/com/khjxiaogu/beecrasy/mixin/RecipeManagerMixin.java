@@ -25,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.khjxiaogu.beecrasy.Beecrasy;
 import com.khjxiaogu.beecrasy.BeecrasyConfig;
 import com.khjxiaogu.beecrasy.utils.CraftingSequenceMatcher;
 
@@ -32,6 +33,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.neoforged.fml.loading.FMLPaths;
 
 @Mixin(RecipeManager.class)
 public class RecipeManagerMixin {
@@ -49,7 +51,11 @@ public class RecipeManagerMixin {
             .walk(stackStream -> stackStream.anyMatch(frame ->
             frame.getClassName().endsWith(".ReloadCommand")
 		    ))&&BeecrasyConfig.SERVER.NO_BLOCK_RELOAD.getAsBoolean();
-		CraftingSequenceMatcher.bake(getObjthis().recipeMap().byType(RecipeType.CRAFTING),!shouldNotWait);
+		//Teacon server has a typically bad performance, so add a special file to note that
+		boolean isTeacon=(FMLPaths.CONFIGDIR.get().resolve("beecrasy-load.toml").toFile().exists());
+		if(isTeacon)
+			Beecrasy.LOGGER.info("Teacon mode");
+		CraftingSequenceMatcher.bake(getObjthis().recipeMap().byType(RecipeType.CRAFTING),(!shouldNotWait)&&!isTeacon);
 	}
 	private RecipeManager getObjthis() {
 		return (RecipeManager)(Object)this;

@@ -114,6 +114,7 @@ public class CraftingSequenceMatcher {
 			Beecrasy.LOGGER.info("Recipe Baking Complete.");
 			CraftingSequenceMatcher.unordered=unordered;
 		});
+		
 		if(await)
 			try {
 				all.get();

@@ -52,6 +52,7 @@ public class BeecrasyConfig {
 		 */
 		Common(ModConfigSpec.Builder builder) {
 
+		
 		}
 	}
 
