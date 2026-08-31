@@ -21,18 +21,25 @@ package com.khjxiaogu.beecrasy.events;
 
 import java.util.function.Consumer;
 
+import com.khjxiaogu.beecrasy.client.screens.sequencertabs.GMTab;
 import com.khjxiaogu.beecrasy.client.screens.sequencertabs.SequencerTab;
 
 import net.neoforged.bus.api.Event;
 
 public class SequencerTabRegistryEvent extends Event {
-	private Consumer<SequencerTab> tabAdder;
+	private final Consumer<SequencerTab> tabAdder;
+	private final Consumer<GMTab> gmTabAdder;
 
-	public SequencerTabRegistryEvent(Consumer<SequencerTab> tabAdder) {
+	public SequencerTabRegistryEvent(Consumer<SequencerTab> tabAdder, Consumer<GMTab> gmTabAdder) {
 		super();
 		this.tabAdder = tabAdder;
+		this.gmTabAdder = gmTabAdder;
 	}
+
 	public void register(SequencerTab tab) {
 		tabAdder.accept(tab);
+	}
+	public void register(GMTab tab) {
+		gmTabAdder.accept(tab);
 	}
 }

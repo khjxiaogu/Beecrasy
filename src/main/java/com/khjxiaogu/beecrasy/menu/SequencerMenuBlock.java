@@ -57,7 +57,7 @@ public class SequencerMenuBlock extends SequencerMenu {
 		this(containerId, inventory, access.inv);
 		this.addDataSlots(data=access);
 		this.addFluidTank(access.tank, access.tank::set, 0);
-		be=access;
+		blockEntity=be=access;
 	}
 	protected SequencerMenuBlock(int containerId, Inventory inventory, ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier) {
 		super(Menus.SEQUENCER_BLOCK_MENU.get(), containerId, inventory, handler, slotModifier);

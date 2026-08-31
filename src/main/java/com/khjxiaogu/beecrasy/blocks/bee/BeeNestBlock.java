@@ -19,18 +19,24 @@
 
 package com.khjxiaogu.beecrasy.blocks.bee;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
+import com.khjxiaogu.beecrasy.BeecrasyRegistries;
+import com.khjxiaogu.beecrasy.blocks.BeecrasyEntityBlock;
 import com.khjxiaogu.beecrasy.client.BeecrasyParticles;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -40,17 +46,25 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
-public class BeeNestBlock extends Block {
+public class BeeNestBlock extends Block implements BeecrasyEntityBlock<BeeNestBlockEntity>{
 	public static enum Facing implements StringRepresentable {
 		CEILING,
 		CORNER;
@@ -208,6 +222,19 @@ public class BeeNestBlock extends Block {
 	}
 
 	@Override
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+		if(params.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof BeeNestBlockEntity be&&be.lootTable!=null) {
+			LootParams lootParams = params
+	        	.withParameter(LootContextParams.BLOCK_STATE, state)
+	        	.create(LootContextParamSets.BLOCK);
+	        ServerLevel level = lootParams.getLevel();
+	        LootTable table = level.getServer().reloadableRegistries().getLootTable(be.lootTable);
+	        return table.getRandomItems(lootParams,be.lootTableSeed);
+		}
+        return super.getDrops(state, params);
+        
+    }
+	@Override
 	protected void createBlockStateDefinition(Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
 		builder.add(BlockStateProperties.HORIZONTAL_FACING);
@@ -244,5 +271,14 @@ public class BeeNestBlock extends Block {
 						0.0D, speedvec.z());
 		}
 		
+	}
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
+		return null;
+	}
+	@Override
+	public DeferredHolder<BlockEntityType<?>, BlockEntityType<BeeNestBlockEntity>> getBlock() {
+
+		return BeecrasyRegistries.Blocks.BEE_NEST_BLOCKENTITY;
 	}
 }

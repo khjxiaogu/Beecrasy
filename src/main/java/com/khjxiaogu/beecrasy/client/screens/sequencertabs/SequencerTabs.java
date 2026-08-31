@@ -38,6 +38,9 @@ import net.neoforged.neoforge.common.NeoForge;
 public class SequencerTabs {
 	/** 最终的标签页列表（初始化后不可变） */
 	private static List<SequencerTab> tabs;
+
+	private static List<GMTab> gmtabs;
+	
 	/**
 	 * 初始化标签页集合。
 	 * <p>
@@ -46,11 +49,15 @@ public class SequencerTabs {
 	 */
 	public static void init() {
 		List<SequencerTab> tabs=new ArrayList<>();
+		List<GMTab> gmtabs=new ArrayList<>();
 		tabs.add(new BasicGeneticsTab());
 		tabs.add(new ProductsTab());
-		SequencerTabRegistryEvent ev=new SequencerTabRegistryEvent(tabs::add);
+		gmtabs.add(new BasicGMTab());
+		gmtabs.add(new ProductsGMTab());
+		SequencerTabRegistryEvent ev=new SequencerTabRegistryEvent(tabs::add,gmtabs::add);
 		NeoForge.EVENT_BUS.post(ev);
 		SequencerTabs.tabs=Collections.unmodifiableList(tabs);
+		SequencerTabs.gmtabs=Collections.unmodifiableList(gmtabs);
 	}
 	/**
 	 * 获取不可变的标签页列表。
@@ -59,5 +66,13 @@ public class SequencerTabs {
 	 */
 	public static List<SequencerTab> getTabs(){
 		return tabs;
+	}
+	/**
+	 * 获取不可变的标签页列表。
+	 *
+	 * @return 所有已注册的 {@link SequencerTab} 实例列表
+	 */
+	public static List<GMTab> getGMTabs(){
+		return gmtabs;
 	}
 }

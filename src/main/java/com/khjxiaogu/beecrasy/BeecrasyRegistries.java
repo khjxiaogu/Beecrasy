@@ -34,6 +34,7 @@ import com.khjxiaogu.beecrasy.beehive.BeeHiveBaseComponent;
 import com.khjxiaogu.beecrasy.beehive.BeeHiveParameters;
 import com.khjxiaogu.beecrasy.blocks.BaseFlowerPotBlock;
 import com.khjxiaogu.beecrasy.blocks.bee.BeeNestBlock;
+import com.khjxiaogu.beecrasy.blocks.bee.BeeNestBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.bee.HiveBlock;
 import com.khjxiaogu.beecrasy.blocks.bee.HiveBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.bee.NaturalHiveBlock;
@@ -50,6 +51,8 @@ import com.khjxiaogu.beecrasy.blocks.bee.beecity.HiveSlotProvider;
 import com.khjxiaogu.beecrasy.blocks.machine.BeediboxBlock;
 import com.khjxiaogu.beecrasy.blocks.machine.BeediboxBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.machine.BeeperBlock;
+import com.khjxiaogu.beecrasy.blocks.machine.GMBlock;
+import com.khjxiaogu.beecrasy.blocks.machine.GMBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.machine.PressBlock;
 import com.khjxiaogu.beecrasy.blocks.machine.PressBlockEntity;
 import com.khjxiaogu.beecrasy.blocks.machine.SequencerBlock;
@@ -79,6 +82,7 @@ import com.khjxiaogu.beecrasy.menu.ApistleMenu;
 import com.khjxiaogu.beecrasy.menu.BeeCityCombMenu;
 import com.khjxiaogu.beecrasy.menu.BeeCityCoreMenu;
 import com.khjxiaogu.beecrasy.menu.BeeCityQueenMenu;
+import com.khjxiaogu.beecrasy.menu.GMMenu;
 import com.khjxiaogu.beecrasy.menu.HiveMenu;
 import com.khjxiaogu.beecrasy.menu.MailBoxMenu;
 import com.khjxiaogu.beecrasy.menu.MailMenu;
@@ -236,6 +240,7 @@ public class BeecrasyRegistries {
 	    public static final DeferredBlock<Block> SKEP=register("skep",SkepBlock::new,(b,p)->new BeehiveBlockItem(b, p, ()->new BeeHiveBaseComponent(1,4,4,0)),Blocks::skepProps,t->t.component(Components.BEE_HIVE, SkepBlockEntity.EMPTY));
 	    public static final DeferredBlock<Block> HIVE=register("hive",HiveBlock::new,(b,p)->new BeehiveBlockItem(b, p, ()->new BeeHiveBaseComponent(2,6,6,0)),Blocks::woodProps,t->t.component(Components.BEE_HIVE, HiveBlockEntity.EMPTY));
 		   
+	    public static final DeferredBlock<GMBlock> GM=register("synthesizer",GMBlock::new,Blocks::machineProps,UnaryOperator.identity());
 	    
 	    public static final DeferredBlock<Block> EMPTY_COMB_BLOCK=register("empty_comb_block");
 	    public static final DeferredBlock<Block> HONEY_COMB_BLOCK=register("honey_comb_block");
@@ -272,6 +277,10 @@ public class BeecrasyRegistries {
 	    
 	    
 	    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, Beecrasy.MODID);
+	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<BeeNestBlockEntity>> BEE_NEST_BLOCKENTITY=BLOCK_ENTITIES.register("bee_nest", makeBlockEntityTypes(BeeNestBlockEntity::new, List.of(BEE_NEST_NASCENT, BEE_NEST_SMALL, BEE_NEST_MEDIUM, BEE_NEST_BIG)));
+	    
+	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GMBlockEntity>> GM_BLOCKENTITY=BLOCK_ENTITIES.register("synthesizer", makeBlockEntityType(GMBlockEntity::new, GM));
+	    
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PressBlockEntity>> PRESS_BLOCKENTITY=BLOCK_ENTITIES.register("honey_press", makeBlockEntityType(PressBlockEntity::new, HONEY_PRESS));
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NaturalHiveBlockEntity>> NATURAL_HIVE_BLOCKENTITY=BLOCK_ENTITIES.register("natural_hive",makeBlockEntityType(NaturalHiveBlockEntity::new, NATURAL_HIVE));
 	    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SkepBlockEntity>> SKEP_BLOCKENTITY=BLOCK_ENTITIES.register("skep", makeBlockEntityType(SkepBlockEntity::new, SKEP));
@@ -436,6 +445,9 @@ public class BeecrasyRegistries {
 		public static final DeferredHolder<MenuType<?>, MenuType<HiveMenu>> HIVE_MENU=MENU_TYPES.register("hive", () -> IMenuTypeExtension.create(HiveMenu::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<MailMenu>> MAIL_MENU=MENU_TYPES.register("mail", () -> IMenuTypeExtension.create(MailMenu::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<MailBoxMenu>> MAILBOX_MENU=MENU_TYPES.register("mailbox", () -> IMenuTypeExtension.create(MailBoxMenu::new));
+		
+		public static final DeferredHolder<MenuType<?>, MenuType<GMMenu>> GM_MENU=MENU_TYPES.register("synthesizer", () -> IMenuTypeExtension.create(GMMenu::new));
+		
 		
 		public static final DeferredHolder<MenuType<?>, MenuType<BeeCityCoreMenu>> BEE_CITY_CORE=MENU_TYPES.register("bee_city_core", () -> IMenuTypeExtension.create(BeeCityCoreMenu::new));
 		public static final DeferredHolder<MenuType<?>, MenuType<BeeCityCombMenu>> BEE_CITY_COMB=MENU_TYPES.register("bee_city_comb", () -> IMenuTypeExtension.create(BeeCityCombMenu::new));

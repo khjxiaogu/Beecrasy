@@ -111,6 +111,11 @@ public class BeecrasyBlockModelProvider extends BlockModelGenerators {
 				.generate(t->t?bmf("sequencer_active"): bmf("sequencer")))
 			.with(ROTATION_HORIZONTAL_FACING)
 			);
+		this.blockStateOutput.accept(
+			this.getVariantBuilder(Blocks.GM.get()).with(PropertyDispatch.initial(BlockStateProperties.LIT)
+				.generate(t->t?bmf("sequencer_active"): bmf("sequencer")))
+			.with(ROTATION_HORIZONTAL_FACING)
+			);
 		this.blockItemModel(Blocks.HIVE);
 		this.blockStateOutput.accept(
 			this.getVariantBuilder(Blocks.HIVE.get(), bmf("hive"))

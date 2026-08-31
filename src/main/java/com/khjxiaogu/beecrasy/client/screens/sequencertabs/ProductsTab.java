@@ -70,6 +70,7 @@ public class ProductsTab implements SequencerTab{
 				int cy=y+15+19*(idx/5);
 				if(mouseX>cx&&mouseY>cy&&mouseX<cx+16&&mouseY<cy+16) {
 					Screen.getTooltipFromItem(Minecraft.getInstance(), stack).forEach(tooltips);
+					tooltips.accept(Genes.BIOTOPE.getReadableText(l.biotope()));
 					tooltips.accept(PHENO);
 				}
 				transform.item(stack,cx,cy);
@@ -87,6 +88,7 @@ public class ProductsTab implements SequencerTab{
 					int cy=y+60+19*(idx/5);
 					if(mouseX>cx&&mouseY>cy&&mouseX<cx+16&&mouseY<cy+16) {
 						Screen.getTooltipFromItem(Minecraft.getInstance(), stack).forEach(tooltips);
+						tooltips.accept(Genes.BIOTOPE.getReadableText(l.biotope()));
 						tooltips.accept(GENO);
 					}
 					transform.item(stack,cx,cy);
