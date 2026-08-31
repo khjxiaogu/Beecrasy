@@ -1,4 +1,4 @@
-// 26.1.2	2026-08-31T12:26:47.3162183	Model Definitions - beecrasy
+// 26.1.2	2026-08-31T13:37:22.1375777	Model Definitions - beecrasy
 1cf5823f416099f900c9eb832a07f001723252b2 assets/beecrasy/blockstates/beedibox.json
 dac4306f0432186d4a9af9fdc4328aea740acb73 assets/beecrasy/blockstates/bee_city_comb.json
 8bbcba3bf0bc0c88d414a125277b141b1ee0f6f8 assets/beecrasy/blockstates/bee_city_core.json
@@ -85,7 +85,7 @@ acf2909014c79b4d48c92242195a349a81c2d7fd assets/beecrasy/items/queen_bee.json
 ab8256d37153e8e257a961b021293cfb23893ad4 assets/beecrasy/items/seikilos_epitaph.json
 4bd6c4da6d092e47eeef22f2dc4f7e887e42dd94 assets/beecrasy/items/sequencer.json
 7fd1954a87eedde5b940287b5b3e21e5dd5d9a35 assets/beecrasy/items/skep.json
-297f476b25e84b70efb90e35a44744df24c528de assets/beecrasy/items/synthesizer.json
+4bd6c4da6d092e47eeef22f2dc4f7e887e42dd94 assets/beecrasy/items/synthesizer.json
 e44fd8c3c29021db95976df9827280bcb522f318 assets/beecrasy/models/block/empty_comb_block_0.json
 100965d4a9a5d2d44b9ed654c4462f7c0b99824b assets/beecrasy/models/block/empty_comb_block_1.json
 1182ce2ea8ee4c0202c30c7e3a96f1724562566e assets/beecrasy/models/block/empty_comb_block_2.json

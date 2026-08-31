@@ -30,17 +30,24 @@ import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Items;
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Menus;
 import com.khjxiaogu.beecrasy.client.apistle.ApistleScreen;
+import com.khjxiaogu.beecrasy.client.screens.GMScreen;
 import com.khjxiaogu.beecrasy.client.screens.MailScreen;
 import com.khjxiaogu.beecrasy.client.screens.PressScreen;
+import com.khjxiaogu.beecrasy.client.screens.sequencertabs.GeneticModifier;
+import com.khjxiaogu.beecrasy.client.screens.sequencertabs.ProductsGMTab;
 import com.khjxiaogu.beecrasy.compat.category.PressCategory;
 import com.khjxiaogu.beecrasy.compat.category.PheromoneRecipeExtension;
 import com.khjxiaogu.beecrasy.compat.category.RoyalJellyRecipeExtension;
 import com.khjxiaogu.beecrasy.data.recipe.PheromoneRecipe;
 import com.khjxiaogu.beecrasy.data.recipe.PressRecipe;
 import com.khjxiaogu.beecrasy.data.recipe.RoyalJellyRecipe;
+import com.khjxiaogu.beecrasy.genome.Genes;
+import com.khjxiaogu.beecrasy.genome.gene.Biotope;
+import com.khjxiaogu.beecrasy.genome.gene.ProductItem;
 import com.khjxiaogu.beecrasy.menu.PressMenu;
 import com.khjxiaogu.beecrasy.network.MailSetIconMessage;
 import com.khjxiaogu.beecrasy.network.PacketHandler;
+import com.mojang.blaze3d.platform.InputConstants;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -66,12 +73,14 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
 @JeiPlugin
 public class JEICompat implements IModPlugin {
 	IJeiRuntime runtime;
+
 	@Override
 	public Identifier getPluginUid() {
 		return Identifier.fromNamespaceAndPath(Beecrasy.MODID, "jei_plugin");
@@ -79,12 +88,17 @@ public class JEICompat implements IModPlugin {
 
 	@Override
 	public void registerItemSubtypes(ISubtypeRegistration registration) {
-	    for(DeferredItem<Item> i:Items.INCENSE_LIST)
-	    	registration.registerFromDataComponentTypes(i.get(), Components.ARGUMENTATION.get());
-	    /*for(DeferredItem<Item> i:List.of(Items.DRONE,Items.LARVA,Items.PRODUCT_COMB,Items.QUEEN_BEE))
-	    	registration.registerFromDataComponentTypes(i.get(), Components.GENOME.get());*/
-	    //registration.registerFromDataComponentTypes(Items.PRODUCT_COMB.get(), Components.COMB_PRODUCT.get());
-	    
+		for (DeferredItem<Item> i : Items.INCENSE_LIST)
+			registration.registerFromDataComponentTypes(i.get(), Components.ARGUMENTATION.get());
+		/*
+		 * for(DeferredItem<Item>
+		 * i:List.of(Items.DRONE,Items.LARVA,Items.PRODUCT_COMB,Items.QUEEN_BEE))
+		 * registration.registerFromDataComponentTypes(i.get(),
+		 * Components.GENOME.get());
+		 */
+		// registration.registerFromDataComponentTypes(Items.PRODUCT_COMB.get(),
+		// Components.COMB_PRODUCT.get());
+
 	}
 
 	@Override
@@ -99,12 +113,12 @@ public class JEICompat implements IModPlugin {
 
 	@Override
 	public void registerRecipes(IRecipeRegistration registration) {
-		registration.addRecipes(PressCategory.TYPE,new ArrayList<>(PressRecipe.recipe.getRecipes()));
+		registration.addRecipes(PressCategory.TYPE, new ArrayList<>(PressRecipe.recipe.getRecipes()));
 	}
 
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
-		this.runtime=jeiRuntime;
+		this.runtime = jeiRuntime;
 	}
 
 	@Override
@@ -122,34 +136,112 @@ public class JEICompat implements IModPlugin {
 	@Override
 	public void registerGuiHandlers(IGuiHandlerRegistration registry) {
 		registry.addGhostIngredientHandler(MailScreen.class, new IGhostIngredientHandler<>() {
-
 			@Override
 			public void onComplete() {
 			}
 
 			@Override
 			public <I> List<Target<I>> getTargetsTyped(MailScreen gui, ITypedIngredient<I> ingredient,
-					boolean doStart) {
-				if(ingredient.getIngredient(VanillaTypes.ITEM_STACK).isPresent()) {
+				boolean doStart) {
+				if (ingredient.getIngredient(VanillaTypes.ITEM_STACK).isPresent()) {
 					return List.of(new Target<>() {
 
 						@Override
 						public Rect2i getArea() {
-							return new Rect2i(gui.getLeftPos()+143,gui.getTopPos() +28,16,16);
+							return new Rect2i(gui.getLeftPos() + 143, gui.getTopPos() + 28, 16, 16);
 						}
 
 						@Override
 						public void accept(I ingredient) {
-							if(ingredient instanceof ItemStack is) {
-								PacketHandler.sendToServer(new MailSetIconMessage(gui.getMenu().containerId,is));
+							if (ingredient instanceof ItemStack is) {
+								PacketHandler.sendToServer(new MailSetIconMessage(gui.getMenu().containerId, is));
 							}
 						}
-						
+
 					});
 				}
 				return List.of();
 			}
-			
+		});
+		registry.addGhostIngredientHandler(GMScreen.class, new IGhostIngredientHandler<>() {
+			@Override
+			public void onComplete() {
+			}
+
+			@Override
+			public <I> List<Target<I>> getTargetsTyped(GMScreen gui, ITypedIngredient<I> ingredient,
+				boolean doStart) {
+				
+				if (ingredient.getIngredient(VanillaTypes.ITEM_STACK).isPresent()&&gui.getSelectedTab() instanceof ProductsGMTab) {
+					List<Target<I>> li = new ArrayList<>();
+					int x = gui.getLeftPos() + 40;
+					int y = gui.getTopPos() + 13;
+					GeneticModifier ahm1 = gui.getMenu().getGene1();
+					GeneticModifier ahm2 = gui.getMenu().getGene2();
+					if (ahm1 != null) {
+						for (int idx = 1; idx <= 9; idx++) {
+							final int cx = x + 0 + (idx % 5) * 19;
+							final int cy = y + 15 + 19 * (idx / 5);
+							final int i = idx - 1;
+							li.add(new Target<>() {
+								@Override
+								public Rect2i getArea() {
+									return new Rect2i(cx, cy, 16, 16);
+								}
+
+								@Override
+								public void accept(I ingredient) {
+									if (ingredient instanceof ItemStack is) {
+
+										if (!is.isEmpty()) {
+											List<ProductItem> ah = ahm1.getAllele(Genes.PRODUCTS);
+											ah = new ArrayList<>(ah);
+											if (i >= ah.size()) {
+												ah.add(new ProductItem(Genes.Alleles.WILD, Optional.empty(), ItemStackTemplate.fromNonEmptyStack(is).withCount(1)));
+											} else {
+												ah.set(i, new ProductItem(Genes.Alleles.WILD, Optional.empty(), ItemStackTemplate.fromNonEmptyStack(is).withCount(1)));
+											}
+											ahm1.setAllele(Genes.PRODUCTS, ah);
+										}
+									}
+								}
+							});
+						}
+						if (ahm2 != null) {
+							for (int idx = 1; idx <= 9; idx++) {
+								final int cx = x + 0 + (idx % 5) * 19;
+								final int cy = y + 15 + 19 * (idx / 5);
+								final int i = idx - 1;
+								li.add(new Target<>() {
+									@Override
+									public Rect2i getArea() {
+										return new Rect2i(cx, cy, 16, 16);
+									}
+
+									@Override
+									public void accept(I ingredient) {
+										if (ingredient instanceof ItemStack is) {
+
+											if (!is.isEmpty()) {
+												List<ProductItem> ah = ahm1.getAllele(Genes.PRODUCTS);
+												ah = new ArrayList<>(ah);
+												if (i >= ah.size()) {
+													ah.add(new ProductItem(Genes.Alleles.WILD, Optional.empty(), ItemStackTemplate.fromNonEmptyStack(is).withCount(1)));
+												} else {
+													ah.set(i, new ProductItem(Genes.Alleles.WILD, Optional.empty(), ItemStackTemplate.fromNonEmptyStack(is).withCount(1)));
+												}
+												ahm1.setAllele(Genes.PRODUCTS, ah);
+											}
+										}
+									}
+								});
+							}
+						}
+					}
+					return li;
+				}
+				return List.of();
+			}
 		});
 		registry.addGenericGuiContainerHandler(PressScreen.class, new IGuiContainerHandler<PressScreen>() {
 			@Override
@@ -160,23 +252,23 @@ public class JEICompat implements IModPlugin {
 
 			@Override
 			public Optional<? extends IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory builder, PressScreen containerScreen, double mouseX, double mouseY) {
-				if(containerScreen.isMouseIn((int)mouseX, (int)mouseY,91,9, 17, 34)) {
-					return builder.createBuilder(NeoForgeTypes.FLUID_STACK, FluidUtil.getStack(containerScreen.getMenu(), 0)).buildWithArea(91,9, 17, 34);
+				if (containerScreen.isMouseIn((int) mouseX, (int) mouseY, 91, 9, 17, 34)) {
+					return builder.createBuilder(NeoForgeTypes.FLUID_STACK, FluidUtil.getStack(containerScreen.getMenu(), 0)).buildWithArea(91, 9, 17, 34);
 				}
 				return IGuiContainerHandler.super.getClickableIngredientUnderMouse(builder, containerScreen, mouseX, mouseY);
 			}
-			
+
 		});
 		registry.addGenericGuiContainerHandler(ApistleScreen.class, new IGuiContainerHandler<ApistleScreen>() {
 			@Override
 			public Optional<? extends IClickableIngredient<?>> getClickableIngredientUnderMouse(IClickableIngredientFactory builder, ApistleScreen containerScreen, double mouseX, double mouseY) {
-	
-				return containerScreen.peekPointedItem().flatMap(iaa->builder.createBuilder(iaa.stack())
-						.buildWithArea(iaa.x(), iaa.y(), iaa.w(), iaa.h()));
+
+				return containerScreen.peekPointedItem().flatMap(iaa -> builder.createBuilder(iaa.stack())
+					.buildWithArea(iaa.x(), iaa.y(), iaa.w(), iaa.h()));
 			}
-			
+
 		});
-		
+
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "beecrasy:block/synthesizer"
+    "model": "beecrasy:block/sequencer"
   }
 }

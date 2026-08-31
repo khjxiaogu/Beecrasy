@@ -33,7 +33,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 public class BeecrasyDataGenerator {
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent.Server event) {
-		System.out.println("Gather server data");
+		Beecrasy.LOGGER.info("Gather server data");
 		DataGenerator gen = event.getGenerator();
 		gen.addProvider(true,new BeecrasyBlockTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
 		gen.addProvider(true,new BeecrasyFluidTagGenerator(gen, Beecrasy.MODID,event.getLookupProvider()));
@@ -49,7 +49,7 @@ public class BeecrasyDataGenerator {
 	}
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent.Client event) {
-		System.out.println("Gather client data");
+		Beecrasy.LOGGER.info("Gather client data");
 		DataGenerator gen = event.getGenerator();
 		
 		gen.addProvider(true,new BeecrasyModelProvider(gen.getPackOutput(), Beecrasy.MODID,event.getResourceManager(PackType.CLIENT_RESOURCES)));

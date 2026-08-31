@@ -126,6 +126,8 @@
 	"gui.beehive.status.no_biotope": "Not Suitable Biotope",
 	"gui.beehive.status.no_flower": "No Flower Nearby",
 	"gui.beehive.status.ok": "OK",
+	"gui.beecrasy.synthesizer.cycle_alleles": "[LMB]/[RMB] to cycle alleles value",
+	"gui.beecrasy.synthesizer.cycle_biotope": "[MMB] to cycle biotope",
 	"gui.correspondence.empty_letter": "Empty Mail",
 	"gui.correspondence.not_enough_postage": "Not Enough Postage",
 	"gui.correspondence.player_not_exist": "Player Not Exist",

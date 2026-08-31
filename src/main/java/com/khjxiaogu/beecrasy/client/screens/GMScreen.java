@@ -84,6 +84,11 @@ public class GMScreen extends AbstractContainerScreen<GMMenu> {
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial,Consumer<Component> adder) {
 		
 	}
+	public GMTab getSelectedTab() {
+		if(selected >=SequencerTabs.getGMTabs().size())
+			return null;
+		return SequencerTabs.getGMTabs().get(selected);
+	}
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partial) {
 		tooltip.clear();

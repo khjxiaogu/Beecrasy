@@ -51,6 +51,10 @@ public class ProductsGMTab implements GMTab{
 	public static final Component PHENO=Component.translatable("genome.beecrasy.genome0");
 	/** 基因型标签（父系） */
 	public static final Component GENO=Component.translatable("genome.beecrasy.genome1");
+
+	public static final Component CYCLE_BIOTOPE=Component.translatable("gui.beecrasy.synthesizer.cycle_biotope");
+	
+	
 	@SuppressWarnings("resource")
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor transform, GMMenu menu, int x, int y, int w, int h, int mouseX, int mouseY, float partial, Consumer<Component> tooltips) {
@@ -76,6 +80,7 @@ public class ProductsGMTab implements GMTab{
 				if(mouseX>cx&&mouseY>cy&&mouseX<cx+16&&mouseY<cy+16) {
 					Screen.getTooltipFromItem(Minecraft.getInstance(), stack).forEach(tooltips);
 					tooltips.accept(Genes.BIOTOPE.getReadableText(l.biotope()));
+					tooltips.accept(CYCLE_BIOTOPE);
 					tooltips.accept(PHENO);
 				}
 				transform.item(stack,cx,cy);
@@ -94,6 +99,7 @@ public class ProductsGMTab implements GMTab{
 					if(mouseX>cx&&mouseY>cy&&mouseX<cx+16&&mouseY<cy+16) {
 						Screen.getTooltipFromItem(Minecraft.getInstance(), stack).forEach(tooltips);
 						tooltips.accept(Genes.BIOTOPE.getReadableText(l.biotope()));
+						tooltips.accept(CYCLE_BIOTOPE);
 						tooltips.accept(GENO);
 					}
 					transform.item(stack,cx,cy);
@@ -138,7 +144,6 @@ public class ProductsGMTab implements GMTab{
 				int cy=y+15+19*(idx/5);
 				if(mouseX>cx&&mouseY>cy&&mouseX<cx+16&&mouseY<cy+16) {
 					ah=new ArrayList<>(ah);
-					System.out.println(idx);
 					if(idx-1>=ah.size()) {
 						if(!menu.getCarried().isEmpty()&&event.button()==InputConstants.MOUSE_BUTTON_LEFT)
 							ah.add(new ProductItem(Genes.Alleles.WILD,Optional.empty(),ItemStackTemplate.fromNonEmptyStack(menu.getCarried()).withCount(1)));

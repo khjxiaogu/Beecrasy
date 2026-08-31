@@ -112,6 +112,8 @@
 	"gene.beecrasy.yield.short": "产量",
 	"genome.beecrasy.genome0": "活动基因",
 	"genome.beecrasy.genome1": "非活动基因",
+	"gui.beecrasy.synthesizer.cycle_alleles": "鼠标左击/右击以切换值。",
+	"gui.beecrasy.synthesizer.cycle_biotope": "鼠标中健切换生境值。",
 	"gui.beehive.control.auto": "自动",
 	"gui.beehive.control.maunal": "手动",
 	"gui.beehive.control.redstone": "红石控制",

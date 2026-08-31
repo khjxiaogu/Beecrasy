@@ -52,6 +52,7 @@ public record SingleGMLine(Gene<?> gene) implements InteractiveLine {
 	/** 基因型标签（父系） */
 	public static final Component GENO=Component.translatable("genome.beecrasy.genome1");
 
+	public static final Component CYCLE_TAB=Component.translatable("gui.beecrasy.synthesizer.cycle_alleles");
 	/**
 	 * 渲染单行基因信息。
 	 * <p>
@@ -86,9 +87,11 @@ public record SingleGMLine(Gene<?> gene) implements InteractiveLine {
 			}else if(mouseX<67) {
 				tooltips.accept(gene.getReadableText(ah1));
 				tooltips.accept(PHENO);
+				tooltips.accept(CYCLE_TAB);
 			}else if(ah2!=null) {
 				tooltips.accept(gene.getReadableText(ah2));
 				tooltips.accept(GENO);
+				tooltips.accept(CYCLE_TAB);
 			}
 		}
 		return 8;
@@ -96,13 +99,12 @@ public record SingleGMLine(Gene<?> gene) implements InteractiveLine {
 
 	@Override
 	public boolean mouseClicked(int mouseX, int mouseY, GeneticModifier ah1, GeneticModifier ah2, MouseButtonEvent event, boolean doubleClick) {
-		System.out.println(mouseX);
 		if(mouseY<8&&mouseY>0&&mouseX>0&&mouseX<92) {
 			if(mouseX<42) {
 			}else if(mouseX<67) {
 				EnumAlleleType alleles=GeneRegistry.getEnumTypes().get(gene.id());
 				Object origin=ah1.getAllele(gene);
-				int num=alleles.getIntId((Allele) origin);
+				int num=alleles.getIntId((Allele)origin);
 				if(event.button()==InputConstants.MOUSE_BUTTON_RIGHT) {
 					num--;
 				}else if(event.button()==InputConstants.MOUSE_BUTTON_LEFT) {
