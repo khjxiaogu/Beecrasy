@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'net.neoforged.gradle.userdev' version '7.1.26'
     id 'net.neoforged.licenser' version '0.7.5'
+    id 'net.darkhax.curseforgegradle' version '1.3.32'
 }
 license {
     header = project.file('HEADER.txt')
@@ -286,3 +287,42 @@ idea {
         downloadJavadoc = true
     }
 }
+
+String getChangelogText() {
+    def changelogFile = file('changelog.txt')
+    String str = "<span style=\"font-size: 18px; color: #333399;\">${mod_name} v${mod_version}</span>&nbsp;&nbsp;<em>for Minecraft ${minecraft_version}</em><br/>"
+    int lineCount = 0
+    boolean done = false
+    changelogFile.eachLine {
+        if (done || it == null) {
+            return
+        }
+        if (it.size() > 1) {
+            def temp = it
+            str += temp+"<br />"
+            lineCount++
+        }
+    }
+    return str
+}
+task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    def envApiKey = System.getenv('CURSEFORGE_API_KEY')
+    apiToken  = envApiKey == null ? 'nope' : envApiKey
+    group = "publishing"
+    // A project ID is required to tell CurseForge which project the uploaded
+    // file belongs to. This is public on your project page and is not private
+    // information.
+    projectId = project.projectId
+
+    // Tells CurseForgeGradle to publish the output of the jar task. This will
+    // return a UploadArtifact object that can be used to further configure the
+    // file. 
+    def mainFile = upload(projectId, jar)
+    mainFile.changelog = getChangelogText()
+    mainFile.changelogType = 'html'
+    mainFile.releaseType=project.curse_type
+    mainFile.addOptional("patchouli","jei")
+    mainFile.addGameVersion(project.minecraft_version)
+    mainFile.addModLoader("NeoForge")
+}
+publish.finalizedBy('publishCurseForge')

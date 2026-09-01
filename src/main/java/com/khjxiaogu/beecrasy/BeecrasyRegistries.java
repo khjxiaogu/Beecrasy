@@ -91,6 +91,7 @@ import com.khjxiaogu.beecrasy.menu.SequencerMenuBlock;
 import com.khjxiaogu.beecrasy.menu.SequencerMenuHandHeld;
 import com.khjxiaogu.beecrasy.menu.SkepMenu;
 import com.khjxiaogu.beecrasy.utils.RecipeCache;
+import com.khjxiaogu.beecrasy.worldgen.UnderLeavesPlacer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
@@ -137,6 +138,9 @@ import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.levelgen.RandomSupport;
+import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecoratorType;
+import net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacerType;
+import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -380,6 +384,7 @@ public class BeecrasyRegistries {
 	    
 	    
 	}
+	
 	public static class Capability{
 		public static final BlockCapability<HiveSlotProvider, Void> BEE_CITY_BLOCK=BlockCapability.createVoid(Beecrasy.rl("bee_city_block"), HiveSlotProvider.class);
 		
@@ -473,7 +478,13 @@ public class BeecrasyRegistries {
 		public static final DeferredHolder<SoundEvent, SoundEvent> BEE_NOTE_EXTRA_SLOW=SOUND_EVENTS.register("beenote_extra_slow", SoundEvent::createVariableRangeEvent);
 		
 	}
-	
+	public class WorldGen {
+		public static final DeferredRegister<TreeDecoratorType<?>> FOILAGE_TYPES = DeferredRegister.create(Registries.TREE_DECORATOR_TYPE, Beecrasy.MODID);
+		public static final DeferredRegister<TrunkPlacerType<?>> TRUNK_TYPES = DeferredRegister.create(Registries.TRUNK_PLACER_TYPE, Beecrasy.MODID);
+		public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES = DeferredRegister.create(Registries.STRUCTURE_TYPE, Beecrasy.MODID);
+
+		public static final DeferredHolder<TreeDecoratorType<?>,TreeDecoratorType<UnderLeavesPlacer>> UNDER_LEAVES_PLACER = FOILAGE_TYPES.register("under_leaves", () -> new TreeDecoratorType<>(UnderLeavesPlacer.CODEC));
+	}
     public static void register(IEventBus modEventBus) {
     	// Register the Deferred Register to the mod event bus so blocks get registered
     	Blocks.BLOCKS.register(modEventBus);
