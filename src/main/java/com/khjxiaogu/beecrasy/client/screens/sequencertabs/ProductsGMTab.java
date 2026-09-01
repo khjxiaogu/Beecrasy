@@ -177,7 +177,7 @@ public class ProductsGMTab implements GMTab{
 				ah=ahm2.getAllele(Genes.PRODUCTS);
 				for(int idx=1;idx<=9;idx++) {
 					int cx=x+0+(idx%5)*19;
-					int cy=y+15+19*(idx/5);
+					int cy=y+60+19*(idx/5);
 					ah=new ArrayList<>(ah);
 					if(mouseX>cx&&mouseY>cy&&mouseX<cx+16&&mouseY<cy+16) {
 						if(idx-1>=ah.size()) {

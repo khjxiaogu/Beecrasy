@@ -210,7 +210,7 @@ public class JEICompat implements IModPlugin {
 						if (ahm2 != null) {
 							for (int idx = 1; idx <= 9; idx++) {
 								final int cx = x + 0 + (idx % 5) * 19;
-								final int cy = y + 15 + 19 * (idx / 5);
+								final int cy = y + 60 + 19 * (idx / 5);
 								final int i = idx - 1;
 								li.add(new Target<>() {
 									@Override
@@ -223,14 +223,14 @@ public class JEICompat implements IModPlugin {
 										if (ingredient instanceof ItemStack is) {
 
 											if (!is.isEmpty()) {
-												List<ProductItem> ah = ahm1.getAllele(Genes.PRODUCTS);
+												List<ProductItem> ah = ahm2.getAllele(Genes.PRODUCTS);
 												ah = new ArrayList<>(ah);
 												if (i >= ah.size()) {
 													ah.add(new ProductItem(Genes.Alleles.WILD, Optional.empty(), ItemStackTemplate.fromNonEmptyStack(is).withCount(1)));
 												} else {
 													ah.set(i, new ProductItem(Genes.Alleles.WILD, Optional.empty(), ItemStackTemplate.fromNonEmptyStack(is).withCount(1)));
 												}
-												ahm1.setAllele(Genes.PRODUCTS, ah);
+												ahm2.setAllele(Genes.PRODUCTS, ah);
 											}
 										}
 									}
