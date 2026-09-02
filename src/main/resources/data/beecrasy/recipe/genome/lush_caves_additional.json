@@ -1,0 +1,59 @@
+{
+	"type": "beecrasy:genome_preset",
+	"genetic_group": "beecrasy:products",
+	"name": "beecrasy:lush_caves_additional",
+	"genomes": [
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:clay_ball"
+						}
+					}
+				]
+			},
+			"weight": 15
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:vines"
+						}
+					}
+				]
+			},
+			"weight": 5
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:glow_berries"
+						}
+					}
+				]
+			},
+			"weight": 7
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:azalea"
+						}
+					}
+				]
+			},
+			"weight": 5
+		}
+	]
+}

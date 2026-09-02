@@ -1,0 +1,65 @@
+{
+	"type": "beecrasy:genome_preset",
+	"genetic_group": "beecrasy:products",
+	"name": "beecrasy:the_end_general",
+	"genomes": [
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:end_stone"
+						}
+					}
+				]
+			},
+			"weight": 20
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:chorus_fruit"
+						}
+					}
+				]
+			},
+			"weight": 12
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:obsidian"
+						}
+					}
+				]
+			},
+			"weight": 8
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:ender_pearl"
+						}
+					}
+				]
+			},
+			"weight": 5
+		},
+		{
+			"data": {
+				"beecrasy:product": []
+			},
+			"weight": 100
+		}
+	]
+}

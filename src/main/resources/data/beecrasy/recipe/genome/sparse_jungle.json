@@ -1,0 +1,143 @@
+{
+	"type": "beecrasy:genome_preset",
+	"genetic_group": "beecrasy:products",
+	"name": "beecrasy:sparse_jungle",
+	"genomes": [
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:jungle_log"
+						}
+					}
+				]
+			},
+			"weight": 10
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:oak_log"
+						}
+					}
+				]
+			},
+			"weight": 10
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:apple"
+						}
+					}
+				]
+			},
+			"weight": 1
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:vine"
+						}
+					}
+				]
+			},
+			"weight": 4
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:melon_slice"
+						}
+					}
+				]
+			},
+			"weight": 2
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:cocoa_beans"
+						}
+					}
+				]
+			},
+			"weight": 2
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:dandelion"
+						}
+					}
+				]
+			},
+			"weight": 1
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:poppy"
+						}
+					}
+				]
+			},
+			"weight": 1
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:white_wool"
+						}
+					}
+				]
+			},
+			"weight": 3
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:string"
+						}
+					}
+				]
+			},
+			"weight": 1
+		},
+		{
+			"data": {
+				"beecrasy:product": []
+			},
+			"weight": 50
+		}
+	]
+}

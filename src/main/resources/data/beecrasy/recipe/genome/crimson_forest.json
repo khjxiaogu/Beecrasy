@@ -1,0 +1,52 @@
+{
+	"type": "beecrasy:genome_preset",
+	"genetic_group": "beecrasy:products",
+	"name": "beecrasy:crimson_forest",
+	"genomes": [
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:netherrack"
+						}
+					}
+				]
+			},
+			"weight": 10
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:soul_sand"
+						}
+					}
+				]
+			},
+			"weight": 10
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:crimson_fungus"
+						}
+					}
+				]
+			},
+			"weight": 15
+		},
+		{
+			"data": {
+				"beecrasy:product": []
+			},
+			"weight": 100
+		}
+	]
+}

@@ -1,0 +1,16 @@
+{
+	"type": "beecrasy:press",
+	"input": {
+		"count": 1,
+		"ingredient": "beecrasy:drone"
+	},
+	"outputs": [
+		{
+			"stack": {
+				"id": "beecrasy:pheromone"
+			},
+			"chance": 0.15
+		}
+	],
+	"time": 200
+}

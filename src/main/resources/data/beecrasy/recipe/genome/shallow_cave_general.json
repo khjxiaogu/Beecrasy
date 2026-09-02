@@ -1,0 +1,182 @@
+{
+	"type": "beecrasy:genome_preset",
+	"genetic_group": "beecrasy:products",
+	"name": "beecrasy:shallow_cave_general",
+	"genomes": [
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:cobblestone"
+						}
+					}
+				]
+			},
+			"weight": 35
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:flint"
+						}
+					}
+				]
+			},
+			"weight": 5
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:calcite"
+						}
+					}
+				]
+			},
+			"weight": 4
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:andesite"
+						}
+					}
+				]
+			},
+			"weight": 5
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:granite"
+						}
+					}
+				]
+			},
+			"weight": 5
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:diorite"
+						}
+					}
+				]
+			},
+			"weight": 5
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:tuff"
+						}
+					}
+				]
+			},
+			"weight": 4
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:coal"
+						}
+					}
+				]
+			},
+			"weight": 5
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:raw_copper"
+						}
+					}
+				]
+			},
+			"weight": 4
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:raw_iron"
+						}
+					}
+				]
+			},
+			"weight": 3
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:raw_gold"
+						}
+					}
+				]
+			},
+			"weight": 1
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:amethyst_shard"
+						}
+					}
+				]
+			},
+			"weight": 1
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:lapis_lazuli"
+						}
+					}
+				]
+			},
+			"weight": 1
+		},
+		{
+			"data": {
+				"beecrasy:product": []
+			},
+			"weight": 150
+		}
+	]
+}

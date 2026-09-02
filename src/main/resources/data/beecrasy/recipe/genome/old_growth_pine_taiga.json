@@ -1,0 +1,78 @@
+{
+	"type": "beecrasy:genome_preset",
+	"genetic_group": "beecrasy:products",
+	"name": "beecrasy:old_growth_pine_taiga",
+	"genomes": [
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:spruce_log"
+						}
+					}
+				]
+			},
+			"weight": 20
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:brown_mushroom"
+						}
+					}
+				]
+			},
+			"weight": 4
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:red_mushroom"
+						}
+					}
+				]
+			},
+			"weight": 4
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:sweet_berries"
+						}
+					}
+				]
+			},
+			"weight": 6
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:fern"
+						}
+					}
+				]
+			},
+			"weight": 4
+		},
+		{
+			"data": {
+				"beecrasy:product": []
+			},
+			"weight": 50
+		}
+	]
+}

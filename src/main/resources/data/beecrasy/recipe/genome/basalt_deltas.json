@@ -1,0 +1,65 @@
+{
+	"type": "beecrasy:genome_preset",
+	"genetic_group": "beecrasy:products",
+	"name": "beecrasy:basalt_deltas",
+	"genomes": [
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:blackstone"
+						}
+					}
+				]
+			},
+			"weight": 20
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:basalt"
+						}
+					}
+				]
+			},
+			"weight": 20
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:magma_cream"
+						}
+					}
+				]
+			},
+			"weight": 4
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:blaze_powder"
+						}
+					}
+				]
+			},
+			"weight": 2
+		},
+		{
+			"data": {
+				"beecrasy:product": []
+			},
+			"weight": 100
+		}
+	]
+}

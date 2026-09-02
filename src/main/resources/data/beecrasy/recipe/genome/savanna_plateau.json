@@ -1,0 +1,52 @@
+{
+	"type": "beecrasy:genome_preset",
+	"genetic_group": "beecrasy:products",
+	"name": "beecrasy:savanna_plateau",
+	"genomes": [
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:acacia_log"
+						}
+					}
+				]
+			},
+			"weight": 20
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:dandelion"
+						}
+					}
+				]
+			},
+			"weight": 2
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:poppy"
+						}
+					}
+				]
+			},
+			"weight": 2
+		},
+		{
+			"data": {
+				"beecrasy:product": []
+			},
+			"weight": 50
+		}
+	]
+}

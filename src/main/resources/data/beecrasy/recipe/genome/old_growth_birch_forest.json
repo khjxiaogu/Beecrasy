@@ -1,0 +1,91 @@
+{
+	"type": "beecrasy:genome_preset",
+	"genetic_group": "beecrasy:products",
+	"name": "beecrasy:old_growth_birch_forest",
+	"genomes": [
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:birch_log"
+						}
+					}
+				]
+			},
+			"weight": 20
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:rose_bush"
+						}
+					}
+				]
+			},
+			"weight": 4
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:lilac"
+						}
+					}
+				]
+			},
+			"weight": 4
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:paper"
+						}
+					}
+				]
+			},
+			"weight": 2
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:peony"
+						}
+					}
+				]
+			},
+			"weight": 4
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:lily_of_the_valley"
+						}
+					}
+				]
+			},
+			"weight": 2
+		},
+		{
+			"data": {
+				"beecrasy:product": []
+			},
+			"weight": 50
+		}
+	]
+}

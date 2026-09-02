@@ -1,0 +1,20 @@
+{
+	"type": "beecrasy:genome_preset",
+	"genetic_group": "beecrasy:products",
+	"name": "beecrasy:dripstone_cave_additional",
+	"genomes": [
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:dripstone_block"
+						}
+					}
+				]
+			},
+			"weight": 10
+		}
+	]
+}

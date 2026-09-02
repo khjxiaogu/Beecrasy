@@ -1,0 +1,143 @@
+{
+	"type": "beecrasy:genome_preset",
+	"genetic_group": "beecrasy:products",
+	"name": "beecrasy:dark_forest",
+	"genomes": [
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:dark_oak_log"
+						}
+					}
+				]
+			},
+			"weight": 20
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:oak_log"
+						}
+					}
+				]
+			},
+			"weight": 15
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:apple"
+						}
+					}
+				]
+			},
+			"weight": 3
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:birch_log"
+						}
+					}
+				]
+			},
+			"weight": 15
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:brown_mushroom"
+						}
+					}
+				]
+			},
+			"weight": 7
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:red_mushroom"
+						}
+					}
+				]
+			},
+			"weight": 7
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:rose_bush"
+						}
+					}
+				]
+			},
+			"weight": 2
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:lilac"
+						}
+					}
+				]
+			},
+			"weight": 2
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:peony"
+						}
+					}
+				]
+			},
+			"weight": 2
+		},
+		{
+			"data": {
+				"beecrasy:product": [
+					{
+						"biotope": "wild",
+						"stack": {
+							"id": "minecraft:lily_of_the_valley"
+						}
+					}
+				]
+			},
+			"weight": 1
+		},
+		{
+			"data": {
+				"beecrasy:product": []
+			},
+			"weight": 100
+		}
+	]
+}

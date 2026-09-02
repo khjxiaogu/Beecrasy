@@ -1,0 +1,16 @@
+{
+	"type": "beecrasy:press",
+	"input": {
+		"count": 1,
+		"ingredient": "minecraft:honeycomb"
+	},
+	"outputs": [
+		{
+			"stack": {
+				"id": "beecrasy:beeswax",
+				"count": 1.0
+			}
+		}
+	],
+	"time": 100
+}
