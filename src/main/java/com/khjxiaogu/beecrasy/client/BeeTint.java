@@ -107,7 +107,8 @@ public record BeeTint(int defaultColor) implements ItemTintSource {
 		        ItemStackRenderState irs=new ItemStackRenderState();
 		        Minecraft.getInstance().getItemModelResolver().appendItemLayers(irs, product, ItemDisplayContext.GUI, level, owner, 0);
 		        TextureAtlasSprite sprite=irs.pickParticleMaterial(level==null?RandomSource.create():level.getRandom()).sprite();
-		        return TintColorCache.getTintColor(sprite);
+		        if(sprite!=null)
+		        	return TintColorCache.getTintColor(sprite);
     		}finally {
     			calculating.set(false);
     		}

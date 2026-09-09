@@ -47,7 +47,7 @@ public class BasicGMTab implements GMTab {
 	/** 基因显示行列表 */
 	List<Line> lines=new ArrayList<>();
 	/** 标签页标题 */
-	public static final Component title=Component.translatable("tab.gm.beecrasy.basic");
+	public static final Component title=Component.translatable("tab.beecrasy.basic");
 	public BasicGMTab() {
 		super();
 		addLines();
