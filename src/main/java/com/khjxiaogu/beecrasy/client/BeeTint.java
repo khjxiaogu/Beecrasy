@@ -19,6 +19,8 @@
 
 package com.khjxiaogu.beecrasy.client;
 
+import org.jspecify.annotations.Nullable;
+
 import com.khjxiaogu.beecrasy.BeecrasyRegistries.Components;
 import com.khjxiaogu.beecrasy.components.TintColorComponent;
 import com.mojang.serialization.MapCodec;
@@ -29,6 +31,7 @@ import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material.Baked;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -106,9 +109,13 @@ public record BeeTint(int defaultColor) implements ItemTintSource {
 		        	product=prod.create();
 		        ItemStackRenderState irs=new ItemStackRenderState();
 		        Minecraft.getInstance().getItemModelResolver().appendItemLayers(irs, product, ItemDisplayContext.GUI, level, owner, 0);
-		        TextureAtlasSprite sprite=irs.pickParticleMaterial(level==null?RandomSource.create():level.getRandom()).sprite();
-		        if(sprite!=null)
-		        	return TintColorCache.getTintColor(sprite);
+		        @Nullable Baked baked=irs.pickParticleMaterial(level==null?RandomSource.create():level.getRandom());
+		        
+		        if(baked!=null) {
+		        	TextureAtlasSprite sprite=baked.sprite();
+			        if(sprite!=null)
+			        	return TintColorCache.getTintColor(sprite);
+		        }
     		}finally {
     			calculating.set(false);
     		}
