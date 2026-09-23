@@ -72,6 +72,7 @@ public class BeecrasyLootProvider extends BlockLootSubProvider {
         	.setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.LOWER)))
         	.add(LootItem.lootTableItem(Blocks.HONEY_PRESS.asItem()))));
 		this.dropSelf(Blocks.SEQUENCER.get());
+		this.dropSelf(Blocks.GM.get());
 		this.dropSelf(Blocks.EMPTY_COMB_BLOCK.get());
 		this.dropSelf(Blocks.HONEY_COMB_BLOCK.get());
 		this.dropSelf(Blocks.FLOWER_ASPHODEL.get());
